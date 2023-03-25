@@ -1,0 +1,219 @@
+declare lower;
+
+input BTD_Length1 = 22;
+input BTD_Length2 = 50;
+input BTD_Length3 = 100;
+input Smooth_Length = 7;
+
+
+input ShowAll_Labels = no; #hint ShowAll_Labels: Shows all labels.
+input ShowMin_Labels = yes; #hint ShowMin_Labels: Shows minimal labels.
+
+
+#22 length
+def BTD = ((((high - Lowest(close[1], BTD_Length1)) / Lowest(close[1], BTD_Length1)) * 1)) + 1;
+def div = close / BTD;
+def smooth = ExpAverage(div, Smooth_Length);
+def BTD_22 = smooth;
+
+def TP = ((((low - Highest(close[1], BTD_Length1)) / Highest(close[1], BTD_Length1)) * 1)) + 1;
+def div2 = close / TP;
+def smooth2 = ExpAverage(div2, Smooth_Length);
+def TP_22 = smooth2;
+
+#50 length
+def BTD2 = ((((high - Lowest(close[1], BTD_Length2)) / Lowest(close[1], BTD_Length2)) * 1)) + 1;
+def div1 = close / BTD2;
+def smooth1 = ExpAverage(div1, Smooth_Length);
+def BTD_50 = smooth1;
+
+def TP2 = ((((low - Highest(close[1], BTD_Length2)) / Highest(close[1], BTD_Length2)) * 1)) + 1;
+def div3 = close / TP2;
+def smooth3 = ExpAverage(div3, Smooth_Length);
+def TP_50 = smooth3;
+
+#100 length
+def BTD3 = ((((high - Lowest(close[1], BTD_Length3)) / Lowest(close[1], BTD_Length3)) * 1)) + 1;
+def div4 = close / BTD3;
+def smooth4 = ExpAverage(div4, Smooth_Length);
+def BTD_100 = smooth4;
+
+def TP3 = ((((low - Highest(close[1], BTD_Length3)) / Highest(close[1], BTD_Length3)) * 1)) + 1;
+def div5 = close / TP3;
+def smooth5 = ExpAverage(div5, Smooth_Length);
+def TP_100 = smooth5;
+
+#Percentile
+def gap22 = tp_22 - btd_22;
+def gap50 = tp_50 - btd_50;
+def gap100 = tp_100 - btd_100;
+
+def perc22high = (((high-btd_22)/gap22)*100);
+def perc50high = (((high-btd_50)/gap50)*100);
+def perc100high = (((high-btd_100)/gap100)*100);
+def perc22low = (((low-btd_22)/gap22)*100);
+def perc50low = (((low-btd_50)/gap50)*100);
+def perc100low = (((low-btd_100)/gap100)*100);
+
+#Plot
+def hundred = 100;
+def zero = 0;
+
+def line1 = if perc22high > 50 then perc22high else perc22low;
+def line2 = if perc50high > 50 then perc50high else perc50low;
+def line3 = if perc100high > 50 then perc100high else perc100low;
+
+#arrows
+def green = line1 crosses below 100 or line1 crosses above 0;
+def yellow = line2 crosses below 100 or line2 crosses above 0;
+def red = line3 crosses below 100 or line3 crosses above 0;
+
+def dwnarrw = if line1 crosses below 100 or line2 crosses below 100  or line3 crosses below 100  then 100 else double.nan;
+
+def uparrw = if line1 crosses above 0  or line2 crosses above 0 or line3 crosses above 0  then 0 else double.nan;
+
+                ##########################
+                # Stats Calculation Code #
+                ##########################
+
+
+#Past bars for stats counts
+input past_bars = 5; #hint past_bars: This number used to calculate the positive BTD run counts and BTD percentages
+# definition of btd signal and identifies bar where past signal occured
+input choose_signal = {default Fast, Medium, Slow}; #hint choose_signal: Choose which line you want to perform stats calculations on
+def green_bull;
+switch (choose_signal)
+{
+case Fast:
+   green_bull = line1 crosses above 0;
+case Medium:
+    green_bull = line2 crosses above 0;
+case Slow:
+    green_bull = line3 crosses above 0;
+}
+def btd_triggered = green_bull[past_bars];
+
+#defines low high price in prior number of bars
+def low_price = low;
+def high_price = high;
+def down = lowest(low_price, past_bars);
+def up = highest(high_price,past_bars);
+#def close_price = close;
+
+input choose_strictness = {default Optimistic, Realistic}; #hint choose_strictness: Used in calculation of winners and losers. Optimistic assumed your exiting at or near the highest price achieved over your chosen amount of past bars, Realistic assumes you get exit at the close of your chosen amount of past bars.
+
+def exit_price;
+switch (choose_strictness)
+{
+case Optimistic:
+     exit_price = up - open[past_bars];
+case Realistic:
+     exit_price = close - close[past_bars];
+}
+
+def ShowAll = ShowAll_Labels;
+def ShowMin =  ShowMin_Labels;
+
+
+#Counter of Total User Chosen BTD signals on chart.
+def green_cnt_sum = if isNan(btd_triggered) then 0 else if btd_triggered then green_cnt_sum[1] + 1  else green_cnt_sum[1];
+#AddLabel(ShowAll, "Total BTD Signals: " + green_cnt_sum + " ", color.LIGHT_GRAY);
+
+#Counter for Green Close when BTD Signal triggered
+def price_green = btd_triggered and close>open from past_bars bars ago;
+def price_grn_cnt =  if isNan(price_green) then 0 else if price_green then price_grn_cnt[1] + 1  else price_grn_cnt[1];
+#AddLabel(ShowAll, "BTD Open Green: " + price_grn_cnt, color.GREEN);
+
+
+# Counter for btd signals where a positive gain was realized
+def btd_posgain_fired  = btd_triggered and (exit_price > 0);
+def greenbull_poswin = if isNan(btd_posgain_fired) then 0 else if btd_posgain_fired then greenbull_poswin[1]+1 else greenbull_poswin[1];
+#AddLabel(ShowAll, "Poss Winners: " + greenbull_poswin + " ", color.CYAN);
+
+
+#defines highest possible price realized after btd signal and sums total
+def green_run = if isNan(btd_triggered) then 0 else if btd_triggered then up else 0;
+def btd_trig_highestsum = TotalSum(green_run);
+#AddLabel(yes, "Post Run High Sum " + btd_trig_highestsum + " ", color.CYAN);
+
+#defines and totals lowest price realized after btd signal for potential loss calc
+def green_lost = if isNan(btd_triggered) then 0 else if btd_triggered then down else 0;
+def btd_trig_lowestsum = TotalSum(green_lost);
+#AddLabel(yes, "Post Run Low Sum " + btd_trig_lowestsum + " ", color.CYAN);
+
+
+#Counter and sum for open prices and calculation of total gained
+def btd_total_gained = if isNan(btd_triggered) then 0 else if btd_triggered then open[past_bars] else 0;
+def btd_opensum = TotalSum(btd_total_gained);
+#AddLabel(yes, "BTD Total Sum " + btd_totalsum + " ", color.CYAN);
+
+#Difference of Total BTD Fired high and open prices divided by number of signals. Average run of BTD signals
+def btd_avg_gain = (btd_trig_highestsum - btd_opensum)/green_cnt_sum;
+#AddLabel(ShowAll, "BTD Avg Run: $" + round(btd_avg_gain) + " ", color.CYAN);
+
+
+
+#Percentage gained of BTD Fired signals
+def perc_high_ttl = btd_trig_highestsum/green_cnt_sum;
+def perc_open_ttl = btd_opensum/green_cnt_sum;
+def avg_perc = (perc_high_ttl - perc_open_ttl)/perc_open_ttl;
+def avg_perc_gain = avg_perc * 100;
+#AddLabel(ShowAll, "BTD Perc Gain: " + round(avg_perc_gain) + "% ", color.CYAN);
+
+
+
+                           ##############
+            ### Possible Failed Signals Code below ###
+                           ##############
+#Counter for potential losers
+def btd_possloss_fired = btd_triggered and (exit_price < 0);
+def greenbull_poslos = if isNan(btd_possloss_fired) then 0 else if btd_possloss_fired then greenbull_poslos[1]+1 else greenbull_poslos[1];
+#AddLabel(ShowAll, "Poss Losers: " + greenbull_poslos + " ", color.ORANGE);
+
+
+#Difference of Total BTD Fired lowest and open prices divided by total number of signals.
+def btd_avg_lost = (btd_trig_lowestsum - btd_opensum)/green_cnt_sum;
+#AddLabel(ShowMin, "Avg Heat Taken: $" + round(btd_avg_lost,2) + " ", color.ORANGE);
+
+#Percentage lost of BTD fired signals
+def perc_lowttl = btd_trig_lowestsum/green_cnt_sum;
+def avg_lostperc = (perc_lowttl - perc_open_ttl)/perc_open_ttl;
+def avg_perc_lost = avg_lostperc * 100;
+#AddLabel(ShowAll, "Avg Heat Perc: " + round(avg_perc_lost) + "% ", color.ORANGE);
+
+
+#Probability of bounce after BTD Signal
+#def bounce_prob = (greenbull_poswin/green_cnt_sum) * 100;
+#AddLabel(ShowAll, "Win Probability: " + round(bounce_prob) + "% ", color.LIGHT_GREEN);
+
+#Probabibility of Sinking
+def bounce_sink = greenbull_poslos/green_cnt_sum * 100;
+#AddLabel(ShowAll, "Loss Probability: " + round(bounce_sink) + "% ", color.LIGHT_RED);
+
+#Score
+def bars = barnumber();
+def reward_risk = round(btd_avg_gain/AbsValue(btd_avg_lost));
+def loss_adj = if greenbull_poslos <= 0 then 0.01 else greenbull_poslos;
+def win_loss = round(greenbull_poswin/loss_adj);
+
+#Determines Frequency of signals for the number of bars on the chart
+def bar_signals = round(bars/green_cnt_sum);
+
+def rr_score = round(reward_risk);
+def r_multiple = round(AbsValue(btd_avg_lost)/btd_avg_gain);
+def wlr_score = round(win_loss);
+def freq_score = round(bar_signals);
+def raw_score = 1 + reward_risk * (greenbull_poswin/green_cnt_sum) - 1;
+
+def total_score = round(raw_score);
+def total_poor = Between(total_score, 0, 1.19);
+def total_good = Between(total_score, 1.2, 1.99);
+def total_excellent = Between(total_score, 2, 100);
+
+#def weight_score = if total_score between  0 and 1.2 then 1 else if total_score between 1.21 and 2 then 2 else if total_score between 2 and 3 then 3 else 4;
+
+
+
+#AddLabel(ShowAll or ShowMin, "Score: " + total_score, color.LIGHT_GRAY);
+#AddLabel(ShowAll or ShowMin, "RRR: " + rr_score + " ", color.LIGHT_GREEN);
+AddLabel(yes, "Rating: " + (if total_poor then  "Poor" else if total_good then "Good" else if total_excellent then "Excellent" else "Unkown Score"), (if total_poor then color.DARK_RED else if total_good then color.YELLOW else if total_excellent then color.GREEN else color.GRAY));

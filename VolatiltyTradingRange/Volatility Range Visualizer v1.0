@@ -1,0 +1,68 @@
+# Start Configurations
+def aggregationPeriod = AggregationPeriod.MONTH;
+def aggregationPeriod_nd = AggregationPeriod.WEEK;
+def averageType = AverageType.WILDERS;
+input monthly_range = yes;
+input weekly_range = no;
+input percentile_plot = no;
+input labels = yes;
+input percentile = 0.90;
+input length = 14;
+# End Configurations
+
+# Start Aggregation Periods
+def hi = high(period = aggregationPeriod)[1];
+def lo = low(period = aggregationPeriod)[1];
+def cl = close(period = aggregationPeriod)[1];
+def open = open(period = aggregationPeriod);
+
+def hi_nd = high(period = aggregationPeriod_nd)[1];
+def lo_nd = low(period = aggregationPeriod_nd)[1];
+def cl_nd = close(period = aggregationPeriod_nd)[1];
+def open_nd = open(period = aggregationPeriod_nd);
+# End Aggregation Periods
+
+# Start Volatility Range A
+def ATR = MovingAverage(averageType, TrueRange(hi, cl, lo), length);
+def op = open;
+plot t1 = if monthly_range then (op + ATR) else double.nan;
+plot t1_percentile = if monthly_range and percentile_plot then (op + ATR * percentile) else double.nan;
+plot b1 = if monthly_range then (op - ATR) else double.nan;
+plot b1_percentile = if monthly_range and percentile_plot then (op - ATR * percentile) else double.nan;
+# End Volatility Range A
+
+# Start Volatility Range B
+def ATR_nd = MovingAverage(averageType, TrueRange(hi_nd, cl_nd, lo_nd), length);
+def op_nd = open_nd;
+plot t2 = if weekly_range then (op_nd + ATR_nd) else double.nan;
+plot t2_percentile = if weekly_range and percentile_plot then (op_nd + ATR_nd * percentile) else double.nan;
+plot b2 = if weekly_range then (op_nd - ATR_nd) else double.nan;
+plot b2_percentile = if weekly_range and percentile_plot then (op_nd - ATR_nd * percentile) else double.nan;
+# End Volatility Range B
+
+# Customizations
+t1.AssignValueColor(color.red);
+t1_percentile.AssignValueColor(color.red);
+t2.AssignValueColor(color.light_red);
+t2_percentile.AssignValueColor(color.light_red);
+b1.AssignValueColor(color.green);
+b1_percentile.AssignValueColor(color.green);
+b2.AssignValueColor(color.light_green);
+b2_percentile.AssignValueColor(color.light_green);
+
+t1.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+b1.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+t2.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+b2.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+t1_percentile.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+b1_percentile.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+t2_percentile.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+b2_percentile.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+
+AddCloud(t1, t1_percentile, color.red, color.red);
+AddCloud(b1, b1_percentile, color.green, color.green);
+AddCloud(t2, t2_percentile, color.light_red, color.light_red);
+AddCloud(b2, b2_percentile, color.light_green, color.light_green);
+AddLabel(yes and labels and monthly_range, "Monthly Range: Active", color.orange);
+AddLabel(yes and labels and weekly_range, "Weekly Range: Active", color.orange);
+# End Customizations

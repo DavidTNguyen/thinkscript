@@ -1,0 +1,74 @@
+declare lower;
+
+# Start Configurations
+def aggregationPeriod = AggregationPeriod.MONTH;
+def aggregationPeriod_nd = AggregationPeriod.WEEK;
+def averageType = AverageType.WILDERS;
+input vertical_period = {WEEK, default MONTH};
+input monthly_range = yes;
+input weekly_range = yes;
+input percentile = no;
+input vertical_line = no;
+input labels = yes;
+input length = 14;
+# End Configurations
+
+# Start Aggregation Periods
+def hi = high(period = aggregationPeriod)[1];
+def lo = low(period = aggregationPeriod)[1];
+def cl = close(period = aggregationPeriod)[1];
+def open = open(period = aggregationPeriod);
+
+def hi_nd = high(period = aggregationPeriod_nd)[1];
+def lo_nd = low(period = aggregationPeriod_nd)[1];
+def cl_nd = close(period = aggregationPeriod_nd)[1];
+def open_nd = open(period = aggregationPeriod_nd);
+# End Aggregation Periods
+
+# Start Volatility Range A
+def ATR = MovingAverage(averageType, TrueRange(hi, cl, lo), length);
+def op = open;
+def t1 = (op + ATR);
+def b1 = (op - ATR);
+def calculationA = t1 - b1;
+def valueA = (((close-t1)/calculationA)*100);
+plot lineA = if monthly_range then (valueA+50)*2 else double.nan;
+lineA.SetdefaultColor(color.pink);
+# End Volatility Range A
+
+# Start Volatility Range B
+def ATR_nd = MovingAverage(averageType, TrueRange(hi_nd, cl_nd, lo_nd), length);
+def op_nd = open_nd;
+def t2 = (op_nd + ATR_nd);
+def b2 = (op_nd - ATR_nd);
+def calculationB = t2 - b2;
+def valueB = (((close-t2)/calculationB)*100);
+plot lineB = if weekly_range then (valueB+50)*2 else double.nan;
+lineB.SetDefaultColor(color.cyan);
+# End Volatility Range B
+
+# Plot Horizontal Lines
+plot under = -100;
+under.AssignValueColor(color.green);
+plot over = 100;
+over.AssignValueColor(color.red);
+plot tile1 = if percentile then 90 else double.nan;
+tile1.AssignValueColor(color.dark_red);
+plot tile2 = if percentile then -90 else double.nan;
+tile2.AssignValueColor(color.dark_green);
+# End Horizontal Lines
+
+# Miscellaneous
+AddCloud(over, tile1, color.dark_red);
+AddCloud(under, tile2, color.dark_green, color.dark_green);
+AddCloud(if lineA < under then lineA else double.nan, under, color.light_green, color.light_green);
+AddCloud(if lineB < under then lineB else double.nan, under, color.dark_green, color.dark_green);
+AddCloud(if lineA > over then lineA else double.nan, over, color.light_red, color.light_red);
+AddCloud(if lineB > over then lineB else double.nan, over, color.light_red, color.light_red);
+
+AddVerticalLine((vertical_line and vertical_period == vertical_period.WEEK and GetWeek() <> GetWeek()[1]) or (vertical_line and vertical_period == vertical_period.MONTH and GetMonth() <> GetMonth()[1]), "", Color.ORANGE, curve.FIRM);
+
+AddLabel(yes and labels, "Weekly Volatility Range", color.cyan);
+AddLabel(yes and labels, "Monthly Volatility Range", color.pink);
+AddLabel(yes and labels, "VR > 100 = Over-extended | VR < -100 = Undervalued", color.white);
+# End Miscellaneous

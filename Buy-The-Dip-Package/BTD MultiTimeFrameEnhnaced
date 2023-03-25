@@ -1,0 +1,34 @@
+# Enhanced MTF version of Buy the Dip
+# Assembled by BenTen at UseThinkScript.com
+# Based on the concept of "Synethetic VIX" by LARRY WILLIAMS
+
+declare lower;
+
+input timeframe1 = AggregationPeriod.DAY;
+input timeframe2 = AggregationPeriod.HOUR;
+def high1 = high(period = timeframe1);
+def close1 = close(period = timeframe1);
+def high2 = high(period = timeframe2);
+def close2 = close(period = timeframe2);
+
+input length = 22;
+
+# Plot indicator
+def value1 = ((high1 - Lowest(close1[1], length)) / Lowest(close1[1], length)) * 100;
+def value2 = ((high2 - Lowest(close2[1], length)) / Lowest(close2[1], length)) * 100;
+plot buythedip1 = value1;
+plot buythedip2 = value2;
+
+plot Zeroline = 0;
+
+buythedip1.AssignValueColor(color.light_red);
+buythedip2.AssignValueColor(color.green);
+Zeroline.AssignValueColor(color.white);
+
+def current_value = ((high - Lowest(close[1], length)) / Lowest(close[1], length)) * 100;
+plot current = current_value;
+current.AssignValueColor(color.white);
+
+AddLabel(yes, "Higher 1", color.light_red);
+AddLabel(yes, "Higher 2", color.green);
+AddLabel(yes, "CURRENT", color.white);

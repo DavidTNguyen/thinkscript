@@ -1,0 +1,74 @@
+# MTF version of Take Profit Indicator
+# Assembled by BenTen at UseThinkScript.com
+# Version 1.0
+# <INSTRUCTION>
+# Get support at: https://usethinkscript.com/forums/take-profit.33/
+# <NOTES>
+# Uses the Synthetic VIX formula by Larry Williams
+# Normalization based on the idea of Jeff Swanson (EasyLanguageMastery)
+# PercentRank script by @diazlaz
+
+declare lower;
+
+input timeframe1 = AggregationPeriod.DAY;
+def low1 = low(period = timeframe1);
+def close1 = close(period = timeframe1);
+
+input length = 22;
+input secondary_length = 44;
+input rank = yes;
+input meter = yes;
+input arrows = no;
+
+def ZeroLine = 0.1;
+plot Zero = Zeroline;
+Zero.AssignValueColor(color.white);
+
+# Current Value
+def current_value = ((highest(close, length) - low) / (highest(close, length))) * 100;
+
+def current_percentRankCount = fold i = 1 to secondary_length + 1 with count = 0
+do
+  if current_value[0] > current_value[i] then
+    count + 1
+  else
+    count;
+
+def current_percentRank = Round(current_percentRankCount / secondary_length * 100.0, 0);
+
+def current_isDown = close < close[1];
+def current_isUp = close > close[1];
+
+def current_valuerank = if current_isUp then current_percentRank else if current_isDown then current_percentRank * -1 else Double.NaN;
+
+# Plot Take Profit
+plot current_takeprofit = if(rank,current_percentRank,current_valuerank);
+def condition1 = current_takeprofit crosses below ZeroLine;
+
+current_takeprofit.AssignValueColor(color.white);
+
+# Higher Timeframe 1
+def timeframe1_value = ((highest(close1, length) - low1) / (highest(close1, length))) * 100;
+
+def timeframe1_percentRankCount = fold tf_i = 1 to secondary_length + 1 with tf_count = 0
+do
+  if timeframe1_value[0] > timeframe1_value[tf_i] then
+    tf_count + 1
+  else
+    tf_count;
+
+def timeframe1_percentRank = Round(timeframe1_percentRankCount / secondary_length * 100.0, 0);
+
+def timeframe1_isDown = close1 < close1[1];
+def timeframe1_isUp = close1 > close1[1];
+
+def timeframe1_valuerank = if timeframe1_isUp then timeframe1_percentRank else if timeframe1_isDown then timeframe1_percentRank * -1 else Double.NaN;
+
+# Plot Take Profit
+plot timeframe1_takeprofit = if(rank,timeframe1_percentRank,timeframe1_valuerank);
+#def condition2 = timeframe1_takeprofit crosses below ZeroLine;
+
+timeframe1_takeprofit.AssignValueColor(color.red);
+
+AddLabel(yes, "Higher Timeframe", color.red);
+AddLabel(yes, "CURRENT", color.white);

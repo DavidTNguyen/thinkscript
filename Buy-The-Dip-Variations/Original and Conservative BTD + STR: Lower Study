@@ -1,0 +1,88 @@
+declare lower;
+
+input length_C = 22;
+input length_50 = 50;
+input length_100 = 100;
+input BTD_meter = yes;
+input STR_meter = yes;
+input arrows = yes;
+input color_change = yes;
+
+# BTD Plot indicator - Conservative
+def BTD_value = ((high - Lowest(close[1], length_C)) / Lowest(close[1], length_C)) * 100;
+plot buythedip = BTD_value;
+plot Zeroline = 0;
+def BTD_condition = buythedip crosses above Zeroline;
+
+# BTD Plot indicator - 50
+def BTD_value_50 = ((high - Lowest(close[1], length_50)) / Lowest(close[1], length_50)) * 100;
+plot buythedip_50 = BTD_value_50;
+def BTD_condition_50 = buythedip_50 crosses below Zeroline;
+
+# BTD Plot indicator - 100
+def BTD_value_100 = ((high - Lowest(close[1], length_100)) / Lowest(close[1], length_100)) * 100;
+plot buythedip_100 = BTD_value_100;
+def BTD_condition_100 = buythedip_100 crosses below Zeroline;
+
+# STR Plot indicator - Conservative
+def STR_value = ((low - highest(close[1], length_C)) / highest(close[1], length_C)) * 100;
+def selltherip = STR_value;
+def STR_condition = selltherip crosses below Zeroline;
+
+# STR Plot indicator - 50
+def STR_value_50 = ((low - highest(close[1], length_50)) / highest(close[1], length_50)) * 100;
+def selltherip_50 = STR_value_50;
+def STR_condition_50 = selltherip_50 crosses above Zeroline;
+
+# STR Plot indicator - 100
+def STR_value_100 = ((low - highest(close[1], length_100)) / highest(close[1], length_100)) * 100;
+def selltherip_100 = STR_value_100;
+def STR_condition_100 = selltherip_100 crosses above Zeroline;
+
+buythedip.SetDefaultColor(GetColor(16));
+buythedip_50.SetDefaultColor(GetColor(4));
+buythedip_100.SetDefaultColor(GetColor(5));
+Zeroline.AssignValueColor(color.white);
+
+AddLabel(BTD_meter and yes, Concat("BTD = ", buythedip), color.light_green);
+#AddLabel(BTD_meter and yes, Concat("BTD = ", buythedip_50), color.green);
+#AddLabel(BTD_meter and yes, Concat("BTD = ", buythedip_100), color.dark_green);
+AddLabel(STR_meter and yes, Concat("STR = ", selltherip), color.light_red);
+#AddLabel(STR_meter and yes, Concat("STR = ", selltherip_50), color.red);
+#AddLabel(STR_meter and yes, Concat("STR = ", selltherip_100), color.dark_red);
+
+# BTD Plot arrows - Conservative
+plot UpSignal = if arrows and BTD_condition then 0 else Double.NaN;
+UpSignal.SetDefaultColor(Color.light_green);
+UpSignal.SetLineWeight(1);
+UpSignal.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
+
+# BTD Plot arrows - 50
+plot UpSignal_50 = if arrows and BTD_condition_50 then 0 else Double.NaN;
+UpSignal_50.SetDefaultColor(Color.Green);
+UpSignal_50.SetLineWeight(3);
+UpSignal_50.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
+
+# BTD Plot arrows - 100
+plot UpSignal_100 = if arrows and BTD_condition_100 then 0 else Double.NaN;
+UpSignal_100.SetDefaultColor(Color.Dark_Green);
+UpSignal_100.SetLineWeight(4);
+UpSignal_100.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
+
+# STR Plot arrows - Conservative
+plot DnSignal = if arrows and STR_condition then buythedip_100 else Double.NaN;
+DnSignal.SetDefaultColor(Color.light_RED);
+DnSignal.SetLineWeight(1);
+DnSignal.SetPaintingStrategy(PaintingStrategy.ARROW_DOWN);
+
+# STR Plot arrows - 50
+plot DnSignal_50 = if arrows and STR_condition_50 then buythedip_100 else Double.NaN;
+DnSignal_50.SetDefaultColor(Color.RED);
+DnSignal_50.SetLineWeight(3);
+DnSignal_50.SetPaintingStrategy(PaintingStrategy.ARROW_DOWN);
+
+# STR Plot arrows - 100
+plot DnSignal_100 = if arrows and STR_condition_100 then buythedip_100 else Double.NaN;
+DnSignal_100.SetDefaultColor(Color.Dark_RED);
+DnSignal_100.SetLineWeight(4);
+DnSignal_100.SetPaintingStrategy(PaintingStrategy.ARROW_DOWN);

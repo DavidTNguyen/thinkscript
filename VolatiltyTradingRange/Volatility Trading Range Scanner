@@ -1,0 +1,18 @@
+declare lower;
+
+input length = 14;
+input averageType = AverageType.WILDERS;
+
+# Start Volatility Range
+def ATR = MovingAverage(averageType, TrueRange(high[1], close[1], low[1]), length);
+def op = open;
+def t1 = (op + ATR);
+def b1 = (op - ATR);
+def calculationA = t1 - b1;
+def valueA = (((close - t1) / calculationA) * 100);
+plot line = (valueA+50)*2;
+line.SetDefaultColor(Color.PINK);
+# End Volatility Range
+
+plot overextended = 100;
+plot undervalued = -100;

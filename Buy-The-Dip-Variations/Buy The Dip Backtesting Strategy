@@ -1,0 +1,80 @@
+input Conservative = Yes;
+
+##SUPERTREND##
+input AtrMult =3;#hint:  <b> ATR Multiplier </b> \n
+input nATR = 6;#hint: ATR length
+def AvgType = AverageType.HULL;
+def ATR = MovingAverage(AvgType, TrueRange(high, close, low), nATR);
+def UP =  HL2 + (AtrMult * ATR);
+def DN = HL2 + (-AtrMult * ATR);
+##END SUPERTREND
+
+input showMovingAve = no;
+input MovingAveAggPeriod = aggregationPeriod.DAY;
+##DETERMINE BULLISH OR BEARISH MOMENTUM ON DAILY
+
+def lengthExp = 8;
+def lengthExp2 = 21;
+
+input useMA = YES;
+def AvgExp = ExpAverage(close(period = MovingAveAggPeriod), lengthExp);
+plot exp1 = if showMovingAve then avgexp else double.nan;
+
+def AvgExp2 = ExpAverage(close(period = MovingAveAggPeriod), lengthExp2);
+plot exp2 = if showMovingAve then avgexp2 else double.nan;
+def bullish = if useMA then AvgExp > AvgExp2 else yes;
+def bearish = if useMA then AvgExp < AvgExp2 else yes;
+
+def lengthBTD = 22;
+def lengthBTDmed = 50;
+def lengthBTDlong = 100;
+input lengthExtreme = 100;
+input thresh = .01;
+# Plot indicator
+def value = ((high - Lowest(close[1], lengthBTD)) / Lowest(close[1], lengthBTD)) * 100;
+def value2 = ((high - Lowest(close[1], lengthBTDmed)) / Lowest(close[1], lengthBTDmed)) * 100;
+def value3 = ((high - Lowest(close[1], lengthBTDlong)) / Lowest(close[1], lengthBTDlong)) * 100;
+def maxBTD = Highest(value,lengthExtreme);
+def BTDRatio = value / maxBTD;
+input extrLevel = .80;
+input useExtr = yes;
+def OB = if useExtr then BTDRatio >= extrLevel else yes;
+def buythedip = value crosses below thresh;
+def buythedip2 = value2 crosses below thresh;
+def buythedip3 = value3 crosses below thresh;
+def buythedipAll = (value<thresh and value2<thresh and value3 < thresh) or (value<thresh and value2<thresh) or (value< thresh and value3<thresh) or (Value2<thresh and value3<thresh);
+
+def BTD = value < thresh;
+
+def valueSTR = ((low - Highest(close[1], lengthBTD)) / Highest(close[1], lengthBTD)) * 100;
+def valueSTR2 = ((low - Highest(close[1], lengthBTDMed)) / Highest(close[1], lengthBTDMed)) * 100;
+def valueSTR3 = ((low - Highest(close[1], lengthBTDLong)) / Highest(close[1], lengthBTDLong)) * 100;
+def minSTR = Lowest(valueSTR,lengthExtreme);
+def STRRatio = -valueSTR / minSTR;
+def OS = if useExtr then STRRatio <= -extrLevel else yes;
+def selltherip = valueSTR crosses above (-thresh);
+def selltherip2 = valueSTR2 crosses above (-thresh);
+def selltherip3 = valueSTR3 crosses above (-thresh);
+def selltheripall = (valuestr<thresh and valuestr2<thresh and valuestr3 < thresh) or (valuestr<thresh and valuestr2<thresh) or (valuestr< thresh and valuestr3<thresh) or (Valuestr2<thresh and valuestr3<thresh);
+def STR = valueSTR>-thresh;
+def trend = if buythedip then 1 else if selltherip then -1 else trend[1];
+
+
+plot OB_OS = if useExtr then LowestAll(low) else no;;
+OB_OS.SetPaintingStrategy(PaintingStrategy.POINTS);
+ob_os.assignValueColor(if OB and selltherip then color.red else if OB and !selltherip then color.dark_orange else if OS and buythedip then color.green else if OS and !buythedip then color.cyan else if trend == 1 then color.light_red else if trend == -1 then color.light_green else color.current);
+ob_os.setLineWeight(3);
+
+input futures = YES;
+input contracts = 10;
+
+#def longCondition = if useOB_OS then OS and buythedip else buythedip;
+def longCondition = if conservative then !buythedipall[1] and buythedipall else buythedip;
+def shortcondition = if conservative then !selltheripall[1] and selltheripall else selltherip;
+
+AddOrder(OrderType.BUY_TO_OPEN, condition = longCondition
+and bullish, price = close, if futures then 1 else contracts*100, tickcolor = Color.GREEN, arrowcolor = Color.GREEN );
+AddOrder(OrderType.SELL_TO_CLOSE, condition =  if longcondition then no else close < DN[1], price = close, if futures then 1 else contracts * 100, tickcolor = Color.RED, arrowcolor = Color.RED) ;
+
+AddOrder(OrderType.SELL_TO_OPEN, condition = shortCondition and bearish, price = close, if futures then 1 else contracts * 100, tickcolor = Color.CYAN, arrowcolor = Color.CYAN );
+AddOrder(OrderType.BUY_TO_CLOSE, condition = if shortcondition then no else close > UP[1], price = close, if futures then 1 else contracts*100, tickcolor = Color.MAGENTA, arrowcolor = Color.MAGENTA) ;

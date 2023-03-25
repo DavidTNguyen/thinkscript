@@ -1,0 +1,50 @@
+# Take Profit Indicator (Lower Study)
+# Assembled by BenTen at UseThinkScript.com
+# Version 1.0
+# <INSTRUCTION>
+# Get support at: https://usethinkscript.com/forums/take-profit.33/
+# <NOTES>
+# Uses the Synthetic VIX formula by Larry Williams
+# Normalization based on the idea of Jeff Swanson (EasyLanguageMastery)
+# PercentRank script by @diazlaz
+
+declare lower;
+
+input length = 22;
+input secondary_length = 44;
+input rank = yes;
+input meter = yes;
+input arrows = no;
+
+def value = ((highest(close, length) - low) / (highest(close, length))) * 100;
+
+def percentRankCount = fold i = 1 to secondary_length + 1 with count = 0
+do
+  if value[0] > value[i] then
+    count + 1
+  else
+    count;
+
+def percentRank = Round(percentRankCount / secondary_length * 100.0, 0);
+
+def isDown = close < close[1];
+def isUp = close > close[1];
+
+def valuerank = if isUp then percentRank else if isDown then percentRank * -1 else Double.NaN;
+
+# Plot Take Profit
+plot takeprofit = if(rank,percentRank,valuerank);
+def ZeroLine = 0.1;
+plot Zero = Zeroline;
+def condition = takeprofit crosses below ZeroLine;
+
+takeprofit.AssignValueColor(if takeprofit <= 0.1 then color.yellow else color.red);
+Zero.AssignValueColor(color.white);
+
+# Plot Signals
+plot downArrow = if condition and arrows then 95 else double.nan;
+downArrow.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+downArrow.SetDefaultColor(color.light_red);
+
+# Plot Meter
+AddLabel(meter and yes, Concat("Meter = ", takeprofit), color.orange);

@@ -1,0 +1,146 @@
+# Advanced Market Moves
+# Assembled by BenTen at useThinkScript.com
+# Version 2.0
+
+# <INSTRUCTION>
+# Get support at: https://usethinkscript.com/forums/advanced-market-moves-2.26/
+# <NOTES>
+# This software is licensed for individual use only.
+# NOT FOR REDISTRIBUTION *PRIVATE/CONFIDENTIAL*
+# Copyright (c) 2020 useThinkScript LLC
+
+# Settings
+input MACD = yes;
+input BollingerBands = yes;
+input OldSignal = no;
+input SupplyDemand = no;
+input Labels = yes;
+input limit_cloud = no;
+input cloud_length = 10;
+
+# Bollinger Bands
+input displace = 0;
+input lengthBB = 20;
+input Num_Dev_Dn = -2.0;
+input Num_Dev_up = 2.0;
+input averageTypeBB = AverageType.Simple;
+input price = close;
+def oAtfh6n = stdev(data = price[-displace], length = lengthBB);
+def aM5xu7k = MovingAverage(averageTypeBB, data = price[-displace], length = lengthBB);
+def dI2hs07 = aM5xu7k + num_Dev_Dn * oAtfh6n;
+def cCdm4cd = aM5xu7k + num_Dev_Up * oAtfh6n;
+def gD4q0z5 = price crosses above dI2hs07;
+def jRvqeoe = price crosses below cCdm4cd;
+
+# RSI
+input length = 14;
+input over_Bought = 70;
+input over_Sold = 30;
+input over_Bought2 = 65;
+input over_Sold2 = 35;
+input averageType = AverageType.WILDERS;
+def vTx3j8c = MovingAverage(averageType, price - price[1], length);
+def gIl5r7s = MovingAverage(averageType, AbsValue(price - price[1]), length);
+def tA4qhjg = if gIl5r7s != 0 then vTx3j8c / gIl5r7s else 0;
+def RSI = 50 * (tA4qhjg + 1);
+def mFzzstv = over_Sold;
+def pKmsxdf = over_Bought;
+# End RSI
+
+# MACD
+input fastLength = 12;
+input slowLength = 26;
+input MACDLength = 9;
+input MACDaverageType = AverageType.EXPONENTIAL;
+def bZrnvi0 = MovingAverage(MACDaverageType, close + (close - close[(fastlength - 1) / 2]), fastLength) - MovingAverage(MACDaverageType, close + (close - close[(slowLength - 1) / 2]), slowLength);
+def cOxk8kt = MovingAverage(MACDaverageType, bZrnvi0, MACDLength);
+def pF6uf3l = bZrnvi0 - cOxk8kt;
+def dFgleep = pF6uf3l crosses above 0;
+def vMss0gi = pF6uf3l crosses below 0;
+# END MACD
+
+# Moving Average
+input priceMA = close;
+input lengthMA = 5;
+input showBreakoutSignals = yes;
+def mSng78b = Average(priceMA[-displace], lengthMA);
+def uTev1a2 = priceMA crosses above mSng78b;
+def rPy3y4n = priceMA crosses below mSng78b;
+
+# Old Signals
+def mGu36uc = RSI(length = length, averageType = averageType) < over_Sold2 and uTev1a2;
+def jEhoesi = RSI(length = length, averageType = averageType) > over_Bought2 and rPy3y4n;
+
+# BB Signals
+def lK8vc4f = RSI(length = length, averageType = averageType) < over_Sold and gD4q0z5;
+def bKxom7g = RSI(length = length, averageType = averageType) > over_Bought and jRvqeoe;
+
+# MCD Signals
+def gA43ixk = RSI(length = length, averageType = averageType) < over_Sold2 and dFgleep;
+def wFgpycr = RSI(length = length, averageType = averageType) > over_Bought2 and vMss0gi;
+
+# Plot Signals
+plot bullish_bb = if BollingerBands then lK8vc4f else double.nan;
+bullish_bb.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+bullish_bb.SetDefaultColor(Color.CYAN);
+bullish_bb.SetLineWeight(2);
+plot bearish_bb = if BollingerBands then bKxom7g else double.nan;
+bearish_bb.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+bearish_bb.SetDefaultColor(Color.CYAN);
+bearish_bb.SetLineWeight(2);
+
+# Cont.
+plot bullish_mcd = if MACD then gA43ixk else double.nan;
+bullish_mcd.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+bullish_mcd.SetDefaultColor(Color.MAGENTA);
+bullish_mcd.SetLineWeight(2);
+plot bearish_mcd = if MACD then wFgpycr else double.nan;
+bearish_mcd.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+bearish_mcd.SetDefaultColor(Color.MAGENTA);
+bearish_mcd.SetLineWeight(2);
+
+# Cont. #2
+plot lZ15z9i = if OldSignal and mGu36uc then mGu36uc else double.nan;
+lZ15z9i.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+lZ15z9i.SetDefaultColor(Color.WHITE);
+lZ15z9i.SetLineWeight(1);
+plot fMqt6x4 = if OldSignal and jEhoesi then jEhoesi else double.nan;
+fMqt6x4.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+fMqt6x4.SetDefaultColor(Color.WHITE);
+fMqt6x4.SetLineWeight(1);
+
+# Supply and Demand Zone #1
+def dHwh1h2 = if lK8vc4f or bKxom7g then 1 else 0;
+def tCa2kqh = if dHwh1h2 then high else tCa2kqh[1];
+def zVtogal = if dHwh1h2 then low  else zVtogal[1];
+def kZuxbiv = if dHwh1h2 then 1 else kZuxbiv[1] + 1;
+plot fP699b2 = if SupplyDemand and limit_cloud == no or limit_cloud == yes and kZuxbiv <= cloud_length then tCa2kqh
+else Double.NaN;
+plot kUce1w6 = if SupplyDemand and limit_cloud == no or limit_cloud == yes and kZuxbiv <= cloud_length then zVtogal
+else Double.NaN;
+fP699b2.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+kUce1w6.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+fP699b2.SetDefaultColor(Color.GRAY);
+kUce1w6.SetDefaultColor(Color.GRAY);
+addCloud(if SupplyDemand == yes then kUce1w6 else double.nan, kUce1w6, Color.CYAN, Color.CYAN);
+addCloud(if SupplyDemand == yes then kUce1w6 else double.nan, fP699b2, Color.CYAN, Color.CYAN);
+
+# Supply and Demand Zone #2
+def qQibh70 = if gA43ixk or wFgpycr then 1 else 0;
+def kE0y5jh = if qQibh70 then high else kE0y5jh[1];
+def mCgv0ps = if qQibh70 then low  else mCgv0ps[1];
+def aAe6e6d = if qQibh70 then 1 else aAe6e6d[1] + 1;
+plot qXv3kyo = if SupplyDemand and limit_cloud == no or limit_cloud == yes and aAe6e6d <= cloud_length then kE0y5jh
+else Double.NaN;
+plot kJilo78 = if SupplyDemand and limit_cloud == no or limit_cloud == yes and aAe6e6d <= cloud_length then mCgv0ps
+else Double.NaN;
+qXv3kyo.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+kJilo78.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+qXv3kyo.SetDefaultColor(Color.GRAY);
+kJilo78.SetDefaultColor(Color.GRAY);
+addCloud(if SupplyDemand == yes then kJilo78 else double.nan, kJilo78, Color.MAGENTA, Color.MAGENTA);
+addCloud(if SupplyDemand == yes then kJilo78 else double.nan, qXv3kyo, Color.MAGENTA, Color.MAGENTA);
+
+AddLabel(Labels and yes, "Advanced Market Moves", color.Yellow);
+AddLabel(Labels and yes, "Signal 1", color.CYAN);
+AddLabel(Labels and yes, "Signal 2", color.MAGENTA);

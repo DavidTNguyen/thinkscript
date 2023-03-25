@@ -1,0 +1,25 @@
+# Standard version of Buy the Dip indicator
+# Assembled by BenTen at UseThinkScript.com
+# Version 1.0
+# <INSTRUCTION>
+# Get support at: https://usethinkscript.com/forums/buy-the-dip.32/
+# <NOTES>
+# Based on the concept of "Synethetic VIX" by Larry Williams
+# This software is licensed for individual use only.
+# NOT FOR REDISTRIBUTION *PRIVATE/CONFIDENTIAL*
+# Copyright (c) 2020 useThinkScript LLC
+
+declare lower;
+
+input length = 22;
+input meter = yes;
+
+# Plot indicator
+def value = ((high - Lowest(close[1], length)) / Lowest(close[1], length)) * 100;
+plot buythedip = value;
+plot Zeroline = 0;
+
+buythedip.AssignValueColor(color.green);
+Zeroline.AssignValueColor(color.white);
+
+AddLabel(meter and yes, Concat("Meter = ", buythedip), color.orange);

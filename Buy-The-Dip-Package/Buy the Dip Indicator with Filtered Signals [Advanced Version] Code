@@ -1,0 +1,44 @@
+# Upper study of Buy the Dip indicator
+# Assembled by BenTen at UseThinkScript.com
+# Version 1.0
+# <INSTRUCTION>
+# Get support at: https://usethinkscript.com/forums/buy-the-dip.32/
+# <NOTES>
+# Based on the concept of "Synethetic VIX" by Larry Williams
+# This software is licensed for individual use only.
+# NOT FOR REDISTRIBUTION *PRIVATE/CONFIDENTIAL*
+# Copyright (c) 2020 useThinkScript LLC
+# Include MTF moving average that you can find here: https://usethinkscript.com/threads/multi-timeframe-mtf-moving-average-indicator-for-thinkorswim.135/
+
+input Period = aggregationPeriod.DAY;
+input AvgType = averageType.Simple;
+input price = close;
+input moving_average = yes;
+input bubbles = yes;
+input meter = yes;
+input ma_labels = yes;
+input length = 22;
+input short_len = 50;
+input long_len = 200;
+
+def AVG1 = MovingAverage(AvgType, close(period = Period), short_len);
+def AVG2 = MovingAverage(AvgType, close(period = Period), long_len);
+def EMA_condition = close > AVG1 or close > AVG2;
+plot average1 = if moving_average then AVG1 else double.nan;
+plot average2 = if moving_average then AVG2 else double.nan;
+
+# Plot indicator
+def value = ((high - Lowest(close[1], length)) / Lowest(close[1], length)) * 100;
+def buythedip = value;
+def Zeroline = 0;
+def signal = buythedip crosses below ZeroLine;
+
+# Customize higher timeframe moving averages
+average1.AssignValueColor(color.cyan);
+average2.AssignValueColor(color.pink);
+
+AddLabel(meter and yes, Concat("Meter = ", buythedip), Color.orange);
+AddLabel(ma_labels and yes, Concat("50 MA = ", AVG1), Color.cyan);
+AddLabel(ma_labels and yes, Concat("200 MA = ", AVG2), Color.pink);
+
+AddChartBubble(bubbles and signal and EMA_condition, low, "Buy the Dip", Color.light_green, no);

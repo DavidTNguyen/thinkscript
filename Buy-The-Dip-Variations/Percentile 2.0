@@ -1,0 +1,145 @@
+declare lower;
+
+input BTD_Length1 = 22;
+input BTD_Length2 = 50;
+input BTD_Length3 = 100;
+input Smooth_Length = 7;
+input ShowSignals = yes;
+input Trendlines = no;
+
+
+#22 length
+def BTD = ((((high - Lowest(close[1], BTD_Length1)) / Lowest(close[1], BTD_Length1)) * 1)) + 1;
+def div = close / BTD;
+def smooth = ExpAverage(div, Smooth_Length);
+def BTD_22 = smooth;
+
+def TP = ((((low - Highest(close[1], BTD_Length1)) / Highest(close[1], BTD_Length1)) * 1)) + 1;
+def div2 = close / TP;
+def smooth2 = ExpAverage(div2, Smooth_Length);
+def TP_22 = smooth2;
+
+#50 length
+def BTD2 = ((((high - Lowest(close[1], BTD_Length2)) / Lowest(close[1], BTD_Length2)) * 1)) + 1;
+def div1 = close / BTD2;
+def smooth1 = ExpAverage(div1, Smooth_Length);
+def BTD_50 = smooth1;
+
+def TP2 = ((((low - Highest(close[1], BTD_Length2)) / Highest(close[1], BTD_Length2)) * 1)) + 1;
+def div3 = close / TP2;
+def smooth3 = ExpAverage(div3, Smooth_Length);
+def TP_50 = smooth3;
+
+#100 length
+def BTD3 = ((((high - Lowest(close[1], BTD_Length3)) / Lowest(close[1], BTD_Length3)) * 1)) + 1;
+def div4 = close / BTD3;
+def smooth4 = ExpAverage(div4, Smooth_Length);
+def BTD_100 = smooth4;
+
+def TP3 = ((((low - Highest(close[1], BTD_Length3)) / Highest(close[1], BTD_Length3)) * 1)) + 1;
+def div5 = close / TP3;
+def smooth5 = ExpAverage(div5, Smooth_Length);
+def TP_100 = smooth5;
+
+#Percentile
+def gap22 = tp_22 - btd_22;
+def gap50 = tp_50 - btd_50;
+def gap100 = tp_100 - btd_100;
+
+def perc22high = (((high-btd_22)/gap22)*100);
+def perc50high = (((high-btd_50)/gap50)*100);
+def perc100high = (((high-btd_100)/gap100)*100);
+def perc22low = (((low-btd_22)/gap22)*100);
+def perc50low = (((low-btd_50)/gap50)*100);
+def perc100low = (((low-btd_100)/gap100)*100);
+
+#Plot
+plot hundred = 100;
+plot zero = 0;
+
+plot line1 = if perc22high > 50 then perc22high else perc22low;
+plot line2 = if perc50high > 50 then perc50high else perc50low;
+plot line3 = if perc100high > 50 then perc100high else perc100low;
+
+#arrows
+def green = line1 crosses below 100 or line1 crosses above 0;
+def yellow = line2 crosses below 100 or line2 crosses above 0;
+def red = line3 crosses below 100 or line3 crosses above 0;
+
+plot dwnarrw = if line1 crosses below 100 and ShowSignals or line2 crosses below 100 and ShowSignals or line3 crosses below 100 and ShowSignals then 100 else double.nan;
+
+plot uparrw = if line1 crosses above 0 and ShowSignals or line2 crosses above 0 and ShowSignals or line3 crosses above 0 and ShowSignals then 0 else double.nan;
+
+#Paint
+hundred.setdefaultColor(color.gray);
+zero.setdefaultColor(color.gray);
+line1.setdefaultColor(color.green);
+line2.setdefaultColor(color.yellow);
+line3.setdefaultColor(color.red);
+dwnarrw.setpaintingStrategy(paintingStrategy.ARROW_DOWN);
+dwnarrw.assignvalueColor(if green and yellow and red then color.red else if green and yellow and !red then color.yellow else color.green);
+dwnarrw.setlineWeight(3);
+uparrw.setpaintingStrategy(paintingStrategy.ARROW_UP);
+uparrw.assignvalueColor(if green  and !yellow  and !red  then color.green else if green  and yellow  and !red  then color.yellow else color.red);
+uparrw.setlineWeight(3);
+
+addcloud(line1,100,color.red,color.current);
+addcloud(line1,0,color.current,color.green);
+
+### Automatic Trend Line Code  ###
+
+input TrendLineLength1 = 150;
+input TrendLineLength2 = 80;
+input TrendLineLength3 = 40;
+
+def Inertia1 = InertiaAll(line1, TrendLineLength1);
+def Inertia2 = InertiaAll(line1, TrendLineLength2);
+def Inertia3 = InertiaAll(line1, TrendLineLength3);
+
+def TL_Bull1 = Inertia1 - (HighestAll(AbsValue(Inertia1 - line1)) * 0.8);
+def TL_Bear1 = Inertia1 + (HighestAll(AbsValue(Inertia1 - line1)) * 0.8);
+def slope1a = TL_Bull1 > TL_Bull1[1];
+def slope1b = TL_Bear1 > TL_Bear1[1];
+
+def TL_Bull2 = Inertia2 - (HighestAll(AbsValue(Inertia2 - line1)) * 0.8);
+def TL_Bear2 = Inertia2 + (HighestAll(AbsValue(Inertia2 - line1)) * 0.8);
+def mid = Inertia2 + (HighestAll(AbsValue(Inertia2 - line1)) * 0.0);
+def slope2a = TL_Bull2 > TL_Bull2[1];
+def slope2b = TL_Bear2 > TL_Bear2[1];
+def slopemid = mid > mid[1];
+
+def TL_Bull3 = Inertia3 - (HighestAll(AbsValue(Inertia3 - line1)) * 0.8);
+def TL_Bear3 = Inertia3 + (HighestAll(AbsValue(Inertia3 - line1)) * 0.8);
+def slope3a = TL_Bull3 > TL_Bull3[1];
+def slope3b = TL_Bear3 > TL_Bear3[1];
+#Long length
+plot TrendLine1a = if Trendlines and slope1a > 0 then TL_Bull1 else if trendlines then TL_Bear1 else double.nan;
+TrendLine1a.SetStyle(Curve.FIRM);
+TrendLine1a.SetLineWeight(1);
+TrendLine1a.AssignValueColor(if slope1a and IsAscending(line1, 10) then Color.WHITE else if slope1a then Color.WHITE else if !IsAscending(line1, 10) then Color.WHITE else Color.WHITE);
+
+plot TrendLine1b = if Trendlines and slope1b > 0 then TL_Bear1 else if trendlines then TL_Bull1 else double.nan;
+TrendLine1b.SetStyle(Curve.FIRM);
+TrendLine1b.SetLineWeight(1);
+TrendLine1b.AssignValueColor(if slope1b and IsAscending(line1, 10) then Color.WHITE else if slope1b then Color.WHITE else if !IsAscending(line1, 10) then Color.WHITE else Color.WHITE);
+#Medium length
+plot TrendLine2a = if Trendlines and slope2a > 0 then TL_Bull2 else if trendlines then TL_Bear2 else double.nan;
+TrendLine2a.SetStyle(Curve.FIRM);
+TrendLine2a.SetLineWeight(1);
+TrendLine2a.AssignValueColor(if slope2a and IsAscending(line1, 10) then Color.LIGHT_GREEN else if slope2a then Color.LIGHT_GREEN else if !IsAscending(line1, 10) then Color.MAGENTA else Color.MAGENTA);
+
+plot TrendLine2b = if Trendlines and slope2b > 0 then TL_Bear2 else if trendlines then TL_Bull2 else double.nan;
+TrendLine2b.SetStyle(Curve.FIRM);
+TrendLine2b.SetLineWeight(1);
+TrendLine2b.AssignValueColor(if slope2b and IsAscending(line1, 10) then Color.LIGHT_GREEN else if slope2b then Color.LIGHT_GREEN else if !IsAscending(line1, 10) then Color.MAGENTA else Color.MAGENTA);
+
+#Short length
+plot TrendLine3a = if Trendlines and slope3a > 0 then TL_Bull3 else if trendlines then TL_Bear3 else double.nan;
+TrendLine3a.SetStyle(Curve.FIRM);
+TrendLine3a.SetLineWeight(1);
+TrendLine3a.AssignValueColor(if slope3a and IsAscending(line1, 10) then Color.CYAN else if slope3a then Color.CYAN else if !IsAscending(line1, 10) then Color.pink else Color.pink);
+
+plot TrendLine3b = if Trendlines and slope3b > 0 then TL_Bear3 else if trendlines then TL_Bull3 else double.nan;
+TrendLine3b.SetStyle(Curve.FIRM);
+TrendLine3b.SetLineWeight(1);
+TrendLine3b.AssignValueColor(if slope3b and IsAscending(line1, 10) then Color.CYAN else if slope3b then Color.CYAN else if !IsAscending(line1, 10) then Color.pink else Color.pink);

@@ -1,0 +1,44 @@
+# Standard version of Buy the Dip indicator
+# Assembled by BenTen at UseThinkScript.com
+# Version 1.2  August 22, 2021
+# <INSTRUCTION>
+# Get support at: https://usethinkscript.com/forums/buy-the-dip.32/
+# <NOTES>
+# Based on the concept of "Synethetic VIX" by Larry Williams
+# This software is licensed for individual use only.
+# NOT FOR REDISTRIBUTION PRIVATE/CONFIDENTIAL
+# Copyright (c) 2020 useThinkScript LLC
+
+declare lower;
+
+input length = 22;
+input meter = yes;
+input ZeroValue = 0.0000;
+input arrows = yes;
+input alerts = yes ;
+input color_change = yes;
+input paintbar = no;
+
+# Plot indicator
+def value = ((high - Lowest(close[1], length)) / Lowest(close[1], length)) * 100;
+plot buythedip = value;
+plot ZeroLine = ZeroValue;
+
+buythedip.AssignValueColor(if color_change and buythedip < Zeroline then color.red else color.green);
+Zeroline.SetDefaultColor(color.white);
+
+AddLabel(meter and yes, Concat("Meter = ", buythedip), color.orange);
+
+# Plot scan
+plot UpSignal =  buythedip crosses below Zeroline ;
+UpSignal.hide();
+
+# Plot arrows
+plot UpArrow = if arrows and UpSignal then Zeroline else Double.NaN ;
+UpArrow.SetDefaultColor(Color.Orange);
+UpArrow.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
+
+# Alert
+Alert(alerts and UpSignal, "Buy the Dip", Alert.Bar, Sound.Chimes);
+
+AssignPriceColor(if paintbar and UpSignal then color.orange else color.current);

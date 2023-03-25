@@ -1,0 +1,91 @@
+# BTD Clouds
+# Assembled by @FateOwnzYou on UseThinkScript.com
+# Based on BenTen's BTD
+# Modified to add Multiple Lengths and Clouds by Chewies76
+
+input BTD_Length1 = 22;
+input BTD_Length2 = 50;
+input BTD_Length3 = 100;
+input TP_Length1 = 22;
+input TP_Length2 = 50;
+input TP_Length3 = 100;
+input Three_Lengths = yes;
+input Smoothed_Length_BTD = 7;
+input Smoothed_Length_TP = 7;
+input Middle_Line = yes;
+input Labels = yes;
+
+#22 length
+def BTD = ((((high - Lowest(close[1], BTD_Length1)) / Lowest(close[1], BTD_Length1)) *1))+1;
+def div = close/BTD;
+def smooth = expAverage(div, Smoothed_length_BTD);
+plot BTD_22 = smooth;
+
+def TP = ((((Low - Highest(close[1], TP_Length1)) / Highest(close[1],TP_Length1)) *1))+1;
+def div2 = close/tp;
+def smooth2 = expAverage(div2, Smoothed_Length_TP);
+plot TP_22 = smooth2;
+
+#50 length
+def BTD2 = ((((high - Lowest(close[1], BTD_Length2)) / Lowest(close[1], BTD_Length2)) *1))+1;
+def div1 = close/BTD2;
+def smooth1 = expAverage(div1, Smoothed_length_BTD);
+plot BTD_50 = smooth1;
+
+def TP2 = ((((Low - Highest(close[1], TP_Length2)) / Highest(close[1],TP_Length2)) *1))+1;
+def div3 = close/tp2;
+def smooth3 = expAverage(div3, Smoothed_Length_TP);
+plot TP_50 = smooth3;
+
+#100 length
+def BTD3 = ((((high - Lowest(close[1], BTD_Length3)) / Lowest(close[1], BTD_Length3)) *1))+1;
+def div4 = close/BTD3;
+def smooth4 = expAverage(div4, Smoothed_length_BTD);
+plot BTD_100 =if Three_lengths then smooth4 else double.nan;
+
+def TP3 = ((((Low - Highest(close[1], TP_Length3)) / Highest(close[1],TP_Length3)) *1))+1;
+def div5 = close/tp3;
+def smooth5 = expAverage(div5, Smoothed_Length_TP);
+plot TP_100 =if Three_Lengths then smooth5 else double.nan;
+
+#plot 50 Middle Line
+def midLine50 = (((smooth3 - smooth1)/2)+smooth1);
+plot middle50 = if Middle_line then midLine50 else double.nan;
+
+#Paint
+TP_100.setdefaultcolor(color.RED);
+TP_100.setLineWeight(1);
+TP_50.setdefaultcolor(color.RED);
+TP_50.setLineWeight(1);
+TP_50.SetStyle(if Three_Lengths then Curve.short_DASH else Curve.Firm);
+TP_22.setdefaultcolor(color.RED);
+TP_22.setLineWeight(1);
+TP_22.SetStyle(Curve.short_DASH);
+BTD_100.setdefaultColor(color.GREEN);
+BTD_100.setLineWeight(1);
+BTD_50.setdefaultColor(color.GREEN);
+BTD_50.setLineWeight(1);
+BTD_50.SetStyle(if Three_Lengths then Curve.short_DASH else Curve.Firm);
+BTD_22.setdefaultColor(color.GREEN);
+BTD_22.setLineWeight(1);
+BTD_22.SetStyle(Curve.short_DASH);
+middle50.setdefaultColor(color.YELLOW);
+middle50.setLineWeight(1);
+
+AddCloud(TP_50, TP_22, Color.DARK_RED, Color.CURRENT);
+AddCloud(BTD_22, BTD_50, Color.DARK_GREEN, Color.CURRENT);
+
+AddCloud(if Three_Lengths then TP_100 else double.nan, TP_50, Color.RED, Color.CURRENT);
+AddCloud(if Three_Lengths then BTD_50 else double.nan, BTD_100, Color.GREEN, Color.CURRENT);
+
+def gap22 = tp_22 - btd_22;
+def gap50 = tp_50 - btd_50;
+def gap100 = tp_100 - btd_100;
+
+def perc22 = Round(((close-btd_22)/gap22)*100,2);
+def perc50 = Round(((close-btd_50)/gap50)*100,2);
+def perc100 = Round(((close-btd_100)/gap100)*100,2);
+
+AddLabel(labels, concat("22Cloud: ",perc22), if perc22 < 5 then color.green else if perc22 > 95 then color.red else color.yellow);
+AddLabel(labels, concat("50Cloud: ",perc50), if perc50 < 5 then color.green else if perc50 > 95 then color.red else color.yellow);
+AddLabel(labels, concat("100Cloud: ",perc100), if perc100 < 5 then color.green else if perc100 > 95 then color.red else color.yellow);

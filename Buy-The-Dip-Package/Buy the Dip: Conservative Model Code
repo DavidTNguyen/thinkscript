@@ -1,0 +1,59 @@
+# Buy the Dip: Conservative Model
+# Assembled by BenTen at UseThinkScript.com
+# Version 1.1
+# <INSTRUCTION>
+# Get support at: https://usethinkscript.com/forums/buy-the-dip.32/
+# <NOTES>
+# Based on the concept of "Synethetic VIX" by Larry Williams
+# This software is licensed for individual use only.
+# NOT FOR REDISTRIBUTION PRIVATE/CONFIDENTIAL
+# Copyright (c) 2020 useThinkScript LLC
+
+# barbaros - 2021.03.19 - fixed 0 on short_value not painting
+
+declare lower;
+
+input short_length = 22;
+input medium_length = 50;
+input long_length = 100;
+input zero_value = 0.01;
+input aggresive_model = no;
+input labels = yes;
+input arrows = no;
+
+# Plot indicator
+plot Zeroline = zero_value;
+Zeroline.AssignValueColor(color.white);
+
+def short_value = ((high - Lowest(close[1], short_length)) / Lowest(close[1], short_length)) * 100;
+def medium_value = ((high - Lowest(close[1], medium_length)) / Lowest(close[1], medium_length)) * 100;
+def long_value = ((high - Lowest(close[1], long_length)) / Lowest(close[1], long_length)) * 100;
+
+plot short_btd = if aggresive_model then short_value else double.nan;
+plot med_btd = medium_value;
+plot long_btd = long_value;
+
+short_btd.AssignValueColor(color.green);
+med_btd.AssignValueColor(color.orange);
+long_btd.AssignValueColor(color.red);
+
+def condition1 = short_btd crosses below Zeroline;
+def condition2 = med_btd crosses below Zeroline;
+def condition3 = long_btd crosses below Zeroline;
+
+# Plot arrows
+plot S_Arrow = if arrows and aggresive_model and condition1 then 0 else Double.NaN;
+S_Arrow.SetDefaultColor(Color.WHITE);
+S_Arrow.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
+
+plot M_Arrow = if arrows and condition2 then 0 else Double.NaN;
+M_Arrow.SetDefaultColor(Color.GREEN);
+M_Arrow.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
+
+plot L_Arrow = if arrows and condition3 then 0 else Double.NaN;
+L_Arrow.SetDefaultColor(Color.RED);
+L_Arrow.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
+
+AddLabel(aggresive_model and labels, "Short Term", color.green);
+AddLabel(labels, "Medium Term", color.orange);
+AddLabel(labels, "Long Term", color.red);
