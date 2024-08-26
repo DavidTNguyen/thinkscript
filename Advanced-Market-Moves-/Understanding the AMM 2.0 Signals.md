@@ -20,4 +20,4 @@ I personally use AMM 2.0 on the hourly and daily timeframe. As they always say, 
 There is NO holy grail
 I think we must all come to a realization that AMM 2.0 is not the holy grail; nothing is when it comes to trading and indicators.
 
-I recommend everyone to test drive it on different timeframes and develop a strategy around it. Always have a stop loss in place in case the trade doesn't work out. Also, come join our Discord chatroom. Everyone in there is also part of VIP. We can all contribute and help each other out. Here is the link to join: https://discord.gg/HQVZUxB
+I recommend everyone to test drive it on different timeframes and develop a strategy around it. Always have a stop loss in place in case the trade doesn't work out.

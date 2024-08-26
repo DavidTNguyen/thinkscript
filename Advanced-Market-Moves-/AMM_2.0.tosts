@@ -2,12 +2,6 @@
 # Assembled by VietRoadie
 # Version 2.0
 
-# <INSTRUCTION>
-# Get support at: https://usethinkscript.com/forums/advanced-market-moves-2.26/
-# <NOTES>
-# This software is licensed for individual use only.
-# NOT FOR REDISTRIBUTION *PRIVATE/CONFIDENTIAL*
-
 # Settings
 input MACD = yes;
 input BollingerBands = yes;
