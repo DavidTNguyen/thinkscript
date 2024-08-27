@@ -1,10 +1,9 @@
 # Option Volume x Price Plotted
-# Twitter @2187Nick
+# By @VietRoadie
 # Update: 
 # 1. Option to set number of strikes to view.
 # 2. Option to manually set expiration date.
 # 3. Should run much faster.
-# May 16, 2023
 
 declare upper;
 declare once_per_bar;
