@@ -3,7 +3,8 @@
 #Contract automatically selected
 
 
-### Should automatically capture 0dte contract except for EOM day. - ## Modified by Glefdar on 02-10-2024: with help from @tifoji's date logic to check if it's the last day of the month, now also works automatically on EOM days
+### Should automatically capture 0dte contract except for EOM day. - 
+## Modified by Glefdar on 02-10-2024: with help from @tifoji's date logic to check if it's the last day of the month, now also works automatically on EOM days
 
 declare once_per_bar;
 input strikeSpacing = 5;

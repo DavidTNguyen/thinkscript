@@ -1,3 +1,5 @@
+# Created by @VietRoadie
+# Version Volatility Range Visualizer v1.0
 # Start Configurations
 def aggregationPeriod = AggregationPeriod.MONTH;
 def aggregationPeriod_nd = AggregationPeriod.WEEK;
@@ -58,7 +60,7 @@ t1_percentile.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 b1_percentile.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 t2_percentile.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 b2_percentile.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-
+t 
 AddCloud(t1, t1_percentile, color.red, color.red);
 AddCloud(b1, b1_percentile, color.green, color.green);
 AddCloud(t2, t2_percentile, color.light_red, color.light_red);
