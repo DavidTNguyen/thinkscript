@@ -1,7 +1,6 @@
 # Unusual options spy_spx_combo_V1
 # Need to add this to SPY chart
 # And unusual_options_new to same chart to view SPY Large Option trades
-# Twitter @2187Nick
 
 declare upper;
 declare once_per_bar;

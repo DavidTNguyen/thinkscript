@@ -1,5 +1,5 @@
 # Modular script to test capturing specific day /ES contract code
-#Twitter @2187Nick
+
 
 input manual = {default false, true};
 input setyyyymmdd = 20240108;

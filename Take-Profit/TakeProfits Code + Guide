@@ -1,8 +1,6 @@
 # Take Profit Indicator (Lower Study)
-# Assembled by BenTen at UseThinkScript.com
-# Version 1.0
 # <INSTRUCTION>
-# Get support at: https://usethinkscript.com/forums/take-profit.33/
+
 # <NOTES>
 # Uses the Synthetic VIX formula by Larry Williams
 # Normalization based on the idea of Jeff Swanson (EasyLanguageMastery)

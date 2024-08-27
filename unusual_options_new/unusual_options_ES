@@ -1,7 +1,7 @@
 #Option Volume x Price Plotted ES Feb 10, 2024
 #Updated option code calculation. Added manual expiration option,
 #Contract automatically selected
-#Twitter @2187Nick
+
 
 ### Should automatically capture 0dte contract except for EOM day. - ## Modified by Glefdar on 02-10-2024: with help from @tifoji's date logic to check if it's the last day of the month, now also works automatically on EOM days
 
