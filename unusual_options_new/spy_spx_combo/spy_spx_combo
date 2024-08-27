@@ -13,7 +13,9 @@ input Tradesize_Dollars = 500000;
 input strikes = 6;
 
 input ManuallySetExpiration = {default "false", "true"};
-input Expiration_YYMMDD = 231020;
+input strikes = 4;
+input ManuallySetExpiration = {default "false", "true"};
+input Expiration_YYMMDD = if ManuallySetExpiration then 240828 else GetYYYYMMDD();
 
 def CurrentYear = GetYear() - 2000;
 def CurrentMonth = GetMonth();
