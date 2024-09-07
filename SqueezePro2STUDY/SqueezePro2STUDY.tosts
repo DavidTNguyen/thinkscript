@@ -1,6 +1,6 @@
-declare lower;
-
 ##Written By VietRoadie using existing Mobius Squeeze Momentum coding and "squeeze" concept made popular by John Carter.
+
+declare lower;
 
 input price = close;
 input length = 20;
