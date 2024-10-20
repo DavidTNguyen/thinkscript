@@ -5,7 +5,7 @@ declare lower;
 input price = close;
 input length = 20;
 input BB_STD = 2.0;
-input averageType = AverageType.SIMPLE;
+input averageType = AverageType.EXPONENTIAL;
 input displace = 0;
 def sDev = StDev(data = price[-displace], length = length);
 def MidLineBB = MovingAverage(averageType, data = price[-displace], length = length);
@@ -14,7 +14,7 @@ def UpperBandBB = MidLineBB + BB_STD * sDev;
 input factorhigh = 1.0;
 input factormid = 1.5;
 input factorlow = 2.0;
-input trueRangeAverageType = AverageType.SIMPLE;
+input trueRangeAverageType = AverageType.EXPONENTIAL;
 
 input showPresqueeze = yes;
 input showOriginalSqueeze = yes;
