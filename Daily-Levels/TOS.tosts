@@ -1,6 +1,6 @@
-input symbol = "/NQ";  // Input symbol
-input levelsNQ = "100,200,300";  // Input levels for /NQ
-input levelsES = "150,250,350";  // Input levels for /ES
+input symbol = "/NQ";  # Input symbol
+input levelsNQ = "100,200,300";  # Input levels for /NQ
+input levelsES = "150,250,350";  # Input levels for /ES
 
 def selectedLevels;
 if symbol == "/NQ" {
@@ -8,13 +8,12 @@ if symbol == "/NQ" {
 } else if symbol == "/ES" {
     selectedLevels = levelsES;
 } else {
-    selectedLevels = "";  // Default to empty if symbol is not recognized
+    selectedLevels = ""; # Default to empty if symbol is not recognized
 }
 
 def selectedLevelArray = TextToArray(selectedLevels, ",");
 def selectedArraySize = GetArraySize(selectedLevelArray);
 
-for i = 0 to selectedArraySize - 1 {
+def level = fold i = 0 to selectedArraySize - 1 
     def horizontalLine = GetValue(selectedLevelArray, i);
-    AddHorizontalLine(horizontalLine, "Level " + AsText(horizontalLine), Color.RED);
-}
+AddHorizontalLine(horizontalLine, "Level " + AsText(horizontalLine), Color.RED);
