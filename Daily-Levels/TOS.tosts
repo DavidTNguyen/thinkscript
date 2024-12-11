@@ -13,12 +13,11 @@ if symbol == "/NQ" {
 
 def selectedLevelArray = TextToArray(selectedLevels, ",");
 def selectedArraySize = GetArraySize(selectedLevelArray);
+plot horizontalLine;
+horizontalLine = fold i = 0 to selectedArraySize with p = Double.NaN do
+    if !IsNaN(GetValue(selectedLevelArray, i)) then
+        GetValue(selectedLevelArray, i)
+    else
+        p;
 
-def addLines(index) {
-    if index < selectedArraySize {
-        def horizontalLine = GetValue(selectedLevelArray, index);
-        AddHorizontalLine(horizontalLine, "Level " + AsText(horizontalLine), Color.RED);
-        addLines(index + 1);
-    }
-}
-addLines(0);
+AddHorizontalLine(horizontalLine, "Level", Color.RED);
