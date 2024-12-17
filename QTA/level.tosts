@@ -1,0 +1,19 @@
+switch (GetSymbol()) {
+    case "/ES":
+        def linesES = fold i = 0 to GetValueSize(levelsES) with p = 0 do (p + if !IsNaN(levelsES[i]) then 1 else 0);
+        plot level_line_ES;
+        level_line_ES = if linesES > 0 then levelsES[linesES - 1] else Double.NaN;
+        level_line_ES.SetDefaultColor(Color.BLUE);
+        level_line_ES.SetLineWeight(1);
+        break;
+    case "/NQ":
+        def linesNQ = fold i = 0 to GetValueSize(levelsNQ) with p = 0 do (p + if !IsNaN(levelsNQ[i]) then 1 else 0);
+        plot level_line_NQ;
+        level_line_NQ = if linesNQ > 0 then levelsNQ[linesNQ - 1] else Double.NaN;
+        level_line_NQ.SetDefaultColor(Color.RED);
+        level_line_NQ.SetLineWeight(1);
+        break;
+    default:
+        plot level_line_default = Double.NaN;
+        break;
+}
