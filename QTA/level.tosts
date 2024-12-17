@@ -1,19 +1,24 @@
-switch (GetSymbol()) {
-    case "/ES":
-        def linesES = fold i = 0 to GetValueSize(levelsES) with p = 0 do (p + if !IsNaN(levelsES[i]) then 1 else 0);
-        plot level_line_ES;
-        level_line_ES = if linesES > 0 then levelsES[linesES - 1] else Double.NaN;
-        level_line_ES.SetDefaultColor(Color.BLUE);
-        level_line_ES.SetLineWeight(1);
-        break;
-    case "/NQ":
-        def linesNQ = fold i = 0 to GetValueSize(levelsNQ) with p = 0 do (p + if !IsNaN(levelsNQ[i]) then 1 else 0);
-        plot level_line_NQ;
-        level_line_NQ = if linesNQ > 0 then levelsNQ[linesNQ - 1] else Double.NaN;
-        level_line_NQ.SetDefaultColor(Color.RED);
-        level_line_NQ.SetLineWeight(1);
-        break;
-    default:
-        plot level_line_default = Double.NaN;
-        break;
+def levelsES[] = {6214.75, 6195.25, 6183.25, 6173.50, 6163.50, 6150.50, 6132.25, 6117.25, 6102.25, 6095.50, 6083.25, 6063.00, 6036.00, 6009.00, 5996.25, 5971.50, 5951.50, 5931.50};
+def levelsNQ[] = {22794.75, 22656.50, 22571.50, 22502.00, 22431.75, 22380.25, 22333.75, 22282.00, 22209.00, 22117.00, 22030.25, 21941.75, 21870.25, 21798.75, 21745.25, 21705.25, 21668.00, 21605.00, 21539.00, 21497.25, 21457.50
+};
+
+if (GetSymbol() == "/ES") {
+    def linesES = fold i = 0 to GetValueSize(levelsES) with p = 0 do (p + if !IsNaN(levelsES[i]) then 1 else 0);
+
+    plot level_line;
+
+    level_line = if linesES > 0 then levelsES[linesES - 1] else Double.NaN;
+
+    level_line.SetDefaultColor(Color.BLUE);
+    level_line.SetLineWeight(1);
+}
+else {
+    def linesNQ = fold i = 0 to GetValueSize(levelsNQ) with p = 0 do (p + if !IsNaN(levelsNQ[i]) then 1 else 0);
+
+    plot level_line;
+
+    level_line = if linesNQ > 0 then levelsNQ[linesNQ - 1] else Double.NaN;
+
+    level_line.SetDefaultColor(Color.BLUE);
+    level_line.SetLineWeight(1);
 }
