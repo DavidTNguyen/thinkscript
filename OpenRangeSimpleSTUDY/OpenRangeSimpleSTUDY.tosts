@@ -1,10 +1,10 @@
 declare Hide_On_Daily;
 declare Once_per_bar;
 
-input OrMeanS  = 0930.0; #hint OrMeanS: Begin Mean Period. Usually Market Open EST.
-input OrMeanE  = 0935.0; #hint OrMeanE: End Mean period. Usually End of first bar.
-input OrBegin  = 0930.0; #hint OrBegin: Beginning for Period of Opening Range Breakout.
-input OrEnd    = 1000.0; #hint OrEnd: End of Period of Opening Range Breakout.
+input OrMeanS  = 0830.0; #hint OrMeanS: Begin Mean Period. Usually Market Open EST.
+input OrMeanE  = 0835.0; #hint OrMeanE: End Mean period. Usually End of first bar.
+input OrBegin  = 0830.0; #hint OrBegin: Beginning for Period of Opening Range Breakout.
+input OrEnd    = 0930.0; #hint OrEnd: End of Period of Opening Range Breakout.
 input CloudOn  = yes;     #hint CloudOn: Clouds Opening Range.
 input AlertOn  = yes;    #hint AlertOn: Alerts on cross of Opening Range.
 input ShowTodayOnly = {"No", default "Yes"};   
