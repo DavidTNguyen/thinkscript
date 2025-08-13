@@ -53,4 +53,4 @@ hGF.HideBubble();
 
 AddCloud(gH, gL, Color.VIOLET, Color.VIOLET);
 AddLabel(yes, Concat(percentRemaining, " % Gap Remaining" ),if percentRemaining  > 0 then Color.green else Color.Red);
-
+Alert(gapFilled and marketOpen, "Gap fully filled!", Alert.BAR, Sound.Ding);
