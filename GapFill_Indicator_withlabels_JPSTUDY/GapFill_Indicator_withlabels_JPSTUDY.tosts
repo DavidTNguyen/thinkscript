@@ -1,9 +1,4 @@
-# TS_GapFill
-# thinkscripter@gmail.com
-# Last Update 28 Jan 2010
-# Last Update 16 Jan 2019 by Jerry Investor
-
-input marketOpenTime = 0930;
+input marketOpenTime = 0830;
 input marketCloseTime = 1615;
 
 def yesterdaysClose = close(period = "DAY" )[1];
