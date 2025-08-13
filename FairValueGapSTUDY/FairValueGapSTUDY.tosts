@@ -14,10 +14,26 @@ def bullishFVG = prevHigh < nextLow;
 # Bearish FVG: previous low > next high
 def bearishFVG = prevLow > nextHigh;
 
-plot BullishGap = if bullishFVG then nextLow else Double.NaN;
-BullishGap.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-BullishGap.SetDefaultColor(Color.GREEN);
+# Draw gaps as colored rectangles using AddCloud
+# Bullish gaps - light green
+def bullishUpperBound = if bullishFVG then nextLow else Double.NaN;
+def bullishLowerBound = if bullishFVG then prevHigh else Double.NaN;
 
-plot BearishGap = if bearishFVG then nextHigh else Double.NaN;
-BearishGap.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-BearishGap.SetDefaultColor(Color.RED);
+# Bearish gaps - light pink
+def bearishUpperBound = if bearishFVG then prevLow else Double.NaN;
+def bearishLowerBound = if bearishFVG then nextHigh else Double.NaN;
+
+AddCloud(bullishUpperBound, bullishLowerBound, Color.LIGHT_GREEN, Color.LIGHT_GREEN, yes);
+AddCloud(bearishUpperBound, bearishLowerBound, Color.PINK, Color.PINK, yes);
+
+# Gap mitigation detection
+# Bullish gap is mitigated when price comes back down into the gap
+def bullishGapMitigated = bullishFVG[1] and !IsNaN(bullishUpperBound[1]) and low <= bullishLowerBound[1];
+
+# Bearish gap is mitigated when price comes back up into the gap  
+def bearishGapMitigated = bearishFVG[1] and !IsNaN(bearishUpperBound[1]) and high >= bearishUpperBound[1];
+
+# Alert conditions
+def gapMitigated = bullishGapMitigated or bearishGapMitigated;
+
+Alert(gapMitigated, "Fair Value Gap Mitigated!", Alert.BAR, Sound.Ding);
