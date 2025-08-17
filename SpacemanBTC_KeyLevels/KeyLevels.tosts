@@ -1,0 +1,161 @@
+# Advanced Multi-Timeframe & Session Levels Plotter (CST)
+# Author: Copilot
+
+# ---- INPUTS ----
+input show4HOpen = yes;
+input show4HPrevHL = no;
+input show4HPrevMid = no;
+input show4HShortHand = no;
+input color4H = Color.ORANGE;
+
+input showDailyOpen = yes;
+input showDailyPrevHL = no;
+input showDailyPrevMid = no;
+input showDailyShortHand = no;
+input colorDaily = Color.CYAN;
+
+input showMondayRange = yes;
+input showMondayMid = yes;
+input showMondayShortHand = no;
+input colorMonday = Color.WHITE;
+
+input showWeeklyOpen = yes;
+input showWeeklyPrevHL = yes;
+input showWeeklyPrevMid = yes;
+input showWeeklyShortHand = no;
+input colorWeekly = Color.YELLOW;
+
+input showMonthlyOpen = yes;
+input showMonthlyPrevHL = yes;
+input showMonthlyPrevMid = yes;
+input showMonthlyShortHand = no;
+input colorMonthly = Color.GREEN;
+
+input showQuarterlyOpen = yes;
+input showQuarterlyPrevHL = no;
+input showQuarterlyPrevMid = yes;
+input showQuarterlyShortHand = no;
+input colorQuarterly = Color.RED;
+
+input showYearlyOpen = yes;
+input showYearlyPrevHL = no;
+input showYearlyPrevMid = yes;
+input showYearlyShortHand = no;
+input colorYearly = Color.MAGENTA;
+
+input londonStart = 8;
+input londonEnd = 16;
+input nyStart = 14;
+input nyEnd = 21;
+input tokyoStart = 0;
+input tokyoEnd = 9;
+
+# ---- TIMEZONE ADJUSTMENT (CST) ----
+def offset = -6; # CST is UTC-6
+def cstHour = GetHour() + offset;
+def cstMinute = GetMinute();
+
+# ---- SESSION LOGIC ----
+def inLondon = cstHour >= londonStart and cstHour < londonEnd;
+def inNY = cstHour >= nyStart and cstHour < nyEnd;
+def inTokyo = cstHour >= tokyoStart and cstHour < tokyoEnd;
+
+# ---- PERIOD LOGIC ----
+def isNewDay = GetDay() <> GetDay()[1];
+def isNewWeek = GetWeek() <> GetWeek()[1];
+def isNewMonth = GetMonth() <> GetMonth()[1];
+def isNewQuarter = (GetMonth() == 1 or GetMonth() == 4 or GetMonth() == 7 or GetMonth() == 10) and isNewMonth;
+def isNewYear = GetYear() <> GetYear()[1];
+
+# ---- LEVEL CALCULATIONS ----
+# Daily
+def dailyOpen = if isNewDay then open else dailyOpen[1];
+def dailyHigh = if isNewDay then high else Max(high, dailyHigh[1]);
+def dailyLow = if isNewDay then low else Min(low, dailyLow[1]);
+def dailyMid = (dailyHigh + dailyLow) / 2;
+
+# Weekly
+def weeklyOpen = if isNewWeek then open else weeklyOpen[1];
+def weeklyHigh = if isNewWeek then high else Max(high, weeklyHigh[1]);
+def weeklyLow = if isNewWeek then low else Min(low, weeklyLow[1]);
+def weeklyMid = (weeklyHigh + weeklyLow) / 2;
+
+# Monthly
+def monthlyOpen = if isNewMonth then open else monthlyOpen[1];
+def monthlyHigh = if isNewMonth then high else Max(high, monthlyHigh[1]);
+def monthlyLow = if isNewMonth then low else Min(low, monthlyLow[1]);
+def monthlyMid = (monthlyHigh + monthlyLow) / 2;
+
+# Quarterly
+def quarterlyOpen = if isNewQuarter then open else quarterlyOpen[1];
+def quarterlyHigh = if isNewQuarter then high else Max(high, quarterlyHigh[1]);
+def quarterlyLow = if isNewQuarter then low else Min(low, quarterlyLow[1]);
+def quarterlyMid = (quarterlyHigh + quarterlyLow) / 2;
+
+# Yearly
+def yearlyOpen = if isNewYear then open else yearlyOpen[1];
+def yearlyHigh = if isNewYear then high else Max(high, yearlyHigh[1]);
+def yearlyLow = if isNewYear then low else Min(low, yearlyLow[1]);
+def yearlyMid = (yearlyHigh + yearlyLow) / 2;
+
+# ---- PLOTTING ----
+# Daily
+plot pDailyOpen = if showDailyOpen then dailyOpen else Double.NaN;
+pDailyOpen.SetDefaultColor(colorDaily);
+pDailyOpen.SetLineWeight(2);
+pDailyOpen.SetStyle(Curve.SHORT_DASH);
+AddChartBubble(showDailyShortHand and !IsNaN(pDailyOpen), pDailyOpen, "D O", colorDaily, yes);
+
+plot pDailyPrevHL = if showDailyPrevHL then dailyHigh else Double.NaN;
+pDailyPrevHL.SetDefaultColor(colorDaily);
+plot pDailyPrevMid = if showDailyPrevMid then dailyMid else Double.NaN;
+pDailyPrevMid.SetDefaultColor(colorDaily);
+
+# Weekly
+plot pWeeklyOpen = if showWeeklyOpen then weeklyOpen else Double.NaN;
+pWeeklyOpen.SetDefaultColor(colorWeekly);
+AddChartBubble(showWeeklyShortHand and !IsNaN(pWeeklyOpen), pWeeklyOpen, "W O", colorWeekly, yes);
+
+plot pWeeklyPrevHL = if showWeeklyPrevHL then weeklyHigh else Double.NaN;
+pWeeklyPrevHL.SetDefaultColor(colorWeekly);
+plot pWeeklyPrevMid = if showWeeklyPrevMid then weeklyMid else Double.NaN;
+pWeeklyPrevMid.SetDefaultColor(colorWeekly);
+
+# Monthly
+plot pMonthlyOpen = if showMonthlyOpen then monthlyOpen else Double.NaN;
+pMonthlyOpen.SetDefaultColor(colorMonthly);
+AddChartBubble(showMonthlyShortHand and !IsNaN(pMonthlyOpen), pMonthlyOpen, "M O", colorMonthly, yes);
+
+plot pMonthlyPrevHL = if showMonthlyPrevHL then monthlyHigh else Double.NaN;
+pMonthlyPrevHL.SetDefaultColor(colorMonthly);
+plot pMonthlyPrevMid = if showMonthlyPrevMid then monthlyMid else Double.NaN;
+pMonthlyPrevMid.SetDefaultColor(colorMonthly);
+
+# Quarterly
+plot pQuarterlyOpen = if showQuarterlyOpen then quarterlyOpen else Double.NaN;
+pQuarterlyOpen.SetDefaultColor(colorQuarterly);
+AddChartBubble(showQuarterlyShortHand and !IsNaN(pQuarterlyOpen), pQuarterlyOpen, "Q O", colorQuarterly, yes);
+
+plot pQuarterlyPrevMid = if showQuarterlyPrevMid then quarterlyMid else Double.NaN;
+pQuarterlyPrevMid.SetDefaultColor(colorQuarterly);
+
+# Yearly
+plot pYearlyOpen = if showYearlyOpen then yearlyOpen else Double.NaN;
+pYearlyOpen.SetDefaultColor(colorYearly);
+AddChartBubble(showYearlyShortHand and !IsNaN(pYearlyOpen), pYearlyOpen, "Y O", colorYearly, yes);
+
+plot pYearlyPrevMid = if showYearlyPrevMid then yearlyMid else Double.NaN;
+pYearlyPrevMid.SetDefaultColor(colorYearly);
+
+# ---- SESSIONS ----
+def sessionLondon = inLondon;
+def sessionNY = inNY;
+def sessionTokyo = inTokyo;
+
+AddCloud(if sessionLondon then high else Double.NaN, if sessionLondon then low else Double.NaN, colorDaily, colorDaily);
+AddCloud(if sessionNY then high else Double.NaN, if sessionNY then low else Double.NaN, colorWeekly, colorWeekly);
+AddCloud(if sessionTokyo then high else Double.NaN, if sessionTokyo then low else Double.NaN, colorMonthly, colorMonthly);
+
+# ---- 4H, Monday Range, etc. can be added with similar logic using aggregation period or custom logic ----
+
+# ---- END ----
