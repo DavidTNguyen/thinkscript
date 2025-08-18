@@ -180,35 +180,42 @@ def pwl = if isNewWeek then low[1] else pwl[1];
 def pmh = if isNewMonth then high[1] else pmh[1];
 def pml = if isNewMonth then low[1] else pml[1];
 
+
 plot PDH = if alertPDH_PDL then pdh else Double.NaN;
 PDH.SetDefaultColor(pdh_pdlLineColor);
 PDH.SetLineWeight(pdh_pdlLineWidth);
 PDH.SetStyle(pdh_pdlLineStyle);
+AddChartBubble(!IsNaN(PDH) and !IsNaN(close), PDH, "Prev Day High", pdh_pdlLineColor, yes);
 
 plot PDL = if alertPDH_PDL then pdl else Double.NaN;
 PDL.SetDefaultColor(pdh_pdlLineColor);
 PDL.SetLineWeight(pdh_pdlLineWidth);
 PDL.SetStyle(pdh_pdlLineStyle);
+AddChartBubble(!IsNaN(PDL) and !IsNaN(close), PDL, "PDL", pdh_pdlLineColor, yes);
 
 plot PWH = if alertPWH_PWL then pwh else Double.NaN;
 PWH.SetDefaultColor(pwh_pwlLineColor);
 PWH.SetLineWeight(pwh_pwlLineWidth);
 PWH.SetStyle(pwh_pwlLineStyle);
+AddChartBubble(!IsNaN(PWH) and !IsNaN(close), PWH, "Prev Week High", pwh_pwlLineColor, yes);
 
 plot PWL = if alertPWH_PWL then pwl else Double.NaN;
 PWL.SetDefaultColor(pwh_pwlLineColor);
 PWL.SetLineWeight(pwh_pwlLineWidth);
 PWL.SetStyle(pwh_pwlLineStyle);
+AddChartBubble(!IsNaN(PWL) and !IsNaN(close), PWL, "Prev Week Low", pwh_pwlLineColor, yes);
 
 plot PMH = if alertPMH_PML then pmh else Double.NaN;
 PMH.SetDefaultColor(pmh_pmlLineColor);
 PMH.SetLineWeight(pmh_pmlLineWidth);
 PMH.SetStyle(pmh_pmlLineStyle);
+AddChartBubble(!IsNaN(PMH) and !IsNaN(close), PMH, "Prev Month High", pmh_pmlLineColor, yes);
 
 plot PML = if alertPMH_PML then pml else Double.NaN;
 PML.SetDefaultColor(pmh_pmlLineColor);
 PML.SetLineWeight(pmh_pmlLineWidth);
 PML.SetStyle(pmh_pmlLineStyle);
+AddChartBubble(!IsNaN(PML) and !IsNaN(close), PML, "Prev Month Low", pmh_pmlLineColor, yes);
 
 # --- FVG LOGIC (SIMPLE) ---
 def bullishFVG = high[2] < low;
@@ -400,11 +407,13 @@ plot pYearlyPrevMid = if showYearlyPrevMid then yearlyMid else Double.NaN;
 pYearlyPrevMid.SetDefaultColor(colorYearly);
 
 # Market Open 8:30 AM CST line
+# Market Open 8:30 AM CST line
 def isMarketOpenBar = SecondsFromTime(830) == 0;
 plot MarketOpen830 = if show830 and isMarketOpenBar then open else Double.NaN;
 MarketOpen830.SetDefaultColor(color830);
 MarketOpen830.SetLineWeight(2);
 MarketOpen830.SetStyle(Curve.LONG_DASH);
+AddChartBubble(!IsNaN(MarketOpen830) and !IsNaN(close), MarketOpen830, "M.O.", color830, yes);
 
 # ---- SESSIONS ----
 def sessionLondon = inLondon;
