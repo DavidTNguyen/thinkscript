@@ -66,34 +66,39 @@ def isNewQuarter = (GetMonth() == 1 or GetMonth() == 4 or GetMonth() == 7 or Get
 def isNewYear = GetYear() <> GetYear()[1];
 
 # ---- LEVEL CALCULATIONS ----
-# Daily
-def dailyOpen = if isNewDay then open else dailyOpen[1];
-def dailyHigh = if isNewDay then high else Max(high, dailyHigh[1]);
-def dailyLow = if isNewDay then low else Min(low, dailyLow[1]);
+
+# Daily (look back only 1 period)
+def dailyOpen = open[1];
+def dailyHigh = high[1];
+def dailyLow = low[1];
 def dailyMid = (dailyHigh + dailyLow) / 2;
 
-# Weekly
-def weeklyOpen = if isNewWeek then open else weeklyOpen[1];
-def weeklyHigh = if isNewWeek then high else Max(high, weeklyHigh[1]);
-def weeklyLow = if isNewWeek then low else Min(low, weeklyLow[1]);
+
+# Weekly (look back only 1 period)
+def weeklyOpen = open(period = AggregationPeriod.WEEK)[1];
+def weeklyHigh = high(period = AggregationPeriod.WEEK)[1];
+def weeklyLow = low(period = AggregationPeriod.WEEK)[1];
 def weeklyMid = (weeklyHigh + weeklyLow) / 2;
 
-# Monthly
-def monthlyOpen = if isNewMonth then open else monthlyOpen[1];
-def monthlyHigh = if isNewMonth then high else Max(high, monthlyHigh[1]);
-def monthlyLow = if isNewMonth then low else Min(low, monthlyLow[1]);
+
+# Monthly (look back only 1 period)
+def monthlyOpen = open(period = AggregationPeriod.MONTH)[1];
+def monthlyHigh = high(period = AggregationPeriod.MONTH)[1];
+def monthlyLow = low(period = AggregationPeriod.MONTH)[1];
 def monthlyMid = (monthlyHigh + monthlyLow) / 2;
 
-# Quarterly
-def quarterlyOpen = if isNewQuarter then open else quarterlyOpen[1];
-def quarterlyHigh = if isNewQuarter then high else Max(high, quarterlyHigh[1]);
-def quarterlyLow = if isNewQuarter then low else Min(low, quarterlyLow[1]);
+
+# Quarterly (look back only 1 period)
+def quarterlyOpen = open(period = AggregationPeriod.QUARTER)[1];
+def quarterlyHigh = high(period = AggregationPeriod.QUARTER)[1];
+def quarterlyLow = low(period = AggregationPeriod.QUARTER)[1];
 def quarterlyMid = (quarterlyHigh + quarterlyLow) / 2;
 
-# Yearly
-def yearlyOpen = if isNewYear then open else yearlyOpen[1];
-def yearlyHigh = if isNewYear then high else Max(high, yearlyHigh[1]);
-def yearlyLow = if isNewYear then low else Min(low, yearlyLow[1]);
+
+# Yearly (look back only 1 period)
+def yearlyOpen = open(period = AggregationPeriod.YEAR)[1];
+def yearlyHigh = high(period = AggregationPeriod.YEAR)[1];
+def yearlyLow = low(period = AggregationPeriod.YEAR)[1];
 def yearlyMid = (yearlyHigh + yearlyLow) / 2;
 
 # ---- PLOTTING ----
