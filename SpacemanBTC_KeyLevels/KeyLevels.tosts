@@ -1,193 +1,437 @@
-# Advanced Multi-Timeframe & Session Levels Plotter (CST)
-# Author: Copilot
+# VietRoadie Session Range
+declare hide_on_daily;
 
-# ---- INPUTS ----
-input show4HOpen = yes;
-input show4HPrevHL = no;
-input show4HPrevMid = no;
-input show4HShortHand = no;
-input show4HColor = yes;
+input display_last_zone = yes;
+input display_count     = 2;
+input Show_Cloud = no;
+input Show_Cloud2 = no;
+input Show_Vertical_Line = yes;
 
-input showDailyOpen = yes;
-input showDailyPrevHL = no;
-input showDailyPrevMid = no;
-input showDailyShortHand = no;
-input showDailyColor = yes;
-
-input showMondayRange = yes;
-input showMondayMid = yes;
-input showMondayShortHand = no;
-input showMondayColor = yes;
-
-input showWeeklyOpen = yes;
-input showWeeklyPrevHL = yes;
-input showWeeklyPrevMid = yes;
-input showWeeklyShortHand = no;
-input showWeeklyColor = yes;
-
-input showMonthlyOpen = yes;
-input showMonthlyPrevHL = yes;
-input showMonthlyPrevMid = yes;
-input showMonthlyShortHand = no;
-input showMonthlyColor = yes;
-
-input showQuarterlyOpen = no;
-input showQuarterlyPrevHL = no;
-input showQuarterlyPrevMid = no;
-input showQuarterlyShortHand = no;
-input showQuarterlyColor = no;
-
-input showYearlyOpen = no;
-input showYearlyPrevHL = no;
-input showYearlyPrevMid = no;
-input showYearlyShortHand = no;
-input showYearlyColor = no;
-
-input londonStart = 8;
-input londonEnd = 16;
-input nyStart = 14;
-input nyEnd = 21;
-input tokyoStart = 0;
-input tokyoEnd = 9;
+def Asian_DrawLine =
+#GetLastDay() and
+(
+!SecondsFromTime(1800) [1]
+);
+#AddVerticalLine (DrawLine, "", Color.Dark_black,Curve.Long_DASH);
 
 
 
-# ---- SESSION LOGIC ----
-# Use SecondsFromTime for session logic (CST market hours example)
-def inLondon = SecondsFromTime(londonStart * 100) >= 0 and SecondsTillTime(londonEnd * 100) > 0;
-def inNY = SecondsFromTime(nyStart * 100) >= 0 and SecondsTillTime(nyEnd * 100) > 0;
-def inTokyo = SecondsFromTime(tokyoStart * 100) >= 0 and SecondsTillTime(tokyoEnd * 100) > 0;
+#input ShowTodayOnly = yes;
+#def Today = if GetDay() == GetLastDay() then 0 else 1;
+#def Today = if GetDay() == GetLastDay() then 1 else 0;
+#def Show_last = if GetDay() >= GetLastDay() then 1 else 0;
 
-# ---- PERIOD LOGIC ----
-def isNewDay = GetDay() <> GetDay()[1];
-def isNewWeek = GetWeek() <> GetWeek()[1];
-def isNewMonth = GetMonth() <> GetMonth()[1];
-def isNewQuarter = (GetMonth() == 1 or GetMonth() == 4 or GetMonth() == 7 or GetMonth() == 10) and isNewMonth;
-def isNewYear = GetYear() <> GetYear()[1];
-
-# ---- LEVEL CALCULATIONS ----
-
-# Daily (look back only 1 period)
-def dailyOpen = open[1];
-def dailyHigh = high[1];
-def dailyLow = low[1];
-def dailyMid = (dailyHigh + dailyLow) / 2;
+###############################################
+def midn = 0000;
+def midnite = if (SecondsFromTime(midn) == 0) then 1 else 0;
+###############################################
 
 
-# Weekly (look back only 1 period)
-def weeklyOpen = open(period = AggregationPeriod.WEEK)[1];
-def weeklyHigh = high(period = AggregationPeriod.WEEK)[1];
-def weeklyLow = low(period = AggregationPeriod.WEEK)[1];
-def weeklyMid = (weeklyHigh + weeklyLow) / 2;
+#############################################################################################################
+#############################################################################################################
+
+#Q1
+def Asian_Q1_afterbegin = 1800;
+#def Asian_Q1_afterend = 2359;
+def Asian_Q1_aftermarket = SecondsFromTime(Asian_Q1_afterbegin[1]) >= 0 and (SecondsFromTime(midn) == 0) >= 0;
+def Asian_Q1_bars = 2000;
+
+#input Asian_Q1_pricePerRowHeightMode = { AUTOMATIC, default TICKSIZE, CUSTOM};
+input Asian_Q1_pricePerRowHeightMode = { TICKSIZE, default AUTOMATIC, CUSTOM};
+
+def Asian_Q1_customRowHeight = 1.0;
+input Asian_Q1_timePerProfile = {default BAR};
+def Asian_Q1_onExpansion = no;
+def Asian_Q1_profiles = 1000;
+
+def Asian_Q1_period;
+
+switch (Asian_Q1_timePerProfile) {
+case BAR:
+    Asian_Q1_period = BarNumber() - 1;
+}
 
 
-# Monthly (look back only 1 period)
-def monthlyOpen = open(period = AggregationPeriod.MONTH)[1];
-def monthlyHigh = high(period = AggregationPeriod.MONTH)[1];
-def monthlyLow = low(period = AggregationPeriod.MONTH)[1];
-def monthlyMid = (monthlyHigh + monthlyLow) / 2;
+def Asian_Q1_count = CompoundValue(1, if Asian_Q1_aftermarket and Asian_Q1_period != Asian_Q1_period[1] then (Asian_Q1_count[1] + Asian_Q1_period - Asian_Q1_period[1]) % Asian_Q1_bars else Asian_Q1_count[1], 0);
+def Asian_Q1_cond = Asian_Q1_count < Asian_Q1_count[1] + Asian_Q1_period - Asian_Q1_period[1];
+def Asian_Q1_height;
+switch (Asian_Q1_pricePerRowHeightMode) {
+case AUTOMATIC:
+    Asian_Q1_height = PricePerRow.AUTOMATIC;
+case TICKSIZE:
+    Asian_Q1_height = PricePerRow.TICKSIZE;
+case CUSTOM:
+    Asian_Q1_height = Asian_Q1_customRowHeight;
+}
+
+profile Asian_Q1_vol = VolumeProfile("startNewProfile" = Asian_Q1_cond, "onExpansion" = no, "numberOfProfiles" = 1000, "pricePerRow" = Asian_Q1_height, "value area percent" = 0);
+
+def Asian_Q1_con = CompoundValue(1, Asian_Q1_onExpansion, no);
+
+def Asian_Q1_hProfile = if Asian_Q1_aftermarket and IsNaN(Asian_Q1_vol.GetHighest()) and Asian_Q1_con then Asian_Q1_hProfile[1] else Asian_Q1_vol.GetHighest();
+def Asian_Q1_lProfile = if Asian_Q1_aftermarket and IsNaN(Asian_Q1_vol.GetLowest()) and Asian_Q1_con then Asian_Q1_lProfile[1] else Asian_Q1_vol.GetLowest();
+def Asian_Q1_plotsDomain = IsNaN(close) == Asian_Q1_onExpansion;
+def Asian_Q1_ProfileHigh = if Asian_Q1_aftermarket and Asian_Q1_plotsDomain then Asian_Q1_hProfile else Double.NaN;
+def Asian_Q1_ProfileLow = if Asian_Q1_aftermarket and Asian_Q1_plotsDomain then Asian_Q1_lProfile else Double.NaN;
+
+def basis      = if TickSize() > .01 then GetYYYYMMDD() else GetDay();
+def asiancount = if basis != basis[1] then  asiancount[1] + 1 else asiancount[1];
+def asiancond  = HighestAll(asiancount) - asiancount + 1;
+AddVerticalLine (if Show_Vertical_Line  and asiancond <= display_count then Asian_DrawLine else Double.NaN, "Asian", CreateColor(204, 255, 204), Curve.FIRM);
+
+plot Asian_Q1_hrange = if display_last_zone and asiancond > display_count then Double.NaN else Asian_Q1_ProfileHigh;
+plot Asian_Q1_lrange = if display_last_zone and asiancond > display_count  then Double.NaN else Asian_Q1_ProfileLow;
+Asian_Q1_hrange.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+Asian_Q1_lrange.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+Asian_Q1_hrange.SetDefaultColor(CreateColor(204, 255, 204));
+Asian_Q1_lrange.SetDefaultColor(CreateColor(204, 255, 204));
+Asian_Q1_hrange.SetLineWeight(1);
+Asian_Q1_lrange.SetLineWeight(1);
+#Asian_Q1_hrange.Hide();
+#Asian_Q1_lrange.Hide();
+
+def Asian_Q1_bubblemover = 0;
+def Asian_Q1_b = Asian_Q1_bubblemover;
+def Asian_Q1_b1 = Asian_Q1_b + 1;
 
 
-# Quarterly (look back only 1 period)
-def quarterlyOpen = open(period = AggregationPeriod.QUARTER)[1];
-def quarterlyHigh = high(period = AggregationPeriod.QUARTER)[1];
-def quarterlyLow = low(period = AggregationPeriod.QUARTER)[1];
-def quarterlyMid = (quarterlyHigh + quarterlyLow) / 2;
+input Asian_Q1_showbubbles = no;
+AddChartBubble(Asian_Q1_showbubbles and (IsNaN(Asian_Q1_hrange[Asian_Q1_b1]) and Asian_Q1_hrange[Asian_Q1_b]) , Asian_Q1_hrange, AsText(Asian_Q1_hrange), Color.LIGHT_RED);
+
+AddChartBubble(Asian_Q1_showbubbles and (IsNaN(Asian_Q1_hrange[Asian_Q1_b1]) and Asian_Q1_hrange[Asian_Q1_b]) , Asian_Q1_lrange, AsText(Asian_Q1_lrange), Color.LIGHT_GREEN, up = no);
+
+input Asian_Q1_showverticalline = no;
+AddVerticalLine(Asian_Q1_showverticalline and Asian_Q1_hrange != Asian_Q1_hrange[1], "", Color.BLUE, stroke = Curve.FIRM);
 
 
-# Yearly (look back only 1 period)
-def yearlyOpen = open(period = AggregationPeriod.YEAR)[1];
-def yearlyHigh = high(period = AggregationPeriod.YEAR)[1];
-def yearlyLow = low(period = AggregationPeriod.YEAR)[1];
-def yearlyMid = (yearlyHigh + yearlyLow) / 2;
+#Addcloud(hrange, lrange, createcolor(0, 51, 51), createcolor(0, 51, 51));
+AddCloud(if Show_Cloud then Asian_Q1_hrange else Double.NaN, Asian_Q1_lrange, CreateColor(204, 255, 204), CreateColor(204, 255, 204));
 
-# ---- PLOTTING ----
-# Daily
+AddCloud(if Show_Cloud2 then Asian_Q1_hrange else Double.NaN, Asian_Q1_lrange, Color.BLACK, Color.BLACK);
+
+#Addcloud(Asian_Q1_hrange, Asian_Q1_lrange, color.black, color.black);
 
 
-plot pDailyOpen = if showDailyOpen then dailyOpen else Double.NaN;
-pDailyOpen.SetDefaultColor(color.cyan);
-pDailyOpen.SetLineWeight(2);
-pDailyOpen.SetStyle(Curve.SHORT_DASH);
-AddChartBubble(!IsNaN(pDailyOpen), pDailyOpen, "Daily Open", color.cyan, yes);
-
-
-
-plot pDailyPrevHL = if showDailyPrevHL then dailyHigh else Double.NaN;
-pDailyPrevHL.SetDefaultColor(color.cyan);
-AddChartBubble(!IsNaN(pDailyPrevHL), pDailyPrevHL, "Daily High", color.cyan, yes);
-plot pDailyPrevMid = if showDailyPrevMid then dailyMid else Double.NaN;
-pDailyPrevMid.SetDefaultColor(color.cyan);
-AddChartBubble(!IsNaN(pDailyPrevMid), pDailyPrevMid, "Daily Mid", color.cyan, yes);
-
-# Weekly
-
-
-plot pWeeklyOpen = if showWeeklyOpen then weeklyOpen else Double.NaN;
-pWeeklyOpen.SetDefaultColor(color.yellow);
-AddChartBubble(!IsNaN(pWeeklyOpen), pWeeklyOpen, "Weekly Open", color.yellow, yes);
-
-
-
-plot pWeeklyPrevHL = if showWeeklyPrevHL then weeklyHigh else Double.NaN;
-pWeeklyPrevHL.SetDefaultColor(color.yellow);
-AddChartBubble(!IsNaN(pWeeklyPrevHL), pWeeklyPrevHL, "Weekly High", color.yellow, yes);
-plot pWeeklyPrevMid = if showWeeklyPrevMid then weeklyMid else Double.NaN;
-pWeeklyPrevMid.SetDefaultColor(color.yellow);
-AddChartBubble(!IsNaN(pWeeklyPrevMid), pWeeklyPrevMid, "Weekly Mid", color.yellow, yes);
-
-# Monthly
-
-
-plot pMonthlyOpen = if showMonthlyOpen then monthlyOpen else Double.NaN;
-pMonthlyOpen.SetDefaultColor(color.green);
-AddChartBubble(!IsNaN(pMonthlyOpen), pMonthlyOpen, "Monthly Open", color.green, yes);
-
-
-
-plot pMonthlyPrevHL = if showMonthlyPrevHL then monthlyHigh else Double.NaN;
-pMonthlyPrevHL.SetDefaultColor(color.green);
-AddChartBubble(!IsNaN(pMonthlyPrevHL), pMonthlyPrevHL, "Monthly High", color.green, yes);
-plot pMonthlyPrevMid = if showMonthlyPrevMid then monthlyMid else Double.NaN;
-pMonthlyPrevMid.SetDefaultColor(color.green);
-AddChartBubble(!IsNaN(pMonthlyPrevMid), pMonthlyPrevMid, "Monthly Mid", color.green, yes);
-
-# Quarterly
-
-
-plot pQuarterlyOpen = if showQuarterlyOpen then quarterlyOpen else Double.NaN;
-pQuarterlyOpen.SetDefaultColor(color.red);
-AddChartBubble(!IsNaN(pQuarterlyOpen), pQuarterlyOpen, "Quarterly Open", color.red, yes);
+###############################################################
+###############################################################
+###############################################################
+#LONDON
 
 
 
-plot pQuarterlyPrevMid = if showQuarterlyPrevMid then quarterlyMid else Double.NaN;
-pQuarterlyPrevMid.SetDefaultColor(color.red);
-AddChartBubble(!IsNaN(pQuarterlyPrevMid), pQuarterlyPrevMid, "Quarterly Mid", color.red, yes);
+def London_Q2_afterbegin = midn;
+def London_Q2_afterend = 0600;
+def London_Q2_aftermarket = SecondsFromTime(London_Q2_afterbegin) >= 0 and SecondsTillTime(London_Q2_afterend) >= 0;
+def London_Q2_bars = 2000;
 
-# Yearly
-
-
-plot pYearlyOpen = if showYearlyOpen then yearlyOpen else Double.NaN;
-pYearlyOpen.SetDefaultColor(color.magenta);
-AddChartBubble(!IsNaN(pYearlyOpen), pYearlyOpen, "Yearly Open", color.magenta, yes);
+def London_DrawLine =
+!SecondsFromTime(0000)[1];
 
 
+#input London_Q2_pricePerRowHeightMode = { AUTOMATIC, default TICKSIZE, CUSTOM};
+input London_Q2_pricePerRowHeightMode = { TICKSIZE, default AUTOMATIC, CUSTOM};
 
-plot pYearlyPrevMid = if showYearlyPrevMid then yearlyMid else Double.NaN;
-pYearlyPrevMid.SetDefaultColor(color.magenta);
-AddChartBubble(!IsNaN(pYearlyPrevMid), pYearlyPrevMid, "Yearly Mid", color.magenta, yes);
+def London_Q2_customRowHeight = 1.0;
+input London_Q2_timePerProfile = {default BAR};
+def London_Q2_onExpansion = no;
+def London_Q2_profiles = 1000;
 
-# ---- SESSIONS ----
-def sessionLondon = inLondon;
-def sessionNY = inNY;
-def sessionTokyo = inTokyo;
+def London_Q2_period;
+
+switch (London_Q2_timePerProfile) {
+case BAR:
+    London_Q2_period = BarNumber() - 1;
+}
 
 
-AddCloud(if sessionLondon then high else Double.NaN, if sessionLondon then low else Double.NaN, color.cyan, color.cyan);
-AddCloud(if sessionNY then high else Double.NaN, if sessionNY then low else Double.NaN, color.yellow, color.yellow);
-AddCloud(if sessionTokyo then high else Double.NaN, if sessionTokyo then low else Double.NaN, color.green, color.green);
+def London_Q2_count = CompoundValue(1, if London_Q2_aftermarket and London_Q2_period != London_Q2_period[1] then (London_Q2_count[1] + London_Q2_period - London_Q2_period[1]) % London_Q2_bars else London_Q2_count[1], 0);
+def London_Q2_cond = London_Q2_count < London_Q2_count[1] + London_Q2_period - London_Q2_period[1];
+def London_Q2_height;
+switch (London_Q2_pricePerRowHeightMode) {
+case AUTOMATIC:
+    London_Q2_height = PricePerRow.AUTOMATIC;
+case TICKSIZE:
+    London_Q2_height = PricePerRow.TICKSIZE;
+case CUSTOM:
+    London_Q2_height = London_Q2_customRowHeight;
+}
 
-# ---- 4H, Monday Range, etc. can be added with similar logic using aggregation period or custom logic ----
+profile London_Q2_vol = VolumeProfile("startNewProfile" = London_Q2_cond, "onExpansion" = no, "numberOfProfiles" = 1000, "pricePerRow" = London_Q2_height, "value area percent" = 0);
 
-# ---- END ----
+def London_Q2_con = CompoundValue(1, London_Q2_onExpansion, no);
+
+def London_Q2_hProfile = if London_Q2_aftermarket and IsNaN(London_Q2_vol.GetHighest()) and London_Q2_con then London_Q2_hProfile[1] else London_Q2_vol.GetHighest();
+def London_Q2_lProfile = if London_Q2_aftermarket and IsNaN(London_Q2_vol.GetLowest()) and London_Q2_con then London_Q2_lProfile[1] else London_Q2_vol.GetLowest();
+def London_Q2_plotsDomain = IsNaN(close) == London_Q2_onExpansion;
+def London_Q2_ProfileHigh = if London_Q2_aftermarket and London_Q2_plotsDomain then London_Q2_hProfile else Double.NaN;
+def London_Q2_ProfileLow = if London_Q2_aftermarket and London_Q2_plotsDomain then London_Q2_lProfile else Double.NaN;
+
+def londoncount = if basis != basis[1] then  londoncount[1] + 1 else londoncount[1];
+def londoncond  = HighestAll(londoncount) - londoncount + 1;
+AddVerticalLine (if Show_Vertical_Line  and londoncond <= display_count then London_DrawLine else Double.NaN, "London", CreateColor(153, 153 , 255), Curve.FIRM);
+
+plot London_Q2_hrange = if display_last_zone and londoncond > display_count then Double.NaN else London_Q2_ProfileHigh;
+plot London_Q2_lrange = if display_last_zone and londoncond > display_count then Double.NaN else London_Q2_ProfileLow;
+London_Q2_hrange.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+London_Q2_lrange.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+London_Q2_hrange.SetDefaultColor(CreateColor(153, 153 , 255));
+London_Q2_lrange.SetDefaultColor(CreateColor(153, 153 , 255));
+London_Q2_hrange.SetLineWeight(1);
+London_Q2_lrange.SetLineWeight(1);
+#London_Q2_hrange.Hide();
+#London_Q2_lrange.Hide();
+
+def London_Q2_bubblemover = 0;
+def London_Q2_b = London_Q2_bubblemover;
+def London_Q2_b1 = London_Q2_b + 1;
+
+
+input London_Q2_showbubbles = no;
+AddChartBubble(London_Q2_showbubbles and (IsNaN(London_Q2_hrange[London_Q2_b1]) and London_Q2_hrange[London_Q2_b]) , London_Q2_hrange, AsText(London_Q2_hrange), Color.LIGHT_RED);
+
+AddChartBubble(London_Q2_showbubbles and (IsNaN(London_Q2_hrange[London_Q2_b1]) and London_Q2_hrange[London_Q2_b]) , London_Q2_lrange, AsText(London_Q2_lrange), Color.LIGHT_GREEN, up = no);
+
+input London_Q2_showverticalline = yes;
+AddVerticalLine(London_Q2_showverticalline and London_Q2_hrange != London_Q2_hrange[1], "London ", Color.BLUE, stroke = Curve.FIRM);
+
+#Addcloud(hrange, lrange, createcolor(0, 51, 51), createcolor(0, 51, 51));
+AddCloud(if Show_Cloud then London_Q2_hrange else Double.NaN, London_Q2_lrange, CreateColor(153, 153 , 255), CreateColor(153, 153 , 255));
+
+AddCloud(if Show_Cloud2 then London_Q2_hrange else Double.NaN, London_Q2_lrange, Color.BLACK, Color.BLACK);
+
+
+#Addcloud(London_Q2_hrange, London_Q2_lrange, color.black, color.black);
+
+#############################################################################################################
+#############################################################################################################
+
+#############################################################################################################
+#############################################################################################################
+def NY_DrawLine =
+#GetDay() == GetLastDay() and
+(
+!SecondsFromTime(0600)
+);
+
+#AddVerticalLine (DrawLine, "", Color.Dark_black,Curve.Long_DASH);
+
+
+def Show_last = if GetDay() == GetLastDay() then 1 else 0;
+
+#############################################################################################################
+#############################################################################################################
+
+#Q3
+def NY_Q3_afterbegin = 0600;
+def NY_Q3_afterend = 1200;
+def NY_Q3_aftermarket = SecondsFromTime(NY_Q3_afterbegin) >= 0 and SecondsTillTime(NY_Q3_afterend) >= 0;
+def NY_Q3_bars = 2000;
+
+#input NY_Q3_pricePerRowHeightMode = { AUTOMATIC, default TICKSIZE, CUSTOM};
+input NY_Q3_pricePerRowHeightMode = { TICKSIZE, default AUTOMATIC, CUSTOM};
+
+def NY_Q3_customRowHeight = 1.0;
+input NY_Q3_timePerProfile = {default BAR};
+def NY_Q3_onExpansion = no;
+def NY_Q3_profiles = 1000;
+
+def NY_Q3_period;
+
+switch (NY_Q3_timePerProfile) {
+case BAR:
+    NY_Q3_period = BarNumber() - 1;
+}
+
+
+def NY_Q3_count = CompoundValue(1, if NY_Q3_aftermarket and NY_Q3_period != NY_Q3_period[1] then (NY_Q3_count[1] + NY_Q3_period - NY_Q3_period[1]) % NY_Q3_bars else NY_Q3_count[1], 0);
+def NY_Q3_cond = NY_Q3_count < NY_Q3_count[1] + NY_Q3_period - NY_Q3_period[1];
+def NY_Q3_height;
+switch (NY_Q3_pricePerRowHeightMode) {
+case AUTOMATIC:
+    NY_Q3_height = PricePerRow.AUTOMATIC;
+case TICKSIZE:
+    NY_Q3_height = PricePerRow.TICKSIZE;
+case CUSTOM:
+    NY_Q3_height = NY_Q3_customRowHeight;
+}
+
+profile NY_Q3_vol = VolumeProfile("startNewProfile" = NY_Q3_cond, "onExpansion" = no, "numberOfProfiles" = 1000, "pricePerRow" = NY_Q3_height, "value area percent" = 0);
+
+def NY_Q3_con = CompoundValue(1, NY_Q3_onExpansion, no);
+
+def NY_Q3_hProfile = if NY_Q3_aftermarket and IsNaN(NY_Q3_vol.GetHighest()) and NY_Q3_con then NY_Q3_hProfile[1] else NY_Q3_vol.GetHighest();
+def NY_Q3_lProfile = if NY_Q3_aftermarket and IsNaN(NY_Q3_vol.GetLowest()) and NY_Q3_con then NY_Q3_lProfile[1] else NY_Q3_vol.GetLowest();
+def NY_Q3_plotsDomain = IsNaN(close) == NY_Q3_onExpansion;
+def NY_Q3_ProfileHigh = if NY_Q3_aftermarket and NY_Q3_plotsDomain then NY_Q3_hProfile else Double.NaN;
+def NY_Q3_ProfileLow = if NY_Q3_aftermarket and NY_Q3_plotsDomain then NY_Q3_lProfile else Double.NaN;
+
+def nyq3count = if basis != basis[1] then  nyq3count[1] + 1 else nyq3count[1];
+def nyq3cond  = HighestAll(nyq3count) - nyq3count + 1;
+AddVerticalLine (if Show_Vertical_Line and nyq3cond <= display_count then NY_DrawLine else Double.NaN, "NY AM", CreateColor(0, 153, 255), Curve.FIRM);
+
+plot NY_Q3_hrange = if display_last_zone and nyq3cond > display_count then Double.NaN else NY_Q3_ProfileHigh;
+plot NY_Q3_lrange = if display_last_zone and nyq3cond > display_count then Double.NaN else NY_Q3_ProfileLow;
+NY_Q3_hrange.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+NY_Q3_lrange.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+NY_Q3_hrange.SetDefaultColor(CreateColor(0, 153, 255));
+NY_Q3_lrange.SetDefaultColor(CreateColor(0, 153, 255));
+NY_Q3_hrange.SetLineWeight(1);
+NY_Q3_lrange.SetLineWeight(1);
+#NY_Q3_hrange.Hide();
+#NY_Q3_lrange.Hide();
+
+def NY_Q3_bubblemover = 0;
+def NY_Q3_b = NY_Q3_bubblemover;
+def NY_Q3_b1 = NY_Q3_b + 1;
+
+
+input NY_Q3_showbubbles = no;
+AddChartBubble(NY_Q3_showbubbles and (IsNaN(NY_Q3_hrange[NY_Q3_b1]) and NY_Q3_hrange[NY_Q3_b]) , NY_Q3_hrange, AsText(NY_Q3_hrange), Color.LIGHT_RED);
+
+AddChartBubble(NY_Q3_showbubbles and (IsNaN(NY_Q3_hrange[NY_Q3_b1]) and NY_Q3_hrange[NY_Q3_b]) , NY_Q3_lrange, AsText(NY_Q3_lrange), Color.LIGHT_GREEN, up = no);
+
+input NY_Q3_showverticalline = no;
+AddVerticalLine(NY_Q3_showverticalline and NY_Q3_hrange != NY_Q3_hrange[1], "", Color.BLUE, stroke = Curve.FIRM);
+
+#Addcloud(hrange, lrange, createcolor(0, 51, 51), createcolor(0, 51, 51));
+AddCloud(if Show_Cloud then NY_Q3_hrange else Double.NaN, NY_Q3_lrange, CreateColor(0, 153, 255), CreateColor(0, 153, 255));
+
+AddCloud(if Show_Cloud2 then NY_Q3_hrange else Double.NaN, NY_Q3_lrange, Color.BLACK, Color.BLACK);
+
+#Addcloud(NY_Q3_hrange, NY_Q3_lrange, color.black, color.black);
+
+#############################################################################################################
+#############################################################################################################
+
+def NY_PM_DrawLine =
+#GetDay() == GetLastDay() and
+(
+!SecondsFromTime(1200)
+);
+
+#AddVerticalLine (DrawLine, "", Color.Dark_black,Curve.Long_DASH);
+
+
+
+#############################################################################################################
+#############################################################################################################
+
+#Q4
+def NY_PM_Q4_afterbegin = 1200;
+def NY_PM_Q4_afterend = 1800;
+def NY_PM_Q4_aftermarket = SecondsFromTime(NY_PM_Q4_afterbegin) >= 0 and SecondsTillTime(NY_PM_Q4_afterend) >= 0;
+def NY_PM_Q4_bars = 2000;
+
+#input NY_PM_Q4_pricePerRowHeightMode = { AUTOMATIC, default TICKSIZE, CUSTOM};
+input NY_PM_Q4_pricePerRowHeightMode = { TICKSIZE, default AUTOMATIC, CUSTOM};
+
+def NY_PM_Q4_customRowHeight = 1.0;
+input NY_PM_Q4_timePerProfile = {default BAR};
+def NY_PM_Q4_onExpansion = no;
+def NY_PM_Q4_profiles = 1000;
+
+def NY_PM_Q4_period;
+
+switch (NY_PM_Q4_timePerProfile) {
+case BAR:
+    NY_PM_Q4_period = BarNumber() - 1;
+}
+
+
+def NY_PM_Q4_count = CompoundValue(1, if NY_PM_Q4_aftermarket and NY_PM_Q4_period != NY_PM_Q4_period[1] then (NY_PM_Q4_count[1] + NY_PM_Q4_period - NY_PM_Q4_period[1]) % NY_PM_Q4_bars else NY_PM_Q4_count[1], 0);
+def NY_PM_Q4_cond = NY_PM_Q4_count < NY_PM_Q4_count[1] + NY_PM_Q4_period - NY_PM_Q4_period[1];
+def NY_PM_Q4_height;
+switch (NY_PM_Q4_pricePerRowHeightMode) {
+case AUTOMATIC:
+    NY_PM_Q4_height = PricePerRow.AUTOMATIC;
+case TICKSIZE:
+    NY_PM_Q4_height = PricePerRow.TICKSIZE;
+case CUSTOM:
+    NY_PM_Q4_height = NY_PM_Q4_customRowHeight;
+}
+
+profile NY_PM_Q4_vol = VolumeProfile("startNewProfile" = NY_PM_Q4_cond, "onExpansion" = no, "numberOfProfiles" = 1000, "pricePerRow" = NY_PM_Q4_height, "value area percent" = 0);
+
+def NY_PM_Q4_con = CompoundValue(1, NY_PM_Q4_onExpansion, no);
+
+def NY_PM_Q4_hProfile = if NY_PM_Q4_aftermarket and IsNaN(NY_PM_Q4_vol.GetHighest()) and NY_PM_Q4_con then NY_PM_Q4_hProfile[1] else NY_PM_Q4_vol.GetHighest();
+def NY_PM_Q4_lProfile = if NY_PM_Q4_aftermarket and IsNaN(NY_PM_Q4_vol.GetLowest()) and NY_PM_Q4_con then NY_PM_Q4_lProfile[1] else NY_PM_Q4_vol.GetLowest();
+def NY_PM_Q4_plotsDomain = IsNaN(close) == NY_PM_Q4_onExpansion;
+def NY_PM_Q4_ProfileHigh = if NY_PM_Q4_aftermarket and NY_PM_Q4_plotsDomain then NY_PM_Q4_hProfile else Double.NaN;
+def NY_PM_Q4_ProfileLow = if NY_PM_Q4_aftermarket and NY_PM_Q4_plotsDomain then NY_PM_Q4_lProfile else Double.NaN;
+
+def nyq4count = if basis != basis[1] then  nyq4count[1] + 1 else nyq4count[1];
+def nyq4cond  = HighestAll(nyq4count) - nyq4count + 1;
+AddVerticalLine (if Show_Vertical_Line and nyq4cond <= display_count then NY_PM_DrawLine else Double.NaN, "NY PM", CreateColor(255, 153, 102), Curve.FIRM);
+
+
+plot NY_PM_Q4_hrange = if display_last_zone and nyq4cond > display_count then Double.NaN else NY_PM_Q4_ProfileHigh;
+plot NY_PM_Q4_lrange = if display_last_zone and nyq4cond > display_count then Double.NaN else NY_PM_Q4_ProfileLow;
+NY_PM_Q4_hrange.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+NY_PM_Q4_lrange.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+NY_PM_Q4_hrange.SetDefaultColor(CreateColor(255, 153, 102));
+NY_PM_Q4_lrange.SetDefaultColor(CreateColor(255, 153, 102));
+NY_PM_Q4_hrange.SetLineWeight(1);
+NY_PM_Q4_lrange.SetLineWeight(1);
+#NY_PM_Q4_hrange.Hide();
+#NY_PM_Q4_lrange.Hide();
+
+def NY_PM_Q4_bubblemover = 0;
+def NY_PM_Q4_b = NY_PM_Q4_bubblemover;
+def NY_PM_Q4_b1 = NY_PM_Q4_b + 1;
+
+
+input NY_PM_Q4_showbubbles = no;
+AddChartBubble(NY_PM_Q4_showbubbles and (IsNaN(NY_PM_Q4_hrange[NY_PM_Q4_b1]) and NY_PM_Q4_hrange[NY_PM_Q4_b]) , NY_PM_Q4_hrange, AsText(NY_PM_Q4_hrange), Color.LIGHT_RED);
+
+AddChartBubble(NY_PM_Q4_showbubbles and (IsNaN(NY_PM_Q4_hrange[NY_PM_Q4_b1]) and NY_PM_Q4_hrange[NY_PM_Q4_b]) , NY_PM_Q4_lrange, AsText(NY_PM_Q4_lrange), Color.LIGHT_GREEN, up = no);
+
+input NY_PM_Q4_showverticalline = no;
+AddVerticalLine(NY_PM_Q4_showverticalline and NY_PM_Q4_hrange != NY_PM_Q4_hrange[1], "", Color.BLUE, stroke = Curve.FIRM);
+
+#Addcloud(hrange, lrange, createcolor(0, 51, 51), createcolor(0, 51, 51));
+AddCloud(if Show_Cloud then NY_PM_Q4_hrange else Double.NaN, NY_PM_Q4_lrange, CreateColor(255, 153, 102), CreateColor(255, 153, 102));
+
+AddCloud(if Show_Cloud2 then NY_PM_Q4_hrange else Double.NaN, NY_PM_Q4_lrange, Color.BLACK, Color.BLACK);
+
+#Addcloud(NY_PM_Q4_hrange, NY_PM_Q4_lrange, color.black, color.black);
+
+#############################################################################################################
+#############################################################################################################
+
+#-----------------
+
+
+AddLabel(1, "  ", Color.BLACK);
+# Asian_Q1_ProfileHigh 
+# Asian_Q1_Profilelow
+def asiahi = if IsNaN(Asian_Q1_ProfileHigh) then asiahi[1] else Asian_Q1_ProfileHigh;
+def asialo = if IsNaN(Asian_Q1_ProfileLow) then asialo[1] else Asian_Q1_ProfileLow;
+AddLabel(1, "asia hi " + asiahi, (if IsNaN(Asian_Q1_ProfileHigh) then Color.GRAY else Color.YELLOW));
+AddLabel(1, "asia lo " + asialo, (if IsNaN(Asian_Q1_ProfileLow) then Color.GRAY else Color.YELLOW));
+
+AddLabel(1, "  ", Color.BLACK);
+#London_Q2_ProfileHigh
+#London_Q2_Profilelow
+def lonhi = if IsNaN(London_Q2_ProfileHigh) then lonhi[1] else London_Q2_ProfileHigh;
+def lonlo = if IsNaN(London_Q2_ProfileLow) then lonlo[1] else London_Q2_ProfileLow;
+AddLabel(1, "london hi " + lonhi, (if IsNaN(London_Q2_ProfileHigh) then Color.GRAY else Color.YELLOW));
+AddLabel(1, "london lo " + lonlo, (if IsNaN(London_Q2_ProfileLow) then Color.GRAY else Color.YELLOW));
+
+AddLabel(1, "  ", Color.BLACK);
+#NY_Q3_ProfileHigh
+#NY_Q3_Profilelow
+def nyamhi = if IsNaN(NY_Q3_ProfileHigh) then nyamhi[1] else NY_Q3_ProfileHigh;
+def nyamlo = if IsNaN(NY_Q3_ProfileLow) then nyamlo[1] else NY_Q3_ProfileLow;
+AddLabel(1, "NY am hi " + nyamhi, (if IsNaN(NY_Q3_ProfileHigh) then Color.GRAY else Color.YELLOW));
+AddLabel(1, "NY am lo " + nyamlo, (if IsNaN(NY_Q3_ProfileLow) then Color.GRAY else Color.YELLOW));
+
+AddLabel(1, "  ", Color.BLACK);
+#NY_PM_Q4_ProfileHigh
+#NY_PM_Q4_Profilelow
+def nypmhi = if IsNaN(NY_PM_Q4_ProfileHigh) then nypmhi[1] else NY_PM_Q4_ProfileHigh;
+def nypmlo = if IsNaN(NY_PM_Q4_ProfileLow) then nypmlo[1] else NY_PM_Q4_ProfileLow;
+AddLabel(1, "NY pm hi " + nypmhi, (if IsNaN(NY_PM_Q4_ProfileHigh) then Color.GRAY else Color.YELLOW));
+AddLabel(1, "NY pm lo " + nypmlo, (if IsNaN(NY_PM_Q4_ProfileLow) then Color.GRAY else Color.YELLOW));
+AddLabel(1, "  ", Color.BLACK);
+#
