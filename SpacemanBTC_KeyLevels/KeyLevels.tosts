@@ -1,3 +1,49 @@
+# ---- SESSION H/L LOGIC ----
+# Asia Session
+def asiaSession = SecondsFromTime(tokyoStart * 100) >= 0 and SecondsTillTime(londonStart * 100) > 0;
+def asiaHigh = if asiaSession and (!asiaSession[1]) then high else if asiaSession then Max(high, asiaHigh[1]) else Double.NaN;
+def asiaLow = if asiaSession and (!asiaSession[1]) then low else if asiaSession then Min(low, asiaLow[1]) else Double.NaN;
+
+# London Session
+def londonSession = SecondsFromTime(londonStart * 100) >= 0 and SecondsTillTime(nyStart * 100) > 0;
+def londonHigh = if londonSession and (!londonSession[1]) then high else if londonSession then Max(high, londonHigh[1]) else Double.NaN;
+def londonLow = if londonSession and (!londonSession[1]) then low else if londonSession then Min(low, londonLow[1]) else Double.NaN;
+
+# NYAM Session
+def nyamSession = SecondsFromTime(nyStart * 100) >= 0 and SecondsTillTime(nyEnd * 100) > 0;
+def nyamHigh = if nyamSession and (!nyamSession[1]) then high else if nyamSession then Max(high, nyamHigh[1]) else Double.NaN;
+def nyamLow = if nyamSession and (!nyamSession[1]) then low else if nyamSession then Min(low, nyamLow[1]) else Double.NaN;
+
+# Plot horizontal lines for each session's high/low
+plot AsiaHi = if !IsNaN(asiaHigh) and !asiaSession then asiaHigh[1] else Double.NaN;
+AsiaHi.SetDefaultColor(color.white);
+AsiaHi.SetLineWeight(2);
+AddChartBubble(!IsNaN(AsiaHi), AsiaHi, "asiahi", color.white, yes);
+
+plot AsiaLo = if !IsNaN(asiaLow) and !asiaSession then asiaLow[1] else Double.NaN;
+AsiaLo.SetDefaultColor(color.white);
+AsiaLo.SetLineWeight(2);
+AddChartBubble(!IsNaN(AsiaLo), AsiaLo, "asialo", color.white, yes);
+
+plot LonHi = if !IsNaN(londonHigh) and !londonSession then londonHigh[1] else Double.NaN;
+LonHi.SetDefaultColor(color.yellow);
+LonHi.SetLineWeight(2);
+AddChartBubble(!IsNaN(LonHi), LonHi, "lonhi", color.yellow, yes);
+
+plot LonLo = if !IsNaN(londonLow) and !londonSession then londonLow[1] else Double.NaN;
+LonLo.SetDefaultColor(color.yellow);
+LonLo.SetLineWeight(2);
+AddChartBubble(!IsNaN(LonLo), LonLo, "lonlo", color.yellow, yes);
+
+plot NYAMHi = if !IsNaN(nyamHigh) and !nyamSession then nyamHigh[1] else Double.NaN;
+NYAMHi.SetDefaultColor(color.cyan);
+NYAMHi.SetLineWeight(2);
+AddChartBubble(!IsNaN(NYAMHi), NYAMHi, "nyamhi", color.cyan, yes);
+
+plot NYAMLo = if !IsNaN(nyamLow) and !nyamSession then nyamLow[1] else Double.NaN;
+NYAMLo.SetDefaultColor(color.cyan);
+NYAMLo.SetLineWeight(2);
+AddChartBubble(!IsNaN(NYAMLo), NYAMLo, "nyamlo", color.cyan, yes);
 # VietRoadie Session Range
 declare hide_on_daily;
 
@@ -407,31 +453,31 @@ AddLabel(1, "  ", Color.BLACK);
 # Asian_Q1_Profilelow
 def asiahi = if IsNaN(Asian_Q1_ProfileHigh) then asiahi[1] else Asian_Q1_ProfileHigh;
 def asialo = if IsNaN(Asian_Q1_ProfileLow) then asialo[1] else Asian_Q1_ProfileLow;
-AddLabel(1, "asia hi " + asiahi, (if IsNaN(Asian_Q1_ProfileHigh) then Color.GRAY else Color.YELLOW));
-AddLabel(1, "asia lo " + asialo, (if IsNaN(Asian_Q1_ProfileLow) then Color.GRAY else Color.YELLOW));
+# AddLabel(1, "asia hi " + asiahi, (if IsNaN(Asian_Q1_ProfileHigh) then Color.GRAY else Color.YELLOW));
+# AddLabel(1, "asia lo " + asialo, (if IsNaN(Asian_Q1_ProfileLow) then Color.GRAY else Color.YELLOW));
 
 AddLabel(1, "  ", Color.BLACK);
 #London_Q2_ProfileHigh
 #London_Q2_Profilelow
 def lonhi = if IsNaN(London_Q2_ProfileHigh) then lonhi[1] else London_Q2_ProfileHigh;
 def lonlo = if IsNaN(London_Q2_ProfileLow) then lonlo[1] else London_Q2_ProfileLow;
-AddLabel(1, "london hi " + lonhi, (if IsNaN(London_Q2_ProfileHigh) then Color.GRAY else Color.YELLOW));
-AddLabel(1, "london lo " + lonlo, (if IsNaN(London_Q2_ProfileLow) then Color.GRAY else Color.YELLOW));
+# AddLabel(1, "london hi " + lonhi, (if IsNaN(London_Q2_ProfileHigh) then Color.GRAY else Color.YELLOW));
+# AddLabel(1, "london lo " + lonlo, (if IsNaN(London_Q2_ProfileLow) then Color.GRAY else Color.YELLOW));
 
 AddLabel(1, "  ", Color.BLACK);
 #NY_Q3_ProfileHigh
 #NY_Q3_Profilelow
 def nyamhi = if IsNaN(NY_Q3_ProfileHigh) then nyamhi[1] else NY_Q3_ProfileHigh;
 def nyamlo = if IsNaN(NY_Q3_ProfileLow) then nyamlo[1] else NY_Q3_ProfileLow;
-AddLabel(1, "NY am hi " + nyamhi, (if IsNaN(NY_Q3_ProfileHigh) then Color.GRAY else Color.YELLOW));
-AddLabel(1, "NY am lo " + nyamlo, (if IsNaN(NY_Q3_ProfileLow) then Color.GRAY else Color.YELLOW));
+# AddLabel(1, "NY am hi " + nyamhi, (if IsNaN(NY_Q3_ProfileHigh) then Color.GRAY else Color.YELLOW));
+# AddLabel(1, "NY am lo " + nyamlo, (if IsNaN(NY_Q3_ProfileLow) then Color.GRAY else Color.YELLOW));
 
 AddLabel(1, "  ", Color.BLACK);
 #NY_PM_Q4_ProfileHigh
 #NY_PM_Q4_Profilelow
 def nypmhi = if IsNaN(NY_PM_Q4_ProfileHigh) then nypmhi[1] else NY_PM_Q4_ProfileHigh;
 def nypmlo = if IsNaN(NY_PM_Q4_ProfileLow) then nypmlo[1] else NY_PM_Q4_ProfileLow;
-AddLabel(1, "NY pm hi " + nypmhi, (if IsNaN(NY_PM_Q4_ProfileHigh) then Color.GRAY else Color.YELLOW));
-AddLabel(1, "NY pm lo " + nypmlo, (if IsNaN(NY_PM_Q4_ProfileLow) then Color.GRAY else Color.YELLOW));
-AddLabel(1, "  ", Color.BLACK);
+# AddLabel(1, "NY pm hi " + nypmhi, (if IsNaN(NY_PM_Q4_ProfileHigh) then Color.GRAY else Color.YELLOW));
+# AddLabel(1, "NY pm lo " + nypmlo, (if IsNaN(NY_PM_Q4_ProfileLow) then Color.GRAY else Color.YELLOW));
+# AddLabel(1, "  ", Color.BLACK);
 #
