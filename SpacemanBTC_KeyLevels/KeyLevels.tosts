@@ -31,17 +31,17 @@ input showMonthlyPrevMid = yes;
 input showMonthlyShortHand = no;
 input showMonthlyColor = yes;
 
-input showQuarterlyOpen = yes;
+input showQuarterlyOpen = no;
 input showQuarterlyPrevHL = no;
-input showQuarterlyPrevMid = yes;
+input showQuarterlyPrevMid = no;
 input showQuarterlyShortHand = no;
-input showQuarterlyColor = yes;
+input showQuarterlyColor = no;
 
-input showYearlyOpen = yes;
+input showYearlyOpen = no;
 input showYearlyPrevHL = no;
-input showYearlyPrevMid = yes;
+input showYearlyPrevMid = no;
 input showYearlyShortHand = no;
-input showYearlyColor = yes;
+input showYearlyColor = no;
 
 input londonStart = 8;
 input londonEnd = 16;
