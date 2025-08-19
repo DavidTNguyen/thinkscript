@@ -6,7 +6,7 @@ input show4HOpen = yes;
 input show4HPrevHL = no;
 input show4HPrevMid = no;
 input show4HShortHand = no;
-input color4H = Color.ORANGE;
+input color4H = Color.YELLOW;
 
 input showDailyOpen = yes;
 input showDailyPrevHL = no;
