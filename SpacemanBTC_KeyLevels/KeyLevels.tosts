@@ -99,61 +99,79 @@ def yearlyMid = (yearlyHigh + yearlyLow) / 2;
 # ---- PLOTTING ----
 # Daily
 
+
 plot pDailyOpen = if showDailyOpen then dailyOpen else Double.NaN;
 pDailyOpen.SetDefaultColor(color.cyan);
 pDailyOpen.SetLineWeight(2);
 pDailyOpen.SetStyle(Curve.SHORT_DASH);
-AddChartBubble(showDailyShortHand and !IsNaN(pDailyOpen), pDailyOpen, "D O", color.cyan, yes);
+AddChartBubble(!IsNaN(pDailyOpen), pDailyOpen, "Daily Open", color.cyan, yes);
+
 
 
 plot pDailyPrevHL = if showDailyPrevHL then dailyHigh else Double.NaN;
 pDailyPrevHL.SetDefaultColor(color.cyan);
+AddChartBubble(!IsNaN(pDailyPrevHL), pDailyPrevHL, "Daily High", color.cyan, yes);
 plot pDailyPrevMid = if showDailyPrevMid then dailyMid else Double.NaN;
 pDailyPrevMid.SetDefaultColor(color.cyan);
+AddChartBubble(!IsNaN(pDailyPrevMid), pDailyPrevMid, "Daily Mid", color.cyan, yes);
 
 # Weekly
 
+
 plot pWeeklyOpen = if showWeeklyOpen then weeklyOpen else Double.NaN;
 pWeeklyOpen.SetDefaultColor(color.yellow);
-AddChartBubble(showWeeklyShortHand and !IsNaN(pWeeklyOpen), pWeeklyOpen, "W O", color.yellow, yes);
+AddChartBubble(!IsNaN(pWeeklyOpen), pWeeklyOpen, "Weekly Open", color.yellow, yes);
+
 
 
 plot pWeeklyPrevHL = if showWeeklyPrevHL then weeklyHigh else Double.NaN;
 pWeeklyPrevHL.SetDefaultColor(color.yellow);
+AddChartBubble(!IsNaN(pWeeklyPrevHL), pWeeklyPrevHL, "Weekly High", color.yellow, yes);
 plot pWeeklyPrevMid = if showWeeklyPrevMid then weeklyMid else Double.NaN;
 pWeeklyPrevMid.SetDefaultColor(color.yellow);
+AddChartBubble(!IsNaN(pWeeklyPrevMid), pWeeklyPrevMid, "Weekly Mid", color.yellow, yes);
 
 # Monthly
 
+
 plot pMonthlyOpen = if showMonthlyOpen then monthlyOpen else Double.NaN;
 pMonthlyOpen.SetDefaultColor(color.green);
-AddChartBubble(showMonthlyShortHand and !IsNaN(pMonthlyOpen), pMonthlyOpen, "M O", color.green, yes);
+AddChartBubble(!IsNaN(pMonthlyOpen), pMonthlyOpen, "Monthly Open", color.green, yes);
+
 
 
 plot pMonthlyPrevHL = if showMonthlyPrevHL then monthlyHigh else Double.NaN;
 pMonthlyPrevHL.SetDefaultColor(color.green);
+AddChartBubble(!IsNaN(pMonthlyPrevHL), pMonthlyPrevHL, "Monthly High", color.green, yes);
 plot pMonthlyPrevMid = if showMonthlyPrevMid then monthlyMid else Double.NaN;
 pMonthlyPrevMid.SetDefaultColor(color.green);
+AddChartBubble(!IsNaN(pMonthlyPrevMid), pMonthlyPrevMid, "Monthly Mid", color.green, yes);
 
 # Quarterly
 
+
 plot pQuarterlyOpen = if showQuarterlyOpen then quarterlyOpen else Double.NaN;
 pQuarterlyOpen.SetDefaultColor(color.red);
-AddChartBubble(showQuarterlyShortHand and !IsNaN(pQuarterlyOpen), pQuarterlyOpen, "Q O", color.red, yes);
+AddChartBubble(!IsNaN(pQuarterlyOpen), pQuarterlyOpen, "Quarterly Open", color.red, yes);
+
 
 
 plot pQuarterlyPrevMid = if showQuarterlyPrevMid then quarterlyMid else Double.NaN;
 pQuarterlyPrevMid.SetDefaultColor(color.red);
+AddChartBubble(!IsNaN(pQuarterlyPrevMid), pQuarterlyPrevMid, "Quarterly Mid", color.red, yes);
 
 # Yearly
 
+
 plot pYearlyOpen = if showYearlyOpen then yearlyOpen else Double.NaN;
 pYearlyOpen.SetDefaultColor(color.magenta);
-AddChartBubble(showYearlyShortHand and !IsNaN(pYearlyOpen), pYearlyOpen, "Y O", color.magenta, yes);
+AddChartBubble(!IsNaN(pYearlyOpen), pYearlyOpen, "Yearly Open", color.magenta, yes);
+
 
 
 plot pYearlyPrevMid = if showYearlyPrevMid then yearlyMid else Double.NaN;
 pYearlyPrevMid.SetDefaultColor(color.magenta);
+AddChartBubble(!IsNaN(pYearlyPrevMid), pYearlyPrevMid, "Yearly Mid", color.magenta, yes);
 
 # ---- SESSIONS ----
 def sessionLondon = inLondon;
