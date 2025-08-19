@@ -6,42 +6,42 @@ input show4HOpen = yes;
 input show4HPrevHL = no;
 input show4HPrevMid = no;
 input show4HShortHand = no;
-input color4H = color.black;
+input show4HColor = yes;
 
 input showDailyOpen = yes;
 input showDailyPrevHL = no;
 input showDailyPrevMid = no;
 input showDailyShortHand = no;
-input colorDaily = color.black;
+input showDailyColor = yes;
 
 input showMondayRange = yes;
 input showMondayMid = yes;
 input showMondayShortHand = no;
-input colorMonday = color.black;
+input showMondayColor = yes;
 
 input showWeeklyOpen = yes;
 input showWeeklyPrevHL = yes;
 input showWeeklyPrevMid = yes;
 input showWeeklyShortHand = no;
-input colorWeekly = color.black;
+input showWeeklyColor = yes;
 
 input showMonthlyOpen = yes;
 input showMonthlyPrevHL = yes;
 input showMonthlyPrevMid = yes;
 input showMonthlyShortHand = no;
-input colorMonthly = color.black;
+input showMonthlyColor = yes;
 
 input showQuarterlyOpen = yes;
 input showQuarterlyPrevHL = no;
 input showQuarterlyPrevMid = yes;
 input showQuarterlyShortHand = no;
-input colorQuarterly = color.black;
+input showQuarterlyColor = yes;
 
 input showYearlyOpen = yes;
 input showYearlyPrevHL = no;
 input showYearlyPrevMid = yes;
 input showYearlyShortHand = no;
-input colorYearly = color.black;
+input showYearlyColor = yes;
 
 input londonStart = 8;
 input londonEnd = 16;
