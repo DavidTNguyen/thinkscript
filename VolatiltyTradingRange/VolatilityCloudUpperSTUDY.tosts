@@ -1,0 +1,36 @@
+# Volatility Cloud (Upper) Based on Implied Volatility
+# Plots a cloud in the upper chart area using implied volatility (IV)
+
+# --- User Inputs ---
+input length = 14;
+input showCloud = yes;
+input showLabels = yes;
+
+# --- Implied Volatility Source ---
+# Use "imp_volatility" built-in if available, else fallback to close as placeholder
+# (Replace 'imp_volatility' with your IV source if needed)
+def iv = if !IsNaN(imp_volatility) then imp_volatility else close;
+
+def ivHigh = Highest(iv, length);
+def ivLow = Lowest(iv, length);
+
+def upperBand = ivHigh;
+def lowerBand = ivLow;
+
+# --- Plot Cloud ---
+plot Upper = if showCloud then upperBand else Double.NaN;
+plot Lower = if showCloud then lowerBand else Double.NaN;
+Upper.SetDefaultColor(Color.YELLOW);
+Lower.SetDefaultColor(Color.CYAN);
+Upper.SetStyle(Curve.SHORT_DASH);
+Lower.SetStyle(Curve.SHORT_DASH);
+AddCloud(Upper, Lower, Color.LIGHT_RED, Color.LIGHT_GREEN);
+
+# --- Labels ---
+AddLabel(showLabels, "IV High: " + AsText(ivHigh), Color.YELLOW);
+AddLabel(showLabels, "IV Low: " + AsText(ivLow), Color.CYAN);
+
+# --- Notes ---
+# - This script is designed for the upper chart (price pane).
+# - Replace 'imp_volatility' with your actual implied volatility source if needed.
+# - The cloud shows the range of implied volatility over the selected length.
