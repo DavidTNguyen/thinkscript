@@ -1,15 +1,16 @@
 # Volatility Cloud (Upper) Based on Implied Volatility
 # Plots a cloud in the upper chart area using implied volatility (IV)
 
+
 # --- User Inputs ---
+input iv_source = {default VIX, VX};
 input length = 14;
 input showCloud = yes;
 input showLabels = yes;
 
+
 # --- Implied Volatility Source ---
-# Use "imp_volatility" built-in if available, else fallback to close as placeholder
-# (Replace 'imp_volatility' with your IV source if needed)
-def iv = if !IsNaN(imp_volatility) then imp_volatility else close;
+def iv = if iv_source == iv_source.VIX then close("VIX") else close("/VX");
 
 def ivHigh = Highest(iv, length);
 def ivLow = Lowest(iv, length);
