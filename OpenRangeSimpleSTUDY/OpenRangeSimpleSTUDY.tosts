@@ -40,15 +40,16 @@ def firstBar = inRange and !inRange[1];
 def rangeHigh = if firstBar then high else if inRange then Max(high, rangeHigh[1]) else rangeHigh[1];
 def rangeLow = if firstBar then low else if inRange then Min(low, rangeLow[1]) else rangeLow[1];
 
-# Lock values after range ends
-def afterRange = SecondsTillTime(rangeEndTime) == 0 and today;
-def lockHigh = if afterRange then rangeHigh else lockHigh[1];
-def lockLow = if afterRange then rangeLow else lockLow[1];
 
-# Plot lines only after range ends, for today only
-plot ORHigh = if afterRange then lockHigh else Double.NaN;
-plot ORLow = if afterRange then lockLow else Double.NaN;
-plot ORMid = if showMid and afterRange then (lockHigh + lockLow) / 2 else Double.NaN;
+# Lock values after range ends and hold for the rest of the day
+def afterRange = SecondsTillTime(rangeEndTime) == 0 and today;
+def lockHigh = if afterRange or (lockHigh[1] != 0 and today) then if lockHigh[1] != 0 then lockHigh[1] else rangeHigh else 0;
+def lockLow = if afterRange or (lockLow[1] != 0 and today) then if lockLow[1] != 0 then lockLow[1] else rangeLow else 0;
+
+# Plot lines: show locked value for the rest of the day after range ends
+plot ORHigh = if lockHigh != 0 and today then lockHigh else Double.NaN;
+plot ORLow = if lockLow != 0 and today then lockLow else Double.NaN;
+plot ORMid = if showMid and lockHigh != 0 and lockLow != 0 and today then (lockHigh + lockLow) / 2 else Double.NaN;
 
 ORHigh.SetDefaultColor(Color.GREEN);
 ORHigh.SetStyle(Curve.SHORT_DASH);
