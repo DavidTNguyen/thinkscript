@@ -31,20 +31,24 @@ def orHigh = if startNewRange then high else if inOpeningRange then Max(high, or
 def orLow  = if startNewRange then low  else if inOpeningRange then Min(low, orLow[1])  else if endRange then orLow[1]  else Double.NaN;
 
 
-plot OpeningRangeHigh = if !inOpeningRange and !IsNaN(orHigh[1]) then orHigh[1] else Double.NaN;
+
+# Only plot for today
+def today = GetDay() == GetLastDay();
+
+plot OpeningRangeHigh = if today and !inOpeningRange and !IsNaN(orHigh[1]) then orHigh[1] else Double.NaN;
 OpeningRangeHigh.SetDefaultColor(color.green);
 OpeningRangeHigh.SetLineWeight(2);
-AddChartBubble(!IsNaN(OpeningRangeHigh), OpeningRangeHigh, "1H OR High", color.green, yes);
+AddChartBubble(today and !IsNaN(OpeningRangeHigh), OpeningRangeHigh, "1H OR High", color.green, yes);
 
-plot OpeningRangeLow = if !inOpeningRange and !IsNaN(orLow[1]) then orLow[1] else Double.NaN;
+plot OpeningRangeLow = if today and !inOpeningRange and !IsNaN(orLow[1]) then orLow[1] else Double.NaN;
 OpeningRangeLow.SetDefaultColor(color.red);
 OpeningRangeLow.SetLineWeight(2);
-AddChartBubble(!IsNaN(OpeningRangeLow), OpeningRangeLow, "1H OR Low", color.red, yes);
+AddChartBubble(today and !IsNaN(OpeningRangeLow), OpeningRangeLow, "1H OR Low", color.red, yes);
 
 # Mid dotted line with label (optional)
 def orMid = (orHigh + orLow) / 2;
-plot OpeningRangeMid = if showMidLine and !inOpeningRange and !IsNaN(orMid[1]) then orMid[1] else Double.NaN;
+plot OpeningRangeMid = if today and showMidLine and !inOpeningRange and !IsNaN(orMid[1]) then orMid[1] else Double.NaN;
 OpeningRangeMid.SetDefaultColor(color.gray);
 OpeningRangeMid.SetLineWeight(2);
 OpeningRangeMid.SetStyle(Curve.LONG_DASH);
-AddChartBubble(showMidLine and !IsNaN(OpeningRangeMid), OpeningRangeMid, midLineLabel, color.gray, yes);
+AddChartBubble(today and showMidLine and !IsNaN(OpeningRangeMid), OpeningRangeMid, midLineLabel, color.gray, yes);
