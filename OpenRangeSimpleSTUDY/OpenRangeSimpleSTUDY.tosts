@@ -69,6 +69,4 @@ ORMid.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 # Labels
 AddChartBubble(afterRange, lockHigh, "1H High", Color.GREEN, yes);
 AddChartBubble(afterRange, lockLow, "1H Low", Color.RED, no);
-if showMid then {
-	AddChartBubble(afterRange, (lockHigh + lockLow) / 2, "1H Mid", Color.YELLOW, yes);
-}
+AddChartBubble(afterRange and showMid, (lockHigh + lockLow) / 2, "1H Mid", Color.YELLOW, yes);
