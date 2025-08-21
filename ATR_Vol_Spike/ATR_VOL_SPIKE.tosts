@@ -1,0 +1,62 @@
+# ATR Volatility Spike Indicator for TOS
+# Cleaned and maintained by VietRoadie
+# Last updated: 2025-08-21
+# ATR and VOl Spike Indicator for TOS
+# VietRoadie
+
+avgLine.SetLineWeight(2);
+avgLine.SetDefaultColor(Color.LIGHT_ORANGE);
+
+# ATR Volatility Spike Indicator for TOS
+input unusualVolumeBarColor = yes;
+input atrPeriod = 20;
+input atrMultiplier = 4.0;
+input Source = close;
+input movAvgLength = 20;
+input VolumeSmaLength = 20;
+
+# VWMA calculation
+script VWMA {
+    input src = close;
+    input len = 14;
+    def vol = volume / 1000;
+    def nom = Average(src * vol, len);
+    def den = Average(vol, len);
+    plot result = nom / den;
+}
+
+def atr = ATR(Length = atrPeriod);
+def nLoss = atrMultiplier * atr;
+def xATRTrailingStop = if IsNaN(xATRTrailingStop[1]) then close - nLoss else
+    if close > xATRTrailingStop[1] and close[1] > xATRTrailingStop[1] then Max(xATRTrailingStop[1], close - nLoss)
+    else if close < xATRTrailingStop[1] and close[1] < xATRTrailingStop[1] then Min(xATRTrailingStop[1], close + nLoss)
+    else if close > xATRTrailingStop[1] then close - nLoss
+    else close + nLoss;
+
+def pos = if IsNaN(pos[1]) then 0 else
+    if close[1] < xATRTrailingStop[1] and close > xATRTrailingStop[1] then 1
+    else if close[1] > xATRTrailingStop[1] and close < xATRTrailingStop[1] then -1
+    else pos[1];
+
+def LONG = pos == 1 and pos[1] != 1;
+def SHORT = pos == -1 and pos[1] != -1;
+
+def vol = volume / 1000;
+def vwmaVal = VWMA(Source, movAvgLength);
+def avg1 = (vwmaVal + xATRTrailingStop) / 2;
+def vol_avg = Average(vol, VolumeSmaLength);
+def unusual_vol_down = unusualVolumeBarColor and vol > vol_avg * 1.2 and close < open;
+def unusual_vol_up = unusualVolumeBarColor and vol > vol_avg * 1.2 and close > open;
+def barHighlightColor = if unusual_vol_down then -1 else if unusual_vol_up then 1 else 0;
+
+# Plot average line
+plot avgLine = avg1;
+avgLine.SetLineWeight(2);
+avgLine.SetDefaultColor(Color.LIGHT_ORANGE);
+
+# Signal bubbles
+AddChartBubble(SHORT, high, "S", Color.RED);
+AddChartBubble(LONG, low, "B", Color.GREEN, no);
+
+# Bar coloring
+AssignPriceColor(if barHighlightColor > 0 then Color.CYAN else if barHighlightColor < 0 then Color.MAGENTA else Color.CURRENT);
