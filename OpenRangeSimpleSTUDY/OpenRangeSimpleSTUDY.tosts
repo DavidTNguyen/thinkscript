@@ -7,8 +7,22 @@ input rangeMinutes = 60;    # 1 hour
 input showMidLine = yes;
 input midLineLabel = "1H OR Mid";
 
+
+# Helper to add minutes to HHmm and return new HHmm
+script addMinutesToHHmm {
+	input timeHHmm = 0;
+	input addMin = 0;
+	def hh = Floor(timeHHmm / 100);
+	def mm = timeHHmm % 100;
+	def totalMin = hh * 60 + mm + addMin;
+	def newHH = Floor(totalMin / 60);
+	def newMM = totalMin % 60;
+	plot out = newHH * 100 + newMM;
+}
+
+def rangeEndTime = addMinutesToHHmm(marketOpenTime, rangeMinutes);
 def barTime = SecondsFromTime(marketOpenTime);
-def inOpeningRange = barTime >= 0 and SecondsFromTime(marketOpenTime + rangeMinutes) < 0;
+def inOpeningRange = barTime >= 0 and SecondsTillTime(rangeEndTime) > 0;
 
 def startNewRange = inOpeningRange and !inOpeningRange[1];
 def endRange = !inOpeningRange and inOpeningRange[1];
