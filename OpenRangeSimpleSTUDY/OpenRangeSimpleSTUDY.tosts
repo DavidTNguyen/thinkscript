@@ -9,56 +9,66 @@ input midLineLabel = "1H OR Mid";
 
 
 # Helper to add minutes to HHmm and return new HHmm
+
+# Helper: Add minutes to HHmm integer
 script addMinutesToHHmm {
-	input timeHHmm = 0;
-	input addMin = 0;
-	def hh = Floor(timeHHmm / 100);
-	def mm = timeHHmm % 100;
-	def totalMin = hh * 60 + mm + addMin;
-	def newHH = Floor(totalMin / 60);
-	def newMM = totalMin % 60;
-	plot out = newHH * 100 + newMM;
+	input baseHHmm = 0930;
+	input minutesToAdd = 60;
+	def baseHour = Floor(baseHHmm / 100);
+	def baseMin = baseHHmm % 100;
+	def totalMin = baseHour * 60 + baseMin + minutesToAdd;
+	def newHour = Floor(totalMin / 60);
+	def newMin = totalMin % 60;
+	plot result = newHour * 100 + newMin;
 }
 
-def rangeEndTime = addMinutesToHHmm(marketOpenTime, rangeMinutes);
-def barTime = SecondsFromTime(marketOpenTime);
-def inOpeningRange = barTime >= 0 and SecondsTillTime(rangeEndTime) > 0;
+# Inputs
+input rangeStartTime = 0930;
+input rangeMinutes = 60;
+input showMid = yes;
 
-def startNewRange = inOpeningRange and !inOpeningRange[1];
-def endRange = !inOpeningRange and inOpeningRange[1];
+# Calculate end time (declare only once)
+def rangeEndTime = addMinutesToHHmm(rangeStartTime, rangeMinutes);
 
-def orHigh = if startNewRange then high else if inOpeningRange then Max(high, orHigh[1]) else if endRange then orHigh[1] else Double.NaN;
-def orLow  = if startNewRange then low  else if inOpeningRange then Min(low, orLow[1])  else if endRange then orLow[1]  else Double.NaN;
-
-
-
-
-# Only plot for today, stretch lines to the right from the end of the first hour
+# Only plot for today
 def today = GetDay() == GetLastDay();
-def rangeEndTime = addMinutesToHHmm(marketOpenTime, rangeMinutes);
-def afterOpeningRange = SecondsFromTime(rangeEndTime) <= 0;
 
-# Capture the high/low at the end of the first hour only
-def firstHourHigh = if today and !inOpeningRange and !IsNaN(orHigh[1]) and afterOpeningRange then orHigh[1] else Double.NaN;
-def firstHourLow  = if today and !inOpeningRange and !IsNaN(orLow[1])  and afterOpeningRange then orLow[1]  else Double.NaN;
-def firstHourMid  = (firstHourHigh + firstHourLow) / 2;
+# Find first bar in range
+def inRange = SecondsFromTime(rangeStartTime) >= 0 and SecondsTillTime(rangeEndTime) > 0 and today;
+def firstBar = inRange and !inRange[1];
 
-plot OpeningRangeHigh = if !IsNaN(firstHourHigh) then firstHourHigh else Double.NaN;
-OpeningRangeHigh.SetDefaultColor(color.green);
-OpeningRangeHigh.SetLineWeight(2);
-OpeningRangeHigh.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-AddChartBubble(!IsNaN(OpeningRangeHigh), OpeningRangeHigh, "1H OR High", color.green, yes);
+# Track high/low during range
+def rangeHigh = if firstBar then high else if inRange then Max(high, rangeHigh[1]) else rangeHigh[1];
+def rangeLow = if firstBar then low else if inRange then Min(low, rangeLow[1]) else rangeLow[1];
 
-plot OpeningRangeLow = if !IsNaN(firstHourLow) then firstHourLow else Double.NaN;
-OpeningRangeLow.SetDefaultColor(color.red);
-OpeningRangeLow.SetLineWeight(2);
-OpeningRangeLow.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-AddChartBubble(!IsNaN(OpeningRangeLow), OpeningRangeLow, "1H OR Low", color.red, yes);
+# Lock values after range ends
+def afterRange = SecondsTillTime(rangeEndTime) == 0 and today;
+def lockHigh = if afterRange then rangeHigh else lockHigh[1];
+def lockLow = if afterRange then rangeLow else lockLow[1];
 
-# Mid dotted line with label (optional)
-plot OpeningRangeMid = if showMidLine and !IsNaN(firstHourMid) then firstHourMid else Double.NaN;
-OpeningRangeMid.SetDefaultColor(color.gray);
-OpeningRangeMid.SetLineWeight(2);
-OpeningRangeMid.SetStyle(Curve.LONG_DASH);
-OpeningRangeMid.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-AddChartBubble(showMidLine and !IsNaN(OpeningRangeMid), OpeningRangeMid, midLineLabel, color.gray, yes);
+# Plot lines only after range ends, for today only
+plot ORHigh = if afterRange then lockHigh else Double.NaN;
+plot ORLow = if afterRange then lockLow else Double.NaN;
+plot ORMid = if showMid and afterRange then (lockHigh + lockLow) / 2 else Double.NaN;
+
+ORHigh.SetDefaultColor(Color.GREEN);
+ORHigh.SetStyle(Curve.SHORT_DASH);
+ORHigh.SetLineWeight(2);
+ORHigh.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+
+ORLow.SetDefaultColor(Color.RED);
+ORLow.SetStyle(Curve.SHORT_DASH);
+ORLow.SetLineWeight(2);
+ORLow.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+
+ORMid.SetDefaultColor(Color.YELLOW);
+ORMid.SetStyle(Curve.SHORT_DASH);
+ORMid.SetLineWeight(1);
+ORMid.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+
+# Labels
+AddChartBubble(afterRange, lockHigh, "1H High", Color.GREEN, yes);
+AddChartBubble(afterRange, lockLow, "1H Low", Color.RED, no);
+if showMid then {
+	AddChartBubble(afterRange, (lockHigh + lockLow) / 2, "1H Mid", Color.YELLOW, yes);
+}
