@@ -32,23 +32,33 @@ def orLow  = if startNewRange then low  else if inOpeningRange then Min(low, orL
 
 
 
-# Only plot for today
-def today = GetDay() == GetLastDay();
 
-plot OpeningRangeHigh = if today and !inOpeningRange and !IsNaN(orHigh[1]) then orHigh[1] else Double.NaN;
+# Only plot for today, stretch lines to the right from the end of the first hour
+def today = GetDay() == GetLastDay();
+def rangeEndTime = addMinutesToHHmm(marketOpenTime, rangeMinutes);
+def afterOpeningRange = SecondsFromTime(rangeEndTime) <= 0;
+
+# Capture the high/low at the end of the first hour only
+def firstHourHigh = if today and !inOpeningRange and !IsNaN(orHigh[1]) and afterOpeningRange then orHigh[1] else Double.NaN;
+def firstHourLow  = if today and !inOpeningRange and !IsNaN(orLow[1])  and afterOpeningRange then orLow[1]  else Double.NaN;
+def firstHourMid  = (firstHourHigh + firstHourLow) / 2;
+
+plot OpeningRangeHigh = if !IsNaN(firstHourHigh) then firstHourHigh else Double.NaN;
 OpeningRangeHigh.SetDefaultColor(color.green);
 OpeningRangeHigh.SetLineWeight(2);
-AddChartBubble(today and !IsNaN(OpeningRangeHigh), OpeningRangeHigh, "1H OR High", color.green, yes);
+OpeningRangeHigh.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+AddChartBubble(!IsNaN(OpeningRangeHigh), OpeningRangeHigh, "1H OR High", color.green, yes);
 
-plot OpeningRangeLow = if today and !inOpeningRange and !IsNaN(orLow[1]) then orLow[1] else Double.NaN;
+plot OpeningRangeLow = if !IsNaN(firstHourLow) then firstHourLow else Double.NaN;
 OpeningRangeLow.SetDefaultColor(color.red);
 OpeningRangeLow.SetLineWeight(2);
-AddChartBubble(today and !IsNaN(OpeningRangeLow), OpeningRangeLow, "1H OR Low", color.red, yes);
+OpeningRangeLow.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+AddChartBubble(!IsNaN(OpeningRangeLow), OpeningRangeLow, "1H OR Low", color.red, yes);
 
 # Mid dotted line with label (optional)
-def orMid = (orHigh + orLow) / 2;
-plot OpeningRangeMid = if today and showMidLine and !inOpeningRange and !IsNaN(orMid[1]) then orMid[1] else Double.NaN;
+plot OpeningRangeMid = if showMidLine and !IsNaN(firstHourMid) then firstHourMid else Double.NaN;
 OpeningRangeMid.SetDefaultColor(color.gray);
 OpeningRangeMid.SetLineWeight(2);
 OpeningRangeMid.SetStyle(Curve.LONG_DASH);
-AddChartBubble(today and showMidLine and !IsNaN(OpeningRangeMid), OpeningRangeMid, midLineLabel, color.gray, yes);
+OpeningRangeMid.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+AddChartBubble(showMidLine and !IsNaN(OpeningRangeMid), OpeningRangeMid, midLineLabel, color.gray, yes);
