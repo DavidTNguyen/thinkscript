@@ -24,7 +24,6 @@ script addMinutesToHHmm {
 
 # Inputs
 input rangeStartTime = 0930;
-input rangeMinutes = 60;
 input showMid = yes;
 
 # Calculate end time (declare only once)
