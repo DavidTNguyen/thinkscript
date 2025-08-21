@@ -1,11 +1,6 @@
 # ATR Volatility Spike Indicator for TOS
 # Cleaned and maintained by VietRoadie
 # Last updated: 2025-08-21
-# ATR and VOl Spike Indicator for TOS
-# VietRoadie
-
-avgLine.SetLineWeight(2);
-avgLine.SetDefaultColor(Color.LIGHT_ORANGE);
 
 # ATR Volatility Spike Indicator for TOS
 input unusualVolumeBarColor = yes;
