@@ -3,10 +3,12 @@ declare lower;
 # Start Configurations
 def aggregationPeriod = AggregationPeriod.MONTH;
 def aggregationPeriod_nd = AggregationPeriod.WEEK;
+def aggregationPeriod_d = AggregationPeriod.DAY;
 def averageType = AverageType.WILDERS;
 input vertical_period = {WEEK, default MONTH};
 input monthly_range = yes;
 input weekly_range = yes;
+input daily_range = yes;
 input percentile = no;
 input vertical_line = no;
 input labels = yes;
@@ -23,9 +25,15 @@ def hi_nd = high(period = aggregationPeriod_nd)[1];
 def lo_nd = low(period = aggregationPeriod_nd)[1];
 def cl_nd = close(period = aggregationPeriod_nd)[1];
 def open_nd = open(period = aggregationPeriod_nd);
+
+def hi_d = high(period = aggregationPeriod_d)[1];
+def lo_d = low(period = aggregationPeriod_d)[1];
+def cl_d = close(period = aggregationPeriod_d)[1];
+def open_d = open(period = aggregationPeriod_d);
 # End Aggregation Periods
 
-# Start Volatility Range A
+
+# Start Volatility Range A (Monthly)
 def ATR = MovingAverage(averageType, TrueRange(hi, cl, lo), length);
 def op = open;
 def t1 = (op + ATR);
@@ -33,10 +41,12 @@ def b1 = (op - ATR);
 def calculationA = t1 - b1;
 def valueA = (((close-t1)/calculationA)*100);
 plot lineA = if monthly_range then (valueA+50)*2 else double.nan;
-lineA.SetdefaultColor(color.pink);
+lineA.SetDefaultColor(color.pink);
 # End Volatility Range A
 
-# Start Volatility Range B
+# Start Volatility Range B (Weekly)
+
+
 def ATR_nd = MovingAverage(averageType, TrueRange(hi_nd, cl_nd, lo_nd), length);
 def op_nd = open_nd;
 def t2 = (op_nd + ATR_nd);
@@ -46,6 +56,17 @@ def valueB = (((close-t2)/calculationB)*100);
 plot lineB = if weekly_range then (valueB+50)*2 else double.nan;
 lineB.SetDefaultColor(color.cyan);
 # End Volatility Range B
+
+# Start Volatility Range C (Daily)
+def ATR_d = MovingAverage(averageType, TrueRange(hi_d, cl_d, lo_d), length);
+def op_d = open_d;
+def t3 = (op_d + ATR_d);
+def b3 = (op_d - ATR_d);
+def calculationC = t3 - b3;
+def valueC = (((close-t3)/calculationC)*100);
+plot lineC = if daily_range then (valueC+50)*2 else double.nan;
+lineC.SetDefaultColor(color.yellow);
+# End Volatility Range C
 
 # Plot Horizontal Lines
 plot under = -100;
@@ -61,13 +82,18 @@ tile2.AssignValueColor(color.dark_green);
 # Miscellaneous
 AddCloud(over, tile1, color.dark_red);
 AddCloud(under, tile2, color.dark_green, color.dark_green);
+
 AddCloud(if lineA < under then lineA else double.nan, under, color.light_green, color.light_green);
 AddCloud(if lineB < under then lineB else double.nan, under, color.dark_green, color.dark_green);
+AddCloud(if lineC < under then lineC else double.nan, under, color.yellow, color.yellow);
 AddCloud(if lineA > over then lineA else double.nan, over, color.light_red, color.light_red);
 AddCloud(if lineB > over then lineB else double.nan, over, color.light_red, color.light_red);
+AddCloud(if lineC > over then lineC else double.nan, over, color.yellow, color.yellow);
 
 AddVerticalLine((vertical_line and vertical_period == vertical_period.WEEK and GetWeek() <> GetWeek()[1]) or (vertical_line and vertical_period == vertical_period.MONTH and GetMonth() <> GetMonth()[1]), "", Color.ORANGE, curve.FIRM);
 
+# Labels
+AddLabel(yes and labels, "Daily Volatility Range", color.yellow);
 AddLabel(yes and labels, "Weekly Volatility Range", color.cyan);
 AddLabel(yes and labels, "Monthly Volatility Range", color.pink);
 AddLabel(yes and labels, "VR > 100 = Over-extended | VR < -100 = Undervalued", color.white);
