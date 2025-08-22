@@ -451,33 +451,26 @@ AddCloud(if Show_Cloud2 then NY_PM_Q4_hrange else Double.NaN, NY_PM_Q4_lrange, C
 AddLabel(1, "  ", Color.BLACK);
 # Asian_Q1_ProfileHigh 
 # Asian_Q1_Profilelow
-def asiahi = if IsNaN(Asian_Q1_ProfileHigh) then asiahi[1] else Asian_Q1_ProfileHigh;
-def asialo = if IsNaN(Asian_Q1_ProfileLow) then asialo[1] else Asian_Q1_ProfileLow;
 # AddLabel(1, "asia hi " + asiahi, (if IsNaN(Asian_Q1_ProfileHigh) then Color.GRAY else Color.YELLOW));
 # AddLabel(1, "asia lo " + asialo, (if IsNaN(Asian_Q1_ProfileLow) then Color.GRAY else Color.YELLOW));
 
 AddLabel(1, "  ", Color.BLACK);
 #London_Q2_ProfileHigh
 #London_Q2_Profilelow
-def lonhi = if IsNaN(London_Q2_ProfileHigh) then lonhi[1] else London_Q2_ProfileHigh;
-def lonlo = if IsNaN(London_Q2_ProfileLow) then lonlo[1] else London_Q2_ProfileLow;
 # AddLabel(1, "london hi " + lonhi, (if IsNaN(London_Q2_ProfileHigh) then Color.GRAY else Color.YELLOW));
 # AddLabel(1, "london lo " + lonlo, (if IsNaN(London_Q2_ProfileLow) then Color.GRAY else Color.YELLOW));
 
 AddLabel(1, "  ", Color.BLACK);
 #NY_Q3_ProfileHigh
 #NY_Q3_Profilelow
-def nyamhi = if IsNaN(NY_Q3_ProfileHigh) then nyamhi[1] else NY_Q3_ProfileHigh;
-def nyamlo = if IsNaN(NY_Q3_ProfileLow) then nyamlo[1] else NY_Q3_ProfileLow;
 # AddLabel(1, "NY am hi " + nyamhi, (if IsNaN(NY_Q3_ProfileHigh) then Color.GRAY else Color.YELLOW));
 # AddLabel(1, "NY am lo " + nyamlo, (if IsNaN(NY_Q3_ProfileLow) then Color.GRAY else Color.YELLOW));
 
 AddLabel(1, "  ", Color.BLACK);
 #NY_PM_Q4_ProfileHigh
 #NY_PM_Q4_Profilelow
-def nypmhi = if IsNaN(NY_PM_Q4_ProfileHigh) then nypmhi[1] else NY_PM_Q4_ProfileHigh;
-def nypmlo = if IsNaN(NY_PM_Q4_ProfileLow) then nypmlo[1] else NY_PM_Q4_ProfileLow;
 # AddLabel(1, "NY pm hi " + nypmhi, (if IsNaN(NY_PM_Q4_ProfileHigh) then Color.GRAY else Color.YELLOW));
 # AddLabel(1, "NY pm lo " + nypmlo, (if IsNaN(NY_PM_Q4_ProfileLow) then Color.GRAY else Color.YELLOW));
 # AddLabel(1, "  ", Color.BLACK);
+
 #
