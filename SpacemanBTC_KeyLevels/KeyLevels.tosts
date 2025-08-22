@@ -1,16 +1,23 @@
-# ---- SESSION H/L LOGIC ----
+
+# ---- SESSION H/L LOGIC (CST) ----
+# Session time constants in HHmm CST
+def tokyoStart = 1800;   # 18:00 CST (Asia open)
+def londonStart = 0200;  # 02:00 CST (London open)
+def nyStart = 0730;      # 07:30 CST (NY open)
+def nyEnd = 1100;        # 11:00 CST (NY end)
+
 # Asia Session
-def asiaSession = SecondsFromTime(tokyoStart * 100) >= 0 and SecondsTillTime(londonStart * 100) > 0;
+def asiaSession = SecondsFromTime(tokyoStart) >= 0 and SecondsTillTime(londonStart) > 0;
 def asiaHigh = if asiaSession and (!asiaSession[1]) then high else if asiaSession then Max(high, asiaHigh[1]) else Double.NaN;
 def asiaLow = if asiaSession and (!asiaSession[1]) then low else if asiaSession then Min(low, asiaLow[1]) else Double.NaN;
 
 # London Session
-def londonSession = SecondsFromTime(londonStart * 100) >= 0 and SecondsTillTime(nyStart * 100) > 0;
+def londonSession = SecondsFromTime(londonStart) >= 0 and SecondsTillTime(nyStart) > 0;
 def londonHigh = if londonSession and (!londonSession[1]) then high else if londonSession then Max(high, londonHigh[1]) else Double.NaN;
 def londonLow = if londonSession and (!londonSession[1]) then low else if londonSession then Min(low, londonLow[1]) else Double.NaN;
 
 # NYAM Session
-def nyamSession = SecondsFromTime(nyStart * 100) >= 0 and SecondsTillTime(nyEnd * 100) > 0;
+def nyamSession = SecondsFromTime(nyStart) >= 0 and SecondsTillTime(nyEnd) > 0;
 def nyamHigh = if nyamSession and (!nyamSession[1]) then high else if nyamSession then Max(high, nyamHigh[1]) else Double.NaN;
 def nyamLow = if nyamSession and (!nyamSession[1]) then low else if nyamSession then Min(low, nyamLow[1]) else Double.NaN;
 
