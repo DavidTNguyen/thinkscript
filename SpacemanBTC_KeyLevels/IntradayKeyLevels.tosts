@@ -1,0 +1,49 @@
+## Intraday Key Levels: Yesterday's High, Low, Close, and Overnight High/Low
+
+# --- Calculate Yesterday's High, Low, Close ---
+def day = GetDay();
+def today = day == GetLastDay();
+def prevDay = day == GetLastDay() - 1;
+
+def yestHigh = if prevDay then if IsNaN(yestHigh[1]) or !prevDay[1] then high else Max(high, yestHigh[1]) else if !IsNaN(yestHigh[1]) and !prevDay then yestHigh[1] else Double.NaN;
+def yestLow  = if prevDay then if IsNaN(yestLow[1]) or !prevDay[1] then low else Min(low, yestLow[1]) else if !IsNaN(yestLow[1]) and !prevDay then yestLow[1] else Double.NaN;
+def yestClose = if prevDay and !prevDay[1] then close[1] else if prevDay then yestClose[1] else if !IsNaN(yestClose[1]) and !prevDay then yestClose[1] else Double.NaN;
+
+# --- Calculate Overnight High/Low (from yesterday's close to today's regular session open) ---
+input overnightStart = 1700; # 5:00pm CST
+input regularOpen = 830;     # 8:30am CST
+def overnight = SecondsFromTime(overnightStart) >= 0 or SecondsTillTime(regularOpen) > 0;
+def overnightHigh = if overnight and !overnight[1] then high else if overnight then Max(high, overnightHigh[1]) else if !IsNaN(overnightHigh[1]) then overnightHigh[1] else Double.NaN;
+def overnightLow  = if overnight and !overnight[1] then low else if overnight then Min(low, overnightLow[1]) else if !IsNaN(overnightLow[1]) then overnightLow[1] else Double.NaN;
+
+# --- Carry Forward Levels ---
+def yHigh = if !IsNaN(yestHigh) then yestHigh else yHigh[1];
+def yLow  = if !IsNaN(yestLow) then yestLow else yLow[1];
+def yClose = if !IsNaN(yestClose) then yestClose else yClose[1];
+def oHigh = if !IsNaN(overnightHigh) then overnightHigh else oHigh[1];
+def oLow  = if !IsNaN(overnightLow) then overnightLow else oLow[1];
+
+# --- Plots (stretch to the right) ---
+plot YestHigh = yHigh;
+YestHigh.SetDefaultColor(Color.LIGHT_GREEN);
+YestHigh.SetStyle(Curve.SHORT_DASH);
+plot YestLow = yLow;
+YestLow.SetDefaultColor(Color.LIGHT_RED);
+YestLow.SetStyle(Curve.SHORT_DASH);
+plot YestClose = yClose;
+YestClose.SetDefaultColor(Color.LIGHT_GRAY);
+YestClose.SetStyle(Curve.SHORT_DASH);
+plot ONHigh = oHigh;
+ONHigh.SetDefaultColor(Color.CYAN);
+ONHigh.SetStyle(Curve.LONG_DASH);
+plot ONLow = oLow;
+ONLow.SetDefaultColor(Color.MAGENTA);
+ONLow.SetStyle(Curve.LONG_DASH);
+
+# --- Bubbles at the most recent bar ---
+def lastBar = !IsNaN(close) and IsNaN(close[-1]);
+AddChartBubble(lastBar, yHigh, "Y High: " + AsText(yHigh), Color.LIGHT_GREEN, yes);
+AddChartBubble(lastBar, yLow, "Y Low: " + AsText(yLow), Color.LIGHT_RED, no);
+AddChartBubble(lastBar, yClose, "Y Close: " + AsText(yClose), Color.LIGHT_GRAY, yes);
+AddChartBubble(lastBar, oHigh, "ON High: " + AsText(oHigh), Color.CYAN, yes);
+AddChartBubble(lastBar, oLow, "ON Low: " + AsText(oLow), Color.MAGENTA, no);
