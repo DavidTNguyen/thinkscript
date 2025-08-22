@@ -136,11 +136,8 @@ def Asian_Q1_plotsDomain = IsNaN(close) == Asian_Q1_onExpansion;
 def Asian_Q1_ProfileHigh = if Asian_Q1_aftermarket and Asian_Q1_plotsDomain then Asian_Q1_hProfile else Double.NaN;
 def Asian_Q1_ProfileLow = if Asian_Q1_aftermarket and Asian_Q1_plotsDomain then Asian_Q1_lProfile else Double.NaN;
 
-def basis      = if TickSize() > .01 then GetYYYYMMDD() else GetDay();
-def asiancount = if basis != basis[1] then  asiancount[1] + 1 else asiancount[1];
-def asiancond  = HighestAll(asiancount) - asiancount + 1;
+# ...existing code...
 AddVerticalLine (if Show_Vertical_Line  and asiancond <= display_count then Asian_DrawLine else Double.NaN, "Asian", CreateColor(204, 255, 204), Curve.FIRM);
-
 plot Asian_Q1_hrange = if display_last_zone and asiancond > display_count then Double.NaN else Asian_Q1_ProfileHigh;
 plot Asian_Q1_lrange = if display_last_zone and asiancond > display_count  then Double.NaN else Asian_Q1_ProfileLow;
 Asian_Q1_hrange.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
@@ -228,10 +225,8 @@ def London_Q2_plotsDomain = IsNaN(close) == London_Q2_onExpansion;
 def London_Q2_ProfileHigh = if London_Q2_aftermarket and London_Q2_plotsDomain then London_Q2_hProfile else Double.NaN;
 def London_Q2_ProfileLow = if London_Q2_aftermarket and London_Q2_plotsDomain then London_Q2_lProfile else Double.NaN;
 
-def londoncount = if basis != basis[1] then  londoncount[1] + 1 else londoncount[1];
-def londoncond  = HighestAll(londoncount) - londoncount + 1;
+# ...existing code...
 AddVerticalLine (if Show_Vertical_Line  and londoncond <= display_count then London_DrawLine else Double.NaN, "London", CreateColor(153, 153 , 255), Curve.FIRM);
-
 plot London_Q2_hrange = if display_last_zone and londoncond > display_count then Double.NaN else London_Q2_ProfileHigh;
 plot London_Q2_lrange = if display_last_zone and londoncond > display_count then Double.NaN else London_Q2_ProfileLow;
 London_Q2_hrange.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
@@ -327,10 +322,8 @@ def NY_Q3_plotsDomain = IsNaN(close) == NY_Q3_onExpansion;
 def NY_Q3_ProfileHigh = if NY_Q3_aftermarket and NY_Q3_plotsDomain then NY_Q3_hProfile else Double.NaN;
 def NY_Q3_ProfileLow = if NY_Q3_aftermarket and NY_Q3_plotsDomain then NY_Q3_lProfile else Double.NaN;
 
-def nyq3count = if basis != basis[1] then  nyq3count[1] + 1 else nyq3count[1];
-def nyq3cond  = HighestAll(nyq3count) - nyq3count + 1;
+# ...existing code...
 AddVerticalLine (if Show_Vertical_Line and nyq3cond <= display_count then NY_DrawLine else Double.NaN, "NY AM", CreateColor(0, 153, 255), Curve.FIRM);
-
 plot NY_Q3_hrange = if display_last_zone and nyq3cond > display_count then Double.NaN else NY_Q3_ProfileHigh;
 plot NY_Q3_lrange = if display_last_zone and nyq3cond > display_count then Double.NaN else NY_Q3_ProfileLow;
 NY_Q3_hrange.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
