@@ -26,32 +26,35 @@ def nyamLow = if nyamSession and (!nyamSession[1]) then low else if nyamSession 
 plot AsiaHi = if !IsNaN(asiaHigh) and !asiaSession then asiaHigh[1] else Double.NaN;
 AsiaHi.SetDefaultColor(color.white);
 AsiaHi.SetLineWeight(2);
-AddChartBubble(!asiaSession and !IsNaN(AsiaHi), AsiaHi, "Asia High", color.white, yes);
+def asiaEnd = asiaSession[1] and !asiaSession;
+AddChartBubble(asiaEnd, AsiaHi, "Asia High", color.white, yes);
 
 plot AsiaLo = if !IsNaN(asiaLow) and !asiaSession then asiaLow[1] else Double.NaN;
 AsiaLo.SetDefaultColor(color.white);
 AsiaLo.SetLineWeight(2);
-AddChartBubble(!asiaSession and !IsNaN(AsiaLo), AsiaLo, "Asia Low", color.white, no);
+AddChartBubble(asiaEnd, AsiaLo, "Asia Low", color.white, no);
 
 plot LonHi = if !IsNaN(londonHigh) and !londonSession then londonHigh[1] else Double.NaN;
 LonHi.SetDefaultColor(color.yellow);
 LonHi.SetLineWeight(2);
-AddChartBubble(!londonSession and !IsNaN(LonHi), LonHi, "London High", color.yellow, yes);
+def londonEnd = londonSession[1] and !londonSession;
+AddChartBubble(londonEnd, LonHi, "London High", color.yellow, yes);
 
 plot LonLo = if !IsNaN(londonLow) and !londonSession then londonLow[1] else Double.NaN;
 LonLo.SetDefaultColor(color.yellow);
 LonLo.SetLineWeight(2);
-AddChartBubble(!londonSession and !IsNaN(LonLo), LonLo, "London Low", color.yellow, no);
+AddChartBubble(londonEnd, LonLo, "London Low", color.yellow, no);
 
 plot NYAMHi = if !IsNaN(nyamHigh) and !nyamSession then nyamHigh[1] else Double.NaN;
 NYAMHi.SetDefaultColor(color.cyan);
 NYAMHi.SetLineWeight(2);
-AddChartBubble(!nyamSession and !IsNaN(NYAMHi), NYAMHi, "NYAM High", color.cyan, yes);
+def nyamEnd = nyamSession[1] and !nyamSession;
+AddChartBubble(nyamEnd, NYAMHi, "NYAM High", color.cyan, yes);
 
 plot NYAMLo = if !IsNaN(nyamLow) and !nyamSession then nyamLow[1] else Double.NaN;
 NYAMLo.SetDefaultColor(color.cyan);
 NYAMLo.SetLineWeight(2);
-AddChartBubble(!nyamSession and !IsNaN(NYAMLo), NYAMLo, "NYAM Low", color.cyan, no);
+AddChartBubble(nyamEnd, NYAMLo, "NYAM Low", color.cyan, no);
 # VietRoadie Session Range
 declare hide_on_daily;
 
