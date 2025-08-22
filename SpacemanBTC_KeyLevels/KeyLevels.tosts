@@ -29,7 +29,7 @@ def AsiaHi_ext = if !IsNaN(asiaHigh) and !asiaSession then asiaHigh[1] else if !
 plot AsiaHi = AsiaHi_ext;
 AsiaHi.SetDefaultColor(color.white);
 AsiaHi.SetLineWeight(2);
-AddChartBubble(BarNumber() == HighestAll(BarNumber()) and !IsNaN(AsiaHi), AsiaHi, "Asia High", color.white, yes);
+AddChartBubble(BarNumber() == HighestAll(BarNumber()) and !IsNaN(AsiaHi) and asiancond == 1, AsiaHi, "Asia High", color.white, yes);
 
 
 # Extend AsiaLo forward until next session starts
@@ -37,7 +37,7 @@ def AsiaLo_ext = if !IsNaN(asiaLow) and !asiaSession then asiaLow[1] else if !Is
 plot AsiaLo = AsiaLo_ext;
 AsiaLo.SetDefaultColor(color.white);
 AsiaLo.SetLineWeight(2);
-AddChartBubble(BarNumber() == HighestAll(BarNumber()) and !IsNaN(AsiaLo), AsiaLo, "Asia Low", color.white, no);
+AddChartBubble(BarNumber() == HighestAll(BarNumber()) and !IsNaN(AsiaLo) and asiancond == 1, AsiaLo, "Asia Low", color.white, no);
 
 
 # Extend LonHi forward until next session starts
@@ -45,7 +45,7 @@ def LonHi_ext = if !IsNaN(londonHigh) and !londonSession then londonHigh[1] else
 plot LonHi = LonHi_ext;
 LonHi.SetDefaultColor(color.yellow);
 LonHi.SetLineWeight(2);
-AddChartBubble(BarNumber() == HighestAll(BarNumber()) and !IsNaN(LonHi), LonHi, "London High", color.yellow, yes);
+AddChartBubble(BarNumber() == HighestAll(BarNumber()) and !IsNaN(LonHi) and londoncond == 1, LonHi, "London High", color.yellow, yes);
 
 
 # Extend LonLo forward until next session starts
@@ -53,7 +53,7 @@ def LonLo_ext = if !IsNaN(londonLow) and !londonSession then londonLow[1] else i
 plot LonLo = LonLo_ext;
 LonLo.SetDefaultColor(color.yellow);
 LonLo.SetLineWeight(2);
-AddChartBubble(BarNumber() == HighestAll(BarNumber()) and !IsNaN(LonLo), LonLo, "London Low", color.yellow, no);
+AddChartBubble(BarNumber() == HighestAll(BarNumber()) and !IsNaN(LonLo) and londoncond == 1, LonLo, "London Low", color.yellow, no);
 
 
 # Extend NYAMHi forward until next session starts
@@ -61,7 +61,7 @@ def NYAMHi_ext = if !IsNaN(nyamHigh) and !nyamSession then nyamHigh[1] else if !
 plot NYAMHi = NYAMHi_ext;
 NYAMHi.SetDefaultColor(color.cyan);
 NYAMHi.SetLineWeight(2);
-AddChartBubble(BarNumber() == HighestAll(BarNumber()) and !IsNaN(NYAMHi), NYAMHi, "NYAM High", color.cyan, yes);
+AddChartBubble(BarNumber() == HighestAll(BarNumber()) and !IsNaN(NYAMHi) and nyq3cond == 1, NYAMHi, "NYAM High", color.cyan, yes);
 
 
 # Extend NYAMLo forward until next session starts
@@ -69,7 +69,7 @@ def NYAMLo_ext = if !IsNaN(nyamLow) and !nyamSession then nyamLow[1] else if !Is
 plot NYAMLo = NYAMLo_ext;
 NYAMLo.SetDefaultColor(color.cyan);
 NYAMLo.SetLineWeight(2);
-AddChartBubble(BarNumber() == HighestAll(BarNumber()) and !IsNaN(NYAMLo), NYAMLo, "NYAM Low", color.cyan, no);
+AddChartBubble(BarNumber() == HighestAll(BarNumber()) and !IsNaN(NYAMLo) and nyq3cond == 1, NYAMLo, "NYAM Low", color.cyan, no);
 # VietRoadie Session Range
 declare hide_on_daily;
 
