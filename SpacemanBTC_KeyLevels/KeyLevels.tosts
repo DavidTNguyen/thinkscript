@@ -31,10 +31,12 @@ plot AsiaLo = AsiaLo_persist;
 AsiaLo.SetDefaultColor(color.white);
 AsiaLo.SetLineWeight(2);
 # Robust bubble logic for all timeframes: show on last bar where value is not NaN
-def lastAsiaHiBar = if !IsNaN(AsiaHi) then BarNumber() else lastAsiaHiBar[1];
-def lastAsiaLoBar = if !IsNaN(AsiaLo) then BarNumber() else lastAsiaLoBar[1];
-AddChartBubble(BarNumber() == HighestAll(lastAsiaHiBar), AsiaHi, "Asia High", color.white, yes);
-AddChartBubble(BarNumber() == HighestAll(lastAsiaLoBar), AsiaLo, "Asia Low", color.white, no);
+
+# Show Asia session bubbles on every bar after session ends, until new session starts
+def asiaSessionEnded = !asiaSession and asiaSession[1];
+def asiaBubbleActive = if asiaSessionEnded then 1 else if !asiaSession and asiaBubbleActive[1] then 1 else 0;
+AddChartBubble(asiaBubbleActive and !IsNaN(AsiaHi), AsiaHi, "Asia High", color.white, yes);
+AddChartBubble(asiaBubbleActive and !IsNaN(AsiaLo), AsiaLo, "Asia Low", color.white, no);
 
 # --- London Session ---
 def londonSession = SecondsFromTime(londonStart) >= 0 and SecondsTillTime(nyStart) > 0;
@@ -50,10 +52,12 @@ def LonLo_persist = if !IsNaN(LonLo_ext) then LonLo_ext else LonLo_persist[1];
 plot LonLo = LonLo_persist;
 LonLo.SetDefaultColor(color.yellow);
 LonLo.SetLineWeight(2);
-def lastLonHiBar = if !IsNaN(LonHi) then BarNumber() else lastLonHiBar[1];
-def lastLonLoBar = if !IsNaN(LonLo) then BarNumber() else lastLonLoBar[1];
-AddChartBubble(BarNumber() == HighestAll(lastLonHiBar), LonHi, "London High", color.yellow, yes);
-AddChartBubble(BarNumber() == HighestAll(lastLonLoBar), LonLo, "London Low", color.yellow, no);
+
+# Show London session bubbles on every bar after session ends, until new session starts
+def londonSessionEnded = !londonSession and londonSession[1];
+def londonBubbleActive = if londonSessionEnded then 1 else if !londonSession and londonBubbleActive[1] then 1 else 0;
+AddChartBubble(londonBubbleActive and !IsNaN(LonHi), LonHi, "London High", color.yellow, yes);
+AddChartBubble(londonBubbleActive and !IsNaN(LonLo), LonLo, "London Low", color.yellow, no);
 
 # --- NYAM Session ---
 def nyamSession = SecondsFromTime(nyStart) >= 0 and SecondsTillTime(nyEnd) > 0;
@@ -69,10 +73,12 @@ def NYAMLo_persist = if !IsNaN(NYAMLo_ext) then NYAMLo_ext else NYAMLo_persist[1
 plot NYAMLo = NYAMLo_persist;
 NYAMLo.SetDefaultColor(color.cyan);
 NYAMLo.SetLineWeight(2);
-def lastNYAMHiBar = if !IsNaN(NYAMHi) then BarNumber() else lastNYAMHiBar[1];
-def lastNYAMLoBar = if !IsNaN(NYAMLo) then BarNumber() else lastNYAMLoBar[1];
-AddChartBubble(BarNumber() == HighestAll(lastNYAMHiBar), NYAMHi, "NYAM High", color.cyan, yes);
-AddChartBubble(BarNumber() == HighestAll(lastNYAMLoBar), NYAMLo, "NYAM Low", color.cyan, no);
+
+# Show NYAM session bubbles on every bar after session ends, until new session starts
+def nyamSessionEnded = !nyamSession and nyamSession[1];
+def nyamBubbleActive = if nyamSessionEnded then 1 else if !nyamSession and nyamBubbleActive[1] then 1 else 0;
+AddChartBubble(nyamBubbleActive and !IsNaN(NYAMHi), NYAMHi, "NYAM High", color.cyan, yes);
+AddChartBubble(nyamBubbleActive and !IsNaN(NYAMLo), NYAMLo, "NYAM Low", color.cyan, no);
 # VietRoadie Session Range
 declare hide_on_daily;
 
