@@ -22,10 +22,12 @@ def asiaHigh = if asiaSession and !asiaSession[1] then high else if asiaSession 
 def asiaLow = if asiaSession and !asiaSession[1] then low else if asiaSession then Min(low, asiaLow[1]) else Double.NaN;
 def AsiaHi_ext = if !IsNaN(asiaHigh) and !asiaSession then asiaHigh[1] else if !IsNaN(AsiaHi_ext[1]) then AsiaHi_ext[1] else Double.NaN;
 def AsiaLo_ext = if !IsNaN(asiaLow) and !asiaSession then asiaLow[1] else if !IsNaN(AsiaLo_ext[1]) then AsiaLo_ext[1] else Double.NaN;
-plot AsiaHi = AsiaHi_ext;
+def AsiaHi_persist = if !IsNaN(AsiaHi_ext) then AsiaHi_ext else AsiaHi_persist[1];
+plot AsiaHi = AsiaHi_persist;
 AsiaHi.SetDefaultColor(color.white);
 AsiaHi.SetLineWeight(2);
-plot AsiaLo = AsiaLo_ext;
+def AsiaLo_persist = if !IsNaN(AsiaLo_ext) then AsiaLo_ext else AsiaLo_persist[1];
+plot AsiaLo = AsiaLo_persist;
 AsiaLo.SetDefaultColor(color.white);
 AsiaLo.SetLineWeight(2);
 # Robust bubble logic for all timeframes: show on last bar where value is not NaN
@@ -40,10 +42,12 @@ def londonHigh = if londonSession and !londonSession[1] then high else if london
 def londonLow = if londonSession and !londonSession[1] then low else if londonSession then Min(low, londonLow[1]) else Double.NaN;
 def LonHi_ext = if !IsNaN(londonHigh) and !londonSession then londonHigh[1] else if !IsNaN(LonHi_ext[1]) then LonHi_ext[1] else Double.NaN;
 def LonLo_ext = if !IsNaN(londonLow) and !londonSession then londonLow[1] else if !IsNaN(LonLo_ext[1]) then LonLo_ext[1] else Double.NaN;
-plot LonHi = LonHi_ext;
+def LonHi_persist = if !IsNaN(LonHi_ext) then LonHi_ext else LonHi_persist[1];
+plot LonHi = LonHi_persist;
 LonHi.SetDefaultColor(color.yellow);
 LonHi.SetLineWeight(2);
-plot LonLo = LonLo_ext;
+def LonLo_persist = if !IsNaN(LonLo_ext) then LonLo_ext else LonLo_persist[1];
+plot LonLo = LonLo_persist;
 LonLo.SetDefaultColor(color.yellow);
 LonLo.SetLineWeight(2);
 def lastLonHiBar = if !IsNaN(LonHi) then BarNumber() else lastLonHiBar[1];
@@ -57,10 +61,12 @@ def nyamHigh = if nyamSession and !nyamSession[1] then high else if nyamSession 
 def nyamLow = if nyamSession and !nyamSession[1] then low else if nyamSession then Min(low, nyamLow[1]) else Double.NaN;
 def NYAMHi_ext = if !IsNaN(nyamHigh) and !nyamSession then nyamHigh[1] else if !IsNaN(NYAMHi_ext[1]) then NYAMHi_ext[1] else Double.NaN;
 def NYAMLo_ext = if !IsNaN(nyamLow) and !nyamSession then nyamLow[1] else if !IsNaN(NYAMLo_ext[1]) then NYAMLo_ext[1] else Double.NaN;
-plot NYAMHi = NYAMHi_ext;
+def NYAMHi_persist = if !IsNaN(NYAMHi_ext) then NYAMHi_ext else NYAMHi_persist[1];
+plot NYAMHi = NYAMHi_persist;
 NYAMHi.SetDefaultColor(color.cyan);
 NYAMHi.SetLineWeight(2);
-plot NYAMLo = NYAMLo_ext;
+def NYAMLo_persist = if !IsNaN(NYAMLo_ext) then NYAMLo_ext else NYAMLo_persist[1];
+plot NYAMLo = NYAMLo_persist;
 NYAMLo.SetDefaultColor(color.cyan);
 NYAMLo.SetLineWeight(2);
 def lastNYAMHiBar = if !IsNaN(NYAMHi) then BarNumber() else lastNYAMHiBar[1];
