@@ -3,8 +3,6 @@
 # Unusual SPY High Volume Alert (for intraday charts <10m)
 
 # Author: VietRoadie, 2025-08-24
-# Add a label for Dead Volume
-AddLabel(yes, "Dead Volume: " + AsText(rollingHourVol), if rollingHourVol >= volumeThreshold then Color.GREEN else Color.YELLOW);
 # Unusual SPY High Volume Alert (for intraday charts <10m)
 
 input volumeThreshold = 12000000;
@@ -22,4 +20,6 @@ VolAlert.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
 VolAlert.SetDefaultColor(Color.RED);
 VolAlert.SetLineWeight(3);
 
+# Add a label for Dead Volume (after all variable definitions)
+AddLabel(yes, "Dead Volume: " + AsText(rollingHourVol), if rollingHourVol >= volumeThreshold then Color.GREEN else Color.YELLOW);
 Alert(alertCondition, "SPY Hourly Volume > 12M!", Alert.BAR, Sound.Ring);
