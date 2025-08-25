@@ -1,18 +1,13 @@
 # Author: VietRoadie, 2025-08-24
-# Indicator: Unusual SPY Volume
-# Unusual SPY High Volume Alert (for intraday charts <10m)
+# Indicator: Unusual SPY Volume + Volume Stack
 
-# Author: VietRoadie, 2025-08-24
-# Unusual SPY High Volume Alert (for intraday charts <10m)
 declare lower;
-input volumeThreshold = 12000000;
 
-# Calculate rolling 1-hour volume (sum of last 60 minutes)
+# === Unusual SPY High Volume Alert (for intraday charts <10m) ===
+input volumeThreshold = 12000000;
 def aggMinutes = 60;
 def barsInHour = aggMinutes / GetAggregationPeriod() * 60 * 1000; # GetAggregationPeriod returns ms
 def rollingHourVol = Sum(volume, barsInHour);
-
-# Alert condition
 def alertCondition = rollingHourVol crosses above volumeThreshold;
 
 plot VolAlert = alertCondition;
@@ -20,12 +15,11 @@ VolAlert.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
 VolAlert.SetDefaultColor(Color.RED);
 VolAlert.SetLineWeight(3);
 
-# Add a label for Dead Volume (after all variable definitions)
 AddLabel(yes, "Dead Volume: " + AsText(rollingHourVol), if rollingHourVol >= volumeThreshold then Color.GREEN else Color.YELLOW);
 AddLabel(yes, "Current Hourly Volume: " + AsText(rollingHourVol), Color.BLUE);
-
 Alert(alertCondition, "SPY Hourly Volume > 12M!", Alert.BAR, Sound.Ring);
 
+# === Volume Stack Features ===
 # Proxy buyer/seller volume by using % of candle "won" by each side
 def buy_volume_stack = if high != low then volume * (close - low) / (high - low) else volume / 2;
 def sell_volume_stack = if high != low then volume * (high - close) / (high - low) else volume / 2;
@@ -38,8 +32,8 @@ StackSmallerVolume.HideBubble();
 StackSmallerVolume.HideTitle();
 StackSmallerVolume.SetLineWeight(1);
 StackSmallerVolume.AssignValueColor(
-	if buyers_winning_stack then Color.RED
-	else Color.GREEN);
+    if buyers_winning_stack then Color.RED
+    else Color.GREEN);
 
 # Bigger Volume (higher bar)
 plot StackBiggerVolume = volume;
@@ -47,8 +41,8 @@ StackBiggerVolume.setPaintingStrategy(PaintingStrategy.Histogram);
 StackBiggerVolume.HideBubble();
 StackBiggerVolume.SetLineWeight(1);
 StackBiggerVolume.AssignValueColor(
-	if buyers_winning_stack then Color.GREEN 
-	else Color.RED);
+    if buyers_winning_stack then Color.GREEN 
+    else Color.RED);
 
 # Rotating Volume Bias Labels
 def buy_percent_stack = if volume > 0 then Round((buy_volume_stack / volume) * 100, 1) else 50;
