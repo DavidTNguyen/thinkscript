@@ -23,17 +23,7 @@ script ParseLevel {
     input level6_thickness = 1;
     input level7 = 6342;
     input level7_thickness = 3;
-    input level8 = 0;
-    input level8_thickness = 1;
-    input level9 = 0;
-    input level9_thickness = 1;
-    input level10 = 0;
-    input level10_thickness = 1;
-                else if star1 then GetValue(Double.Parse(Substring(str, 0, InStr(str, "(*)") - 1)), 0)
-                else GetValue(Double.Parse(str), 0);
-    def stars = if star2 then 2 else if star1 then 1 else 0;
-    plot outValue = value;
-    plot outStars = stars;
+
 }
 
 def delim = ",";
