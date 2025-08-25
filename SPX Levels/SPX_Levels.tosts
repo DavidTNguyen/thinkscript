@@ -52,13 +52,6 @@ def s8 = ParseLevel(l8).outStars;
 def s9 = ParseLevel(l9).outStars;
 
 # Plot and label each level
-DefineGlobalColor(\"star2\", Color.MAGENTA);
-
-# Helper for color/weight
-def w0 = if s0 == 2 then 3 else if s0 == 1 then 2 else 1;
-def w1 = if s1 == 2 then 3 else if s1 == 1 then 2 else 1;
-def w2 = if s2 == 2 then 3 else if s2 == 1 then 2 else 1;
-def w3 = if s3 == 2 then 3 else if s3 == 1 then 2 else 1;
 def w4 = if s4 == 2 then 3 else if s4 == 1 then 2 else 1;
 def w5 = if s5 == 2 then 3 else if s5 == 1 then 2 else 1;
 def w6 = if s6 == 2 then 3 else if s6 == 1 then 2 else 1;
