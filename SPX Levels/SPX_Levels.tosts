@@ -9,7 +9,26 @@ script ParseLevel {
     input str = "";
     def star2 = InStr(str, "(**)") > 0;
     def star1 = !star2 and InStr(str, "(*)") > 0;
-    def value = if star2 then GetValue(Double.Parse(Substring(str, 0, InStr(str, "(**)") - 1)), 0)
+    input level1 = 6519;
+    input level1_thickness = 1; # 1=normal, 2=(*), 3=(**)
+    input level2 = 6536;
+    input level2_thickness = 1;
+    input level3 = 6478;
+    input level3_thickness = 2;
+    input level4 = 6443;
+    input level4_thickness = 1;
+    input level5 = 6400;
+    input level5_thickness = 1;
+    input level6 = 6360;
+    input level6_thickness = 1;
+    input level7 = 6342;
+    input level7_thickness = 3;
+    input level8 = 0;
+    input level8_thickness = 1;
+    input level9 = 0;
+    input level9_thickness = 1;
+    input level10 = 0;
+    input level10_thickness = 1;
                 else if star1 then GetValue(Double.Parse(Substring(str, 0, InStr(str, "(*)") - 1)), 0)
                 else GetValue(Double.Parse(str), 0);
     def stars = if star2 then 2 else if star1 then 1 else 0;
@@ -27,100 +46,69 @@ def l5 = Trim(GetValue(String.Split(levels, delim), 5));
 def l6 = Trim(GetValue(String.Split(levels, delim), 6));
 def l7 = Trim(GetValue(String.Split(levels, delim), 7));
 def l8 = Trim(GetValue(String.Split(levels, delim), 8));
-def l9 = Trim(GetValue(String.Split(levels, delim), 9));
-
-def v0 = ParseLevel(l0).outValue;
-def v1 = ParseLevel(l1).outValue;
-def v2 = ParseLevel(l2).outValue;
-def v3 = ParseLevel(l3).outValue;
-def v4 = ParseLevel(l4).outValue;
-def v5 = ParseLevel(l5).outValue;
-def v6 = ParseLevel(l6).outValue;
-def v7 = ParseLevel(l7).outValue;
-def v8 = ParseLevel(l8).outValue;
 def v9 = ParseLevel(l9).outValue;
-
-def s0 = ParseLevel(l0).outStars;
-def s1 = ParseLevel(l1).outStars;
-def s2 = ParseLevel(l2).outStars;
-def s3 = ParseLevel(l3).outStars;
-def s4 = ParseLevel(l4).outStars;
-def s5 = ParseLevel(l5).outStars;
-def s6 = ParseLevel(l6).outStars;
-def s7 = ParseLevel(l7).outStars;
-def s8 = ParseLevel(l8).outStars;
 def s9 = ParseLevel(l9).outStars;
-
-# Plot and label each level
-def w4 = if s4 == 2 then 3 else if s4 == 1 then 2 else 1;
-def w5 = if s5 == 2 then 3 else if s5 == 1 then 2 else 1;
-def w6 = if s6 == 2 then 3 else if s6 == 1 then 2 else 1;
-def w7 = if s7 == 2 then 3 else if s7 == 1 then 2 else 1;
-def w8 = if s8 == 2 then 3 else if s8 == 1 then 2 else 1;
-def w9 = if s9 == 2 then 3 else if s9 == 1 then 2 else 1;
-
-def c0 = if s0 == 2 then Color.MAGENTA else if s0 == 1 then Color.RED else Color.GRAY;
 def c1 = if s1 == 2 then Color.MAGENTA else if s1 == 1 then Color.RED else Color.GRAY;
-def c2 = if s2 == 2 then Color.MAGENTA else if s2 == 1 then Color.RED else Color.GRAY;
-def c3 = if s3 == 2 then Color.MAGENTA else if s3 == 1 then Color.RED else Color.GRAY;
-def c4 = if s4 == 2 then Color.MAGENTA else if s4 == 1 then Color.RED else Color.GRAY;
-def c5 = if s5 == 2 then Color.MAGENTA else if s5 == 1 then Color.RED else Color.GRAY;
-def c6 = if s6 == 2 then Color.MAGENTA else if s6 == 1 then Color.RED else Color.GRAY;
-def c7 = if s7 == 2 then Color.MAGENTA else if s7 == 1 then Color.RED else Color.GRAY;
-def c8 = if s8 == 2 then Color.MAGENTA else if s8 == 1 then Color.RED else Color.GRAY;
-def c9 = if s9 == 2 then Color.MAGENTA else if s9 == 1 then Color.RED else Color.GRAY;
 
-plot Level0 = v0;
-Level0.SetDefaultColor(c0);
-Level0.SetLineWeight(w0);
-Level0.SetStyle(Curve.FIRM);
+    plot L1 = level1;
+    L1.SetDefaultColor(if level1_thickness == 3 then Color.MAGENTA else if level1_thickness == 2 then Color.RED else Color.GRAY);
+    L1.SetLineWeight(level1_thickness);
+    L1.SetStyle(Curve.FIRM);
+    AddLabel(yes, AsText(level1) + (if level1_thickness == 3 then " (**) " else if level1_thickness == 2 then " (*) " else ""), if level1_thickness == 3 then Color.MAGENTA else if level1_thickness == 2 then Color.RED else Color.GRAY);
 
-plot Level1 = v1;
-Level1.SetDefaultColor(c1);
-Level1.SetLineWeight(w1);
-Level1.SetStyle(Curve.FIRM);
+    plot L2 = level2;
+    L2.SetDefaultColor(if level2_thickness == 3 then Color.MAGENTA else if level2_thickness == 2 then Color.RED else Color.GRAY);
+    L2.SetLineWeight(level2_thickness);
+    L2.SetStyle(Curve.FIRM);
+    AddLabel(yes, AsText(level2) + (if level2_thickness == 3 then " (**) " else if level2_thickness == 2 then " (*) " else ""), if level2_thickness == 3 then Color.MAGENTA else if level2_thickness == 2 then Color.RED else Color.GRAY);
 
-plot Level2 = v2;
-Level2.SetDefaultColor(c2);
-Level2.SetLineWeight(w2);
-Level2.SetStyle(Curve.FIRM);
+    plot L3 = level3;
+    L3.SetDefaultColor(if level3_thickness == 3 then Color.MAGENTA else if level3_thickness == 2 then Color.RED else Color.GRAY);
+    L3.SetLineWeight(level3_thickness);
+    L3.SetStyle(Curve.FIRM);
+    AddLabel(yes, AsText(level3) + (if level3_thickness == 3 then " (**) " else if level3_thickness == 2 then " (*) " else ""), if level3_thickness == 3 then Color.MAGENTA else if level3_thickness == 2 then Color.RED else Color.GRAY);
 
-plot Level3 = v3;
-Level3.SetDefaultColor(c3);
-Level3.SetLineWeight(w3);
-Level3.SetStyle(Curve.FIRM);
+    plot L4 = level4;
+    L4.SetDefaultColor(if level4_thickness == 3 then Color.MAGENTA else if level4_thickness == 2 then Color.RED else Color.GRAY);
+    L4.SetLineWeight(level4_thickness);
+    L4.SetStyle(Curve.FIRM);
+    AddLabel(yes, AsText(level4) + (if level4_thickness == 3 then " (**) " else if level4_thickness == 2 then " (*) " else ""), if level4_thickness == 3 then Color.MAGENTA else if level4_thickness == 2 then Color.RED else Color.GRAY);
 
-plot Level4 = v4;
-Level4.SetDefaultColor(c4);
-Level4.SetLineWeight(w4);
-Level4.SetStyle(Curve.FIRM);
+    plot L5 = level5;
+    L5.SetDefaultColor(if level5_thickness == 3 then Color.MAGENTA else if level5_thickness == 2 then Color.RED else Color.GRAY);
+    L5.SetLineWeight(level5_thickness);
+    L5.SetStyle(Curve.FIRM);
+    AddLabel(yes, AsText(level5) + (if level5_thickness == 3 then " (**) " else if level5_thickness == 2 then " (*) " else ""), if level5_thickness == 3 then Color.MAGENTA else if level5_thickness == 2 then Color.RED else Color.GRAY);
 
-plot Level5 = v5;
-Level5.SetDefaultColor(c5);
-Level5.SetLineWeight(w5);
-Level5.SetStyle(Curve.FIRM);
+    plot L6 = level6;
+    L6.SetDefaultColor(if level6_thickness == 3 then Color.MAGENTA else if level6_thickness == 2 then Color.RED else Color.GRAY);
+    L6.SetLineWeight(level6_thickness);
+    L6.SetStyle(Curve.FIRM);
+    AddLabel(yes, AsText(level6) + (if level6_thickness == 3 then " (**) " else if level6_thickness == 2 then " (*) " else ""), if level6_thickness == 3 then Color.MAGENTA else if level6_thickness == 2 then Color.RED else Color.GRAY);
 
-plot Level6 = v6;
-Level6.SetDefaultColor(c6);
-Level6.SetLineWeight(w6);
-Level6.SetStyle(Curve.FIRM);
+    plot L7 = level7;
+    L7.SetDefaultColor(if level7_thickness == 3 then Color.MAGENTA else if level7_thickness == 2 then Color.RED else Color.GRAY);
+    L7.SetLineWeight(level7_thickness);
+    L7.SetStyle(Curve.FIRM);
+    AddLabel(yes, AsText(level7) + (if level7_thickness == 3 then " (**) " else if level7_thickness == 2 then " (*) " else ""), if level7_thickness == 3 then Color.MAGENTA else if level7_thickness == 2 then Color.RED else Color.GRAY);
 
-plot Level7 = v7;
-Level7.SetDefaultColor(c7);
-Level7.SetLineWeight(w7);
-Level7.SetStyle(Curve.FIRM);
+    plot L8 = level8;
+    L8.SetDefaultColor(if level8_thickness == 3 then Color.MAGENTA else if level8_thickness == 2 then Color.RED else Color.GRAY);
+    L8.SetLineWeight(level8_thickness);
+    L8.SetStyle(Curve.FIRM);
+    AddLabel(yes, AsText(level8) + (if level8_thickness == 3 then " (**) " else if level8_thickness == 2 then " (*) " else ""), if level8_thickness == 3 then Color.MAGENTA else if level8_thickness == 2 then Color.RED else Color.GRAY);
 
-plot Level8 = v8;
-Level8.SetDefaultColor(c8);
-Level8.SetLineWeight(w8);
-Level8.SetStyle(Curve.FIRM);
+    plot L9 = level9;
+    L9.SetDefaultColor(if level9_thickness == 3 then Color.MAGENTA else if level9_thickness == 2 then Color.RED else Color.GRAY);
+    L9.SetLineWeight(level9_thickness);
+    L9.SetStyle(Curve.FIRM);
+    AddLabel(yes, AsText(level9) + (if level9_thickness == 3 then " (**) " else if level9_thickness == 2 then " (*) " else ""), if level9_thickness == 3 then Color.MAGENTA else if level9_thickness == 2 then Color.RED else Color.GRAY);
 
-plot Level9 = v9;
-Level9.SetDefaultColor(c9);
-Level9.SetLineWeight(w9);
-Level9.SetStyle(Curve.FIRM);
-
-AddLabel(yes, AsText(v0) + (if s0 == 2 then " (**) " else if s0 == 1 then " (*) " else ""), c0);
+    plot L10 = level10;
+    L10.SetDefaultColor(if level10_thickness == 3 then Color.MAGENTA else if level10_thickness == 2 then Color.RED else Color.GRAY);
+    L10.SetLineWeight(level10_thickness);
+    L10.SetStyle(Curve.FIRM);
+    AddLabel(yes, AsText(level10) + (if level10_thickness == 3 then " (**) " else if level10_thickness == 2 then " (*) " else ""), if level10_thickness == 3 then Color.MAGENTA else if level10_thickness == 2 then Color.RED else Color.GRAY);
 AddLabel(yes, AsText(v1) + (if s1 == 2 then " (**) " else if s1 == 1 then " (*) " else ""), c1);
 AddLabel(yes, AsText(v2) + (if s2 == 2 then " (**) " else if s2 == 1 then " (*) " else ""), c2);
 AddLabel(yes, AsText(v3) + (if s3 == 2 then " (**) " else if s3 == 1 then " (*) " else ""), c3);
