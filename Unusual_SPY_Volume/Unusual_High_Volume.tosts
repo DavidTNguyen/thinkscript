@@ -1,0 +1,20 @@
+# Add a label for Dead Volume
+AddLabel(yes, "Dead Volume: " + AsText(rollingHourVol), if rollingHourVol >= volumeThreshold then Color.GREEN else Color.YELLOW);
+# Unusual SPY High Volume Alert (for intraday charts <10m)
+
+input volumeThreshold = 12000000;
+
+# Calculate rolling 1-hour volume (sum of last 60 minutes)
+def aggMinutes = 60;
+def barsInHour = aggMinutes / GetAggregationPeriod() * 60 * 1000; # GetAggregationPeriod returns ms
+def rollingHourVol = Sum(volume, barsInHour);
+
+# Alert condition
+def alertCondition = rollingHourVol crosses above volumeThreshold;
+
+plot VolAlert = alertCondition;
+VolAlert.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+VolAlert.SetDefaultColor(Color.RED);
+VolAlert.SetLineWeight(3);
+
+Alert(alertCondition, "SPY Hourly Volume > 12M!", Alert.BAR, Sound.Ring);
