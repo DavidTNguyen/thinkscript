@@ -53,12 +53,6 @@ def s9 = ParseLevel(l9).outStars;
 
 # Plot and label each level
 DefineGlobalColor(\"star2\", Color.MAGENTA);
-DefineGlobalColor(\"star1\", Color.YELLOW);
-DefineGlobalColor(\"normal\", Color.GRAY);
-
-DefineGlobalColor(\"star2bubble\", Color.MAGENTA);
-DefineGlobalColor(\"star1bubble\", Color.YELLOW);
-DefineGlobalColor(\"normalbubble\", Color.GRAY);
 
 # Helper for color/weight
 def w0 = if s0 == 2 then 3 else if s0 == 1 then 2 else 1;
@@ -72,17 +66,16 @@ def w7 = if s7 == 2 then 3 else if s7 == 1 then 2 else 1;
 def w8 = if s8 == 2 then 3 else if s8 == 1 then 2 else 1;
 def w9 = if s9 == 2 then 3 else if s9 == 1 then 2 else 1;
 
-def c0 = if s0 == 2 then GlobalColor(\"star2\") else if s0 == 1 then GlobalColor(\"star1\") else GlobalColor(\"normal\");
-def c1 = if s1 == 2 then GlobalColor(\"star2\") else if s1 == 1 then GlobalColor(\"star1\") else GlobalColor(\"normal\");
-def c2 = if s2 == 2 then GlobalColor(\"star2\") else if s2 == 1 then GlobalColor(\"star1\") else GlobalColor(\"normal\");
-def c3 = if s3 == 2 then GlobalColor(\"star2\") else if s3 == 1 then GlobalColor(\"star1\") else GlobalColor(\"normal\");
-def c4 = if s4 == 2 then GlobalColor(\"star2\") else if s4 == 1 then GlobalColor(\"star1\") else GlobalColor(\"normal\");
-def c5 = if s5 == 2 then GlobalColor(\"star2\") else if s5 == 1 then GlobalColor(\"star1\") else GlobalColor(\"normal\");
-def c6 = if s6 == 2 then GlobalColor(\"star2\") else if s6 == 1 then GlobalColor(\"star1\") else GlobalColor(\"normal\");
-def c7 = if s7 == 2 then GlobalColor(\"star2\") else if s7 == 1 then GlobalColor(\"star1\") else GlobalColor(\"normal\");
-def c8 = if s8 == 2 then GlobalColor(\"star2\") else if s8 == 1 then GlobalColor(\"star1\") else GlobalColor(\"normal\");
-def c9 = if s9 == 2 then GlobalColor(\"star2\") else if s9 == 1 then GlobalColor(\"star1\") else GlobalColor(\"normal\");
-
+def c0 = if s0 == 2 then Color.MAGENTA else if s0 == 1 then Color.RED else Color.GRAY;
+def c1 = if s1 == 2 then Color.MAGENTA else if s1 == 1 then Color.RED else Color.GRAY;
+def c2 = if s2 == 2 then Color.MAGENTA else if s2 == 1 then Color.RED else Color.GRAY;
+def c3 = if s3 == 2 then Color.MAGENTA else if s3 == 1 then Color.RED else Color.GRAY;
+def c4 = if s4 == 2 then Color.MAGENTA else if s4 == 1 then Color.RED else Color.GRAY;
+def c5 = if s5 == 2 then Color.MAGENTA else if s5 == 1 then Color.RED else Color.GRAY;
+def c6 = if s6 == 2 then Color.MAGENTA else if s6 == 1 then Color.RED else Color.GRAY;
+def c7 = if s7 == 2 then Color.MAGENTA else if s7 == 1 then Color.RED else Color.GRAY;
+def c8 = if s8 == 2 then Color.MAGENTA else if s8 == 1 then Color.RED else Color.GRAY;
+def c9 = if s9 == 2 then Color.MAGENTA else if s9 == 1 then Color.RED else Color.GRAY;
 plot Level0 = v0;
 Level0.SetDefaultColor(c0);
 Level0.SetLineWeight(w0);
