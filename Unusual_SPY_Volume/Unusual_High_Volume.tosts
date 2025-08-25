@@ -4,7 +4,7 @@
 
 # Author: VietRoadie, 2025-08-24
 # Unusual SPY High Volume Alert (for intraday charts <10m)
-
+declare lower;
 input volumeThreshold = 12000000;
 
 # Calculate rolling 1-hour volume (sum of last 60 minutes)
@@ -23,4 +23,38 @@ VolAlert.SetLineWeight(3);
 # Add a label for Dead Volume (after all variable definitions)
 AddLabel(yes, "Dead Volume: " + AsText(rollingHourVol), if rollingHourVol >= volumeThreshold then Color.GREEN else Color.YELLOW);
 AddLabel(yes, "Current Hourly Volume: " + AsText(rollingHourVol), Color.BLUE);
+
 Alert(alertCondition, "SPY Hourly Volume > 12M!", Alert.BAR, Sound.Ring);
+
+# Proxy buyer/seller volume by using % of candle "won" by each side
+def buy_volume_stack = if high != low then volume * (close - low) / (high - low) else volume / 2;
+def sell_volume_stack = if high != low then volume * (high - close) / (high - low) else volume / 2;
+def buyers_winning_stack = buy_volume_stack >= sell_volume_stack;
+
+# Smaller Volume (lower bar)
+plot StackSmallerVolume = if buyers_winning_stack then sell_volume_stack else buy_volume_stack;
+StackSmallerVolume.setPaintingStrategy(PaintingStrategy.Histogram);
+StackSmallerVolume.HideBubble();
+StackSmallerVolume.HideTitle();
+StackSmallerVolume.SetLineWeight(1);
+StackSmallerVolume.AssignValueColor(
+	if buyers_winning_stack then Color.RED
+	else Color.GREEN);
+
+# Bigger Volume (higher bar)
+plot StackBiggerVolume = volume;
+StackBiggerVolume.setPaintingStrategy(PaintingStrategy.Histogram);
+StackBiggerVolume.HideBubble();
+StackBiggerVolume.SetLineWeight(1);
+StackBiggerVolume.AssignValueColor(
+	if buyers_winning_stack then Color.GREEN 
+	else Color.RED);
+
+# Rotating Volume Bias Labels
+def buy_percent_stack = if volume > 0 then Round((buy_volume_stack / volume) * 100, 1) else 50;
+def sell_percent_stack = if volume > 0 then Round((sell_volume_stack / volume) * 100, 1) else 50;
+def buy_larger_stack = buy_percent_stack >= sell_percent_stack;
+def larger_percentage_stack = if buy_larger_stack then buy_percent_stack else sell_percent_stack;
+def smaller_percentage_stack = if buy_larger_stack then sell_percent_stack else buy_percent_stack;
+AddLabel(yes, larger_percentage_stack + "% ", if buy_larger_stack then Color.GREEN else Color.RED);
+AddLabel(yes, smaller_percentage_stack + "% ", if buy_larger_stack then Color.RED else Color.GREEN);
