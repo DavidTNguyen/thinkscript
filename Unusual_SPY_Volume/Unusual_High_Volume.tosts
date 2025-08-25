@@ -16,7 +16,7 @@ VolAlert.SetDefaultColor(Color.RED);
 VolAlert.SetLineWeight(3);
 
 AddLabel(yes, "Dead Volume: " + AsText(rollingHourVol), if rollingHourVol >= volumeThreshold then Color.GREEN else Color.YELLOW);
-AddLabel(yes, "Current Hourly Volume: " + AsText(rollingHourVol), Color.BLUE);
+# AddLabel(yes, "Current Hourly Volume: " + AsText(rollingHourVol), Color.BLUE);
 Alert(alertCondition, "SPY Hourly Volume > 12M!", Alert.BAR, Sound.Ring);
 
 # === Volume Stack Features ===
