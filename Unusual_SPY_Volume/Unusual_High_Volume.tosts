@@ -1,8 +1,5 @@
 # Author: VietRoadie, 2025-08-24
-
-declare lower;
-declare once_per_bar;
-declare indicator("Unusual SPY Volume");
+# Indicator: Unusual SPY Volume
 # Unusual SPY High Volume Alert (for intraday charts <10m)
 
 # Author: VietRoadie, 2025-08-24
