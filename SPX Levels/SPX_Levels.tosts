@@ -76,62 +76,64 @@ def c6 = if s6 == 2 then Color.MAGENTA else if s6 == 1 then Color.RED else Color
 def c7 = if s7 == 2 then Color.MAGENTA else if s7 == 1 then Color.RED else Color.GRAY;
 def c8 = if s8 == 2 then Color.MAGENTA else if s8 == 1 then Color.RED else Color.GRAY;
 def c9 = if s9 == 2 then Color.MAGENTA else if s9 == 1 then Color.RED else Color.GRAY;
+
 plot Level0 = v0;
 Level0.SetDefaultColor(c0);
 Level0.SetLineWeight(w0);
 Level0.SetStyle(Curve.FIRM);
-AddChartBubble(bar == lastBar, Level0, AsText(v0) + (if s0 == 2 then \" (**)\" else if s0 == 1 then \" (*)\" else \"\"), c0, yes);
 
 plot Level1 = v1;
 Level1.SetDefaultColor(c1);
 Level1.SetLineWeight(w1);
 Level1.SetStyle(Curve.FIRM);
-AddChartBubble(bar == lastBar, Level1, AsText(v1) + (if s1 == 2 then \" (**)\" else if s1 == 1 then \" (*)\" else \"\"), c1, yes);
 
 plot Level2 = v2;
 Level2.SetDefaultColor(c2);
 Level2.SetLineWeight(w2);
 Level2.SetStyle(Curve.FIRM);
-AddChartBubble(bar == lastBar, Level2, AsText(v2) + (if s2 == 2 then \" (**)\" else if s2 == 1 then \" (*)\" else \"\"), c2, yes);
 
 plot Level3 = v3;
 Level3.SetDefaultColor(c3);
 Level3.SetLineWeight(w3);
 Level3.SetStyle(Curve.FIRM);
-AddChartBubble(bar == lastBar, Level3, AsText(v3) + (if s3 == 2 then \" (**)\" else if s3 == 1 then \" (*)\" else \"\"), c3, yes);
 
 plot Level4 = v4;
 Level4.SetDefaultColor(c4);
 Level4.SetLineWeight(w4);
 Level4.SetStyle(Curve.FIRM);
-AddChartBubble(bar == lastBar, Level4, AsText(v4) + (if s4 == 2 then \" (**)\" else if s4 == 1 then \" (*)\" else \"\"), c4, yes);
 
 plot Level5 = v5;
 Level5.SetDefaultColor(c5);
 Level5.SetLineWeight(w5);
 Level5.SetStyle(Curve.FIRM);
-AddChartBubble(bar == lastBar, Level5, AsText(v5) + (if s5 == 2 then \" (**)\" else if s5 == 1 then \" (*)\" else \"\"), c5, yes);
 
 plot Level6 = v6;
 Level6.SetDefaultColor(c6);
 Level6.SetLineWeight(w6);
 Level6.SetStyle(Curve.FIRM);
-AddChartBubble(bar == lastBar, Level6, AsText(v6) + (if s6 == 2 then \" (**)\" else if s6 == 1 then \" (*)\" else \"\"), c6, yes);
 
 plot Level7 = v7;
 Level7.SetDefaultColor(c7);
 Level7.SetLineWeight(w7);
 Level7.SetStyle(Curve.FIRM);
-AddChartBubble(bar == lastBar, Level7, AsText(v7) + (if s7 == 2 then \" (**)\" else if s7 == 1 then \" (*)\" else \"\"), c7, yes);
 
 plot Level8 = v8;
 Level8.SetDefaultColor(c8);
 Level8.SetLineWeight(w8);
 Level8.SetStyle(Curve.FIRM);
-AddChartBubble(bar == lastBar, Level8, AsText(v8) + (if s8 == 2 then \" (**)\" else if s8 == 1 then \" (*)\" else \"\"), c8, yes);
 
 plot Level9 = v9;
 Level9.SetDefaultColor(c9);
 Level9.SetLineWeight(w9);
 Level9.SetStyle(Curve.FIRM);
-AddChartBubble(bar == lastBar, Level9, AsText(v9) + (if s9 == 2 then \" (**)\" else if s9 == 1 then \" (*)\" else \"\"), c9, yes);
+
+AddLabel(yes, AsText(v0) + (if s0 == 2 then " (**) " else if s0 == 1 then " (*) " else ""), c0);
+AddLabel(yes, AsText(v1) + (if s1 == 2 then " (**) " else if s1 == 1 then " (*) " else ""), c1);
+AddLabel(yes, AsText(v2) + (if s2 == 2 then " (**) " else if s2 == 1 then " (*) " else ""), c2);
+AddLabel(yes, AsText(v3) + (if s3 == 2 then " (**) " else if s3 == 1 then " (*) " else ""), c3);
+AddLabel(yes, AsText(v4) + (if s4 == 2 then " (**) " else if s4 == 1 then " (*) " else ""), c4);
+AddLabel(yes, AsText(v5) + (if s5 == 2 then " (**) " else if s5 == 1 then " (*) " else ""), c5);
+AddLabel(yes, AsText(v6) + (if s6 == 2 then " (**) " else if s6 == 1 then " (*) " else ""), c6);
+AddLabel(yes, AsText(v7) + (if s7 == 2 then " (**) " else if s7 == 1 then " (*) " else ""), c7);
+AddLabel(yes, AsText(v8) + (if s8 == 2 then " (**) " else if s8 == 1 then " (*) " else ""), c8);
+AddLabel(yes, AsText(v9) + (if s9 == 2 then " (**) " else if s9 == 1 then " (*) " else ""), c9);
