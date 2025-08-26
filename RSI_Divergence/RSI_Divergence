@@ -1,4 +1,4 @@
-# RSI Divergence Indicator #TSBuild25
+# RSI Divergence Indicator - VietRoadie
 # Identifies Regular and Hidden Bullish/Bearish Divergences
 # Plots lines and labels on price and RSI, with color coding
 
@@ -17,14 +17,22 @@ def pivotLow = low == Lowest(low, lookback);
 def rsiPivotHigh = rsi == Highest(rsi, lookback);
 def rsiPivotLow = rsi == Lowest(rsi, lookback);
 
-def pricePivotBar = if pivotHigh or pivotLow then BarNumber() else Double.NaN;
-def rsiPivotBar = if rsiPivotHigh or rsiPivotLow then BarNumber() else Double.NaN;
+# --- Store Last Two Pivots (Price and RSI) ---
+def pricePivot = if pivotHigh or pivotLow then price else Double.NaN;
+def rsiPivot = if rsiPivotHigh or rsiPivotLow then rsi else Double.NaN;
 
-def lastPricePivotBar = if !IsNaN(pricePivotBar) then pricePivotBar else lastPricePivotBar[1];
-def lastRSIPivotBar = if !IsNaN(rsiPivotBar) then rsiPivotBar else lastRSIPivotBar[1];
+def pricePivotBar = if !IsNaN(pricePivot) then BarNumber() else Double.NaN;
+def rsiPivotBar = if !IsNaN(rsiPivot) then BarNumber() else Double.NaN;
 
-def lastPricePivot = if !IsNaN(pricePivotBar) then if pivotHigh then high else low else lastPricePivot[1];
-def lastRSIPivot = if !IsNaN(rsiPivotBar) then rsi else lastRSIPivot[1];
+def pricePivot1 = if !IsNaN(pricePivot) then pricePivot else pricePivot1[1];
+def pricePivot2 = if !IsNaN(pricePivot) and !IsNaN(pricePivot1[1]) then pricePivot1[1] else pricePivot2[1];
+def pricePivotBar1 = if !IsNaN(pricePivotBar) then pricePivotBar else pricePivotBar1[1];
+def pricePivotBar2 = if !IsNaN(pricePivotBar) and !IsNaN(pricePivotBar1[1]) then pricePivotBar1[1] else pricePivotBar2[1];
+
+def rsiPivot1 = if !IsNaN(rsiPivot) then rsiPivot else rsiPivot1[1];
+def rsiPivot2 = if !IsNaN(rsiPivot) and !IsNaN(rsiPivot1[1]) then rsiPivot1[1] else rsiPivot2[1];
+def rsiPivotBar1 = if !IsNaN(rsiPivotBar) then rsiPivotBar else rsiPivotBar1[1];
+def rsiPivotBar2 = if !IsNaN(rsiPivotBar) and !IsNaN(rsiPivotBar1[1]) then rsiPivotBar1[1] else rsiPivotBar2[1];
 
 # --- Detect Divergences ---
 # Regular Bullish: Price lower low, RSI higher low
@@ -32,22 +40,32 @@ def lastRSIPivot = if !IsNaN(rsiPivotBar) then rsi else lastRSIPivot[1];
 # Hidden Bullish: Price higher low, RSI lower low
 # Hidden Bearish: Price lower high, RSI higher high
 
-def regBull = pivotLow and lastPricePivot < low and rsi > lastRSIPivot;
-def regBear = pivotHigh and lastPricePivot > high and rsi < lastRSIPivot;
-def hidBull = pivotLow and lastPricePivot > low and rsi < lastRSIPivot;
-def hidBear = pivotHigh and lastPricePivot < high and rsi > lastRSIPivot;
+def regBull = pivotLow and pricePivot1 < pricePivot2 and rsiPivot1 > rsiPivot2;
+def regBear = pivotHigh and pricePivot1 > pricePivot2 and rsiPivot1 < rsiPivot2;
+def hidBull = pivotLow and pricePivot1 > pricePivot2 and rsiPivot1 < rsiPivot2;
+def hidBear = pivotHigh and pricePivot1 < pricePivot2 and rsiPivot1 > rsiPivot2;
 
-# --- Draw Divergence Lines on Price ---
-AddChartLine(regBull, lastPricePivotBar, lastPricePivot, BarNumber(), low, Color.GREEN, Curve.SHORT_DASH);
-AddChartLine(regBear, lastPricePivotBar, lastPricePivot, BarNumber(), high, Color.RED, Curve.SHORT_DASH);
-AddChartLine(hidBull, lastPricePivotBar, lastPricePivot, BarNumber(), low, Color.DARK_GREEN, Curve.SHORT_DASH);
-AddChartLine(hidBear, lastPricePivotBar, lastPricePivot, BarNumber(), high, Color.DARK_RED, Curve.SHORT_DASH);
+# --- Plot Divergence Lines on Price ---
+plot PriceDivLine = if (regBull or hidBull) and !IsNaN(pricePivot2) and !IsNaN(pricePivot1) then if BarNumber() == pricePivotBar2 then pricePivot2 else if BarNumber() == pricePivotBar1 then pricePivot1 else Double.NaN else Double.NaN;
+PriceDivLine.SetDefaultColor(if regBull then Color.GREEN else if hidBull then Color.DARK_GREEN else Color.CURRENT);
+PriceDivLine.SetLineWeight(2);
+PriceDivLine.SetStyle(Curve.SHORT_DASH);
 
-# --- Draw Divergence Lines on RSI ---
-AddChartLine(regBull, lastRSIPivotBar, lastRSIPivot, BarNumber(), rsi, Color.GREEN, Curve.SHORT_DASH, "RSI");
-AddChartLine(regBear, lastRSIPivotBar, lastRSIPivot, BarNumber(), rsi, Color.RED, Curve.SHORT_DASH, "RSI");
-AddChartLine(hidBull, lastRSIPivotBar, lastRSIPivot, BarNumber(), rsi, Color.DARK_GREEN, Curve.SHORT_DASH, "RSI");
-AddChartLine(hidBear, lastRSIPivotBar, lastRSIPivot, BarNumber(), rsi, Color.DARK_RED, Curve.SHORT_DASH, "RSI");
+plot PriceDivLineBear = if (regBear or hidBear) and !IsNaN(pricePivot2) and !IsNaN(pricePivot1) then if BarNumber() == pricePivotBar2 then pricePivot2 else if BarNumber() == pricePivotBar1 then pricePivot1 else Double.NaN else Double.NaN;
+PriceDivLineBear.SetDefaultColor(if regBear then Color.RED else if hidBear then Color.DARK_RED else Color.CURRENT);
+PriceDivLineBear.SetLineWeight(2);
+PriceDivLineBear.SetStyle(Curve.SHORT_DASH);
+
+# --- Plot Divergence Lines on RSI ---
+plot RSIDivLine = if (regBull or hidBull) and !IsNaN(rsiPivot2) and !IsNaN(rsiPivot1) then if BarNumber() == rsiPivotBar2 then rsiPivot2 else if BarNumber() == rsiPivotBar1 then rsiPivot1 else Double.NaN else Double.NaN;
+RSIDivLine.SetDefaultColor(if regBull then Color.GREEN else if hidBull then Color.DARK_GREEN else Color.CURRENT);
+RSIDivLine.SetLineWeight(2);
+RSIDivLine.SetStyle(Curve.SHORT_DASH);
+
+plot RSIDivLineBear = if (regBear or hidBear) and !IsNaN(rsiPivot2) and !IsNaN(rsiPivot1) then if BarNumber() == rsiPivotBar2 then rsiPivot2 else if BarNumber() == rsiPivotBar1 then rsiPivot1 else Double.NaN else Double.NaN;
+RSIDivLineBear.SetDefaultColor(if regBear then Color.RED else if hidBear then Color.DARK_RED else Color.CURRENT);
+RSIDivLineBear.SetLineWeight(2);
+RSIDivLineBear.SetStyle(Curve.SHORT_DASH);
 
 # --- Divergence Labels ---
 AddChartBubble(regBull, low, "Reg Bullish", Color.GREEN, no);
