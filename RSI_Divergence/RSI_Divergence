@@ -45,27 +45,47 @@ def regBear = pivotHigh and pricePivot1 > pricePivot2 and rsiPivot1 < rsiPivot2;
 def hidBull = pivotLow and pricePivot1 > pricePivot2 and rsiPivot1 < rsiPivot2;
 def hidBear = pivotHigh and pricePivot1 < pricePivot2 and rsiPivot1 > rsiPivot2;
 
-# --- Plot Divergence Lines on Price ---
-plot PriceDivLine = if (regBull or hidBull) and !IsNaN(pricePivot2) and !IsNaN(pricePivot1) then if BarNumber() == pricePivotBar2 then pricePivot2 else if BarNumber() == pricePivotBar1 then pricePivot1 else Double.NaN else Double.NaN;
-PriceDivLine.SetDefaultColor(if regBull then Color.GREEN else if hidBull then Color.DARK_GREEN else Color.CURRENT);
-PriceDivLine.SetLineWeight(2);
-PriceDivLine.SetStyle(Curve.SHORT_DASH);
+# --- Plot Divergence Lines on Price (Separate Plots for Each Type) ---
+plot PriceDivLineRegBull = if regBull and !IsNaN(pricePivot2) and !IsNaN(pricePivot1) and (BarNumber() == pricePivotBar2 or BarNumber() == pricePivotBar1) then if BarNumber() == pricePivotBar2 then pricePivot2 else pricePivot1 else Double.NaN;
+PriceDivLineRegBull.SetDefaultColor(Color.GREEN);
+PriceDivLineRegBull.SetLineWeight(2);
+PriceDivLineRegBull.SetStyle(Curve.SHORT_DASH);
 
-plot PriceDivLineBear = if (regBear or hidBear) and !IsNaN(pricePivot2) and !IsNaN(pricePivot1) then if BarNumber() == pricePivotBar2 then pricePivot2 else if BarNumber() == pricePivotBar1 then pricePivot1 else Double.NaN else Double.NaN;
-PriceDivLineBear.SetDefaultColor(if regBear then Color.RED else if hidBear then Color.DARK_RED else Color.CURRENT);
-PriceDivLineBear.SetLineWeight(2);
-PriceDivLineBear.SetStyle(Curve.SHORT_DASH);
+plot PriceDivLineHidBull = if hidBull and !IsNaN(pricePivot2) and !IsNaN(pricePivot1) and (BarNumber() == pricePivotBar2 or BarNumber() == pricePivotBar1) then if BarNumber() == pricePivotBar2 then pricePivot2 else pricePivot1 else Double.NaN;
+PriceDivLineHidBull.SetDefaultColor(Color.DARK_GREEN);
+PriceDivLineHidBull.SetLineWeight(2);
+PriceDivLineHidBull.SetStyle(Curve.SHORT_DASH);
 
-# --- Plot Divergence Lines on RSI ---
-plot RSIDivLine = if (regBull or hidBull) and !IsNaN(rsiPivot2) and !IsNaN(rsiPivot1) then if BarNumber() == rsiPivotBar2 then rsiPivot2 else if BarNumber() == rsiPivotBar1 then rsiPivot1 else Double.NaN else Double.NaN;
-RSIDivLine.SetDefaultColor(if regBull then Color.GREEN else if hidBull then Color.DARK_GREEN else Color.CURRENT);
-RSIDivLine.SetLineWeight(2);
-RSIDivLine.SetStyle(Curve.SHORT_DASH);
+plot PriceDivLineRegBear = if regBear and !IsNaN(pricePivot2) and !IsNaN(pricePivot1) and (BarNumber() == pricePivotBar2 or BarNumber() == pricePivotBar1) then if BarNumber() == pricePivotBar2 then pricePivot2 else pricePivot1 else Double.NaN;
+PriceDivLineRegBear.SetDefaultColor(Color.RED);
+PriceDivLineRegBear.SetLineWeight(2);
+PriceDivLineRegBear.SetStyle(Curve.SHORT_DASH);
 
-plot RSIDivLineBear = if (regBear or hidBear) and !IsNaN(rsiPivot2) and !IsNaN(rsiPivot1) then if BarNumber() == rsiPivotBar2 then rsiPivot2 else if BarNumber() == rsiPivotBar1 then rsiPivot1 else Double.NaN else Double.NaN;
-RSIDivLineBear.SetDefaultColor(if regBear then Color.RED else if hidBear then Color.DARK_RED else Color.CURRENT);
-RSIDivLineBear.SetLineWeight(2);
-RSIDivLineBear.SetStyle(Curve.SHORT_DASH);
+plot PriceDivLineHidBear = if hidBear and !IsNaN(pricePivot2) and !IsNaN(pricePivot1) and (BarNumber() == pricePivotBar2 or BarNumber() == pricePivotBar1) then if BarNumber() == pricePivotBar2 then pricePivot2 else pricePivot1 else Double.NaN;
+PriceDivLineHidBear.SetDefaultColor(Color.DARK_RED);
+PriceDivLineHidBear.SetLineWeight(2);
+PriceDivLineHidBear.SetStyle(Curve.SHORT_DASH);
+
+# --- Plot Divergence Lines on RSI (Separate Plots for Each Type) ---
+plot RSIDivLineRegBull = if regBull and !IsNaN(rsiPivot2) and !IsNaN(rsiPivot1) and (BarNumber() == rsiPivotBar2 or BarNumber() == rsiPivotBar1) then if BarNumber() == rsiPivotBar2 then rsiPivot2 else rsiPivot1 else Double.NaN;
+RSIDivLineRegBull.SetDefaultColor(Color.GREEN);
+RSIDivLineRegBull.SetLineWeight(2);
+RSIDivLineRegBull.SetStyle(Curve.SHORT_DASH);
+
+plot RSIDivLineHidBull = if hidBull and !IsNaN(rsiPivot2) and !IsNaN(rsiPivot1) and (BarNumber() == rsiPivotBar2 or BarNumber() == rsiPivotBar1) then if BarNumber() == rsiPivotBar2 then rsiPivot2 else rsiPivot1 else Double.NaN;
+RSIDivLineHidBull.SetDefaultColor(Color.DARK_GREEN);
+RSIDivLineHidBull.SetLineWeight(2);
+RSIDivLineHidBull.SetStyle(Curve.SHORT_DASH);
+
+plot RSIDivLineRegBear = if regBear and !IsNaN(rsiPivot2) and !IsNaN(rsiPivot1) and (BarNumber() == rsiPivotBar2 or BarNumber() == rsiPivotBar1) then if BarNumber() == rsiPivotBar2 then rsiPivot2 else rsiPivot1 else Double.NaN;
+RSIDivLineRegBear.SetDefaultColor(Color.RED);
+RSIDivLineRegBear.SetLineWeight(2);
+RSIDivLineRegBear.SetStyle(Curve.SHORT_DASH);
+
+plot RSIDivLineHidBear = if hidBear and !IsNaN(rsiPivot2) and !IsNaN(rsiPivot1) and (BarNumber() == rsiPivotBar2 or BarNumber() == rsiPivotBar1) then if BarNumber() == rsiPivotBar2 then rsiPivot2 else rsiPivot1 else Double.NaN;
+RSIDivLineHidBear.SetDefaultColor(Color.DARK_RED);
+RSIDivLineHidBear.SetLineWeight(2);
+RSIDivLineHidBear.SetStyle(Curve.SHORT_DASH);
 
 # --- Divergence Labels ---
 AddChartBubble(regBull, low, "Reg Bullish", Color.GREEN, no);
