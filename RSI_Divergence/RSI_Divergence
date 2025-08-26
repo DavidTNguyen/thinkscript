@@ -14,8 +14,17 @@ def rsi = RSI(price, rsiLength);
 # --- Find Pivots (Highs/Lows) ---
 def pivotHigh = high == Highest(high, lookback);
 def pivotLow = low == Lowest(low, lookback);
-def rsiPivotHigh = rsi == Highest(rsi, lookback);
-def rsiPivotLow = rsi == Lowest(rsi, lookback);
+# Use a constant for RSI pivot detection
+script rsiPivotHighScript {
+    input rsiVal = 0.0;
+    plot out = rsiVal == Highest(rsiVal, 20); # 20 is constant
+}
+script rsiPivotLowScript {
+    input rsiVal = 0.0;
+    plot out = rsiVal == Lowest(rsiVal, 20); # 20 is constant
+}
+def rsiPivotHigh = rsiPivotHighScript(rsi);
+def rsiPivotLow = rsiPivotLowScript(rsi);
 
 # --- Store Last Two Pivots (Price and RSI) ---
 def pricePivot = if pivotHigh or pivotLow then price else Double.NaN;
