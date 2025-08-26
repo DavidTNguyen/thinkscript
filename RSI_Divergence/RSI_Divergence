@@ -2,6 +2,8 @@
 # Identifies Regular and Hidden Bullish/Bearish Divergences
 # Plots lines and labels on price and RSI, with color coding
 
+declare lower;
+
 # --- Inputs ---
 input rsiLength = 14;         # RSI calculation period
 input price = close;          # Price data to use for RSI
