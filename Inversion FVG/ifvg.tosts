@@ -34,9 +34,11 @@ def gapMid = (gapTop + gapBot) / 2;
 def gapSize = AbsValue(gapTop - gapBot);
 def validGap = gapSize > atrMultiplier * atr;
 
+def isGap = (bullishFVG or bearishFVG) and validGap;
+
 # --- Track Gaps and Inversions ---
-rec gapActive = if (bullishFVG or bearishFVG) and validGap then 1 
-    else if gapActive[1] == 1 and !(bullishFVG or bearishFVG) and !IsNaN(gapTop[1]) and (
+rec gapActive = if isGap then 1 
+    else if gapActive[1] == 1 and !isGap and !IsNaN(gapTop[1]) and (
         (bullishFVG[1] and close < gapBot[1]) or (bearishFVG[1] and close > gapTop[1])
     ) then 2 
     else if gapActive[1] == 2 then 2 
@@ -58,22 +60,32 @@ BearGap.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 BearGap.SetDefaultColor(Color.RED);
 BearGap.SetLineWeight(2);
 
-plot MidLine = if (bullishFVG or bearishFVG) and validGap and showSeeds then gapMid else Double.NaN;
+plot MidLine = if isGap and showSeeds then gapMid else Double.NaN;
 MidLine.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 MidLine.SetDefaultColor(Color.LIGHT_GRAY);
 MidLine.SetLineWeight(1);
 MidLine.SetStyle(Curve.SHORT_DASH);
 
-# --- Inversion Zones ---
-plot InvZoneTop = if gapActive == 2 and invType != 0 then invTop else Double.NaN;
-InvZoneTop.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-InvZoneTop.SetDefaultColor(if invType == 1 then Color.GREEN else if invType == -1 then Color.RED else Color.GRAY);
-InvZoneTop.SetLineWeight(2);
+# --- Inversion Zones (Separate Plots for Bullish/Bearish) ---
+plot InvZoneTopBull = if gapActive == 2 and invType == 1 then invTop else Double.NaN;
+InvZoneTopBull.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+InvZoneTopBull.SetDefaultColor(Color.GREEN);
+InvZoneTopBull.SetLineWeight(2);
 
-plot InvZoneBot = if gapActive == 2 and invType != 0 then invBot else Double.NaN;
-InvZoneBot.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-InvZoneBot.SetDefaultColor(if invType == 1 then Color.GREEN else if invType == -1 then Color.RED else Color.GRAY);
-InvZoneBot.SetLineWeight(2);
+plot InvZoneBotBull = if gapActive == 2 and invType == 1 then invBot else Double.NaN;
+InvZoneBotBull.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+InvZoneBotBull.SetDefaultColor(Color.GREEN);
+InvZoneBotBull.SetLineWeight(2);
+
+plot InvZoneTopBear = if gapActive == 2 and invType == -1 then invTop else Double.NaN;
+InvZoneTopBear.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+InvZoneTopBear.SetDefaultColor(Color.RED);
+InvZoneTopBear.SetLineWeight(2);
+
+plot InvZoneBotBear = if gapActive == 2 and invType == -1 then invBot else Double.NaN;
+InvZoneBotBear.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+InvZoneBotBear.SetDefaultColor(Color.RED);
+InvZoneBotBear.SetLineWeight(2);
 
 plot InvMid = if gapActive == 2 and invType != 0 then (invTop + invBot) / 2 else Double.NaN;
 InvMid.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
