@@ -11,7 +11,10 @@ input level4 = 6443;
 input level4_thickness = 1;
 input level5 = 6400;
 input level5_thickness = 1;
-
+input level6 = 6360;
+input level6_thickness = 1;
+input level7 = 6443;
+input level7_thickness = 3;
 
 plot L1 = level1;
 L1.SetDefaultColor(Color.GRAY);
@@ -42,3 +45,15 @@ L5.SetDefaultColor(Color.GRAY);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
 AddLabel(yes, "Level 5: " + AsText(level5) + (if level5_thickness == 3 then " (**)" else if level5_thickness == 2 then " (*)" else ""), Color.GRAY);
+
+plot L6 = level6;
+L6.SetDefaultColor(Color.GRAY);
+L6.SetLineWeight(level6_thickness);
+L6.SetStyle(Curve.FIRM);
+AddLabel(yes, "Level 6: " + AsText(level6) + (if level6_thickness == 3 then " (**)" else if level6_thickness == 2 then " (*)" else ""), Color.GRAY);
+
+plot L7 = level7;
+L7.SetDefaultColor(Color.GRAY);
+L7.SetLineWeight(level7_thickness);
+L7.SetStyle(Curve.FIRM);
+AddLabel(yes, "Level 7: " + AsText(level7) + (if level7_thickness == 3 then " (**)" else if level7_thickness == 2 then " (*)" else ""), Color.GRAY);
