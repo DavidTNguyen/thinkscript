@@ -1,6 +1,6 @@
-# Inversion FVG Indicator with Color-Coded Bars
+# Inversion FVG Indicator with Color-Coded Gap Bars
 # Identifies Fair Value Gaps (FVGs) and their inversions based on ICT concepts
-# Plots FVGs as clouds, midlines, inversion dots, and colors bars for events
+# Draws FVGs as color-coded bars (light green for bullish, light red for bearish)
 # Optimized for futures (NQ, ES) and crypto (ETH, BTC, SOL)
 
 # --- Inputs ---
@@ -8,7 +8,7 @@ input atrLength = 14;           # ATR period for filtering gaps
 input atrMultiplier = 0.25;     # ATR multiplier to filter small gaps (0.25-0.5)
 input useCloseForRetest = no;   # Yes: Use close for retest signals; No: Use wick
 input showSeeds = yes;          # Show pre-inversion FVGs
-input extendBars = 20;          # Bars to extend FVG clouds
+input extendBars = 20;          # Bars to extend FVG bars
 input maxBarsToDisplay = 100;   # Limit display to recent FVGs (avoid clutter)
 input enableAlerts = yes;       # Enable alerts for FVG, inversion, and retest
 
@@ -56,34 +56,50 @@ def bearRetest = if !IsNaN(bullFVGBar[1]) and bullFVGInversion[1] then
     (if useCloseForRetest then close <= bullFVGBottom[1] and close >= bullFVGBottom[1] - atr * 0.1 else low <= bullFVGBottom[1] and low >= bullFVGBottom[1] - atr * 0.1) 
     else 0;
 
-# --- Plot FVG Clouds ---
-# Pre-Inversion Bullish FVG (Green)
-AddCloud(
-    if showSeeds and BarNumber() <= HighestAll(bullFVGBar) + extendBars and BarNumber() >= HighestAll(bullFVGBar) and !bullFVGInversion[1] and BarNumber() >= HighestAll(BarNumber()) - maxBarsToDisplay then bullFVGTop else Double.NaN,
-    if showSeeds and BarNumber() <= HighestAll(bullFVGBar) + extendBars and BarNumber() >= HighestAll(bullFVGBar) and !bullFVGInversion[1] and BarNumber() >= HighestAll(BarNumber()) - maxBarsToDisplay then bullFVGBottom else Double.NaN,
-    Color.LIGHT_GREEN, Color.LIGHT_GREEN
-);
+# --- Plot FVG Bars ---
+# Pre-Inversion Bullish FVG (Light Green Bars)
+def bullFVGPlot = if showSeeds and BarNumber() <= HighestAll(bullFVGBar) + extendBars and BarNumber() >= HighestAll(bullFVGBar) and !bullFVGInversion[1] and BarNumber() >= HighestAll(BarNumber()) - maxBarsToDisplay then bullFVGTop - bullFVGBottom else Double.NaN;
+plot BullFVGBarPlot = bullFVGPlot;
+BullFVGBarPlot.SetPaintingStrategy(PaintingStrategy.HISTOGRAM);
+BullFVGBarPlot.SetDefaultColor(Color.LIGHT_GREEN);
+BullFVGBarPlot.SetLineWeight(3);
+BullFVGBarPlot.AssignValueColor(if !IsNaN(bullFVGPlot) then Color.LIGHT_GREEN else Color.CURRENT);
+BullFVGBarPlot.SetStyle(Curve.FIRM);
+BullFVGBarPlot.HideBubble();
+BullFVGBarPlot.HideTitle();
 
-# Pre-Inversion Bearish FVG (Red)
-AddCloud(
-    if showSeeds and BarNumber() <= HighestAll(bearFVGBar) + extendBars and BarNumber() >= HighestAll(bearFVGBar) and !bearFVGInversion[1] and BarNumber() >= HighestAll(BarNumber()) - maxBarsToDisplay then bearFVGTop else Double.NaN,
-    if showSeeds and BarNumber() <= HighestAll(bearFVGBar) + extendBars and BarNumber() >= HighestAll(bearFVGBar) and !bearFVGInversion[1] and BarNumber() >= HighestAll(BarNumber()) - maxBarsToDisplay then bearFVGBottom else Double.NaN,
-    Color.LIGHT_RED, Color.LIGHT_RED
-);
+# Pre-Inversion Bearish FVG (Light Red Bars)
+def bearFVGPlot = if showSeeds and BarNumber() <= HighestAll(bearFVGBar) + extendBars and BarNumber() >= HighestAll(bearFVGBar) and !bearFVGInversion[1] and BarNumber() >= HighestAll(BarNumber()) - maxBarsToDisplay then bearFVGTop - bearFVGBottom else Double.NaN;
+plot BearFVGBarPlot = bearFVGPlot;
+BearFVGBarPlot.SetPaintingStrategy(PaintingStrategy.HISTOGRAM);
+BearFVGBarPlot.SetDefaultColor(Color.LIGHT_RED);
+BearFVGBarPlot.SetLineWeight(3);
+BearFVGBarPlot.AssignValueColor(if !IsNaN(bearFVGPlot) then Color.LIGHT_RED else Color.CURRENT);
+BearFVGBarPlot.SetStyle(Curve.FIRM);
+BearFVGBarPlot.HideBubble();
+BearFVGBarPlot.HideTitle();
 
-# Post-Inversion Bullish FVG (Bearish Supply Zone, Red)
-AddCloud(
-    if BarNumber() <= HighestAll(bullFVGBar) + extendBars and BarNumber() >= HighestAll(bullFVGBar) and bullFVGInversion[1] and BarNumber() >= HighestAll(BarNumber()) - maxBarsToDisplay then bullFVGTop else Double.NaN,
-    if BarNumber() <= HighestAll(bullFVGBar) + extendBars and BarNumber() >= HighestAll(bullFVGBar) and bullFVGInversion[1] and BarNumber() >= HighestAll(BarNumber()) - maxBarsToDisplay then bullFVGBottom else Double.NaN,
-    Color.LIGHT_RED, Color.LIGHT_RED
-);
+# Post-Inversion Bullish FVG (Bearish Supply Zone, Light Red Bars)
+def bullFVGInvPlot = if BarNumber() <= HighestAll(bullFVGBar) + extendBars and BarNumber() >= HighestAll(bullFVGBar) and bullFVGInversion[1] and BarNumber() >= HighestAll(BarNumber()) - maxBarsToDisplay then bullFVGTop - bullFVGBottom else Double.NaN;
+plot BullFVGInvBarPlot = bullFVGInvPlot;
+BullFVGInvBarPlot.SetPaintingStrategy(PaintingStrategy.HISTOGRAM);
+BullFVGInvBarPlot.SetDefaultColor(Color.LIGHT_RED);
+BullFVGInvBarPlot.SetLineWeight(3);
+BullFVGInvBarPlot.AssignValueColor(if !IsNaN(bullFVGInvPlot) then Color.LIGHT_RED else Color.CURRENT);
+BullFVGInvBarPlot.SetStyle(Curve.FIRM);
+BullFVGInvBarPlot.HideBubble();
+BullFVGInvBarPlot.HideTitle();
 
-# Post-Inversion Bearish FVG (Bullish Demand Zone, Green)
-AddCloud(
-    if BarNumber() <= HighestAll(bearFVGBar) + extendBars and BarNumber() >= HighestAll(bearFVGBar) and bearFVGInversion[1] and BarNumber() >= HighestAll(BarNumber()) - maxBarsToDisplay then bearFVGTop else Double.NaN,
-    if BarNumber() <= HighestAll(bearFVGBar) + extendBars and BarNumber() >= HighestAll(bearFVGBar) and bearFVGInversion[1] and BarNumber() >= HighestAll(BarNumber()) - maxBarsToDisplay then bearFVGBottom else Double.NaN,
-    Color.LIGHT_GREEN, Color.LIGHT_GREEN
-);
+# Post-Inversion Bearish FVG (Bullish Demand Zone, Light Green Bars)
+def bearFVGInvPlot = if BarNumber() <= HighestAll(bearFVGBar) + extendBars and BarNumber() >= HighestAll(bearFVGBar) and bearFVGInversion[1] and BarNumber() >= HighestAll(BarNumber()) - maxBarsToDisplay then bearFVGTop - bearFVGBottom else Double.NaN;
+plot BearFVGInvBarPlot = bearFVGInvPlot;
+BearFVGInvBarPlot.SetPaintingStrategy(PaintingStrategy.HISTOGRAM);
+BearFVGInvBarPlot.SetDefaultColor(Color.LIGHT_GREEN);
+BearFVGInvBarPlot.SetLineWeight(3);
+BearFVGInvBarPlot.AssignValueColor(if !IsNaN(bearFVGInvPlot) then Color.LIGHT_GREEN else Color.CURRENT);
+BearFVGInvBarPlot.SetStyle(Curve.FIRM);
+BearFVGInvBarPlot.HideBubble();
+BearFVGInvBarPlot.HideTitle();
 
 # --- Plot Midlines ---
 plot BullFVGMidline = if BarNumber() <= HighestAll(bullFVGBar) + extendBars and BarNumber() >= HighestAll(bullFVGBar) and BarNumber() >= HighestAll(BarNumber()) - maxBarsToDisplay then (bullFVGTop + bullFVGBottom) / 2 else Double.NaN;
@@ -115,13 +131,9 @@ BearInversionDot.SetLineWeight(3);
 BearInversionDot.HideBubble();
 BearInversionDot.HideTitle();
 
-# --- Color-Coded Bars ---
+# --- Color-Coded Bars for Retests ---
 AssignPriceColor(
-    if bullFVG then Color.GREEN
-    else if bearFVG then Color.RED
-    else if bullFVGInversion then Color.DARK_RED
-    else if bearFVGInversion then Color.DARK_GREEN
-    else if bullRetest then Color.CYAN
+    if bullRetest then Color.CYAN
     else if bearRetest then Color.MAGENTA
     else Color.CURRENT
 );
