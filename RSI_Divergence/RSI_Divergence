@@ -1,0 +1,80 @@
+# RSI Divergence Indicator #TSBuild25
+# Identifies Regular and Hidden Bullish/Bearish Divergences
+# Plots lines and labels on price and RSI, with color coding
+
+input rsiLength = 14;
+input price = close;
+input overBought = 70;
+input overSold = 30;
+input lookback = 20; # How many bars to look back for pivots
+
+# --- RSI Calculation ---
+def rsi = RSI(price, rsiLength);
+
+# --- Find Pivots (Highs/Lows) ---
+def pivotHigh = high == Highest(high, lookback);
+def pivotLow = low == Lowest(low, lookback);
+def rsiPivotHigh = rsi == Highest(rsi, lookback);
+def rsiPivotLow = rsi == Lowest(rsi, lookback);
+
+# --- Store Last Two Pivots ---
+def ph1 = if pivotHigh then high else Double.NaN;
+def ph2 = if !IsNaN(ph1) then ph1[1] else Double.NaN;
+def pl1 = if pivotLow then low else Double.NaN;
+def pl2 = if !IsNaN(pl1) then pl1[1] else Double.NaN;
+def rph1 = if rsiPivotHigh then rsi else Double.NaN;
+def rph2 = if !IsNaN(rph1) then rph1[1] else Double.NaN;
+def rpl1 = if rsiPivotLow then rsi else Double.NaN;
+def rpl2 = if !IsNaN(rpl1) then rpl1[1] else Double.NaN;
+
+# --- Regular Bullish Divergence ---
+def regBull = pl1 < pl2 and rpl1 > rpl2 and !IsNaN(pl1) and !IsNaN(pl2) and !IsNaN(rpl1) and !IsNaN(rpl2);
+# --- Regular Bearish Divergence ---
+def regBear = ph1 > ph2 and rph1 < rph2 and !IsNaN(ph1) and !IsNaN(ph2) and !IsNaN(rph1) and !IsNaN(rph2);
+# --- Hidden Bullish Divergence ---
+def hidBull = pl1 > pl2 and rpl1 < rpl2 and !IsNaN(pl1) and !IsNaN(pl2) and !IsNaN(rpl1) and !IsNaN(rpl2);
+# --- Hidden Bearish Divergence ---
+def hidBear = ph1 < ph2 and rph1 > rph2 and !IsNaN(ph1) and !IsNaN(ph2) and !IsNaN(rph1) and !IsNaN(rph2);
+
+# --- Plot Divergence Lines and Labels ---
+plot PriceLineBull = if regBull or hidBull then pl2 else Double.NaN;
+PriceLineBull.SetDefaultColor(Color.GREEN);
+PriceLineBull.SetLineWeight(2);
+PriceLineBull.SetStyle(Curve.SHORT_DASH);
+
+plot PriceLineBear = if regBear or hidBear then ph2 else Double.NaN;
+PriceLineBear.SetDefaultColor(Color.RED);
+PriceLineBear.SetLineWeight(2);
+PriceLineBear.SetStyle(Curve.SHORT_DASH);
+
+AddChartBubble(regBull, low, "Reg Bullish", Color.GREEN, no);
+AddChartBubble(regBear, high, "Reg Bearish", Color.RED, yes);
+AddChartBubble(hidBull, low, "Hidden Bullish", Color.DARK_GREEN, no);
+AddChartBubble(hidBear, high, "Hidden Bearish", Color.DARK_RED, yes);
+
+# --- RSI Panel Divergence Lines ---
+AddCloud(if regBull or hidBull then rpl2 else Double.NaN, if regBull or hidBull then rpl1 else Double.NaN, Color.GREEN, Color.GREEN);
+AddCloud(if regBear or hidBear then rph2 else Double.NaN, if regBear or hidBear then rph1 else Double.NaN, Color.RED, Color.RED);
+
+# --- Alerts ---
+Alert(regBull or hidBull, "RSI Bullish Divergence!", Alert.BAR, Sound.Bell);
+Alert(regBear or hidBear, "RSI Bearish Divergence!", Alert.BAR, Sound.Bell);
+
+# --- RSI Plot (for reference) ---
+plot RSIline = rsi;
+RSIline.SetDefaultColor(Color.GRAY);
+RSIline.SetLineWeight(1);
+RSIline.HideTitle();
+RSIline.HideBubble();
+
+plot OverBoughtLine = overBought;
+OverBoughtLine.SetDefaultColor(Color.LIGHT_RED);
+OverBoughtLine.SetStyle(Curve.SHORT_DASH);
+OverBoughtLine.HideTitle();
+OverBoughtLine.HideBubble();
+
+plot OverSoldLine = overSold;
+OverSoldLine.SetDefaultColor(Color.LIGHT_GREEN);
+OverSoldLine.SetStyle(Curve.SHORT_DASH);
+OverSoldLine.HideTitle();
+OverSoldLine.HideBubble();
