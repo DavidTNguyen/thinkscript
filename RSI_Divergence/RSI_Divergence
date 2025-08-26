@@ -17,44 +17,43 @@ def pivotLow = low == Lowest(low, lookback);
 def rsiPivotHigh = rsi == Highest(rsi, lookback);
 def rsiPivotLow = rsi == Lowest(rsi, lookback);
 
-# --- Store Last Two Pivots ---
-def ph1 = if pivotHigh then high else Double.NaN;
-def ph2 = if !IsNaN(ph1) then ph1[1] else Double.NaN;
-def pl1 = if pivotLow then low else Double.NaN;
-def pl2 = if !IsNaN(pl1) then pl1[1] else Double.NaN;
-def rph1 = if rsiPivotHigh then rsi else Double.NaN;
-def rph2 = if !IsNaN(rph1) then rph1[1] else Double.NaN;
-def rpl1 = if rsiPivotLow then rsi else Double.NaN;
-def rpl2 = if !IsNaN(rpl1) then rpl1[1] else Double.NaN;
+def pricePivotBar = if pivotHigh or pivotLow then BarNumber() else Double.NaN;
+def rsiPivotBar = if rsiPivotHigh or rsiPivotLow then BarNumber() else Double.NaN;
 
-# --- Regular Bullish Divergence ---
-def regBull = pl1 < pl2 and rpl1 > rpl2 and !IsNaN(pl1) and !IsNaN(pl2) and !IsNaN(rpl1) and !IsNaN(rpl2);
-# --- Regular Bearish Divergence ---
-def regBear = ph1 > ph2 and rph1 < rph2 and !IsNaN(ph1) and !IsNaN(ph2) and !IsNaN(rph1) and !IsNaN(rph2);
-# --- Hidden Bullish Divergence ---
-def hidBull = pl1 > pl2 and rpl1 < rpl2 and !IsNaN(pl1) and !IsNaN(pl2) and !IsNaN(rpl1) and !IsNaN(rpl2);
-# --- Hidden Bearish Divergence ---
-def hidBear = ph1 < ph2 and rph1 > rph2 and !IsNaN(ph1) and !IsNaN(ph2) and !IsNaN(rph1) and !IsNaN(rph2);
+def lastPricePivotBar = if !IsNaN(pricePivotBar) then pricePivotBar else lastPricePivotBar[1];
+def lastRSIPivotBar = if !IsNaN(rsiPivotBar) then rsiPivotBar else lastRSIPivotBar[1];
 
-# --- Plot Divergence Lines and Labels ---
-plot PriceLineBull = if regBull or hidBull then pl2 else Double.NaN;
-PriceLineBull.SetDefaultColor(Color.GREEN);
-PriceLineBull.SetLineWeight(2);
-PriceLineBull.SetStyle(Curve.SHORT_DASH);
+def lastPricePivot = if !IsNaN(pricePivotBar) then if pivotHigh then high else low else lastPricePivot[1];
+def lastRSIPivot = if !IsNaN(rsiPivotBar) then rsi else lastRSIPivot[1];
 
-plot PriceLineBear = if regBear or hidBear then ph2 else Double.NaN;
-PriceLineBear.SetDefaultColor(Color.RED);
-PriceLineBear.SetLineWeight(2);
-PriceLineBear.SetStyle(Curve.SHORT_DASH);
+# --- Detect Divergences ---
+# Regular Bullish: Price lower low, RSI higher low
+# Regular Bearish: Price higher high, RSI lower high
+# Hidden Bullish: Price higher low, RSI lower low
+# Hidden Bearish: Price lower high, RSI higher high
 
+def regBull = pivotLow and lastPricePivot < low and rsi > lastRSIPivot;
+def regBear = pivotHigh and lastPricePivot > high and rsi < lastRSIPivot;
+def hidBull = pivotLow and lastPricePivot > low and rsi < lastRSIPivot;
+def hidBear = pivotHigh and lastPricePivot < high and rsi > lastRSIPivot;
+
+# --- Draw Divergence Lines on Price ---
+AddChartLine(regBull, lastPricePivotBar, lastPricePivot, BarNumber(), low, Color.GREEN, Curve.SHORT_DASH);
+AddChartLine(regBear, lastPricePivotBar, lastPricePivot, BarNumber(), high, Color.RED, Curve.SHORT_DASH);
+AddChartLine(hidBull, lastPricePivotBar, lastPricePivot, BarNumber(), low, Color.DARK_GREEN, Curve.SHORT_DASH);
+AddChartLine(hidBear, lastPricePivotBar, lastPricePivot, BarNumber(), high, Color.DARK_RED, Curve.SHORT_DASH);
+
+# --- Draw Divergence Lines on RSI ---
+AddChartLine(regBull, lastRSIPivotBar, lastRSIPivot, BarNumber(), rsi, Color.GREEN, Curve.SHORT_DASH, "RSI");
+AddChartLine(regBear, lastRSIPivotBar, lastRSIPivot, BarNumber(), rsi, Color.RED, Curve.SHORT_DASH, "RSI");
+AddChartLine(hidBull, lastRSIPivotBar, lastRSIPivot, BarNumber(), rsi, Color.DARK_GREEN, Curve.SHORT_DASH, "RSI");
+AddChartLine(hidBear, lastRSIPivotBar, lastRSIPivot, BarNumber(), rsi, Color.DARK_RED, Curve.SHORT_DASH, "RSI");
+
+# --- Divergence Labels ---
 AddChartBubble(regBull, low, "Reg Bullish", Color.GREEN, no);
 AddChartBubble(regBear, high, "Reg Bearish", Color.RED, yes);
 AddChartBubble(hidBull, low, "Hidden Bullish", Color.DARK_GREEN, no);
 AddChartBubble(hidBear, high, "Hidden Bearish", Color.DARK_RED, yes);
-
-# --- RSI Panel Divergence Lines ---
-AddCloud(if regBull or hidBull then rpl2 else Double.NaN, if regBull or hidBull then rpl1 else Double.NaN, Color.GREEN, Color.GREEN);
-AddCloud(if regBear or hidBear then rph2 else Double.NaN, if regBear or hidBear then rph1 else Double.NaN, Color.RED, Color.RED);
 
 # --- Alerts ---
 Alert(regBull or hidBull, "RSI Bullish Divergence!", Alert.BAR, Sound.Bell);
