@@ -1,77 +1,24 @@
-# Expected Move Horizontal Lines with Labels
-# Plots daily and weekly expected move levels based on implied volatility
-# VietRoadie
-
-declare upper;
-
-# Input parameters
-input showDailyExpectedMove = yes;
-input showWeeklyExpectedMove = yes;
-input daysToExpiration = 1; # For daily expected move
-input weeklyDaysToExpiration = 7; # For weekly expected move
-input dailyIV = 0.1525; # Enter the daily IV from the option chain, e.g. 0.1525 for 15.25%
-input weeklyIV = 0.1517; # Enter the weekly IV from the option chain, e.g. 0.1517 for 15.17%
-
-# Get current price
-def currentPrice = close;
+# Inputs for Implied Volatility
+input dailyIV = 0.0096; # Daily Implied Volatility (e.g., 0.96% as decimal)
+input weeklyIV = 0.0217; # Weekly Implied Volatility (e.g., 2.17% as decimal, approx for 5 days)
+input price = close; # Use current close price as the reference
 
 # Calculate Daily Expected Move (1 Standard Deviation, 68% confidence)
-def dailyExpectedMove = currentPrice * dailyIV * 2;
-# Weekly IV is assumed to be annualized IV adjusted for 5 trading days
-def weeklyExpectedMove = currentPrice * weeklyIV * 2; 
+def dailyMove = price * dailyIV; # One-sided move (up or down)
+def dailyUpperRange = price + dailyMove; # Upper bound
+def dailyLowerRange = price - dailyMove; # Lower bound
 
-# Calculate support and resistance levels
-def dailyUpperLevel = currentPrice + dailyExpectedMove;
-def dailyLowerLevel = currentPrice - dailyExpectedMove;
-def weeklyUpperLevel = currentPrice + weeklyExpectedMove;
-def weeklyLowerLevel = currentPrice - weeklyExpectedMove;
+# Calculate Weekly Expected Move (1 Standard Deviation, 68% confidence)
+def weeklyMove = price * weeklyIV; # One-sided move (up or down)
+def weeklyUpperRange = price + weeklyMove; # Upper bound
+def weeklyLowerRange = price - weeklyMove; # Lower bound
 
+# Plot the ranges (optional, for chart visualization)
+plot DailyUpper = dailyUpperRange;
+plot DailyLower = dailyLowerRange;
+plot WeeklyUpper = weeklyUpperRange;
+plot WeeklyLower = weeklyLowerRange;
 
-# Plot horizontal lines for daily expected move (extend across chart)
-plot DailyUpper = if showDailyExpectedMove then HighestAll(dailyUpperLevel) else Double.NaN;
-plot DailyLower = if showDailyExpectedMove then HighestAll(dailyLowerLevel) else Double.NaN;
-
-# Plot horizontal lines for weekly expected move (extend across chart)
-plot WeeklyUpper = if showWeeklyExpectedMove then HighestAll(weeklyUpperLevel) else Double.NaN;
-plot WeeklyLower = if showWeeklyExpectedMove then HighestAll(weeklyLowerLevel) else Double.NaN;
-
-# Style the lines
-DailyUpper.SetDefaultColor(Color.ORANGE);
-DailyUpper.SetStyle(Curve.SHORT_DASH);
-DailyUpper.SetLineWeight(2);
-
-DailyLower.SetDefaultColor(Color.ORANGE);
-DailyLower.SetStyle(Curve.SHORT_DASH);
-DailyLower.SetLineWeight(2);
-
-WeeklyUpper.SetDefaultColor(Color.CYAN);
-WeeklyUpper.SetStyle(Curve.LONG_DASH);
-WeeklyUpper.SetLineWeight(2);
-
-WeeklyLower.SetDefaultColor(Color.CYAN);
-WeeklyLower.SetStyle(Curve.LONG_DASH);
-WeeklyLower.SetLineWeight(2);
-
-# Add labels
-AddLabel(showDailyExpectedMove, 
-         "Daily EM: ±" + AsText(dailyExpectedMove, NumberFormat.TWO_DECIMAL_PLACES) + 
-         " (" + AsText(dailyUpperLevel, NumberFormat.TWO_DECIMAL_PLACES) + "/" + 
-         AsText(dailyLowerLevel, NumberFormat.TWO_DECIMAL_PLACES) + ")", 
-         Color.ORANGE);
-
-AddLabel(showWeeklyExpectedMove, 
-         "Weekly EM: ±" + AsText(weeklyExpectedMove, NumberFormat.TWO_DECIMAL_PLACES) + 
-         " (" + AsText(weeklyUpperLevel, NumberFormat.TWO_DECIMAL_PLACES) + "/" + 
-         AsText(weeklyLowerLevel, NumberFormat.TWO_DECIMAL_PLACES) + ")", 
-         Color.CYAN);
-
-# Add labels showing the IVs used
-AddLabel(yes, "Daily IV: " + AsPercent(dailyIV), Color.GRAY);
-AddLabel(yes, "Weekly IV: " + AsPercent(weeklyIV), Color.GRAY);
-
-# Add bubbles at the last bar for level identification
-def lastBar = !IsNaN(close) and IsNaN(close[-1]);
-AddChartBubble(lastBar and showDailyExpectedMove, HighestAll(DailyUpper), "Daily +EM: " + AsText(HighestAll(DailyUpper), NumberFormat.TWO_DECIMAL_PLACES), Color.ORANGE, yes);
-AddChartBubble(lastBar and showDailyExpectedMove, LowestAll(DailyLower), "Daily -EM: " + AsText(LowestAll(DailyLower), NumberFormat.TWO_DECIMAL_PLACES), Color.ORANGE, no);
-AddChartBubble(lastBar and showWeeklyExpectedMove, HighestAll(WeeklyUpper), "Weekly +EM: " + AsText(HighestAll(WeeklyUpper), NumberFormat.TWO_DECIMAL_PLACES), Color.CYAN, yes);
-AddChartBubble(lastBar and showWeeklyExpectedMove, LowestAll(WeeklyLower), "Weekly -EM: " + AsText(LowestAll(WeeklyLower), NumberFormat.TWO_DECIMAL_PLACES), Color.CYAN, no);
+# Add Labels for Visualization
+AddLabel(yes, "Daily Range: $" + AsText(dailyLowerRange, NumberFormat.DOLLAR, 2) + " to $" + AsText(dailyUpperRange, NumberFormat.DOLLAR, 2), Color.WHITE);
+AddLabel(yes, "Weekly Range: $" + AsText(weeklyLowerRange, NumberFormat.DOLLAR, 2) + " to $" + AsText(weeklyUpperRange, NumberFormat.DOLLAR, 2), Color.WHITE);
