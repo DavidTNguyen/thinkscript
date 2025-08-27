@@ -27,11 +27,11 @@ def weeklyLowerLevel = currentPrice - weeklyExpectedMove;
 
 # Plot horizontal lines for daily expected move (extend across chart)
 plot DailyUpper = if showDailyExpectedMove then HighestAll(dailyUpperLevel) else Double.NaN;
-plot DailyLower = if showDailyExpectedMove then LowestAll(dailyLowerLevel) else Double.NaN;
+plot DailyLower = if showDailyExpectedMove then HighestAll(dailyLowerLevel) else Double.NaN;
 
 # Plot horizontal lines for weekly expected move (extend across chart)
 plot WeeklyUpper = if showWeeklyExpectedMove then HighestAll(weeklyUpperLevel) else Double.NaN;
-plot WeeklyLower = if showWeeklyExpectedMove then LowestAll(weeklyLowerLevel) else Double.NaN;
+plot WeeklyLower = if showWeeklyExpectedMove then HighestAll(weeklyLowerLevel) else Double.NaN;
 
 # Style the lines
 DailyUpper.SetDefaultColor(Color.ORANGE);
