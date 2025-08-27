@@ -9,7 +9,7 @@ input showDailyExpectedMove = yes;
 input showWeeklyExpectedMove = yes;
 input daysToExpiration = 1; # For daily expected move
 input weeklyDaysToExpiration = 7; # For weekly expected move
-input impliedVolatility = 0.30; # Default 30% IV, adjust as needed
+def impliedVolatility = ImpVolatility();
 
 # Get current price
 def currentPrice = close;
