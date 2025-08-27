@@ -15,9 +15,10 @@ input weeklyIV = 0.1517; # Enter the weekly IV from the option chain, e.g. 0.151
 # Get current price
 def currentPrice = close;
 
-# Calculate expected moves using the formula: Price * IV * sqrt(DTE/365)
-def dailyExpectedMove = currentPrice * dailyIV * Sqrt(daysToExpiration / 365);
-def weeklyExpectedMove = currentPrice * weeklyIV * Sqrt(weeklyDaysToExpiration / 365);
+# Calculate Daily Expected Move (1 Standard Deviation, 68% confidence)
+def dailyExpectedMove = currentPrice * dailyIV * 2;
+# Weekly IV is assumed to be annualized IV adjusted for 5 trading days
+def weeklyExpectedMove = currentPrice * weeklyIV * 2; 
 
 # Calculate support and resistance levels
 def dailyUpperLevel = currentPrice + dailyExpectedMove;
