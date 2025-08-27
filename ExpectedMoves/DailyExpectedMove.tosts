@@ -1,0 +1,87 @@
+# Expected Move Horizontal Lines with Labels
+# Plots daily and weekly expected move levels based on implied volatility
+# VietRoadie
+
+declare upper;
+
+# Input parameters
+input showDailyExpectedMove = yes;
+input showWeeklyExpectedMove = yes;
+input daysToExpiration = 1; # For daily expected move
+input weeklyDaysToExpiration = 7; # For weekly expected move
+input impliedVolatility = 0.30; # Default 30% IV, adjust as needed
+
+# Get current price
+def currentPrice = close;
+
+# Calculate expected moves using the formula: Price * IV * sqrt(DTE/365)
+def dailyExpectedMove = currentPrice * impliedVolatility * Sqrt(daysToExpiration / 365);
+def weeklyExpectedMove = currentPrice * impliedVolatility * Sqrt(weeklyDaysToExpiration / 365);
+
+# Calculate support and resistance levels
+def dailyUpperLevel = currentPrice + dailyExpectedMove;
+def dailyLowerLevel = currentPrice - dailyExpectedMove;
+def weeklyUpperLevel = currentPrice + weeklyExpectedMove;
+def weeklyLowerLevel = currentPrice - weeklyExpectedMove;
+
+# Plot horizontal lines for daily expected move
+plot DailyUpper = if showDailyExpectedMove then dailyUpperLevel else Double.NaN;
+plot DailyLower = if showDailyExpectedMove then dailyLowerLevel else Double.NaN;
+
+# Plot horizontal lines for weekly expected move
+plot WeeklyUpper = if showWeeklyExpectedMove then weeklyUpperLevel else Double.NaN;
+plot WeeklyLower = if showWeeklyExpectedMove then weeklyLowerLevel else Double.NaN;
+
+# Style the lines
+DailyUpper.SetDefaultColor(Color.ORANGE);
+DailyUpper.SetStyle(Curve.SHORT_DASH);
+DailyUpper.SetLineWeight(2);
+
+DailyLower.SetDefaultColor(Color.ORANGE);
+DailyLower.SetStyle(Curve.SHORT_DASH);
+DailyLower.SetLineWeight(2);
+
+WeeklyUpper.SetDefaultColor(Color.CYAN);
+WeeklyUpper.SetStyle(Curve.LONG_DASH);
+WeeklyUpper.SetLineWeight(2);
+
+WeeklyLower.SetDefaultColor(Color.CYAN);
+WeeklyLower.SetStyle(Curve.LONG_DASH);
+WeeklyLower.SetLineWeight(2);
+
+# Add labels
+AddLabel(showDailyExpectedMove, 
+         "Daily EM: ±" + AsText(dailyExpectedMove, NumberFormat.TWO_DECIMAL_PLACES) + 
+         " (" + AsText(dailyUpperLevel, NumberFormat.TWO_DECIMAL_PLACES) + "/" + 
+         AsText(dailyLowerLevel, NumberFormat.TWO_DECIMAL_PLACES) + ")", 
+         Color.ORANGE);
+
+AddLabel(showWeeklyExpectedMove, 
+         "Weekly EM: ±" + AsText(weeklyExpectedMove, NumberFormat.TWO_DECIMAL_PLACES) + 
+         " (" + AsText(weeklyUpperLevel, NumberFormat.TWO_DECIMAL_PLACES) + "/" + 
+         AsText(weeklyLowerLevel, NumberFormat.TWO_DECIMAL_PLACES) + ")", 
+         Color.CYAN);
+
+# Add a label showing the IV used
+AddLabel(yes, "IV: " + AsPercent(impliedVolatility), Color.GRAY);
+
+# Optional: Add bubbles on the right side for level identification
+AddChartBubble(IsNaN(close[1]) and !IsNaN(close) and showDailyExpectedMove, 
+               dailyUpperLevel, 
+               "Daily +EM: " + AsText(dailyUpperLevel, NumberFormat.TWO_DECIMAL_PLACES), 
+               Color.ORANGE, yes);
+
+AddChartBubble(IsNaN(close[1]) and !IsNaN(close) and showDailyExpectedMove, 
+               dailyLowerLevel, 
+               "Daily -EM: " + AsText(dailyLowerLevel, NumberFormat.TWO_DECIMAL_PLACES), 
+               Color.ORANGE, no);
+
+AddChartBubble(IsNaN(close[1]) and !IsNaN(close) and showWeeklyExpectedMove, 
+               weeklyUpperLevel, 
+               "Weekly +EM: " + AsText(weeklyUpperLevel, NumberFormat.TWO_DECIMAL_PLACES), 
+               Color.CYAN, yes);
+
+AddChartBubble(IsNaN(close[1]) and !IsNaN(close) and showWeeklyExpectedMove, 
+               weeklyLowerLevel, 
+               "Weekly -EM: " + AsText(weeklyLowerLevel, NumberFormat.TWO_DECIMAL_PLACES), 
+               Color.CYAN, no);
