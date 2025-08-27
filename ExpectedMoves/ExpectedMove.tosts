@@ -13,6 +13,12 @@ def weeklyMove = price * weeklyIV; # One-sided move (up or down)
 def weeklyUpperRange = price + weeklyMove; # Upper bound
 def weeklyLowerRange = price - weeklyMove; # Lower bound
 
+# Round to 2 decimal places for display
+def dailyLowerRounded = Round(dailyLowerRange, 2);
+def dailyUpperRounded = Round(dailyUpperRange, 2);
+def weeklyLowerRounded = Round(weeklyLowerRange, 2);
+def weeklyUpperRounded = Round(weeklyUpperRange, 2);
+
 # Plot the ranges (optional, for chart visualization)
 plot DailyUpper = dailyUpperRange;
 plot DailyLower = dailyLowerRange;
@@ -20,5 +26,5 @@ plot WeeklyUpper = weeklyUpperRange;
 plot WeeklyLower = weeklyLowerRange;
 
 # Add Labels for Visualization
-AddLabel(yes, "Daily Range: $" + AsText(dailyLowerRange, NumberFormat.DOLLAR, 2) + " to $" + AsText(dailyUpperRange, NumberFormat.DOLLAR, 2), Color.WHITE);
-AddLabel(yes, "Weekly Range: $" + AsText(weeklyLowerRange, NumberFormat.DOLLAR, 2) + " to $" + AsText(weeklyUpperRange, NumberFormat.DOLLAR, 2), Color.WHITE);
+AddLabel(yes, "Daily Range: $" + AsText(dailyLowerRounded, NumberFormat.DOLLAR) + " to $" + AsText(dailyUpperRounded, NumberFormat.DOLLAR), Color.WHITE);
+AddLabel(yes, "Weekly Range: $" + AsText(weeklyLowerRounded, NumberFormat.DOLLAR) + " to $" + AsText(weeklyUpperRounded, NumberFormat.DOLLAR), Color.WHITE);
