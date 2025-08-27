@@ -68,7 +68,7 @@ AddLabel(yes, "IV: " + AsPercent(impliedVolatility), Color.GRAY);
 
 # Add bubbles at the last bar for level identification
 def lastBar = !IsNaN(close) and IsNaN(close[-1]);
-AddChartBubble(lastBar and showDailyExpectedMove, DailyUpper, "Daily +EM: " + AsText(DailyUpper, NumberFormat.TWO_DECIMAL_PLACES), Color.ORANGE, yes);
-AddChartBubble(lastBar and showDailyExpectedMove, DailyLower, "Daily -EM: " + AsText(DailyLower, NumberFormat.TWO_DECIMAL_PLACES), Color.ORANGE, no);
-AddChartBubble(lastBar and showWeeklyExpectedMove, WeeklyUpper, "Weekly +EM: " + AsText(WeeklyUpper, NumberFormat.TWO_DECIMAL_PLACES), Color.CYAN, yes);
-AddChartBubble(lastBar and showWeeklyExpectedMove, WeeklyLower, "Weekly -EM: " + AsText(WeeklyLower, NumberFormat.TWO_DECIMAL_PLACES), Color.CYAN, no);
+AddChartBubble(lastBar and showDailyExpectedMove, HighestAll(DailyUpper), "Daily +EM: " + AsText(HighestAll(DailyUpper), NumberFormat.TWO_DECIMAL_PLACES), Color.ORANGE, yes);
+AddChartBubble(lastBar and showDailyExpectedMove, LowestAll(DailyLower), "Daily -EM: " + AsText(LowestAll(DailyLower), NumberFormat.TWO_DECIMAL_PLACES), Color.ORANGE, no);
+AddChartBubble(lastBar and showWeeklyExpectedMove, HighestAll(WeeklyUpper), "Weekly +EM: " + AsText(HighestAll(WeeklyUpper), NumberFormat.TWO_DECIMAL_PLACES), Color.CYAN, yes);
+AddChartBubble(lastBar and showWeeklyExpectedMove, LowestAll(WeeklyLower), "Weekly -EM: " + AsText(LowestAll(WeeklyLower), NumberFormat.TWO_DECIMAL_PLACES), Color.CYAN, no);
