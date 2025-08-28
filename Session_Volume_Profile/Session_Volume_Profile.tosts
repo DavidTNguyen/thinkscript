@@ -1,0 +1,63 @@
+#
+# Quant Trading Volume Profile
+#
+# Contributors: David Nguyen, Thinkorswim
+
+def multiplier = 1;
+def onExpansion = no;
+def profiles = 1000;
+input profileSession = {default Day, Week, Month};
+input showPointOfControl = yes;
+input showValueArea = yes;
+input valueAreaPercent = 68;
+input opacity = 60;
+def period;
+def yyyymmdd = GetYYYYMMDD();
+def seconds = SecondsFromTime(0);
+def month = GetYear() * 12 + GetMonth();
+def day_number = DaysFromDate(First(yyyymmdd)) + GetDayOfWeek(First(yyyymmdd));
+def dom = GetDayOfMonth(yyyymmdd);
+def dow = GetDayOfWeek(yyyymmdd - dom + 1);
+def expthismonth = (if dow > 5 then 27 else 20) - dow;
+def exp_opt = month + (dom > expthismonth);
+switch (profileSession) {
+case Day:
+    period = CountTradingDays(Min(First(yyyymmdd), yyyymmdd), yyyymmdd) - 1;
+case Week:
+    period = Floor(day_number / 7);
+case Month:
+    period = Floor(month - First(month));
+}
+def count = CompoundValue(1, if period != period[1] then (count[1] + period - period[1]) % multiplier else count[1], 0);
+def cond = count < count[1] + period - period[1];
+def height = PricePerRow.TICKSIZE;
+profile vol = VolumeProfile("startNewProfile" = cond, "onExpansion" = onExpansion, "numberOfProfiles" = profiles, "pricePerRow" = height, "value area percent" = valueAreaPercent);
+def con = CompoundValue(1, onExpansion, no);
+def pc = if IsNaN(vol.GetPointOfControl()) and con then pc[1] else vol.GetPointOfControl();
+def hVA = if IsNaN(vol.GetHighestValueArea()) and con then hVA[1] else vol.GetHighestValueArea();
+def lVA = if IsNaN(vol.GetLowestValueArea()) and con then lVA[1] else vol.GetLowestValueArea();
+def hProfile = if IsNaN(vol.GetHighest()) and con then hProfile[1] else vol.GetHighest();
+def lProfile = if IsNaN(vol.GetLowest()) and con then lProfile[1] else vol.GetLowest();
+def plotsDomain = IsNaN(close) == onExpansion;
+plot POC = if plotsDomain then pc else Double.NaN;
+plot ProfileHigh = if plotsDomain then hProfile else Double.NaN;
+plot ProfileLow = if plotsDomain then lProfile else Double.NaN;
+plot VAHigh = if plotsDomain then hVA else Double.NaN;
+plot VALow = if plotsDomain then lVA else Double.NaN;
+DefineGlobalColor("Profile", CreateColor(70, 70, 70));
+DefineGlobalColor("Point Of Control", CreateColor(255, 215, 0));
+DefineGlobalColor("Value Area", CreateColor(95, 140, 230));
+vol.Show(GlobalColor("Profile"), if showPointOfControl then GlobalColor("Point Of Control") else Color.CURRENT, if showValueArea then GlobalColor("Value Area") else Color.CURRENT, opacity);
+POC.SetDefaultColor(GlobalColor("Point Of Control"));
+POC.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+POC.SetLineWeight(2);
+VAHigh.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+VALow.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+VAHigh.SetDefaultColor(GlobalColor("Value Area"));
+VALow.SetDefaultColor(GlobalColor("Value Area"));
+ProfileHigh.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+ProfileLow.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+ProfileHigh.SetDefaultColor(GetColor(3));
+ProfileLow.SetDefaultColor(GetColor(3));
+ProfileHigh.Hide();
+ProfileLow.Hide();
