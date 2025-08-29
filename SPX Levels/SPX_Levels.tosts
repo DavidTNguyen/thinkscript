@@ -13,7 +13,7 @@ input level5 = 6400;
 input level5_thickness = 1;
 input level6 = 6360;
 input level6_thickness = 1;
-input level7 = 6443;
+input level7 = 6443;AC
 input level7_thickness = 3;
 
 plot L1 = level1;

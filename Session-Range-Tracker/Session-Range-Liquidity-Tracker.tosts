@@ -6,45 +6,119 @@ def LondonEnd = 1000;   # 10:00 AM CST (London close)
 def NYStart = 0700;     # 7:00 AM CST (New York open)
 def NYEnd = 1600;       # 4:00 PM CST (New York close)
 
-# Function to check if current time is within a session
-def isAsia = GetTime() >= RegularTradingStart(GetYYYYMMDD()) + AsiaStart * 10000 and GetTime() < RegularTradingStart(GetYYYYMMDD()) + AsiaEnd * 10000;
-def isLondon = GetTime() >= RegularTradingStart(GetYYYYMMDD()) + LondonStart * 10000 and GetTime() < RegularTradingStart(GetYYYYMMDD()) + LondonEnd * 10000;
-def isNY = GetTime() >= RegularTradingStart(GetYYYYMMDD()) + NYStart * 10000 and GetTime() < RegularTradingStart(GetYYYYMMDD()) + NYEnd * 10000;
+# Session detection
+# Asia session: 7:00 PM to 1:00 AM (crosses midnight)
+def asiaSession = 
+    (SecondsFromTime(1900) >= 0 or SecondsFromTime(0100) < 0);
 
-# Calculate high and low for each session
-def AsiaHigh = if isAsia then high else AsiaHigh[1];
-def AsiaLow = if isAsia then low else AsiaLow[1];
-def LondonHigh = if isLondon then high else LondonHigh[1];
-def LondonLow = if isLondon then low else LondonLow[1];
-def NYHigh = if isNY then high else NYHigh[1];
-def NYLow = if isNY then low else NYLow[1];
+def isAsia = asiaSession;
 
-# Plot the high and low lines for each session
-plot AsiaHighLine = if isAsia or IsNaN(HighestAll(AsiaHigh)) or HighestAll(AsiaHigh) == 0 then Double.NaN else HighestAll(AsiaHigh);
-plot AsiaLowLine = if isAsia or IsNaN(LowestAll(AsiaLow)) or LowestAll(AsiaLow) == 0 then Double.NaN else LowestAll(AsiaLow);
-plot LondonHighLine = if isLondon or IsNaN(HighestAll(LondonHigh)) or HighestAll(LondonHigh) == 0 then Double.NaN else HighestAll(LondonHigh);
-plot LondonLowLine = if isLondon or IsNaN(LowestAll(LondonLow)) or LowestAll(LondonLow) == 0 then Double.NaN else LowestAll(LondonLow);
-plot NYHighLine = if isNY or IsNaN(HighestAll(NYHigh)) or HighestAll(NYHigh) == 0 then Double.NaN else HighestAll(NYHigh);
-plot NYLowLine = if isNY or IsNaN(LowestAll(NYLow)) or LowestAll(NYLow) == 0 then Double.NaN else LowestAll(NYLow);
+# London and NY sessions (do not cross midnight)
+def isLondon = SecondsFromTime(0200) >= 0 and SecondsFromTime(1000) < 0;
+def isNY = SecondsFromTime(0700) >= 0 and SecondsFromTime(1600) < 0;
 
-# Styling for the lines
-AsiaHighLine.SetDefaultColor(Color.CYAN);
-AsiaHighLine.SetStyle(Curve.FIRM);
-AsiaLowLine.SetDefaultColor(Color.CYAN);
-AsiaLowLine.SetStyle(Curve.FIRM);
-LondonHighLine.SetDefaultColor(Color.YELLOW);
-LondonHighLine.SetStyle(Curve.FIRM);
-LondonLowLine.SetDefaultColor(Color.YELLOW);
-LondonLowLine.SetStyle(Curve.FIRM);
-NYHighLine.SetDefaultColor(Color.GREEN);
-NYHighLine.SetStyle(Curve.FIRM);
-NYLowLine.SetDefaultColor(Color.GREEN);
-NYLowLine.SetStyle(Curve.FIRM);
+# Session high/low calculation
+def AsiaHigh = if isAsia then if !isAsia[1] then high else Max(high, AsiaHigh[1]) else if isAsia[1] then AsiaHigh[1] else Double.NaN;
+def AsiaLow = if isAsia then if !isAsia[1] then low else Min(low, AsiaLow[1]) else if isAsia[1] then AsiaLow[1] else Double.NaN;
+def LondonHigh = if isLondon then if !isLondon[1] then high else Max(high, LondonHigh[1]) else if isLondon[1] then LondonHigh[1] else Double.NaN;
+def LondonLow = if isLondon then if !isLondon[1] then low else Min(low, LondonLow[1]) else if isLondon[1] then LondonLow[1] else Double.NaN;
+def NYHigh = if isNY then if !isNY[1] then high else Max(high, NYHigh[1]) else if isNY[1] then NYHigh[1] else Double.NaN;
+def NYLow = if isNY then if !isNY[1] then low else Min(low, NYLow[1]) else if isNY[1] then NYLow[1] else Double.NaN;
 
-# Add labels for each session's high and low
-AddLabel(!IsNaN(HighestAll(AsiaHigh)) and HighestAll(AsiaHigh) != 0, "Asia High: " + AsPrice(HighestAll(AsiaHigh)), Color.CYAN);
-AddLabel(!IsNaN(LowestAll(AsiaLow)) and LowestAll(AsiaLow) != 0, "Asia Low: " + AsPrice(LowestAll(AsiaLow)), Color.CYAN);
-AddLabel(!IsNaN(HighestAll(LondonHigh)) and HighestAll(LondonHigh) != 0, "London High: " + AsPrice(HighestAll(LondonHigh)), Color.YELLOW);
-AddLabel(!IsNaN(LowestAll(LondonLow)) and LowestAll(LondonLow) != 0, "London Low: " + AsPrice(LowestAll(LondonLow)), Color.YELLOW);
-AddLabel(!IsNaN(HighestAll(NYHigh)) and HighestAll(NYHigh) != 0, "NY High: " + AsPrice(HighestAll(NYHigh)), Color.GREEN);
-AddLabel(!IsNaN(LowestAll(NYLow)) and LowestAll(NYLow) != 0, "NY Low: " + AsPrice(LowestAll(NYLow)), Color.GREEN);
+# Session end detection
+def asiaSessionJustEnded = isAsia[1] and !isAsia;
+def londonSessionJustEnded = isLondon[1] and !isLondon;
+def nySessionJustEnded = isNY[1] and !isNY;
+
+# Store high/low at end of session
+def asiaSessionHighValue = if asiaSessionJustEnded then AsiaHigh[1] else if !IsNaN(asiaSessionHighValue[1]) then asiaSessionHighValue[1] else Double.NaN;
+def asiaSessionLowValue  = if asiaSessionJustEnded then AsiaLow[1]  else if !IsNaN(asiaSessionLowValue[1]) then asiaSessionLowValue[1] else Double.NaN;
+def londonSessionHighValue = if londonSessionJustEnded then LondonHigh[1] else if !IsNaN(londonSessionHighValue[1]) then londonSessionHighValue[1] else Double.NaN;
+def londonSessionLowValue  = if londonSessionJustEnded then LondonLow[1]  else if !IsNaN(londonSessionLowValue[1]) then londonSessionLowValue[1] else Double.NaN;
+def nySessionHighValue = if nySessionJustEnded then NYHigh[1] else if !IsNaN(nySessionHighValue[1]) then nySessionHighValue[1] else Double.NaN;
+def nySessionLowValue  = if nySessionJustEnded then NYLow[1]  else if !IsNaN(nySessionLowValue[1]) then nySessionLowValue[1] else Double.NaN;
+
+# Persistent horizontal price levels for each session (use _val for variables)
+def newDay = GetDay() != GetDay()[1];
+
+def asiaHighLevel_val = if newDay then Double.NaN
+    else if asiaSessionJustEnded then asiaSessionHighValue
+    else if !IsNaN(asiaHighLevel_val[1]) then asiaHighLevel_val[1]
+    else Double.NaN;
+
+def asiaLowLevel_val = if newDay then Double.NaN
+    else if asiaSessionJustEnded then asiaSessionLowValue
+    else if !IsNaN(asiaLowLevel_val[1]) then asiaLowLevel_val[1]
+    else Double.NaN;
+
+def londonHighLevel_val = if newDay then Double.NaN
+    else if londonSessionJustEnded then londonSessionHighValue
+    else if !IsNaN(londonHighLevel_val[1]) then londonHighLevel_val[1]
+    else Double.NaN;
+
+def londonLowLevel_val = if newDay then Double.NaN
+    else if londonSessionJustEnded then londonSessionLowValue
+    else if !IsNaN(londonLowLevel_val[1]) then londonLowLevel_val[1]
+    else Double.NaN;
+
+def nyHighLevel_val = if newDay then Double.NaN
+    else if nySessionJustEnded then nySessionHighValue
+    else if !IsNaN(nyHighLevel_val[1]) then nyHighLevel_val[1]
+    else Double.NaN;
+
+def nyLowLevel_val = if newDay then Double.NaN
+    else if nySessionJustEnded then nySessionLowValue
+    else if !IsNaN(nyLowLevel_val[1]) then nyLowLevel_val[1]
+    else Double.NaN;
+
+plot AsiaHighLevel = asiaHighLevel_val;
+plot AsiaLowLevel = asiaLowLevel_val;
+
+AsiaHighLevel.SetDefaultColor(Color.CYAN);
+AsiaHighLevel.SetStyle(Curve.SHORT_DASH);
+AsiaHighLevel.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+
+AsiaLowLevel.SetDefaultColor(Color.CYAN);
+AsiaLowLevel.SetStyle(Curve.SHORT_DASH);
+AsiaLowLevel.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+
+plot LondonHighLevel = if !IsNaN(londonHighLevel_val) then londonHighLevel_val else Double.NaN;
+plot LondonLowLevel = londonLowLevel_val;
+plot NYHighLevel = nyHighLevel_val;
+plot NYLowLevel = nyLowLevel_val;
+
+LondonHighLevel.SetDefaultColor(Color.YELLOW);
+LondonHighLevel.SetStyle(Curve.SHORT_DASH);
+LondonHighLevel.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+LondonLowLevel.SetDefaultColor(Color.YELLOW);
+LondonLowLevel.SetStyle(Curve.SHORT_DASH);
+NYHighLevel.SetDefaultColor(Color.GREEN);
+NYHighLevel.SetStyle(Curve.SHORT_DASH);
+NYLowLevel.SetDefaultColor(Color.GREEN);
+NYLowLevel.SetStyle(Curve.SHORT_DASH);
+
+# Bubble only at the end of session, with short labels
+AddChartBubble(asiaSessionJustEnded, asiaSessionHighValue, "A Hi: " + AsPrice(asiaSessionHighValue), Color.CYAN, yes);
+AddChartBubble(asiaSessionJustEnded, asiaSessionLowValue, "A Lo: " + AsPrice(asiaSessionLowValue), Color.CYAN, no);
+AddChartBubble(londonSessionJustEnded, londonSessionHighValue, "L Hi: " + AsPrice(londonSessionHighValue), Color.YELLOW, yes);
+AddChartBubble(londonSessionJustEnded, londonSessionLowValue, "L Lo: " + AsPrice(londonSessionLowValue), Color.YELLOW, no);
+AddChartBubble(nySessionJustEnded, nySessionHighValue, "N Hi: " + AsPrice(nySessionHighValue), Color.GREEN, yes);
+AddChartBubble(nySessionJustEnded, nySessionLowValue, "N Lo: " + AsPrice(nySessionLowValue), Color.GREEN, no);
+
+# Vertical dotted lines at the start and end of each session
+def asiaSessionStartBar = isAsia and !isAsia[1];
+def londonSessionStartBar = isLondon and !isLondon[1];
+def nySessionStartBar = isNY and !isNY[1];
+
+AddVerticalLine(asiaSessionStartBar, "Asia", Color.CYAN, Curve.SHORT_DASH);
+AddVerticalLine(londonSessionStartBar, "London", Color.YELLOW, Curve.SHORT_DASH);
+AddVerticalLine(nySessionStartBar, "NY", Color.GREEN, Curve.SHORT_DASH);
+
+# Optionally, add vertical lines at the end of each session
+def asiaSessionEndBar = !isAsia and isAsia[1];
+def londonSessionEndBar = !isLondon and isLondon[1];
+def nySessionEndBar = !isNY and isNY[1];
+
+AddVerticalLine(asiaSessionEndBar, "Asia End", Color.CYAN, Curve.SHORT_DASH);
+AddVerticalLine(londonSessionEndBar, "London End", Color.YELLOW, Curve.SHORT_DASH);
+AddVerticalLine(nySessionEndBar, "NY End", Color.GREEN, Curve.SHORT_DASH);
