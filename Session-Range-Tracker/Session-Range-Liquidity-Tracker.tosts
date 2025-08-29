@@ -20,12 +20,12 @@ def NYHigh = if isNY then high else NYHigh[1];
 def NYLow = if isNY then low else NYLow[1];
 
 # Plot the high and low lines for each session
-plot AsiaHighLine = if isAsia then Double.NaN else HighestAll(AsiaHigh);
-plot AsiaLowLine = if isAsia then Double.NaN else LowestAll(AsiaLow);
-plot LondonHighLine = if isLondon then Double.NaN else HighestAll(LondonHigh);
-plot LondonLowLine = if isLondon then Double.NaN else LowestAll(LondonLow);
-plot NYHighLine = if isNY then Double.NaN else HighestAll(NYHigh);
-plot NYLowLine = if isNY then Double.NaN else LowestAll(NYLow);
+plot AsiaHighLine = if isAsia or IsNaN(HighestAll(AsiaHigh)) or HighestAll(AsiaHigh) == 0 then Double.NaN else HighestAll(AsiaHigh);
+plot AsiaLowLine = if isAsia or IsNaN(LowestAll(AsiaLow)) or LowestAll(AsiaLow) == 0 then Double.NaN else LowestAll(AsiaLow);
+plot LondonHighLine = if isLondon or IsNaN(HighestAll(LondonHigh)) or HighestAll(LondonHigh) == 0 then Double.NaN else HighestAll(LondonHigh);
+plot LondonLowLine = if isLondon or IsNaN(LowestAll(LondonLow)) or LowestAll(LondonLow) == 0 then Double.NaN else LowestAll(LondonLow);
+plot NYHighLine = if isNY or IsNaN(HighestAll(NYHigh)) or HighestAll(NYHigh) == 0 then Double.NaN else HighestAll(NYHigh);
+plot NYLowLine = if isNY or IsNaN(LowestAll(NYLow)) or LowestAll(NYLow) == 0 then Double.NaN else LowestAll(NYLow);
 
 # Styling for the lines
 AsiaHighLine.SetDefaultColor(Color.CYAN);
@@ -42,9 +42,9 @@ NYLowLine.SetDefaultColor(Color.GREEN);
 NYLowLine.SetStyle(Curve.FIRM);
 
 # Add labels for each session's high and low
-AddLabel(yes, "Asia High: " + AsPrice(HighestAll(AsiaHigh)), Color.CYAN);
-AddLabel(yes, "Asia Low: " + AsPrice(LowestAll(AsiaLow)), Color.CYAN);
-AddLabel(yes, "London High: " + AsPrice(HighestAll(LondonHigh)), Color.YELLOW);
-AddLabel(yes, "London Low: " + AsPrice(LowestAll(LondonLow)), Color.YELLOW);
-AddLabel(yes, "NY High: " + AsPrice(HighestAll(NYHigh)), Color.GREEN);
-AddLabel(yes, "NY Low: " + AsPrice(LowestAll(NYLow)), Color.GREEN);
+AddLabel(!IsNaN(HighestAll(AsiaHigh)) and HighestAll(AsiaHigh) != 0, "Asia High: " + AsPrice(HighestAll(AsiaHigh)), Color.CYAN);
+AddLabel(!IsNaN(LowestAll(AsiaLow)) and LowestAll(AsiaLow) != 0, "Asia Low: " + AsPrice(LowestAll(AsiaLow)), Color.CYAN);
+AddLabel(!IsNaN(HighestAll(LondonHigh)) and HighestAll(LondonHigh) != 0, "London High: " + AsPrice(HighestAll(LondonHigh)), Color.YELLOW);
+AddLabel(!IsNaN(LowestAll(LondonLow)) and LowestAll(LondonLow) != 0, "London Low: " + AsPrice(LowestAll(LondonLow)), Color.YELLOW);
+AddLabel(!IsNaN(HighestAll(NYHigh)) and HighestAll(NYHigh) != 0, "NY High: " + AsPrice(HighestAll(NYHigh)), Color.GREEN);
+AddLabel(!IsNaN(LowestAll(NYLow)) and LowestAll(NYLow) != 0, "NY Low: " + AsPrice(LowestAll(NYLow)), Color.GREEN);
