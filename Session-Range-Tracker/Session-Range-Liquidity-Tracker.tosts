@@ -1,24 +1,13 @@
 declare hide_on_daily;
 
 input display_last_zone = yes;
-input display_count     = 2;
+input display_count     = 4;
 input Show_Cloud = no;
 input Show_Cloud2 = no;
 input Show_Vertical_Line = yes;
 
 def Asian_DrawLine =
-#GetLastDay() and
-(
-!SecondsFromTime(1800) [1]
-);
-#AddVerticalLine (DrawLine, "", Color.Dark_black,Curve.Long_DASH);
 
-
-
-#input ShowTodayOnly = yes;
-#def Today = if GetDay() == GetLastDay() then 0 else 1;
-#def Today = if GetDay() == GetLastDay() then 1 else 0;
-#def Show_last = if GetDay() >= GetLastDay() then 1 else 0;
 
 ###############################################
 def midn = 0000;
@@ -86,8 +75,7 @@ Asian_Q1_hrange.SetDefaultColor(CreateColor(204, 255, 204));
 Asian_Q1_lrange.SetDefaultColor(CreateColor(204, 255, 204));
 Asian_Q1_hrange.SetLineWeight(1);
 Asian_Q1_lrange.SetLineWeight(1);
-#Asian_Q1_hrange.Hide();
-#Asian_Q1_lrange.Hide();
+
 
 def Asian_Q1_bubblemover = 0;
 def Asian_Q1_b = Asian_Q1_bubblemover;
@@ -177,8 +165,7 @@ London_Q2_hrange.SetDefaultColor(CreateColor(153, 153 , 255));
 London_Q2_lrange.SetDefaultColor(CreateColor(153, 153 , 255));
 London_Q2_hrange.SetLineWeight(1);
 London_Q2_lrange.SetLineWeight(1);
-#London_Q2_hrange.Hide();
-#London_Q2_lrange.Hide();
+
 
 def London_Q2_bubblemover = 0;
 def London_Q2_b = London_Q2_bubblemover;
@@ -276,8 +263,7 @@ NY_Q3_hrange.SetDefaultColor(CreateColor(0, 153, 255));
 NY_Q3_lrange.SetDefaultColor(CreateColor(0, 153, 255));
 NY_Q3_hrange.SetLineWeight(1);
 NY_Q3_lrange.SetLineWeight(1);
-#NY_Q3_hrange.Hide();
-#NY_Q3_lrange.Hide();
+
 
 def NY_Q3_bubblemover = 0;
 def NY_Q3_b = NY_Q3_bubblemover;
@@ -372,8 +358,7 @@ NY_PM_Q4_hrange.SetDefaultColor(CreateColor(255, 153, 102));
 NY_PM_Q4_lrange.SetDefaultColor(CreateColor(255, 153, 102));
 NY_PM_Q4_hrange.SetLineWeight(1);
 NY_PM_Q4_lrange.SetLineWeight(1);
-#NY_PM_Q4_hrange.Hide();
-#NY_PM_Q4_lrange.Hide();
+
 
 def NY_PM_Q4_bubblemover = 0;
 def NY_PM_Q4_b = NY_PM_Q4_bubblemover;
@@ -401,33 +386,25 @@ AddCloud(if Show_Cloud2 then NY_PM_Q4_hrange else Double.NaN, NY_PM_Q4_lrange, C
 #-----------------
 
 
-# addlabel(1, "  ", color.black);
-# Asian_Q1_ProfileHigh 
-# Asian_Q1_Profilelow
+
 def asiahi = if isnan(Asian_Q1_ProfileHigh) then asiahi[1] else Asian_Q1_ProfileHigh;
 def asialo = if isnan(Asian_Q1_Profilelow) then asialo[1] else Asian_Q1_Profilelow;
 AddChartBubble(!IsNaN(asialo), asialo, "asialo", color.white, yes);
 AddChartBubble(!IsNaN(asiahi), asiahi, "asiahi", color.white, yes);
 
-# addlabel(1, "  ", color.black);
-#London_Q2_ProfileHigh
-#London_Q2_Profilelow
+
 def lonhi = if isnan(London_Q2_ProfileHigh) then lonhi[1] else London_Q2_ProfileHigh;
 def lonlo = if isnan(London_Q2_Profilelow) then lonlo[1] else London_Q2_Profilelow;
 AddChartBubble(!IsNaN(lonlo), lonlo, "lonlo", color.white, yes);
 AddChartBubble(!IsNaN(lonhi), lonhi, "lonhi", color.white, yes);
 
-# addlabel(1, "  ", color.black);
-#NY_Q3_ProfileHigh
-#NY_Q3_Profilelow
+
 def nyamhi = if isnan(NY_Q3_ProfileHigh) then nyamhi[1] else NY_Q3_ProfileHigh;
 def nyamlo = if isnan(NY_Q3_Profilelow) then nyamlo[1] else NY_Q3_Profilelow;
 AddChartBubble(!IsNaN(nyamlo), nyamlo, "nyamlo", color.white, yes);
 AddChartBubble(!IsNaN(nyamhi), nyamhi, "nyamhi", color.white, yes);
 
-# addlabel(1, "  ", color.black);
-#NY_PM_Q4_ProfileHigh
-#NY_PM_Q4_Profilelow
+
 def nypmhi = if isnan(NY_PM_Q4_ProfileHigh) then nypmhi[1] else NY_PM_Q4_ProfileHigh;
 def nypmlo = if isnan(NY_PM_Q4_Profilelow) then nypmlo[1] else NY_PM_Q4_Profilelow;
 AddChartBubble(!IsNaN(nypmlo), nypmlo, "nypmlo", color.white, yes);
