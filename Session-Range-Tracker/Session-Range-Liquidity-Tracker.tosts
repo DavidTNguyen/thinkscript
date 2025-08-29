@@ -65,7 +65,7 @@ def Asian_Q1_ProfileLow = if Asian_Q1_aftermarket and Asian_Q1_plotsDomain then 
 def basis      = if TickSize() > .01 then GetYYYYMMDD() else GetDay();
 def asiancount = if basis != basis[1] then  asiancount[1] + 1 else asiancount[1];
 def asiancond  = HighestAll(asiancount) - asiancount + 1;
-AddVerticalLine (if Show_Vertical_Line  and asiancond <= display_count then Asian_DrawLine else Double.NaN, "Asian", CreateColor(204, 255, 204), Curve.FIRM);
+AddVerticalLine (if Show_Vertical_Line and asiancond <= display_count then 1.0 else Double.NaN, "Asian", CreateColor(204, 255, 204), Curve.FIRM);
 
 plot Asian_Q1_hrange = if display_last_zone and asiancond > display_count then Double.NaN else Asian_Q1_ProfileHigh;
 plot Asian_Q1_lrange = if display_last_zone and asiancond > display_count  then Double.NaN else Asian_Q1_ProfileLow;
