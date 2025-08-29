@@ -6,7 +6,7 @@ input Show_Cloud = no;
 input Show_Cloud2 = no;
 input Show_Vertical_Line = yes;
 
-def Asian_DrawLine =
+
 
 
 ###############################################
