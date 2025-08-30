@@ -1,0 +1,51 @@
+# Expected Move Levels based on TOS Implied Vol
+# Author: VietRoadie
+
+input dailyEM = 0.0;   # Daily expected move (set to 0 for auto)
+input weeklyEM = 0.0;  # Weekly expected move (set to 0 for auto)
+input useAuto = yes;   # If yes, auto-calculate EM from IV, else use manual values
+input dailyIV = 0.0096;   # Daily IV (as decimal, e.g. 0.96% = 0.0096)
+input weeklyIV = 0.0217;  # Weekly IV (as decimal, e.g. 2.17% = 0.0217)
+input showBubbles = yes;
+
+def price = close;
+
+# Dynamically calculate EM if enabled
+def dEM = if useAuto then price * dailyIV else dailyEM;
+def wEM = if useAuto then price * weeklyIV else weeklyEM;
+
+# Daily levels
+def dailyHigh = price + dEM;
+def dailyLow  = price - dEM;
+
+# Weekly levels
+def weeklyHigh = price + wEM;
+def weeklyLow  = price - wEM;
+
+# Plot weekly range (double thickness, solid purple)
+plot WeeklyHigh = weeklyHigh;
+plot WeeklyLow  = weeklyLow;
+WeeklyHigh.SetDefaultColor(Color.MAGENTA);
+WeeklyHigh.SetLineWeight(3);
+WeeklyHigh.SetStyle(Curve.FIRM);
+WeeklyLow.SetDefaultColor(Color.MAGENTA);
+WeeklyLow.SetLineWeight(3);
+WeeklyLow.SetStyle(Curve.FIRM);
+
+# Plot daily range (light gray)
+plot DailyHigh = dailyHigh;
+plot DailyLow  = dailyLow;
+DailyHigh.SetDefaultColor(Color.LIGHT_GRAY);
+DailyHigh.SetLineWeight(1);
+DailyHigh.SetStyle(Curve.FIRM);
+DailyLow.SetDefaultColor(Color.LIGHT_GRAY);
+DailyLow.SetLineWeight(1);
+DailyLow.SetStyle(Curve.FIRM);
+
+# Bubble labels
+AddChartBubble(showBubbles and !IsNaN(WeeklyHigh), WeeklyHigh, "W Hi: " + AsPrice(WeeklyHigh), Color.MAGENTA, yes);
+AddChartBubble(showBubbles and !IsNaN(WeeklyLow), WeeklyLow, "W Lo: " + AsPrice(WeeklyLow), Color.MAGENTA, no);
+AddChartBubble(showBubbles and !IsNaN(DailyHigh), DailyHigh, "D Hi: " + AsPrice(DailyHigh), Color.LIGHT_GRAY, yes);
+AddChartBubble(showBubbles and !IsNaN(DailyLow), DailyLow, "D Lo: " + AsPrice(DailyLow), Color.LIGHT_GRAY, no);
+
+# End of script
