@@ -1,265 +1,62 @@
-# Expected Move Levels for 9/2/2025 and 9/2-9/5/2025
+# Expected Move Levels with Input Parameters
 # Author: VietRoadie
+# Modified to accept daily and weekly high/low as inputs
 
 input showBubbles = yes;
+input dailyHigh = 648.91;
+input dailyLow = 641.19;
+input weeklyHigh = 653.71;
+input weeklyLow = 636.39;
 
-def today = GetYYYYMMDD();
+# --- Daily Levels ---
+plot Daily_High = dailyHigh;
+plot Daily_Low = dailyLow;
+Daily_High.SetDefaultColor(Color.LIGHT_GRAY);
+Daily_High.SetLineWeight(1);
+Daily_High.SetStyle(Curve.FIRM);
+Daily_Low.SetDefaultColor(Color.LIGHT_GRAY);
+Daily_Low.SetLineWeight(1);
+Daily_Low.SetStyle(Curve.FIRM);
 
-# --- Daily Levels for 9/2/2025 ---
-def isDaily = today == 20250902;
-
-# SPY
-plot SPY_Daily_High = if isDaily and GetSymbol() == "SPY" then 648.91 else Double.NaN;
-plot SPY_Daily_Low  = if isDaily and GetSymbol() == "SPY" then 641.19 else Double.NaN;
-SPY_Daily_High.SetDefaultColor(Color.LIGHT_GRAY);
-SPY_Daily_High.SetLineWeight(1);
-SPY_Daily_High.SetStyle(Curve.FIRM);
-SPY_Daily_Low.SetDefaultColor(Color.LIGHT_GRAY);
-SPY_Daily_Low.SetLineWeight(1);
-SPY_Daily_Low.SetStyle(Curve.FIRM);
-
-# SPX
-plot SPX_Daily_High = if isDaily and GetSymbol() == "SPX" then 6501.60 else Double.NaN;
-plot SPX_Daily_Low  = if isDaily and GetSymbol() == "SPX" then 6418.92 else Double.NaN;
-SPX_Daily_High.SetDefaultColor(Color.LIGHT_GRAY);
-SPX_Daily_High.SetLineWeight(1);
-SPX_Daily_High.SetStyle(Curve.FIRM);
-SPX_Daily_Low.SetDefaultColor(Color.LIGHT_GRAY);
-SPX_Daily_Low.SetLineWeight(1);
-SPX_Daily_Low.SetStyle(Curve.FIRM);
-
-# XSP
-plot XSP_Daily_High = if isDaily and GetSymbol() == "XSP" then 650.00 else Double.NaN;
-plot XSP_Daily_Low  = if isDaily and GetSymbol() == "XSP" then 642.06 else Double.NaN;
-XSP_Daily_High.SetDefaultColor(Color.LIGHT_GRAY);
-XSP_Daily_High.SetLineWeight(1);
-XSP_Daily_High.SetStyle(Curve.FIRM);
-XSP_Daily_Low.SetDefaultColor(Color.LIGHT_GRAY);
-XSP_Daily_Low.SetLineWeight(1);
-XSP_Daily_Low.SetStyle(Curve.FIRM);
-
-# QQQ
-plot QQQ_Daily_High = if isDaily and GetSymbol() == "QQQ" then 575.59 else Double.NaN;
-plot QQQ_Daily_Low  = if isDaily and GetSymbol() == "QQQ" then 565.21 else Double.NaN;
-QQQ_Daily_High.SetDefaultColor(Color.LIGHT_GRAY);
-QQQ_Daily_High.SetLineWeight(1);
-QQQ_Daily_High.SetStyle(Curve.FIRM);
-QQQ_Daily_Low.SetDefaultColor(Color.LIGHT_GRAY);
-QQQ_Daily_Low.SetLineWeight(1);
-QQQ_Daily_Low.SetStyle(Curve.FIRM);
-
-# IWM
-plot IWM_Daily_High = if isDaily and GetSymbol() == "IWM" then 237.30 else Double.NaN;
-plot IWM_Daily_Low  = if isDaily and GetSymbol() == "IWM" then 233.04 else Double.NaN;
-IWM_Daily_High.SetDefaultColor(Color.LIGHT_GRAY);
-IWM_Daily_High.SetLineWeight(1);
-IWM_Daily_High.SetStyle(Curve.FIRM);
-IWM_Daily_Low.SetDefaultColor(Color.LIGHT_GRAY);
-IWM_Daily_Low.SetLineWeight(1);
-IWM_Daily_Low.SetStyle(Curve.FIRM);
-
-# --- Weekly Levels for 9/2-9/5/2025 ---
-def isWeekly = today >= 20250902 and today <= 20250905;
-
-# SPY
-plot SPY_Weekly_High = if isWeekly and GetSymbol() == "SPY" then 653.71 else Double.NaN;
-plot SPY_Weekly_Low  = if isWeekly and GetSymbol() == "SPY" then 636.39 else Double.NaN;
-SPY_Weekly_High.SetDefaultColor(Color.MAGENTA);
-SPY_Weekly_High.SetLineWeight(3);
-SPY_Weekly_High.SetStyle(Curve.FIRM);
-SPY_Weekly_Low.SetDefaultColor(Color.MAGENTA);
-SPY_Weekly_Low.SetLineWeight(3);
-SPY_Weekly_Low.SetStyle(Curve.FIRM);
-
-# SPX
-plot SPX_Weekly_High = if isWeekly and GetSymbol() == "SPX" then 6547.02 else Double.NaN;
-plot SPX_Weekly_Low  = if isWeekly and GetSymbol() == "SPX" then 6373.50 else Double.NaN;
-SPX_Weekly_High.SetDefaultColor(Color.MAGENTA);
-SPX_Weekly_High.SetLineWeight(3);
-SPX_Weekly_High.SetStyle(Curve.FIRM);
-SPX_Weekly_Low.SetDefaultColor(Color.MAGENTA);
-SPX_Weekly_Low.SetLineWeight(3);
-SPX_Weekly_Low.SetStyle(Curve.FIRM);
-
-# XSP
-plot XSP_Weekly_High = if isWeekly and GetSymbol() == "XSP" then 654.62 else Double.NaN;
-plot XSP_Weekly_Low  = if isWeekly and GetSymbol() == "XSP" then 637.44 else Double.NaN;
-XSP_Weekly_High.SetDefaultColor(Color.MAGENTA);
-XSP_Weekly_High.SetLineWeight(3);
-XSP_Weekly_High.SetStyle(Curve.FIRM);
-XSP_Weekly_Low.SetDefaultColor(Color.MAGENTA);
-XSP_Weekly_Low.SetLineWeight(3);
-XSP_Weekly_Low.SetStyle(Curve.FIRM);
-
-# QQQ
-plot QQQ_Weekly_High = if isWeekly and GetSymbol() == "QQQ" then 581.07 else Double.NaN;
-plot QQQ_Weekly_Low  = if isWeekly and GetSymbol() == "QQQ" then 559.73 else Double.NaN;
-QQQ_Weekly_High.SetDefaultColor(Color.MAGENTA);
-QQQ_Weekly_High.SetLineWeight(3);
-QQQ_Weekly_High.SetStyle(Curve.FIRM);
-QQQ_Weekly_Low.SetDefaultColor(Color.MAGENTA);
-QQQ_Weekly_Low.SetLineWeight(3);
-QQQ_Weekly_Low.SetStyle(Curve.FIRM);
-
-# IWM
-plot IWM_Weekly_High = if isWeekly and GetSymbol() == "IWM" then 240.23 else Double.NaN;
-plot IWM_Weekly_Low  = if isWeekly and GetSymbol() == "IWM" then 230.11 else Double.NaN;
-IWM_Weekly_High.SetDefaultColor(Color.MAGENTA);
-IWM_Weekly_High.SetLineWeight(3);
-IWM_Weekly_High.SetStyle(Curve.FIRM);
-IWM_Weekly_Low.SetDefaultColor(Color.MAGENTA);
-IWM_Weekly_Low.SetLineWeight(3);
-IWM_Weekly_Low.SetStyle(Curve.FIRM);
+# --- Weekly Levels ---
+plot Weekly_High = weeklyHigh;
+plot Weekly_Low = weeklyLow;
+Weekly_High.SetDefaultColor(Color.MAGENTA);
+Weekly_High.SetLineWeight(3);
+Weekly_High.SetStyle(Curve.FIRM);
+Weekly_Low.SetDefaultColor(Color.MAGENTA);
+Weekly_Low.SetLineWeight(3);
+Weekly_Low.SetStyle(Curve.FIRM);
 
 # --- Bubbles (only show one bubble per level, at the last bar) ---
 def lastBarNum = HighestAll(BarNumber());
 def showBubbleBar = BarNumber() == lastBarNum;
 
 AddChartBubble(
-    showBubbles and showBubbleBar and !IsNaN(SPY_Weekly_High),
-    SPY_Weekly_High,
-    "W Hi: 653.71",
+    showBubbles and showBubbleBar,
+    Weekly_High,
+    "Expected Weekly High: " + weeklyHigh,
     Color.MAGENTA,
     yes
 );
 AddChartBubble(
-    showBubbles and showBubbleBar and !IsNaN(SPY_Weekly_Low),
-    SPY_Weekly_Low,
-    "W Lo: 636.39",
-    Color.MAGENTA,
-    no
-);
-AddChartBubble(
-    showBubbles and showBubbleBar and !IsNaN(SPY_Daily_High),
-    SPY_Daily_High,
-    "D Hi: 648.91",
-    Color.LIGHT_GRAY,
-    yes
-);
-AddChartBubble(
-    showBubbles and showBubbleBar and !IsNaN(SPY_Daily_Low),
-    SPY_Daily_Low,
-    "D Lo: 641.19",
-    Color.LIGHT_GRAY,
-    no
-);
-
-
-AddChartBubble(
-    showBubbles and showBubbleBar and !IsNaN(SPX_Weekly_High),
-    SPX_Weekly_High,
-    "W Hi: 6547.02",
-    Color.MAGENTA,
-    yes
-);
-AddChartBubble(
-    showBubbles and showBubbleBar and !IsNaN(SPX_Weekly_Low),
-    SPX_Weekly_Low,
-    "W Lo: 6373.50",
+    showBubbles and showBubbleBar,
+    Weekly_Low,
+    "Expected Weekly Low: " + weeklyLow,
     Color.MAGENTA,
     no
 );
 AddChartBubble(
-    showBubbles and showBubbleBar and !IsNaN(SPX_Daily_High),
-    SPX_Daily_High,
-    "D Hi: 6501.60",
+    showBubbles and showBubbleBar,
+    Daily_High,
+    "Expected Daily High: " + dailyHigh,
     Color.LIGHT_GRAY,
     yes
 );
 AddChartBubble(
-    showBubbles and showBubbleBar and !IsNaN(SPX_Daily_Low),
-    SPX_Daily_Low,
-    "D Lo: 6418.92",
-    Color.LIGHT_GRAY,
-    no
-);
-
-
-AddChartBubble(
-    showBubbles and showBubbleBar and !IsNaN(XSP_Weekly_High),
-    XSP_Weekly_High,
-    "W Hi: 654.62",
-    Color.MAGENTA,
-    yes
-);
-AddChartBubble(
-    showBubbles and showBubbleBar and !IsNaN(XSP_Weekly_Low),
-    XSP_Weekly_Low,
-    "W Lo: 637.44",
-    Color.MAGENTA,
-    no
-);
-AddChartBubble(
-    showBubbles and showBubbleBar and !IsNaN(XSP_Daily_High),
-    XSP_Daily_High,
-    "D Hi: 650.00",
-    Color.LIGHT_GRAY,
-    yes
-);
-AddChartBubble(
-    showBubbles and showBubbleBar and !IsNaN(XSP_Daily_Low),
-    XSP_Daily_Low,
-    "D Lo: 642.06",
-    Color.LIGHT_GRAY,
-    no
-);
-
-
-AddChartBubble(
-    showBubbles and showBubbleBar and !IsNaN(QQQ_Weekly_High),
-    QQQ_Weekly_High,
-    "W Hi: 581.07",
-    Color.MAGENTA,
-    yes
-);
-AddChartBubble(
-    showBubbles and showBubbleBar and !IsNaN(QQQ_Weekly_Low),
-    QQQ_Weekly_Low,
-    "W Lo: 559.73",
-    Color.MAGENTA,
-    no
-);
-AddChartBubble(
-    showBubbles and showBubbleBar and !IsNaN(QQQ_Daily_High),
-    QQQ_Daily_High,
-    "D Hi: 575.59",
-    Color.LIGHT_GRAY,
-    yes
-);
-AddChartBubble(
-    showBubbles and showBubbleBar and !IsNaN(QQQ_Daily_Low),
-    QQQ_Daily_Low,
-    "D Lo: 565.21",
-    Color.LIGHT_GRAY,
-    no
-);
-
-
-AddChartBubble(
-    showBubbles and showBubbleBar and !IsNaN(IWM_Weekly_High),
-    IWM_Weekly_High,
-    "W Hi: 240.23",
-    Color.MAGENTA,
-    yes
-);
-AddChartBubble(
-    showBubbles and showBubbleBar and !IsNaN(IWM_Weekly_Low),
-    IWM_Weekly_Low,
-    "W Lo: 230.11",
-    Color.MAGENTA,
-    no
-);
-AddChartBubble(
-    showBubbles and showBubbleBar and !IsNaN(IWM_Daily_High),
-    IWM_Daily_High,
-    "D Hi: 237.30",
-    Color.LIGHT_GRAY,
-    yes
-);
-AddChartBubble(
-    showBubbles and showBubbleBar and !IsNaN(IWM_Daily_Low),
-    IWM_Daily_Low,
-    "D Lo: 233.04",
+    showBubbles and showBubbleBar,
+    Daily_Low,
+    "Expected Daily Low: " + dailyLow,
     Color.LIGHT_GRAY,
     no
 );
