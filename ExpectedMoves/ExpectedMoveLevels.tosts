@@ -1,6 +1,5 @@
 # Expected Move Levels with Auto-Default Values by Symbol
 # Author: VietRoadie
-# Auto-defaults to correct values based on symbol
 
 input showBubbles = yes;
 input dailyHigh = 0.0;
@@ -8,52 +7,51 @@ input dailyLow = 0.0;
 input weeklyHigh = 0.0;
 input weeklyLow = 0.0;
 
-# Get current symbol
-def symbol = GetSymbol();
+def symbolSPY = GetSymbol() == "SPY";
+def symbolSPX = GetSymbol() == "SPX";
+def symbolXSP = GetSymbol() == "XSP";
+def symbolQQQ = GetSymbol() == "QQQ";
+def symbolIWM = GetSymbol() == "IWM";
 
-# Auto-default daily values based on symbol (if inputs are 0)
-def defaultDailyHigh = 
-    if symbol == "SPY" then 648.91
-    else if symbol == "SPX" then 6501.60
-    else if symbol == "XSP" then 650.00
-    else if symbol == "QQQ" then 575.59
-    else if symbol == "IWM" then 237.30
-    else 0.0;
+def defaultDailyHigh =
+    if symbolSPY then 648.91
+    else if symbolSPX then 6501.60
+    else if symbolXSP then 650.00
+    else if symbolQQQ then 575.59
+    else if symbolIWM then 237.30
+    else Double.NaN;
 
-def defaultDailyLow = 
-    if symbol == "SPY" then 641.19
-    else if symbol == "SPX" then 6418.92
-    else if symbol == "XSP" then 642.06
-    else if symbol == "QQQ" then 565.21
-    else if symbol == "IWM" then 233.04
-    else 0.0;
+def defaultDailyLow =
+    if symbolSPY then 641.19
+    else if symbolSPX then 6418.92
+    else if symbolXSP then 642.06
+    else if symbolQQQ then 565.21
+    else if symbolIWM then 233.04
+    else Double.NaN;
 
-# Auto-default weekly values based on symbol (if inputs are 0)
-def defaultWeeklyHigh = 
-    if symbol == "SPY" then 653.71
-    else if symbol == "SPX" then 6547.02
-    else if symbol == "XSP" then 654.62
-    else if symbol == "QQQ" then 581.07
-    else if symbol == "IWM" then 240.23
-    else 0.0;
+def defaultWeeklyHigh =
+    if symbolSPY then 653.71
+    else if symbolSPX then 6547.02
+    else if symbolXSP then 654.62
+    else if symbolQQQ then 581.07
+    else if symbolIWM then 240.23
+    else Double.NaN;
 
-def defaultWeeklyLow = 
-    if symbol == "SPY" then 636.39
-    else if symbol == "SPX" then 6373.50
-    else if symbol == "XSP" then 637.44
-    else if symbol == "QQQ" then 559.73
-    else if symbol == "IWM" then 230.11
-    else 0.0;
+def defaultWeeklyLow =
+    if symbolSPY then 636.39
+    else if symbolSPX then 6373.50
+    else if symbolXSP then 637.44
+    else if symbolQQQ then 559.73
+    else if symbolIWM then 230.11
+    else Double.NaN;
 
-# Use input values if provided, otherwise use auto-defaults
 def activeDailyHigh = if dailyHigh != 0 then dailyHigh else defaultDailyHigh;
 def activeDailyLow = if dailyLow != 0 then dailyLow else defaultDailyLow;
 def activeWeeklyHigh = if weeklyHigh != 0 then weeklyHigh else defaultWeeklyHigh;
 def activeWeeklyLow = if weeklyLow != 0 then weeklyLow else defaultWeeklyLow;
 
-# --- Daily Levels ---
-plot Daily_High = if activeDailyHigh != 0 then activeDailyHigh else Double.NaN;
-plot Daily_Low = if activeDailyLow != 0 then activeDailyLow else Double.NaN;
+plot Daily_High = activeDailyHigh;
+plot Daily_Low = activeDailyLow;
 Daily_High.SetDefaultColor(Color.LIGHT_GRAY);
 Daily_High.SetLineWeight(1);
 Daily_High.SetStyle(Curve.FIRM);
@@ -61,9 +59,8 @@ Daily_Low.SetDefaultColor(Color.LIGHT_GRAY);
 Daily_Low.SetLineWeight(1);
 Daily_Low.SetStyle(Curve.FIRM);
 
-# --- Weekly Levels ---
-plot Weekly_High = if activeWeeklyHigh != 0 then activeWeeklyHigh else Double.NaN;
-plot Weekly_Low = if activeWeeklyLow != 0 then activeWeeklyLow else Double.NaN;
+plot Weekly_High = activeWeeklyHigh;
+plot Weekly_Low = activeWeeklyLow;
 Weekly_High.SetDefaultColor(Color.MAGENTA);
 Weekly_High.SetLineWeight(3);
 Weekly_High.SetStyle(Curve.FIRM);
@@ -71,9 +68,9 @@ Weekly_Low.SetDefaultColor(Color.MAGENTA);
 Weekly_Low.SetLineWeight(3);
 Weekly_Low.SetStyle(Curve.FIRM);
 
-# --- Bubbles (only show one bubble per level, at the last bar) ---
 def lastBarNum = HighestAll(BarNumber());
 def showBubbleBar = BarNumber() == lastBarNum;
+def offset = 5; # number of bars to the left from the last bar
 
 AddChartBubble(
     showBubbles and showBubbleBar and !IsNaN(Weekly_High),
@@ -103,5 +100,10 @@ AddChartBubble(
     Color.LIGHT_GRAY,
     no
 );
+
+AddLabel(showBubbles and !IsNaN(Weekly_High), "W Hi: " + activeWeeklyHigh, Color.MAGENTA);
+AddLabel(showBubbles and !IsNaN(Weekly_Low), "W Lo: " + activeWeeklyLow, Color.MAGENTA);
+AddLabel(showBubbles and !IsNaN(Daily_High), "D Hi: " + activeDailyHigh, Color.LIGHT_GRAY);
+AddLabel(showBubbles and !IsNaN(Daily_Low), "D Lo: " + activeDailyLow, Color.LIGHT_GRAY);
 
 # End of script
