@@ -23,29 +23,29 @@ def weeklyHigh = price + wEM;
 def weeklyLow  = price - wEM;
 
 # Plot weekly range (double thickness, solid purple)
-plot WeeklyHigh = weeklyHigh;
-plot WeeklyLow  = weeklyLow;
-WeeklyHigh.SetDefaultColor(Color.MAGENTA);
-WeeklyHigh.SetLineWeight(3);
-WeeklyHigh.SetStyle(Curve.FIRM);
-WeeklyLow.SetDefaultColor(Color.MAGENTA);
-WeeklyLow.SetLineWeight(3);
-WeeklyLow.SetStyle(Curve.FIRM);
+plot WeeklyHighPlot = weeklyHigh;
+plot WeeklyLowPlot  = weeklyLow;
+WeeklyHighPlot.SetDefaultColor(Color.MAGENTA);
+WeeklyHighPlot.SetLineWeight(3);
+WeeklyHighPlot.SetStyle(Curve.FIRM);
+WeeklyLowPlot.SetDefaultColor(Color.MAGENTA);
+WeeklyLowPlot.SetLineWeight(3);
+WeeklyLowPlot.SetStyle(Curve.FIRM);
 
 # Plot daily range (light gray)
-plot DailyHigh = dailyHigh;
-plot DailyLow  = dailyLow;
-DailyHigh.SetDefaultColor(Color.LIGHT_GRAY);
-DailyHigh.SetLineWeight(1);
-DailyHigh.SetStyle(Curve.FIRM);
-DailyLow.SetDefaultColor(Color.LIGHT_GRAY);
-DailyLow.SetLineWeight(1);
-DailyLow.SetStyle(Curve.FIRM);
+plot DailyHighPlot = dailyHigh;
+plot DailyLowPlot  = dailyLow;
+DailyHighPlot.SetDefaultColor(Color.LIGHT_GRAY);
+DailyHighPlot.SetLineWeight(1);
+DailyHighPlot.SetStyle(Curve.FIRM);
+DailyLowPlot.SetDefaultColor(Color.LIGHT_GRAY);
+DailyLowPlot.SetLineWeight(1);
+DailyLowPlot.SetStyle(Curve.FIRM);
 
 # Bubble labels
-AddChartBubble(showBubbles and !IsNaN(WeeklyHigh), WeeklyHigh, "W Hi: " + AsPrice(WeeklyHigh), Color.MAGENTA, yes);
-AddChartBubble(showBubbles and !IsNaN(WeeklyLow), WeeklyLow, "W Lo: " + AsPrice(WeeklyLow), Color.MAGENTA, no);
-AddChartBubble(showBubbles and !IsNaN(DailyHigh), DailyHigh, "D Hi: " + AsPrice(DailyHigh), Color.LIGHT_GRAY, yes);
-AddChartBubble(showBubbles and !IsNaN(DailyLow), DailyLow, "D Lo: " + AsPrice(DailyLow), Color.LIGHT_GRAY, no);
+AddChartBubble(showBubbles and !IsNaN(weeklyHigh), weeklyHigh, "W Hi: " + AsPrice(weeklyHigh), Color.MAGENTA, yes);
+AddChartBubble(showBubbles and !IsNaN(weeklyLow), weeklyLow, "W Lo: " + AsPrice(weeklyLow), Color.MAGENTA, no);
+AddChartBubble(showBubbles and !IsNaN(dailyHigh), dailyHigh, "D Hi: " + AsPrice(dailyHigh), Color.LIGHT_GRAY, yes);
+AddChartBubble(showBubbles and !IsNaN(dailyLow), dailyLow, "D Lo: " + AsPrice(dailyLow), Color.LIGHT_GRAY, no);
 
 # End of script
