@@ -1,0 +1,269 @@
+## Gamma Strikes (OI or Volume) — Cleaned Study
+## Plots horizontal strike lines and optional bubbles sized by net GEX (Calls − Puts)
+## Data source toggle: Open Interest or Live Volume
+## Author: VietRoadie (cleaned)
+
+declare upper;
+declare once_per_bar;
+
+# =========================
+# Inputs
+# =========================
+input dataSource = {default "OpenInterest", "Volume"};
+input strikes = 10;              # number of steps above/below base to compute (max handled below)
+input strikeSpacing = 5.0;       # 5 for SPY, 1 for SPX, 0.5 for QQQ, etc.
+
+input ManuallySetExpiration = {default "false", "true"};
+input Expiration_YYMMDD = 0;     # e.g., 250902 for Sep 02, 2025
+
+input showLines = yes;
+input showBubbles = yes;
+input threshold = 250;           # threshold in displayed units (K if Volume, M if OI)
+
+input manualCenterStrike = {default "false", "true"};
+input centerStrike = 0.0;        # set when manualCenterStrike = true
+
+# =========================
+# Setup and helpers
+# =========================
+DefineGlobalColor("Pos", Color.GREEN);
+DefineGlobalColor("Neg", Color.RED);
+DefineGlobalColor("VolLabel", Color.CYAN);
+
+def S = close();
+def IV = imp_volatility(GetSymbol());
+
+def DateString_auto = GetYYYYMMDD() - 20000000;          # YYMMDD
+def seconds_left = SecondsTillTime(1615);
+def hours_left = seconds_left / 3600;
+def days_left = if hours_left <= 0 then 0 else hours_left / 24;
+def DateString = if ManuallySetExpiration then Expiration_YYMMDD else DateString_auto;
+def t = ((DateString - DateString_auto) + days_left) / 365;
+
+# Strike base around open (daily) unless manual
+def rounding_factor = if strikeSpacing > 1 and strikeSpacing < 25 then -1 else if strikeSpacing > 24 then -2 else 0;
+def openlevel = open(period = AggregationPeriod.DAY);
+def base_strike = if manualCenterStrike then centerStrike else Round(openlevel, rounding_factor);
+
+# Gamma via BS approx (same approach used in existing repo scripts)
+def Sqr_IV_2 = Sqr(IV) / 2 * t;
+def Sqrt_t_iv = IV * Sqrt(t);
+def Sqrt_pi = Sqrt(2 * Double.Pi);
+def Sqrt_t_iv_S = S * IV * Sqrt(t);
+
+Script BS_GAMMA {
+    input strike = 0.0;
+    input S = 0.0;
+    input Sqr_IV_2 = 0.0;
+    input Sqrt_t_iv = 0.0;
+    input Sqrt_pi = 0.0;
+    input Sqrt_t_iv_S = 0.0;
+    plot gamma = (Exp(-(Sqr((Log(S / strike) + Sqr_IV_2) / Sqrt_t_iv) / 2)) / Sqrt_pi) / Sqrt_t_iv_S;
+}
+
+# Build option symbols helper
+Script OPT_DATA {
+    input strike = 0.0;
+    input dt = 0;     # YYMMDD
+    def callSym = "." + GetSymbol() + AsPrice(dt) + "C" + AsPrice(strike);
+    def putSym  = "." + GetSymbol() + AsPrice(dt) + "P" + AsPrice(strike);
+    plot callOI  = if IsNaN(open_interest(callSym)) then 0 else open_interest(callSym);
+    plot putOI   = if IsNaN(open_interest(putSym)) then 0 else open_interest(putSym);
+    plot callVol = if IsNaN(volume(callSym)) then 0 else volume(callSym);
+    plot putVol  = if IsNaN(volume(putSym)) then 0 else volume(putSym);
+}
+
+# Unit scaling: show K for Volume, M for OI (matches repo conventions)
+def useVol = dataSource == dataSource."Volume";
+def scale = if useVol then 1000 else 10000;   # Volume in K, OI in M
+
+# =========================
+# Enumerate strikes ±N (up to ±10 supported)
+# =========================
+def k0  = base_strike;
+def k1p = base_strike + strikeSpacing;
+def k2p = base_strike + strikeSpacing * 2;
+def k3p = base_strike + strikeSpacing * 3;
+def k4p = base_strike + strikeSpacing * 4;
+def k5p = base_strike + strikeSpacing * 5;
+def k6p = base_strike + strikeSpacing * 6;
+def k7p = base_strike + strikeSpacing * 7;
+def k8p = base_strike + strikeSpacing * 8;
+def k9p = base_strike + strikeSpacing * 9;
+def k10p = base_strike + strikeSpacing * 10;
+
+def k1m = base_strike - strikeSpacing;
+def k2m = base_strike - strikeSpacing * 2;
+def k3m = base_strike - strikeSpacing * 3;
+def k4m = base_strike - strikeSpacing * 4;
+def k5m = base_strike - strikeSpacing * 5;
+def k6m = base_strike - strikeSpacing * 6;
+def k7m = base_strike - strikeSpacing * 7;
+def k8m = base_strike - strikeSpacing * 8;
+def k9m = base_strike - strikeSpacing * 9;
+def k10m = base_strike - strikeSpacing * 10;
+
+# Gamma per strike
+def g0  = BS_GAMMA(k0,   S, Sqr_IV_2, Sqrt_t_iv, Sqrt_pi, Sqrt_t_iv_S);
+def g1p = BS_GAMMA(k1p,  S, Sqr_IV_2, Sqrt_t_iv, Sqrt_pi, Sqrt_t_iv_S);
+def g2p = BS_GAMMA(k2p,  S, Sqr_IV_2, Sqrt_t_iv, Sqrt_pi, Sqrt_t_iv_S);
+def g3p = BS_GAMMA(k3p,  S, Sqr_IV_2, Sqrt_t_iv, Sqrt_pi, Sqrt_t_iv_S);
+def g4p = BS_GAMMA(k4p,  S, Sqr_IV_2, Sqrt_t_iv, Sqrt_pi, Sqrt_t_iv_S);
+def g5p = BS_GAMMA(k5p,  S, Sqr_IV_2, Sqrt_t_iv, Sqrt_pi, Sqrt_t_iv_S);
+def g6p = BS_GAMMA(k6p,  S, Sqr_IV_2, Sqrt_t_iv, Sqrt_pi, Sqrt_t_iv_S);
+def g7p = BS_GAMMA(k7p,  S, Sqr_IV_2, Sqrt_t_iv, Sqrt_pi, Sqrt_t_iv_S);
+def g8p = BS_GAMMA(k8p,  S, Sqr_IV_2, Sqrt_t_iv, Sqrt_pi, Sqrt_t_iv_S);
+def g9p = BS_GAMMA(k9p,  S, Sqr_IV_2, Sqrt_t_iv, Sqrt_pi, Sqrt_t_iv_S);
+def g10p = BS_GAMMA(k10p, S, Sqr_IV_2, Sqrt_t_iv, Sqrt_pi, Sqrt_t_iv_S);
+
+def g1m = BS_GAMMA(k1m,  S, Sqr_IV_2, Sqrt_t_iv, Sqrt_pi, Sqrt_t_iv_S);
+def g2m = BS_GAMMA(k2m,  S, Sqr_IV_2, Sqrt_t_iv, Sqrt_pi, Sqrt_t_iv_S);
+def g3m = BS_GAMMA(k3m,  S, Sqr_IV_2, Sqrt_t_iv, Sqrt_pi, Sqrt_t_iv_S);
+def g4m = BS_GAMMA(k4m,  S, Sqr_IV_2, Sqrt_t_iv, Sqrt_pi, Sqrt_t_iv_S);
+def g5m = BS_GAMMA(k5m,  S, Sqr_IV_2, Sqrt_t_iv, Sqrt_pi, Sqrt_t_iv_S);
+def g6m = BS_GAMMA(k6m,  S, Sqr_IV_2, Sqrt_t_iv, Sqrt_pi, Sqrt_t_iv_S);
+def g7m = BS_GAMMA(k7m,  S, Sqr_IV_2, Sqrt_t_iv, Sqrt_pi, Sqrt_t_iv_S);
+def g8m = BS_GAMMA(k8m,  S, Sqr_IV_2, Sqrt_t_iv, Sqrt_pi, Sqrt_t_iv_S);
+def g9m = BS_GAMMA(k9m,  S, Sqr_IV_2, Sqrt_t_iv, Sqrt_pi, Sqrt_t_iv_S);
+def g10m = BS_GAMMA(k10m, S, Sqr_IV_2, Sqrt_t_iv, Sqrt_pi, Sqrt_t_iv_S);
+
+# Pull opt data and compute net GEX per strike
+Script STRIKE_GEX {
+    input strike = 0.0;
+    input dt = 0;
+    input gamma = 0.0;
+    input S = 0.0;
+    input useVol = 0;
+    input scale = 1;
+    def callSym = "." + GetSymbol() + AsPrice(dt) + "C" + AsPrice(strike);
+    def putSym  = "." + GetSymbol() + AsPrice(dt) + "P" + AsPrice(strike);
+    def cOI = if IsNaN(open_interest(callSym)) then 0 else open_interest(callSym);
+    def pOI = if IsNaN(open_interest(putSym))  then 0 else open_interest(putSym);
+    def cV  = if IsNaN(volume(callSym))       then 0 else volume(callSym);
+    def pV  = if IsNaN(volume(putSym))        then 0 else volume(putSym);
+    def diff = if useVol then (cV - pV) else (cOI - pOI);
+    plot gex = Round((diff * gamma * S) / scale, 0);
+}
+
+def gex0  = STRIKE_GEX(k0,  DateString, g0,  S, useVol, scale).gex;
+def gex1p = STRIKE_GEX(k1p, DateString, g1p, S, useVol, scale).gex;
+def gex2p = STRIKE_GEX(k2p, DateString, g2p, S, useVol, scale).gex;
+def gex3p = STRIKE_GEX(k3p, DateString, g3p, S, useVol, scale).gex;
+def gex4p = STRIKE_GEX(k4p, DateString, g4p, S, useVol, scale).gex;
+def gex5p = STRIKE_GEX(k5p, DateString, g5p, S, useVol, scale).gex;
+def gex6p = STRIKE_GEX(k6p, DateString, g6p, S, useVol, scale).gex;
+def gex7p = STRIKE_GEX(k7p, DateString, g7p, S, useVol, scale).gex;
+def gex8p = STRIKE_GEX(k8p, DateString, g8p, S, useVol, scale).gex;
+def gex9p = STRIKE_GEX(k9p, DateString, g9p, S, useVol, scale).gex;
+def gex10p = STRIKE_GEX(k10p, DateString, g10p, S, useVol, scale).gex;
+
+def gex1m = STRIKE_GEX(k1m, DateString, g1m, S, useVol, scale).gex;
+def gex2m = STRIKE_GEX(k2m, DateString, g2m, S, useVol, scale).gex;
+def gex3m = STRIKE_GEX(k3m, DateString, g3m, S, useVol, scale).gex;
+def gex4m = STRIKE_GEX(k4m, DateString, g4m, S, useVol, scale).gex;
+def gex5m = STRIKE_GEX(k5m, DateString, g5m, S, useVol, scale).gex;
+def gex6m = STRIKE_GEX(k6m, DateString, g6m, S, useVol, scale).gex;
+def gex7m = STRIKE_GEX(k7m, DateString, g7m, S, useVol, scale).gex;
+def gex8m = STRIKE_GEX(k8m, DateString, g8m, S, useVol, scale).gex;
+def gex9m = STRIKE_GEX(k9m, DateString, g9m, S, useVol, scale).gex;
+def gex10m = STRIKE_GEX(k10m, DateString, g10m, S, useVol, scale).gex;
+
+# =========================
+# Plots: Horizontal lines at strikes, colored by sign; optional bubbles when above threshold
+# =========================
+plot k0line  = if showLines and AbsValue(gex0)  > threshold then k0  else Double.NaN;
+plot k1pline = if showLines and strikes > 0 and AbsValue(gex1p) > threshold then k1p else Double.NaN;
+plot k2pline = if showLines and strikes > 1 and AbsValue(gex2p) > threshold then k2p else Double.NaN;
+plot k3pline = if showLines and strikes > 2 and AbsValue(gex3p) > threshold then k3p else Double.NaN;
+plot k4pline = if showLines and strikes > 3 and AbsValue(gex4p) > threshold then k4p else Double.NaN;
+plot k5pline = if showLines and strikes > 4 and AbsValue(gex5p) > threshold then k5p else Double.NaN;
+plot k6pline = if showLines and strikes > 5 and AbsValue(gex6p) > threshold then k6p else Double.NaN;
+plot k7pline = if showLines and strikes > 6 and AbsValue(gex7p) > threshold then k7p else Double.NaN;
+plot k8pline = if showLines and strikes > 7 and AbsValue(gex8p) > threshold then k8p else Double.NaN;
+plot k9pline = if showLines and strikes > 8 and AbsValue(gex9p) > threshold then k9p else Double.NaN;
+plot k10pline = if showLines and strikes > 9 and AbsValue(gex10p) > threshold then k10p else Double.NaN;
+
+plot k1mline = if showLines and strikes > 0 and AbsValue(gex1m) > threshold then k1m else Double.NaN;
+plot k2mline = if showLines and strikes > 1 and AbsValue(gex2m) > threshold then k2m else Double.NaN;
+plot k3mline = if showLines and strikes > 2 and AbsValue(gex3m) > threshold then k3m else Double.NaN;
+plot k4mline = if showLines and strikes > 3 and AbsValue(gex4m) > threshold then k4m else Double.NaN;
+plot k5mline = if showLines and strikes > 4 and AbsValue(gex5m) > threshold then k5m else Double.NaN;
+plot k6mline = if showLines and strikes > 5 and AbsValue(gex6m) > threshold then k6m else Double.NaN;
+plot k7mline = if showLines and strikes > 6 and AbsValue(gex7m) > threshold then k7m else Double.NaN;
+plot k8mline = if showLines and strikes > 7 and AbsValue(gex8m) > threshold then k8m else Double.NaN;
+plot k9mline = if showLines and strikes > 8 and AbsValue(gex9m) > threshold then k9m else Double.NaN;
+plot k10mline = if showLines and strikes > 9 and AbsValue(gex10m) > threshold then k10m else Double.NaN;
+
+k0line.AssignValueColor(if gex0 >= 0 then GlobalColor("Pos") else GlobalColor("Neg"));
+k1pline.AssignValueColor(if gex1p >= 0 then GlobalColor("Pos") else GlobalColor("Neg"));
+k2pline.AssignValueColor(if gex2p >= 0 then GlobalColor("Pos") else GlobalColor("Neg"));
+k3pline.AssignValueColor(if gex3p >= 0 then GlobalColor("Pos") else GlobalColor("Neg"));
+k4pline.AssignValueColor(if gex4p >= 0 then GlobalColor("Pos") else GlobalColor("Neg"));
+k5pline.AssignValueColor(if gex5p >= 0 then GlobalColor("Pos") else GlobalColor("Neg"));
+k6pline.AssignValueColor(if gex6p >= 0 then GlobalColor("Pos") else GlobalColor("Neg"));
+k7pline.AssignValueColor(if gex7p >= 0 then GlobalColor("Pos") else GlobalColor("Neg"));
+k8pline.AssignValueColor(if gex8p >= 0 then GlobalColor("Pos") else GlobalColor("Neg"));
+k9pline.AssignValueColor(if gex9p >= 0 then GlobalColor("Pos") else GlobalColor("Neg"));
+k10pline.AssignValueColor(if gex10p >= 0 then GlobalColor("Pos") else GlobalColor("Neg"));
+
+k1mline.AssignValueColor(if gex1m >= 0 then GlobalColor("Pos") else GlobalColor("Neg"));
+k2mline.AssignValueColor(if gex2m >= 0 then GlobalColor("Pos") else GlobalColor("Neg"));
+k3mline.AssignValueColor(if gex3m >= 0 then GlobalColor("Pos") else GlobalColor("Neg"));
+k4mline.AssignValueColor(if gex4m >= 0 then GlobalColor("Pos") else GlobalColor("Neg"));
+k5mline.AssignValueColor(if gex5m >= 0 then GlobalColor("Pos") else GlobalColor("Neg"));
+k6mline.AssignValueColor(if gex6m >= 0 then GlobalColor("Pos") else GlobalColor("Neg"));
+k7mline.AssignValueColor(if gex7m >= 0 then GlobalColor("Pos") else GlobalColor("Neg"));
+k8mline.AssignValueColor(if gex8m >= 0 then GlobalColor("Pos") else GlobalColor("Neg"));
+k9mline.AssignValueColor(if gex9m >= 0 then GlobalColor("Pos") else GlobalColor("Neg"));
+k10mline.AssignValueColor(if gex10m >= 0 then GlobalColor("Pos") else GlobalColor("Neg"));
+
+k0line.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k1pline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k2pline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k3pline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k4pline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k5pline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k6pline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k7pline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k8pline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k9pline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k10pline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+
+k1mline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k2mline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k3mline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k4mline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k5mline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k6mline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k7mline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k8mline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k9mline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k10mline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+
+# Bubbles
+AddChartBubble(showBubbles and AbsValue(gex0)  > threshold, k0,  (if useVol then "$" else "") + gex0  + (if useVol then "K" else "M"),  if gex0  >= 0 then GlobalColor("Pos") else GlobalColor("Neg"), gex0  >= 0);
+AddChartBubble(showBubbles and strikes > 0 and AbsValue(gex1p) > threshold, k1p, (if useVol then "$" else "") + gex1p + (if useVol then "K" else "M"), if gex1p >= 0 then GlobalColor("Pos") else GlobalColor("Neg"), gex1p >= 0);
+AddChartBubble(showBubbles and strikes > 1 and AbsValue(gex2p) > threshold, k2p, (if useVol then "$" else "") + gex2p + (if useVol then "K" else "M"), if gex2p >= 0 then GlobalColor("Pos") else GlobalColor("Neg"), gex2p >= 0);
+AddChartBubble(showBubbles and strikes > 2 and AbsValue(gex3p) > threshold, k3p, (if useVol then "$" else "") + gex3p + (if useVol then "K" else "M"), if gex3p >= 0 then GlobalColor("Pos") else GlobalColor("Neg"), gex3p >= 0);
+AddChartBubble(showBubbles and strikes > 3 and AbsValue(gex4p) > threshold, k4p, (if useVol then "$" else "") + gex4p + (if useVol then "K" else "M"), if gex4p >= 0 then GlobalColor("Pos") else GlobalColor("Neg"), gex4p >= 0);
+AddChartBubble(showBubbles and strikes > 4 and AbsValue(gex5p) > threshold, k5p, (if useVol then "$" else "") + gex5p + (if useVol then "K" else "M"), if gex5p >= 0 then GlobalColor("Pos") else GlobalColor("Neg"), gex5p >= 0);
+AddChartBubble(showBubbles and strikes > 5 and AbsValue(gex6p) > threshold, k6p, (if useVol then "$" else "") + gex6p + (if useVol then "K" else "M"), if gex6p >= 0 then GlobalColor("Pos") else GlobalColor("Neg"), gex6p >= 0);
+AddChartBubble(showBubbles and strikes > 6 and AbsValue(gex7p) > threshold, k7p, (if useVol then "$" else "") + gex7p + (if useVol then "K" else "M"), if gex7p >= 0 then GlobalColor("Pos") else GlobalColor("Neg"), gex7p >= 0);
+AddChartBubble(showBubbles and strikes > 7 and AbsValue(gex8p) > threshold, k8p, (if useVol then "$" else "") + gex8p + (if useVol then "K" else "M"), if gex8p >= 0 then GlobalColor("Pos") else GlobalColor("Neg"), gex8p >= 0);
+AddChartBubble(showBubbles and strikes > 8 and AbsValue(gex9p) > threshold, k9p, (if useVol then "$" else "") + gex9p + (if useVol then "K" else "M"), if gex9p >= 0 then GlobalColor("Pos") else GlobalColor("Neg"), gex9p >= 0);
+AddChartBubble(showBubbles and strikes > 9 and AbsValue(gex10p) > threshold, k10p, (if useVol then "$" else "") + gex10p + (if useVol then "K" else "M"), if gex10p >= 0 then GlobalColor("Pos") else GlobalColor("Neg"), gex10p >= 0);
+
+AddChartBubble(showBubbles and strikes > 0 and AbsValue(gex1m) > threshold, k1m, (if useVol then "$" else "") + gex1m + (if useVol then "K" else "M"), if gex1m >= 0 then GlobalColor("Pos") else GlobalColor("Neg"), gex1m >= 0);
+AddChartBubble(showBubbles and strikes > 1 and AbsValue(gex2m) > threshold, k2m, (if useVol then "$" else "") + gex2m + (if useVol then "K" else "M"), if gex2m >= 0 then GlobalColor("Pos") else GlobalColor("Neg"), gex2m >= 0);
+AddChartBubble(showBubbles and strikes > 2 and AbsValue(gex3m) > threshold, k3m, (if useVol then "$" else "") + gex3m + (if useVol then "K" else "M"), if gex3m >= 0 then GlobalColor("Pos") else GlobalColor("Neg"), gex3m >= 0);
+AddChartBubble(showBubbles and strikes > 3 and AbsValue(gex4m) > threshold, k4m, (if useVol then "$" else "") + gex4m + (if useVol then "K" else "M"), if gex4m >= 0 then GlobalColor("Pos") else GlobalColor("Neg"), gex4m >= 0);
+AddChartBubble(showBubbles and strikes > 4 and AbsValue(gex5m) > threshold, k5m, (if useVol then "$" else "") + gex5m + (if useVol then "K" else "M"), if gex5m >= 0 then GlobalColor("Pos") else GlobalColor("Neg"), gex5m >= 0);
+AddChartBubble(showBubbles and strikes > 5 and AbsValue(gex6m) > threshold, k6m, (if useVol then "$" else "") + gex6m + (if useVol then "K" else "M"), if gex6m >= 0 then GlobalColor("Pos") else GlobalColor("Neg"), gex6m >= 0);
+AddChartBubble(showBubbles and strikes > 6 and AbsValue(gex7m) > threshold, k7m, (if useVol then "$" else "") + gex7m + (if useVol then "K" else "M"), if gex7m >= 0 then GlobalColor("Pos") else GlobalColor("Neg"), gex7m >= 0);
+AddChartBubble(showBubbles and strikes > 7 and AbsValue(gex8m) > threshold, k8m, (if useVol then "$" else "") + gex8m + (if useVol then "K" else "M"), if gex8m >= 0 then GlobalColor("Pos") else GlobalColor("Neg"), gex8m >= 0);
+AddChartBubble(showBubbles and strikes > 8 and AbsValue(gex9m) > threshold, k9m, (if useVol then "$" else "") + gex9m + (if useVol then "K" else "M"), if gex9m >= 0 then GlobalColor("Pos") else GlobalColor("Neg"), gex9m >= 0);
+AddChartBubble(showBubbles and strikes > 9 and AbsValue(gex10m) > threshold, k10m, (if useVol then "$" else "") + gex10m + (if useVol then "K" else "M"), if gex10m >= 0 then GlobalColor("Pos") else GlobalColor("Neg"), gex10m >= 0);
+
+# Labels
+AddLabel(yes, (if useVol then "Live GEX (K)" else "OI GEX (M)") + " — Exp: " + AsPrice(DateString), GlobalColor("VolLabel"));
+AddLabel(yes, "Base Strike: " + base_strike + " | IV: " + Round(IV, 3), Color.WHITE);
