@@ -1,6 +1,7 @@
 # Advanced-Market-Moves-
 
-Introduction to the Arrows
+## Introduction to the Arrows
+
 There are three core components in AMM 2.0. The RSI (Relative Strength Index), the Bollinger Bands, and the fast version of the original MACD. If you notice, there are 2 labels on your chart that says "Signal 1" and "Signal 2". The color of the label correspond to the color of the arrow.
 
 Let's talk about Signal 1:
