@@ -1,6 +1,6 @@
 # Advanced Market Moves
 # Assembled by VietRoadie
-# Version 3.0
+# Version 3.1 (Improved with Volume Confirmation)
 # See "Understanding the AMM 3.0 Signals.md" for full documentation.
 
 # === User Inputs ===
@@ -11,20 +11,25 @@ input SupplyDemand = no;           # Show Supply/Demand zones
 input Labels = yes;                # Show chart labels
 input limitCloud = no;             # Limit cloud length
 input cloudLength = 10;            # Cloud length
+input volLookback = 20;            # Lookback period for average volume
+input volMultiplier = 1.5;         # Volume must be this times the average
+
+# === Volume Confirmation ===
+def avgVolume = SimpleMovingAvg(volume, volLookback);
+def volConfirm = volume > avgVolume * volMultiplier;
 
 # === Bollinger Bands ===
 input displace = 0;
 input bbLength = 20;
 input bbDevDown = -2.0;
 input bbDevUp = 2.0;
-input bbAverageType = AverageType.Simple;
-input price = close;
-def bbStdDev = stdev(data = price[-displace], length = bbLength);
-def bbMA = MovingAverage(bbAverageType, data = price[-displace], length = bbLength);
+input bbAverageType = AverageType.SIMPLE;
+def bbStdDev = StDev(data = close[-displace], length = bbLength);
+def bbMA = MovingAverage(bbAverageType, data = close[-displace], length = bbLength);
 def lowerBB = bbMA + bbDevDown * bbStdDev;
 def upperBB = bbMA + bbDevUp * bbStdDev;
-def closeAboveLowerBB = price crosses above lowerBB;
-def closeBelowUpperBB = price crosses below upperBB;
+def closeAboveLowerBB = close crosses above lowerBB;
+def closeBelowUpperBB = close crosses below upperBB;
 
 # === RSI ===
 input rsiLength = 14;
@@ -33,8 +38,8 @@ input rsiOversold = 30;
 input rsiOverbought2 = 65;
 input rsiOversold2 = 35;
 input rsiAverageType = AverageType.WILDERS;
-def rsiChangeMA = MovingAverage(rsiAverageType, price - price[1], rsiLength);
-def rsiAbsChangeMA = MovingAverage(rsiAverageType, AbsValue(price - price[1]), rsiLength);
+def rsiChangeMA = MovingAverage(rsiAverageType, close - close[1], rsiLength);
+def rsiAbsChangeMA = MovingAverage(rsiAverageType, AbsValue(close - close[1]), rsiLength);
 def rsiRatio = if rsiAbsChangeMA != 0 then rsiChangeMA / rsiAbsChangeMA else 0;
 def rsiValue = 50 * (rsiRatio + 1);
 def isRSIOversold = rsiValue < rsiOversold;
@@ -47,8 +52,8 @@ input macdFastLength = 12;
 input macdSlowLength = 26;
 input macdSignalLength = 9;
 input macdAverageType = AverageType.EXPONENTIAL;
-def macdFastMA = MovingAverage(macdAverageType, close + (close - close[(macdFastLength - 1) / 2]), macdFastLength);
-def macdSlowMA = MovingAverage(macdAverageType, close + (close - close[(macdSlowLength - 1) / 2]), macdSlowLength);
+def macdFastMA = MovingAverage(macdAverageType, close, macdFastLength);
+def macdSlowMA = MovingAverage(macdAverageType, close, macdSlowLength);
 def macdLine = macdFastMA - macdSlowMA;
 def macdSignal = MovingAverage(macdAverageType, macdLine, macdSignalLength);
 def macdHist = macdLine - macdSignal;
@@ -63,46 +68,46 @@ def sma5 = Average(smaPrice[-displace], smaLength);
 def priceCrossesAboveSMA5 = smaPrice crosses above sma5;
 def priceCrossesBelowSMA5 = smaPrice crosses below sma5;
 
-# === Signal Logic ===
-# Signal 1: RSI + Bollinger Bands
-def signal1Bullish = isRSIOversold and closeAboveLowerBB;
-def signal1Bearish = isRSIOverbought and closeBelowUpperBB;
+# === Signal Logic with Volume Confirmation ===
+# Signal 1: RSI + Bollinger Bands + Volume
+def signal1Bullish = isRSIOversold and closeAboveLowerBB and volConfirm;
+def signal1Bearish = isRSIOverbought and closeBelowUpperBB and volConfirm;
 
-# Signal 2: RSI + MACD
-def signal2Bullish = isRSIOversold2 and isMACDBullishCrossover;
-def signal2Bearish = isRSIOverbought2 and isMACDBearishCrossover;
+# Signal 2: RSI + MACD + Volume
+def signal2Bullish = isRSIOversold2 and isMACDBullishCrossover and volConfirm;
+def signal2Bearish = isRSIOverbought2 and isMACDBearishCrossover and volConfirm;
 
-# Old Signal: RSI + SMA5
-def oldSignalBullish = rsiValue < rsiOversold2 and priceCrossesAboveSMA5;
-def oldSignalBearish = rsiValue > rsiOverbought2 and priceCrossesBelowSMA5;
+# Old Signal: RSI + SMA5 + Volume
+def oldSignalBullish = rsiValue < rsiOversold2 and priceCrossesAboveSMA5 and volConfirm;
+def oldSignalBearish = rsiValue > rsiOverbought2 and priceCrossesBelowSMA5 and volConfirm;
 
 # === Plots ===
-plot bullishBB = if BollingerBands then signal1Bullish else double.nan;
+plot bullishBB = if BollingerBands then signal1Bullish else Double.NaN;
 bullishBB.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
 bullishBB.SetDefaultColor(Color.CYAN);
 bullishBB.SetLineWeight(2);
 
-plot bearishBB = if BollingerBands then signal1Bearish else double.nan;
+plot bearishBB = if BollingerBands then signal1Bearish else Double.NaN;
 bearishBB.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
 bearishBB.SetDefaultColor(Color.CYAN);
 bearishBB.SetLineWeight(2);
 
-plot bullishMACD = if MACD then signal2Bullish else double.nan;
+plot bullishMACD = if MACD then signal2Bullish else Double.NaN;
 bullishMACD.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
 bullishMACD.SetDefaultColor(Color.MAGENTA);
 bullishMACD.SetLineWeight(2);
 
-plot bearishMACD = if MACD then signal2Bearish else double.nan;
+plot bearishMACD = if MACD then signal2Bearish else Double.NaN;
 bearishMACD.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
 bearishMACD.SetDefaultColor(Color.MAGENTA);
 bearishMACD.SetLineWeight(2);
 
-plot oldSignalBullishPlot = if OldSignal and oldSignalBullish then oldSignalBullish else double.nan;
+plot oldSignalBullishPlot = if OldSignal and oldSignalBullish then oldSignalBullish else Double.NaN;
 oldSignalBullishPlot.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
 oldSignalBullishPlot.SetDefaultColor(Color.WHITE);
 oldSignalBullishPlot.SetLineWeight(1);
 
-plot oldSignalBearishPlot = if OldSignal and oldSignalBearish then oldSignalBearish else double.nan;
+plot oldSignalBearishPlot = if OldSignal and oldSignalBearish then oldSignalBearish else Double.NaN;
 oldSignalBearishPlot.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
 oldSignalBearishPlot.SetDefaultColor(Color.WHITE);
 oldSignalBearishPlot.SetLineWeight(1);
@@ -112,29 +117,28 @@ def supplyDemandBBSignal = if signal1Bullish or signal1Bearish then 1 else 0;
 def supplyDemandBBHigh = if supplyDemandBBSignal then high else supplyDemandBBHigh[1];
 def supplyDemandBBLow = if supplyDemandBBSignal then low else supplyDemandBBLow[1];
 def supplyDemandBBCount = if supplyDemandBBSignal then 1 else supplyDemandBBCount[1] + 1;
-plot supplyDemandBBHighPlot = if SupplyDemand and limitCloud == no or limitCloud == yes and supplyDemandBBCount <= cloudLength then supplyDemandBBHigh else Double.NaN;
-plot supplyDemandBBLowPlot = if SupplyDemand and limitCloud == no or limitCloud == yes and supplyDemandBBCount <= cloudLength then supplyDemandBBLow else Double.NaN;
+plot supplyDemandBBHighPlot = if SupplyDemand and (limitCloud == no or (limitCloud == yes and supplyDemandBBCount <= cloudLength)) then supplyDemandBBHigh else Double.NaN;
+plot supplyDemandBBLowPlot = if SupplyDemand and (limitCloud == no or (limitCloud == yes and supplyDemandBBCount <= cloudLength)) then supplyDemandBBLow else Double.NaN;
 supplyDemandBBHighPlot.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 supplyDemandBBLowPlot.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 supplyDemandBBHighPlot.SetDefaultColor(Color.GRAY);
 supplyDemandBBLowPlot.SetDefaultColor(Color.GRAY);
-addCloud(if SupplyDemand == yes then supplyDemandBBLowPlot else double.nan, supplyDemandBBLowPlot, Color.CYAN, Color.CYAN);
-addCloud(if SupplyDemand == yes then supplyDemandBBLowPlot else double.nan, supplyDemandBBHighPlot, Color.CYAN, Color.CYAN);
+AddCloud(if SupplyDemand then supplyDemandBBLowPlot else Double.NaN, supplyDemandBBHighPlot, Color.CYAN, Color.CYAN);
 
 def supplyDemandMACDSignal = if signal2Bullish or signal2Bearish then 1 else 0;
 def supplyDemandMACDHigh = if supplyDemandMACDSignal then high else supplyDemandMACDHigh[1];
 def supplyDemandMACDLow = if supplyDemandMACDSignal then low else supplyDemandMACDLow[1];
 def supplyDemandMACDCount = if supplyDemandMACDSignal then 1 else supplyDemandMACDCount[1] + 1;
-plot supplyDemandMACDHighPlot = if SupplyDemand and limitCloud == no or limitCloud == yes and supplyDemandMACDCount <= cloudLength then supplyDemandMACDHigh else Double.NaN;
-plot supplyDemandMACDLowPlot = if SupplyDemand and limitCloud == no or limitCloud == yes and supplyDemandMACDCount <= cloudLength then supplyDemandMACDLow else Double.NaN;
+plot supplyDemandMACDHighPlot = if SupplyDemand and (limitCloud == no or (limitCloud == yes and supplyDemandMACDCount <= cloudLength)) then supplyDemandMACDHigh else Double.NaN;
+plot supplyDemandMACDLowPlot = if SupplyDemand and (limitCloud == no or (limitCloud == yes and supplyDemandMACDCount <= cloudLength)) then supplyDemandMACDLow else Double.NaN;
 supplyDemandMACDHighPlot.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 supplyDemandMACDLowPlot.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 supplyDemandMACDHighPlot.SetDefaultColor(Color.GRAY);
 supplyDemandMACDLowPlot.SetDefaultColor(Color.GRAY);
-addCloud(if SupplyDemand == yes then supplyDemandMACDLowPlot else double.nan, supplyDemandMACDLowPlot, Color.MAGENTA, Color.MAGENTA);
-addCloud(if SupplyDemand == yes then supplyDemandMACDLowPlot else double.nan, supplyDemandMACDHighPlot, Color.MAGENTA, Color.MAGENTA);
+AddCloud(if SupplyDemand then supplyDemandMACDLowPlot else Double.NaN, supplyDemandMACDHighPlot, Color.MAGENTA, Color.MAGENTA);
 
 # === Labels ===
-AddLabel(Labels and yes, "Advanced Market Moves", color.Yellow);
-AddLabel(Labels and yes, "Signal 1", color.CYAN);
-AddLabel(Labels and yes, "Signal 2", color.MAGENTA);
+AddLabel(Labels and yes, "Advanced Market Moves 3.1", Color.YELLOW);
+AddLabel(Labels and yes, "Signal 1 (BB+RSI+Vol)", Color.CYAN);
+AddLabel(Labels and yes, "Signal 2 (MACD+RSI+Vol)", Color.MAGENTA);
+AddLabel(Labels and yes, "Volume: " + Round(volume, 0) + " / Avg: " + Round(avgVolume, 0), if volConfirm then Color.GREEN else Color.RED);
