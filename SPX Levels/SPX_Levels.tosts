@@ -1,20 +1,20 @@
 # === SPX Levels: Clean Numeric Input Structure ===
 
 # === SPX Levels: 5 Inputs with Thickness and Price Labels ===
-input level1 = 6519;
+input level1 = 6536;
 input level1_thickness = 1; # 1=normal, 2=(*), 3=(**)
-input level2 = 6536;
+input level2 = 6506;
 input level2_thickness = 1;
 input level3 = 6478;
-input level3_thickness = 2;
-input level4 = 6443;
+input level3_thickness = 1;
+input level4 = 6445;
 input level4_thickness = 1;
-input level5 = 6400;
+input level5 = 6415;
 input level5_thickness = 1;
-input level6 = 6360;
+input level6 = 6385;
 input level6_thickness = 1;
-input level7 = 6443;AC
-input level7_thickness = 3;
+input level7 = 6355;
+input level7_thickness = 1;
 
 plot L1 = level1;
 L1.SetDefaultColor(Color.GRAY);

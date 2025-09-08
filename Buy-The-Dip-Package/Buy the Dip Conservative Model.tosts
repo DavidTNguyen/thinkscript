@@ -1,15 +1,5 @@
 # Buy the Dip: Conservative Model
-# Assembled by BenTen at UseThinkScript.com
-# Version 1.1
-# <INSTRUCTION>
-# Get support at: https://usethinkscript.com/forums/buy-the-dip.32/
-# <NOTES>
-# Based on the concept of "Synethetic VIX" by Larry Williams
-# This software is licensed for individual use only.
-# NOT FOR REDISTRIBUTION PRIVATE/CONFIDENTIAL
-# Copyright (c) 2020 useThinkScript LLC
-
-# barbaros - 2021.03.19 - fixed 0 on short_value not painting
+# Version 1.2 - Improved with smoothing, alerts, and custom colors
 
 declare lower;
 
@@ -17,43 +7,64 @@ input short_length = 22;
 input medium_length = 50;
 input long_length = 100;
 input zero_value = 0.01;
-input aggresive_model = no;
+input aggressive_model = no;  # Fixed typo from "aggresive_model"
 input labels = yes;
 input arrows = no;
+input smoothing_length = 5;  # New: EMA smoothing length
+input short_color = Color.GREEN;  # New: Customizable colors
+input medium_color = Color.ORANGE;
+input long_color = Color.RED;
+input arrow_short_color = Color.WHITE;
+input arrow_medium_color = Color.GREEN;
+input arrow_long_color = Color.RED;
 
 # Plot indicator
 plot Zeroline = zero_value;
-Zeroline.AssignValueColor(color.white);
+Zeroline.AssignValueColor(Color.WHITE);
 
 def short_value = ((high - Lowest(close[1], short_length)) / Lowest(close[1], short_length)) * 100;
 def medium_value = ((high - Lowest(close[1], medium_length)) / Lowest(close[1], medium_length)) * 100;
 def long_value = ((high - Lowest(close[1], long_length)) / Lowest(close[1], long_length)) * 100;
 
-plot short_btd = if aggresive_model then short_value else double.nan;
-plot med_btd = medium_value;
-plot long_btd = long_value;
+# Apply EMA smoothing
+def short_smoothed = ExpAverage(short_value, smoothing_length);
+def medium_smoothed = ExpAverage(medium_value, smoothing_length);
+def long_smoothed = ExpAverage(long_value, smoothing_length);
 
-short_btd.AssignValueColor(color.green);
-med_btd.AssignValueColor(color.orange);
-long_btd.AssignValueColor(color.red);
+plot short_btd = if aggressive_model then short_smoothed else Double.NaN;
+plot med_btd = medium_smoothed;
+plot long_btd = long_smoothed;
+
+short_btd.AssignValueColor(short_color);
+med_btd.AssignValueColor(medium_color);
+long_btd.AssignValueColor(long_color);
+
+# Add histogram style for medium and long
+med_btd.SetPaintingStrategy(PaintingStrategy.HISTOGRAM);
+long_btd.SetPaintingStrategy(PaintingStrategy.HISTOGRAM);
 
 def condition1 = short_btd crosses below Zeroline;
 def condition2 = med_btd crosses below Zeroline;
 def condition3 = long_btd crosses below Zeroline;
 
 # Plot arrows
-plot S_Arrow = if arrows and aggresive_model and condition1 then 0 else Double.NaN;
-S_Arrow.SetDefaultColor(Color.WHITE);
+plot S_Arrow = if arrows and aggressive_model and condition1 then 0 else Double.NaN;
+S_Arrow.SetDefaultColor(arrow_short_color);
 S_Arrow.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
 
 plot M_Arrow = if arrows and condition2 then 0 else Double.NaN;
-M_Arrow.SetDefaultColor(Color.GREEN);
+M_Arrow.SetDefaultColor(arrow_medium_color);
 M_Arrow.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
 
 plot L_Arrow = if arrows and condition3 then 0 else Double.NaN;
-L_Arrow.SetDefaultColor(Color.RED);
+L_Arrow.SetDefaultColor(arrow_long_color);
 L_Arrow.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
 
-AddLabel(aggresive_model and labels, "Short Term", color.green);
-AddLabel(labels, "Medium Term", color.orange);
-AddLabel(labels, "Long Term", color.red);
+# Add alerts
+Alert(condition1 and aggressive_model, "Short Term Dip Signal", Alert.TICK, Sound.Ding);
+Alert(condition2, "Medium Term Dip Signal", Alert.TICK, Sound.Ding);
+Alert(condition3, "Long Term Dip Signal", Alert.TICK, Sound.Ding);
+
+AddLabel(aggressive_model and labels, "Short Term", short_color);
+AddLabel(labels, "Medium Term", medium_color);
+AddLabel(labels, "Long Term", long_color);
