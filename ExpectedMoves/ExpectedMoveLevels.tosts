@@ -14,19 +14,19 @@ def symbolQQQ = GetSymbol() == "QQQ";
 def symbolIWM = GetSymbol() == "IWM";
 
 def defaultDailyHigh =
-    if symbolSPY then 650.80
-    else if symbolSPX then 6513.83
-    else if symbolXSP then 651.27
-    else if symbolQQQ then 580.23
-    else if symbolIWM then 239.92
+    if symbolSPY then 653.44
+    else if symbolSPX then 6542.94
+    else if symbolXSP then Double.NaN
+    else if symbolQQQ then 584.10
+    else if symbolIWM then 239.12
     else Double.NaN;
 
 def defaultDailyLow =
-    if symbolSPY then 643.68
-    else if symbolSPX then 6449.17
-    else if symbolXSP then 645.03
-    else if symbolQQQ then 571.89
-    else if symbolIWM then 235.62
+    if symbolSPY then 647.22
+    else if symbolSPX then 6482.28
+    else if symbolXSP then Double.NaN
+    else if symbolQQQ then 576.92
+    else if symbolIWM then 234.58
     else Double.NaN;
 
 def defaultWeeklyHigh =
