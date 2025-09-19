@@ -1,39 +1,65 @@
-## Gamma Strikes (Price Levels Only) — Cleaned Study
+## Enhanced Gamma Strikes Study v2.0
+## Features:
+## - Dynamic spacing (Fixed, Percentage-based, ATR-based)
+## - Multiple centering modes (Daily Open, Current Price, Manual, Round to Strike)
+## - Visual ATM highlighting with enhanced colors
+## - Price labels and comprehensive information display
+## - Improved visual styling with color-coded strike levels
 
 declare upper;
 declare once_per_bar;
 
 input strikes = 10;
+input spacingType = {default "fixed", "percentage", "atr_based"};
 input strikeSpacing = 5.0;
-input manualCenterStrike = {default "false", "true"};
+input percentageSpacing = 1.0;
+input atrPeriod = 14;
+input atrMultiplier = 0.5;
+input centeringMode = {default "daily_open", "current_price", "manual", "round_to_strike"};
 input centerStrike = 0.0;
+input roundToNearest = 5.0;
 input showLines = yes;
+input showLabels = yes;
+input highlightATM = yes;
 
 def openlevel = open(period = AggregationPeriod.DAY);
-def base_strike = if manualCenterStrike then centerStrike else Round(openlevel, 0);
+def currentPrice = close;
+def atr_value = Average(TrueRange(high, close, low), atrPeriod);
+
+# Dynamic strike spacing calculation
+def dynamic_spacing = 
+    if spacingType == spacingType.percentage then currentPrice * percentageSpacing / 100
+    else if spacingType == spacingType.atr_based then atr_value * atrMultiplier
+    else strikeSpacing;
+
+def base_strike = 
+    if centeringMode == centeringMode.manual then centerStrike
+    else if centeringMode == centeringMode.current_price then Round(currentPrice, 0)
+    else if centeringMode == centeringMode.round_to_strike then Round(currentPrice / roundToNearest, 0) * roundToNearest
+    else Round(openlevel, 0);
 
 def k0  = base_strike;
-def k1p = base_strike + strikeSpacing;
-def k2p = base_strike + strikeSpacing * 2;
-def k3p = base_strike + strikeSpacing * 3;
-def k4p = base_strike + strikeSpacing * 4;
-def k5p = base_strike + strikeSpacing * 5;
-def k6p = base_strike + strikeSpacing * 6;
-def k7p = base_strike + strikeSpacing * 7;
-def k8p = base_strike + strikeSpacing * 8;
-def k9p = base_strike + strikeSpacing * 9;
-def k10p = base_strike + strikeSpacing * 10;
+def k1p = base_strike + dynamic_spacing;
+def k2p = base_strike + dynamic_spacing * 2;
+def k3p = base_strike + dynamic_spacing * 3;
+def k4p = base_strike + dynamic_spacing * 4;
+def k5p = base_strike + dynamic_spacing * 5;
+def k6p = base_strike + dynamic_spacing * 6;
+def k7p = base_strike + dynamic_spacing * 7;
+def k8p = base_strike + dynamic_spacing * 8;
+def k9p = base_strike + dynamic_spacing * 9;
+def k10p = base_strike + dynamic_spacing * 10;
 
-def k1m = base_strike - strikeSpacing;
-def k2m = base_strike - strikeSpacing * 2;
-def k3m = base_strike - strikeSpacing * 3;
-def k4m = base_strike - strikeSpacing * 4;
-def k5m = base_strike - strikeSpacing * 5;
-def k6m = base_strike - strikeSpacing * 6;
-def k7m = base_strike - strikeSpacing * 7;
-def k8m = base_strike - strikeSpacing * 8;
-def k9m = base_strike - strikeSpacing * 9;
-def k10m = base_strike - strikeSpacing * 10;
+def k1m = base_strike - dynamic_spacing;
+def k2m = base_strike - dynamic_spacing * 2;
+def k3m = base_strike - dynamic_spacing * 3;
+def k4m = base_strike - dynamic_spacing * 4;
+def k5m = base_strike - dynamic_spacing * 5;
+def k6m = base_strike - dynamic_spacing * 6;
+def k7m = base_strike - dynamic_spacing * 7;
+def k8m = base_strike - dynamic_spacing * 8;
+def k9m = base_strike - dynamic_spacing * 9;
+def k10m = base_strike - dynamic_spacing * 10;
 
 plot k0line  = if showLines then k0  else Double.NaN;
 plot k1pline = if showLines and strikes > 0 then k1p else Double.NaN;
@@ -58,27 +84,123 @@ plot k8mline = if showLines and strikes > 7 then k8m else Double.NaN;
 plot k9mline = if showLines and strikes > 8 then k9m else Double.NaN;
 plot k10mline = if showLines and strikes > 9 then k10m else Double.NaN;
 
+# ATM Strike Detection and Highlighting
+def isATM_k0 = closestStrike == k0;
+def isATM_k1p = closestStrike == k1p;
+def isATM_k1m = closestStrike == k1m;
+def isATM_k2p = closestStrike == k2p;
+def isATM_k2m = closestStrike == k2m;
+
+# Visual Styling Configuration
 k0line.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k0line.SetDefaultColor(if highlightATM and isATM_k0 then Color.WHITE else Color.YELLOW);
+k0line.SetLineWeight(if isATM_k0 then 4 else 3);
+k0line.SetStyle(Curve.FIRM);
+
 k1pline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k1pline.SetDefaultColor(if highlightATM and isATM_k1p then Color.WHITE else Color.CYAN);
+k1pline.SetLineWeight(if isATM_k1p then 3 else 2);
 k2pline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k2pline.SetDefaultColor(Color.LIGHT_BLUE);
+k2pline.SetLineWeight(1);
 k3pline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k3pline.SetDefaultColor(Color.BLUE);
+k3pline.SetLineWeight(1);
 k4pline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k4pline.SetDefaultColor(Color.DARK_BLUE);
+k4pline.SetLineWeight(1);
 k5pline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k5pline.SetDefaultColor(Color.GRAY);
+k5pline.SetLineWeight(1);
 k6pline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k6pline.SetDefaultColor(Color.LIGHT_GRAY);
+k6pline.SetLineWeight(1);
 k7pline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k7pline.SetDefaultColor(Color.DARK_GRAY);
+k7pline.SetLineWeight(1);
 k8pline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k8pline.SetDefaultColor(Color.LIGHT_GRAY);
+k8pline.SetLineWeight(1);
 k9pline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k9pline.SetDefaultColor(Color.GRAY);
+k9pline.SetLineWeight(1);
 k10pline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k10pline.SetDefaultColor(Color.DARK_GRAY);
+k10pline.SetLineWeight(1);
 
 k1mline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k1mline.SetDefaultColor(if highlightATM and isATM_k1m then Color.WHITE else Color.MAGENTA);
+k1mline.SetLineWeight(if isATM_k1m then 3 else 2);
 k2mline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k2mline.SetDefaultColor(Color.LIGHT_RED);
+k2mline.SetLineWeight(1);
 k3mline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k3mline.SetDefaultColor(Color.RED);
+k3mline.SetLineWeight(1);
 k4mline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k4mline.SetDefaultColor(Color.DARK_RED);
+k4mline.SetLineWeight(1);
 k5mline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k5mline.SetDefaultColor(Color.ORANGE);
+k5mline.SetLineWeight(1);
 k6mline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k6mline.SetDefaultColor(Color.LIGHT_ORANGE);
+k6mline.SetLineWeight(1);
 k7mline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k7mline.SetDefaultColor(Color.DARK_ORANGE);
+k7mline.SetLineWeight(1);
 k8mline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k8mline.SetDefaultColor(Color.LIGHT_ORANGE);
+k8mline.SetLineWeight(1);
 k9mline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k9mline.SetDefaultColor(Color.ORANGE);
+k9mline.SetLineWeight(1);
 k10mline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+k10mline.SetDefaultColor(Color.DARK_ORANGE);
+k10mline.SetLineWeight(1);
 
-AddLabel(yes, "Base Strike: " + base_strike, Color.WHITE);
+# Price Labels on Lines
+k0line.ShowBubbles();
+k1pline.ShowBubbles();
+k2pline.ShowBubbles();
+k3pline.ShowBubbles();
+k4pline.ShowBubbles();
+k5pline.ShowBubbles();
+k1mline.ShowBubbles();
+k2mline.ShowBubbles();
+k3mline.ShowBubbles();
+k4mline.ShowBubbles();
+k5mline.ShowBubbles();
+
+# Enhanced Labels
+def priceRelativeToBase = Round((currentPrice - base_strike) / dynamic_spacing, 1);
+def spacingInfo = if spacingType == spacingType.percentage then "% Based" 
+                 else if spacingType == spacingType.atr_based then "ATR Based" 
+                 else "Fixed";
+
+# Find closest strike to current price
+def distanceToK0 = AbsValue(currentPrice - k0);
+def distanceToK1p = AbsValue(currentPrice - k1p);
+def distanceToK1m = AbsValue(currentPrice - k1m);
+def distanceToK2p = AbsValue(currentPrice - k2p);
+def distanceToK2m = AbsValue(currentPrice - k2m);
+
+def closestStrike = 
+    if distanceToK0 <= distanceToK1p and distanceToK0 <= distanceToK1m then k0
+    else if distanceToK1p <= distanceToK1m and distanceToK1p <= distanceToK2p and distanceToK1p <= distanceToK2m then k1p
+    else if distanceToK1m <= distanceToK2p and distanceToK1m <= distanceToK2m then k1m
+    else if distanceToK2p <= distanceToK2m then k2p
+    else k2m;
+
+def centeringModeText = 
+    if centeringMode == centeringMode.current_price then "Current Price"
+    else if centeringMode == centeringMode.manual then "Manual"
+    else if centeringMode == centeringMode.round_to_strike then "Round to Strike"
+    else "Daily Open";
+
+AddLabel(showLabels, "🎯 Base: " + base_strike + " | Mode: " + centeringModeText, Color.YELLOW);
+AddLabel(showLabels, "💰 Current: " + Round(currentPrice, 2) + " | ATM: " + closestStrike, Color.WHITE);
+AddLabel(showLabels, "📏 Spacing: " + Round(dynamic_spacing, 2) + " (" + spacingInfo + ")", Color.CYAN);
+AddLabel(showLabels, "📊 Position: " + priceRelativeToBase + " strikes from base", 
+         if priceRelativeToBase > 0 then Color.GREEN else if priceRelativeToBase < 0 then Color.RED else Color.WHITE);
+AddLabel(showLabels and spacingType == spacingType.atr_based, "📈 ATR(" + atrPeriod + "): " + Round(atr_value, 2), Color.ORANGE);
