@@ -1,2 +1,158 @@
+# Intraday Gamma Strikes
+
+A ThinkScript indicator that plots volume-weighted gamma exposure (GEX) strikes for intraday trading, providing dynamic support and resistance levels based on options flow.
+
+[Import ThinkScript Study](http://tos.mx/!kbmPXAli)
+
+## Overview
+
+This indicator calculates and displays gamma exposure strike levels that act as dynamic support and resistance zones throughout the trading session. The strikes are based on options volume and open interest, helping traders identify key price levels where gamma effects may influence price action.
+![Intraday Gamma Strikes Chart](./Intraday_Gamma.png)
+
+## Features
+
+- **Dynamic Strike Calculation**: Automatically calculates ATM strike based on current price
+- **Multiple Support/Resistance Levels**: Shows 3 levels above and below ATM (S1-S3, R1-R3)
+- **Visual Indicators**: Horizontal lines with color-coded levels and price bubbles
+- **Customizable Parameters**: Adjustable strike spacing, GEX threshold, and display options
+- **Multi-Instrument Support**: Optimized settings for SPX, SPY, QQQ, and IWM
+
+## Installation
+
+1. Copy the ThinkScript code from `Intraday_Gamma_Strikes.tosts`
+2. In ThinkOrSwim, go to Charts > Studies > Edit Studies > Create
+3. Paste the code and save with a descriptive name
+4. Apply to your chart with appropriate settings for your instrument
+
+## Configuration
+
+### Recommended Settings by Instrument
+
+#### SPX (S&P 500 Index)
+```
+strikeSpacing = 25        # SPX uses 25-point increments
+gexThreshold = 500        # Appropriate for index volume
+strikeDepth = 5           # Full range of levels
+```
+
+#### SPY (S&P 500 ETF)
+```
+strikeSpacing = 1         # SPY uses $1 increments
+gexThreshold = 1000       # Higher threshold for massive volume
+strikeDepth = 3-5         # Adjustable based on preference
+```
+
+#### QQQ (Nasdaq ETF)
+```
+strikeSpacing = 1         # QQQ uses $1 increments
+gexThreshold = 800        # High volume adjustment
+strikeDepth = 3-5         # Adjustable based on preference
+```
+
+#### IWM (Russell 2000 ETF)
+```
+strikeSpacing = 1         # IWM uses $1 increments
+gexThreshold = 300        # Lower volume adjustment
+strikeDepth = 3-5         # Adjustable based on preference
+```
+
+### Parameters
+
+| Parameter             | Description                        | Default  | Range         |
+| --------------------- | ---------------------------------- | -------- | ------------- |
+| `strikeDepth`         | Number of strikes above/below ATM  | 5        | 1-10          |
+| `expDate`             | Expiration date (0 = auto)         | 20250919 | YYYYMMDD or 0 |
+| `gexThreshold`        | Minimum GEX to display             | 500      | 100-2000      |
+| `strikeSpacing`       | Strike price increment             | 25       | 1-50          |
+| `minVolRatio`         | Volume/OI ratio threshold          | 2.0      | 1.0-5.0       |
+| `showAllStrikes`      | Show all strikes regardless of GEX | Yes      | Yes/No        |
+| `showHorizontalLines` | Display horizontal lines           | Yes      | Yes/No        |
+
+## Visual Elements
+
+### Color Scheme
+- **ATM Line**: White solid line (thick)
+- **Support Levels**: 
+  - S1: Cyan (closest support)
+  - S2: Orange (medium support)
+  - S3: Blue (furthest support)
+- **Resistance Levels**:
+  - R1: Magenta (closest resistance)
+  - R2: Pink (medium resistance)
+  - R3: Red (furthest resistance)
+
+### Display Elements
+- **Horizontal Lines**: Dashed lines showing strike levels
+- **Price Bubbles**: Level labels on the right side of chart
+- **Status Labels**: Current price, ATM, and strike values at top
+
+## Usage
+
+### For Scalping
+1. Use 3 strike levels (`strikeDepth = 3`) for cleaner view
+2. Set appropriate `gexThreshold` based on instrument volume
+3. Watch for price reactions at gamma strike levels
+4. Use strikes as entry/exit points for scalp trades
+
+### For Swing Trading
+1. Use 5 strike levels (`strikeDepth = 5`) for broader view
+2. Monitor price behavior at multiple gamma levels
+3. Look for support/resistance confluence with other indicators
+
+### Key Trading Concepts
+- **Gamma Walls**: High GEX levels that may act as price magnets
+- **Support/Resistance**: Strike levels often provide dynamic S/R
+- **Volume Confirmation**: Higher volume at strikes increases significance
+- **Intraday Reversion**: Price tends to revert toward high gamma strikes
+
+## Technical Details
+
+### Gamma Exposure Calculation
+The indicator uses a simplified GEX calculation based on:
+- Base GEX threshold
+- Volume multiplier
+- Strike distance from ATM
+- Options volume and open interest ratios
+
+### Strike Level Logic
+1. Calculate ATM strike using current price and strike spacing
+2. Generate support levels (ATM - spacing increments)
+3. Generate resistance levels (ATM + spacing increments)
+4. Apply GEX weighting based on volume activity
+
+## Troubleshooting
+
+### Common Issues
+- **No horizontal lines**: Check `showHorizontalLines` setting
+- **Lines jumping**: Normal behavior as ATM recalculates with price
+- **Missing levels**: Adjust `gexThreshold` lower to show more strikes
+- **Too many lines**: Reduce `strikeDepth` or increase `gexThreshold`
+
+### Performance Notes
+- Indicator recalculates on each bar
+- Higher `strikeDepth` values may impact performance
+- Consider using on shorter timeframes (1-5 min) for best results
+
+## References
+
+- [Gamma Exposure Analysis](https://x.com/i/grok/share/gR53lnLzUBaUjP6oksXp1Cd63)
+- [Options Flow Impact](https://x.com/i/grok/share/zvrQUiKoeLP7dc5mA08Z2kF4m)
+
+## License
+
+This project is provided as-is for educational and trading purposes. Use at your own risk.
+
+## Contributing
+
+Feel free to submit issues and enhancement requests. When contributing, please:
+1. Test changes thoroughly on paper trading
+2. Include configuration details for different instruments
+3. Document any parameter modifications
+
+---
+
+**Disclaimer**: This indicator is for educational purposes only. Past performance does not guarantee future results. Always practice proper risk management and consider consulting with a financial advisor.
+
 https://x.com/i/grok/share/gR53lnLzUBaUjP6oksXp1Cd63
 https://x.com/i/grok/share/zvrQUiKoeLP7dc5mA08Z2kF4m
+
