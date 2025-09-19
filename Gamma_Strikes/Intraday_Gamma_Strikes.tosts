@@ -70,16 +70,16 @@ Resistance1Line.SetStyle(Curve.LONG_DASH);
 Resistance2Line.SetStyle(Curve.LONG_DASH);
 Resistance3Line.SetStyle(Curve.LONG_DASH);
 
-# Enhanced debug labels
+# Enhanced debug labels - clean prefixes only
 AddLabel(yes, "Current Price: " + Round(close, 2), Color.WHITE);
 AddLabel(yes, "ATM Strike: " + Round(currentATM, 0), Color.WHITE);
 
-# Support labels with visual indicators
+# Support labels with clean prefixes
 AddLabel(yes, "S1: " + Round(s1Level, 0), Color.CYAN);
 AddLabel(yes, "S2: " + Round(s2Level, 0), Color.ORANGE);
 AddLabel(yes, "S3: " + Round(s3Level, 0), Color.BLUE);
 
-# Resistance labels with visual indicators
+# Resistance labels with clean prefixes
 AddLabel(yes, "R1: " + Round(r1Level, 0), Color.MAGENTA);
 AddLabel(yes, "R2: " + Round(r2Level, 0), Color.PINK);
 AddLabel(yes, "R3: " + Round(r3Level, 0), Color.RED);
@@ -87,15 +87,15 @@ AddLabel(yes, "R3: " + Round(r3Level, 0), Color.RED);
 # Fixed bubble logic - show on last bar
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
 
-# Enhanced price bubbles for all levels
+# Enhanced price bubbles - clean labels without gamma symbols
 AddChartBubble(isLastBar, currentATM, "ATM " + Round(currentATM, 0), Color.WHITE, yes);
 
-# Support bubbles (below ATM)
+# Support bubbles with clean prefixes
 AddChartBubble(isLastBar, s1Level, "S1 " + Round(s1Level, 0), Color.CYAN, no);
 AddChartBubble(isLastBar, s2Level, "S2 " + Round(s2Level, 0), Color.ORANGE, no);
 AddChartBubble(isLastBar, s3Level, "S3 " + Round(s3Level, 0), Color.BLUE, no);
 
-# Resistance bubbles (above ATM)
+# Resistance bubbles with clean prefixes
 AddChartBubble(isLastBar, r1Level, "R1 " + Round(r1Level, 0), Color.MAGENTA, yes);
 AddChartBubble(isLastBar, r2Level, "R2 " + Round(r2Level, 0), Color.PINK, yes);
 AddChartBubble(isLastBar, r3Level, "R3 " + Round(r3Level, 0), Color.RED, yes);
