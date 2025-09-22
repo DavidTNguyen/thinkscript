@@ -11,28 +11,20 @@ input minVolRatio = 2.0;      # Volume must be >= 2.0 * OI for significant new a
 input showAllStrikes = yes;   # Debug: Show all strikes regardless of GEX
 input showHorizontalLines = yes; # Toggle for horizontal lines
 
-# Calculate ATM and strikes
-def atmStrike = Round(close / strikeSpacing, 0) * strikeSpacing;
+# Correct ATM strike calculation - round to nearest strike, not up
+def atmStrike = Floor(close / strikeSpacing + 0.5) * strikeSpacing;
 def currentExpDate = if expDate == 0 then GetYYYYMMDD() else expDate;
 
-# Calculate 3 support levels below ATM
-def support1 = atmStrike - strikeSpacing;     # Support -25
-def support2 = atmStrike - 2 * strikeSpacing; # Support -50
-def support3 = atmStrike - 3 * strikeSpacing; # Support -75
+# Use consistent ATM calculation throughout
+def currentATM = atmStrike;
 
-# Calculate 3 resistance levels above ATM
-def resistance1 = atmStrike + strikeSpacing;     # Resistance +25
-def resistance2 = atmStrike + 2 * strikeSpacing; # Resistance +50
-def resistance3 = atmStrike + 3 * strikeSpacing; # Resistance +75
-
-# Force horizontal line display using manual levels that will update with price
-def currentATM = Round(close / 25, 0) * 25;
-def s1Level = currentATM - 25;
-def s2Level = currentATM - 50;
-def s3Level = currentATM - 75;
-def r1Level = currentATM + 25;
-def r2Level = currentATM + 50;
-def r3Level = currentATM + 75;
+# Calculate support and resistance levels using the correct ATM
+def s1Level = currentATM - strikeSpacing;
+def s2Level = currentATM - 2 * strikeSpacing;
+def s3Level = currentATM - 3 * strikeSpacing;
+def r1Level = currentATM + strikeSpacing;
+def r2Level = currentATM + 2 * strikeSpacing;
+def r3Level = currentATM + 3 * strikeSpacing;
 
 # Plot horizontal lines with explicit values
 plot ATMLine = currentATM;
