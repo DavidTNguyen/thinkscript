@@ -1,63 +1,64 @@
-# === SPX Levels: Updated October 2025 Key Levels ===
-# Updated: October 11, 2025
-# Based on: Converted futures fair value, resistance zones, and critical support
+# === SPX Levels: W-Shape Structure Trade Map ===
+# Updated: October 18, 2025
+# Based on: W-Shape pattern with key support at 6550 and resistance at 6725
+# Trade Map: Bullish above 6725 | Bearish below 6550 | Range-bound between
 
 # === Key Support & Resistance Levels ===
-input level1 = 6760; # Upside call target (highest resistance)
+input level1 = 6800; # Bullish breakout target zone
 input level1_thickness = 2; # 1=normal, 2=(*), 3=(**)
-input level2 = 6715; # Major call target zone
-input level2_thickness = 2;
-input level3 = 6690; # Popular call target
+input level2 = 6725; # KEY RESISTANCE - W-Shape upper boundary
+input level2_thickness = 3;
+input level3 = 6650; # Mid-range level
 input level3_thickness = 1;
-input level4 = 6630; # Call target zone
+input level4 = 6600; # W-Shape mid-point
 input level4_thickness = 1;
-input level5 = 6601; # Call target zone
-input level5_thickness = 1;
-input level6 = 6550; # Initial upside resistance
+input level5 = 6550; # KEY SUPPORT - W-Shape lower boundary
+input level5_thickness = 3;
+input level6 = 6500; # Bearish breakdown zone
 input level6_thickness = 1;
-input level7 = 6483; # Critical support - October low target/fair value
-input level7_thickness = 3;
+input level7 = 6450; # Extended downside target
+input level7_thickness = 1;
 
-# Resistance Levels (Call Targets)
+# Bullish Breakout Zone
 plot L1 = level1;
-L1.SetDefaultColor(Color.RED);
+L1.SetDefaultColor(Color.DARK_GREEN);
 L1.SetLineWeight(level1_thickness);
 L1.SetStyle(Curve.FIRM);
-AddLabel(yes, "R6: " + AsText(level1) + " (Highest Call Target)" + (if level1_thickness == 3 then " (**)" else if level1_thickness == 2 then " (*)" else ""), Color.RED);
 
+# KEY RESISTANCE - W-Shape Upper Boundary
 plot L2 = level2;
-L2.SetDefaultColor(Color.ORANGE);
+L2.SetDefaultColor(Color.RED);
 L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
-AddLabel(yes, "R5: " + AsText(level2) + " (Major Call Target)" + (if level2_thickness == 3 then " (**)" else if level2_thickness == 2 then " (*)" else ""), Color.ORANGE);
+L2.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+AddChartBubble(yes, level2, "KEY RESISTANCE: " + level2, Color.RED, yes);
 
+# Range Levels
 plot L3 = level3;
-L3.SetDefaultColor(Color.YELLOW);
+L3.SetDefaultColor(Color.GRAY);
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
-AddLabel(yes, "R4: " + AsText(level3) + " (Call Target)" + (if level3_thickness == 3 then " (**)" else if level3_thickness == 2 then " (*)" else ""), Color.YELLOW);
 
 plot L4 = level4;
-L4.SetDefaultColor(Color.LIGHT_ORANGE);
+L4.SetDefaultColor(Color.LIGHT_GRAY);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
-AddLabel(yes, "R3: " + AsText(level4) + " (Call Zone)" + (if level4_thickness == 3 then " (**)" else if level4_thickness == 2 then " (*)" else ""), Color.LIGHT_ORANGE);
 
+# KEY SUPPORT - W-Shape Lower Boundary
 plot L5 = level5;
-L5.SetDefaultColor(Color.PINK);
+L5.SetDefaultColor(Color.GREEN);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
-AddLabel(yes, "R2: " + AsText(level5) + " (Call Zone)" + (if level5_thickness == 3 then " (**)" else if level5_thickness == 2 then " (*)" else ""), Color.PINK);
+L5.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+AddChartBubble(yes, level5, "KEY SUPPORT: " + level5, Color.GREEN, no);
 
+# Bearish Breakdown Zone
 plot L6 = level6;
-L6.SetDefaultColor(Color.MAGENTA);
+L6.SetDefaultColor(Color.ORANGE);
 L6.SetLineWeight(level6_thickness);
 L6.SetStyle(Curve.FIRM);
-AddLabel(yes, "R1: " + AsText(level6) + " (Initial Resistance)" + (if level6_thickness == 3 then " (**)" else if level6_thickness == 2 then " (*)" else ""), Color.MAGENTA);
 
-# Critical Support Level
 plot L7 = level7;
-L7.SetDefaultColor(Color.GREEN);
+L7.SetDefaultColor(Color.DARK_RED);
 L7.SetLineWeight(level7_thickness);
 L7.SetStyle(Curve.FIRM);
-AddLabel(yes, "S1: " + AsText(level7) + " (CRITICAL SUPPORT - Oct Low/Fair Value)" + (if level7_thickness == 3 then " (**)" else if level7_thickness == 2 then " (*)" else ""), Color.GREEN);
