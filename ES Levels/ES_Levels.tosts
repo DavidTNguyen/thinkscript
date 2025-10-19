@@ -1,0 +1,137 @@
+# === ES Levels: Triangle Pattern Trade Map ===
+# Updated: October 18, 2025
+# Based on: Triangle consolidation with key support at 6540 and resistance at 6746.80
+# Trade Map: Bullish above 6746.80 | Bearish below 6540 | Range-bound between
+
+# === Key Support & Resistance Levels ===
+input level1 = 6780; # Extended bullish target
+input level1_thickness = 2; # 1=normal, 2=(*), 3=(**)
+input level2 = 6746.80; # KEY RESISTANCE - Triangle upper boundary
+input level2_thickness = 3;
+input level3 = 6720; # Secondary resistance
+input level3_thickness = 1;
+input level4 = 6680; # Mid-range pivot
+input level4_thickness = 1;
+input level5 = 6640; # Triangle mid-point
+input level5_thickness = 1;
+input level6 = 6600; # Secondary support
+input level6_thickness = 1;
+input level7 = 6540; # KEY SUPPORT - Triangle lower boundary
+input level7_thickness = 3;
+input level8 = 6500; # Extended bearish target
+input level8_thickness = 2;
+
+# Alert Settings
+input enableAlerts = yes;
+input alertSensitivity = 2; # Points within level to trigger alert
+
+# Extended Bull Target
+plot L1 = level1;
+L1.SetDefaultColor(Color.DARK_GREEN);
+L1.SetLineWeight(level1_thickness);
+L1.SetStyle(Curve.FIRM);
+
+# KEY RESISTANCE - Triangle Upper Boundary
+plot L2 = level2;
+L2.SetDefaultColor(Color.RED);
+L2.SetLineWeight(level2_thickness);
+L2.SetStyle(Curve.FIRM);
+L2.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+
+# Secondary Resistance
+plot L3 = level3;
+L3.SetDefaultColor(Color.PINK);
+L3.SetLineWeight(level3_thickness);
+L3.SetStyle(Curve.FIRM);
+
+# Range Levels
+plot L4 = level4;
+L4.SetDefaultColor(Color.GRAY);
+L4.SetLineWeight(level4_thickness);
+L4.SetStyle(Curve.FIRM);
+
+plot L5 = level5;
+L5.SetDefaultColor(Color.LIGHT_GRAY);
+L5.SetLineWeight(level5_thickness);
+L5.SetStyle(Curve.FIRM);
+
+plot L6 = level6;
+L6.SetDefaultColor(Color.CYAN);
+L6.SetLineWeight(level6_thickness);
+L6.SetStyle(Curve.FIRM);
+
+# KEY SUPPORT - Triangle Lower Boundary
+plot L7 = level7;
+L7.SetDefaultColor(Color.GREEN);
+L7.SetLineWeight(level7_thickness);
+L7.SetStyle(Curve.FIRM);
+L7.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+
+# Extended Bear Target
+plot L8 = level8;
+L8.SetDefaultColor(Color.DARK_RED);
+L8.SetLineWeight(level8_thickness);
+L8.SetStyle(Curve.FIRM);
+
+# Fixed bubble logic - show only on last bar
+def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
+
+# Ultra-short bubble labels
+AddChartBubble(isLastBar, level1, "BT " + level1, Color.DARK_GREEN, yes);
+AddChartBubble(isLastBar, level2, "R " + level2, Color.RED, yes);
+AddChartBubble(isLastBar, level3, "R2 " + level3, Color.PINK, yes);
+AddChartBubble(isLastBar, level4, "M " + level4, Color.GRAY, yes);
+AddChartBubble(isLastBar, level5, "P " + level5, Color.LIGHT_GRAY, no);
+AddChartBubble(isLastBar, level6, "S2 " + level6, Color.CYAN, no);
+AddChartBubble(isLastBar, level7, "S " + level7, Color.GREEN, no);
+AddChartBubble(isLastBar, level8, "BD " + level8, Color.DARK_RED, no);
+
+# === ALERT SYSTEM ===
+
+# Key Level Breakout Alerts (Primary Trading Signals)
+Alert(enableAlerts and close crosses above level2, "🚀 ES BREAKOUT ABOVE 6746.80! TRIANGLE RESOLUTION - Consider Bull Call Spread", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and close crosses below level7, "🚨 ES BREAKDOWN BELOW 6540! TRIANGLE BREAKDOWN - Consider Bear Put Spread", Alert.BAR, Sound.Bell);
+
+# Target Alerts
+Alert(enableAlerts and close crosses above level1, "🎯 ES Bull Target Hit: 6780 - Take Profits on Long Positions", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and close crosses below level8, "🔴 ES Bear Target Hit: 6500 - Major Bearish Move Complete", Alert.BAR, Sound.Bell);
+
+# Resistance Test Alerts
+Alert(enableAlerts and close >= level2 - alertSensitivity and close <= level2 + alertSensitivity, "⚠️ ES Testing Triangle Resistance 6746.80 - Watch for Breakout/Rejection", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level3 - alertSensitivity and close <= level3 + alertSensitivity, "📊 ES Testing Secondary Resistance 6720", Alert.BAR, Sound.Chimes);
+
+# Support Test Alerts
+Alert(enableAlerts and close >= level7 - alertSensitivity and close <= level7 + alertSensitivity, "⚠️ ES Testing Triangle Support 6540 - Critical Level", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level6 - alertSensitivity and close <= level6 + alertSensitivity, "📊 ES Testing Secondary Support 6600", Alert.BAR, Sound.Chimes);
+
+# Range Trading Alerts
+Alert(enableAlerts and close crosses above level4, "📈 ES Above Mid-Range: 6680 - Bullish Bias", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses below level4, "📉 ES Below Mid-Range: 6680 - Bearish Bias", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses above level5, "⚡ ES Above Pivot: 6640 - Momentum Building", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses below level5, "⚡ ES Below Pivot: 6640 - Weakness Showing", Alert.BAR, Sound.Chimes);
+
+# Triangle Pattern Alerts
+Alert(enableAlerts and low[1] <= level7 and close > level7 + 5, "💪 ES Bounce from Triangle Support 6540 - Long Setup", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and high[1] >= level2 and close < level2 - 5, "🛑 ES Rejection at Triangle Resistance 6746.80 - Short Setup", Alert.BAR, Sound.Bell);
+
+# Compression Alerts (Triangle getting tight)
+def triangleRange = level2 - level7;
+def compressionThreshold = 150; # Points
+Alert(enableAlerts and triangleRange <= compressionThreshold, "🔥 ES Triangle Compression - Breakout Imminent! Range: " + Round(triangleRange, 1), Alert.BAR, Sound.Ring);
+
+# Status Labels
+AddLabel(enableAlerts, "🔔 Alerts ON", Color.GREEN);
+AddLabel(!enableAlerts, "🔕 Alerts OFF", Color.RED);
+AddLabel(yes, "ES Triangle Levels", Color.WHITE);
+AddLabel(yes, "Bull Above: " + level2, Color.DARK_GREEN);
+AddLabel(yes, "Bear Below: " + level7, Color.RED);
+AddLabel(yes, "Range: " + Round(triangleRange, 1) + " pts", Color.CYAN);
+AddLabel(yes, "Current: " + Round(close, 2), Color.YELLOW);
+
+# Triangle Pattern Status
+def trianglePosition = (close - level7) / (level2 - level7) * 100;
+AddLabel(yes, "Triangle %: " + Round(trianglePosition, 1) + "%", 
+    if trianglePosition > 75 then Color.DARK_GREEN 
+    else if trianglePosition > 50 then Color.GREEN
+    else if trianglePosition > 25 then Color.ORANGE
+    else Color.RED);
