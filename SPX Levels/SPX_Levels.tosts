@@ -19,6 +19,10 @@ input level6_thickness = 1;
 input level7 = 6450; # Extended downside target
 input level7_thickness = 1;
 
+# Alert Settings
+input enableAlerts = yes;
+input alertSensitivity = 2; # Points within level to trigger alert
+
 # Bullish Breakout Zone
 plot L1 = level1;
 L1.SetDefaultColor(Color.DARK_GREEN);
@@ -72,3 +76,36 @@ AddChartBubble(isLastBar, level4, "P " + level4, Color.LIGHT_GRAY, no);
 AddChartBubble(isLastBar, level5, "S " + level5, Color.GREEN, no);
 AddChartBubble(isLastBar, level6, "BR " + level6, Color.ORANGE, no);
 AddChartBubble(isLastBar, level7, "BD " + level7, Color.DARK_RED, no);
+
+# === ALERT SYSTEM ===
+
+# Key Level Breakout Alerts (Primary Trading Signals)
+Alert(enableAlerts and close crosses above level2, "🚀 SPX BREAKOUT ABOVE 6725! BULLISH SIGNAL - Consider Bull Call Spread", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and close crosses below level5, "🚨 SPX BREAKDOWN BELOW 6550! BEARISH SIGNAL - Consider Bear Put Spread", Alert.BAR, Sound.Bell);
+
+# Resistance Test Alerts
+Alert(enableAlerts and close >= level2 - alertSensitivity and close <= level2 + alertSensitivity, "⚠️ SPX Testing Key Resistance 6725 - Watch for Breakout/Rejection", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses above level1, "🎯 SPX Bull Target Hit: 6800 - Take Profits on Long Positions", Alert.BAR, Sound.Ding);
+
+# Support Test Alerts
+Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "⚠️ SPX Testing Key Support 6550 - Watch for Bounce/Break", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses below level6, "📉 SPX Bear Zone: 6500 - Breakdown Accelerating", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level7, "🔴 SPX Extended Breakdown: 6450 - Major Bearish Move", Alert.BAR, Sound.Bell);
+
+# Range Trading Alerts
+Alert(enableAlerts and close crosses above level3, "📈 SPX Above Mid-Range: 6650 - Bullish Bias", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses below level3, "📉 SPX Below Mid-Range: 6650 - Bearish Bias", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses above level4, "⚡ SPX Above Pivot: 6600 - Momentum Building", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses below level4, "⚡ SPX Below Pivot: 6600 - Weakness Showing", Alert.BAR, Sound.Chimes);
+
+# Bounce/Rejection Alerts (Secondary Signals)
+Alert(enableAlerts and low[1] <= level5 and close > level5 + 5, "💪 SPX Bounce from 6550 Support - Long Setup", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and high[1] >= level2 and close < level2 - 5, "🛑 SPX Rejection at 6725 Resistance - Short Setup", Alert.BAR, Sound.Bell);
+
+# Status Labels
+AddLabel(enableAlerts, "🔔 Alerts ON", Color.GREEN);
+AddLabel(!enableAlerts, "🔕 Alerts OFF", Color.RED);
+AddLabel(yes, "SPX W-Shape Levels", Color.WHITE);
+AddLabel(yes, "Bull Above: " + level2, Color.DARK_GREEN);
+AddLabel(yes, "Bear Below: " + level5, Color.RED);
+AddLabel(yes, "Current: " + Round(close, 2), Color.YELLOW);
