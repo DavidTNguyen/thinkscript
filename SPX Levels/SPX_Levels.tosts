@@ -31,7 +31,6 @@ L2.SetDefaultColor(Color.RED);
 L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
 L2.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-AddChartBubble(yes, level2, "KEY RESISTANCE: " + level2, Color.RED, yes);
 
 # Range Levels
 plot L3 = level3;
@@ -50,7 +49,6 @@ L5.SetDefaultColor(Color.GREEN);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
 L5.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-AddChartBubble(yes, level5, "KEY SUPPORT: " + level5, Color.GREEN, no);
 
 # Bearish Breakdown Zone
 plot L6 = level6;
@@ -62,3 +60,15 @@ plot L7 = level7;
 L7.SetDefaultColor(Color.DARK_RED);
 L7.SetLineWeight(level7_thickness);
 L7.SetStyle(Curve.FIRM);
+
+# Fixed bubble logic - show only on last bar
+def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
+
+# Ultra-short bubble labels
+AddChartBubble(isLastBar, level1, "B " + level1, Color.DARK_GREEN, yes);
+AddChartBubble(isLastBar, level2, "R " + level2, Color.RED, yes);
+AddChartBubble(isLastBar, level3, "M " + level3, Color.GRAY, yes);
+AddChartBubble(isLastBar, level4, "P " + level4, Color.LIGHT_GRAY, no);
+AddChartBubble(isLastBar, level5, "S " + level5, Color.GREEN, no);
+AddChartBubble(isLastBar, level6, "BR " + level6, Color.ORANGE, no);
+AddChartBubble(isLastBar, level7, "BD " + level7, Color.DARK_RED, no);
