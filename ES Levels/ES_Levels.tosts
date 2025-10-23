@@ -5,23 +5,17 @@
 
 # === Key Support & Resistance Levels ===
 input level1 = 6800; # Extended bullish target (6792+)
-input level1_thickness = 3; # 1=normal, 2=(*), 3=(**)
+input level1_thickness = 3;
 input level2 = 6792; # PRIMARY BREAKOUT TARGET
 input level2_thickness = 3;
 input level3 = 6787; # BREAKOUT LEVEL - Flag upper boundary
 input level3_thickness = 3;
 input level4 = 6782; # Flag top resistance
 input level4_thickness = 2;
-input level5 = 6770; # Flag mid-range
-input level5_thickness = 1;
-input level6 = 6766; # Primary support within flag
-input level6_thickness = 2;
-input level7 = 6756; # KEY SUPPORT - Flag lower boundary / Break level
-input level7_thickness = 3;
-input level8 = 6740; # Dip target if break below 6756
-input level8_thickness = 2;
-input level9 = 6720; # Extended bearish target
-input level9_thickness = 2;
+input level5 = 6766; # Primary support within flag
+input level5_thickness = 2;
+input level6 = 6756; # KEY SUPPORT - Flag lower boundary / Break level
+input level6_thickness = 3;
 
 # Alert Settings
 input enableAlerts = yes;
@@ -52,36 +46,18 @@ L4.SetDefaultColor(Color.YELLOW);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
-# Flag Mid-Range
+# Primary Support - 6766
 plot L5 = level5;
-L5.SetDefaultColor(Color.GRAY);
+L5.SetDefaultColor(Color.CYAN);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
 
-# Primary Support - 6766
+# KEY SUPPORT - Flag Lower Boundary (6756)
 plot L6 = level6;
-L6.SetDefaultColor(Color.CYAN);
+L6.SetDefaultColor(Color.ORANGE);
 L6.SetLineWeight(level6_thickness);
 L6.SetStyle(Curve.FIRM);
-
-# KEY SUPPORT - Flag Lower Boundary (6756)
-plot L7 = level7;
-L7.SetDefaultColor(Color.ORANGE);
-L7.SetLineWeight(level7_thickness);
-L7.SetStyle(Curve.FIRM);
-L7.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-
-# Dip Target
-plot L8 = level8;
-L8.SetDefaultColor(Color.RED);
-L8.SetLineWeight(level8_thickness);
-L8.SetStyle(Curve.FIRM);
-
-# Extended Bear Target
-plot L9 = level9;
-L9.SetDefaultColor(Color.DARK_RED);
-L9.SetLineWeight(level9_thickness);
-L9.SetStyle(Curve.FIRM);
+L6.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
 # Fixed bubble logic - show only on last bar
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
@@ -91,43 +67,33 @@ AddChartBubble(isLastBar, level1, "BT " + level1, Color.DARK_GREEN, yes);
 AddChartBubble(isLastBar, level2, "T1 " + level2, Color.GREEN, yes);
 AddChartBubble(isLastBar, level3, "BO " + level3, Color.LIME, yes);
 AddChartBubble(isLastBar, level4, "FT " + level4, Color.YELLOW, yes);
-AddChartBubble(isLastBar, level5, "M " + level5, Color.GRAY, no);
-AddChartBubble(isLastBar, level6, "S1 " + level6, Color.CYAN, no);
-AddChartBubble(isLastBar, level7, "S " + level7, Color.ORANGE, no);
-AddChartBubble(isLastBar, level8, "DIP " + level8, Color.RED, no);
-AddChartBubble(isLastBar, level9, "BD " + level9, Color.DARK_RED, no);
+AddChartBubble(isLastBar, level5, "S1 " + level5, Color.CYAN, no);
+AddChartBubble(isLastBar, level6, "S " + level6, Color.ORANGE, no);
 
 # === ALERT SYSTEM ===
 
 # Key Level Breakout Alerts (Primary Trading Signals)
 Alert(enableAlerts and close crosses above level3, "ES BREAKOUT ABOVE 6787! FLAG BREAKOUT", Alert.BAR, Sound.Ding);
 Alert(enableAlerts and close crosses above level2, "ES TARGET HIT: 6792! PRIMARY BREAKOUT", Alert.BAR, Sound.Ding);
-Alert(enableAlerts and close crosses below level7, "ES BREAKDOWN BELOW 6756! DIP INCOMING", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level6, "ES BREAKDOWN BELOW 6756! DIP INCOMING", Alert.BAR, Sound.Bell);
 
 # Flag Pattern Alerts
 Alert(enableAlerts and close >= level3 - alertSensitivity and close <= level3 + alertSensitivity, "ES Testing Breakout Level 6787", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level7 - alertSensitivity and close <= level7 + alertSensitivity, "ES Testing Critical Support 6756", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level6 - alertSensitivity and close <= level6 + alertSensitivity, "ES Testing Critical Support 6756", Alert.BAR, Sound.Chimes);
 
 # Support Test Alerts
-Alert(enableAlerts and close >= level6 - alertSensitivity and close <= level6 + alertSensitivity, "ES Testing Primary Support 6766", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level4 - alertSensitivity and close <= level4 + alertSensitivity, "ES Testing Flag Top 6782", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "ES Testing Primary Support 6766", Alert.BAR, Sound.Chimes);
 
 # Target Alerts
 Alert(enableAlerts and close crosses above level1, "ES Extended Target: 6800+ Major Bull Move", Alert.BAR, Sound.Ding);
-Alert(enableAlerts and close crosses below level8, "ES Dip Target Hit: 6740 Breakdown", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level9, "ES Extended Bear Target: 6720", Alert.BAR, Sound.Bell);
-
-# Range Trading Alerts
-Alert(enableAlerts and close crosses above level5, "ES Above Flag Mid: 6770 Bullish Bias", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close crosses below level5, "ES Below Flag Mid: 6770 Bearish Bias", Alert.BAR, Sound.Chimes);
 
 # Flag Pattern Bounce/Rejection Alerts
-Alert(enableAlerts and low[1] <= level7 and close > level7 + 3, "ES Bounce from 6756 Support Long Setup", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and low[1] <= level6 and close > level6 + 3, "ES Bounce from 6756 Support Long Setup", Alert.BAR, Sound.Ding);
 Alert(enableAlerts and high[1] >= level3 and close < level3 - 3, "ES Rejection at 6787 Breakout Short Setup", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and low[1] <= level6 and close > level6 + 2, "ES Bounce from 6766 Support Flag Hold", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and low[1] <= level5 and close > level5 + 2, "ES Bounce from 6766 Support Flag Hold", Alert.BAR, Sound.Chimes);
 
 # Flag Compression Alerts
-def flagRange = level4 - level7;
+def flagRange = level4 - level6;
 Alert(enableAlerts and flagRange <= 30, "ES Flag Tightening Breakout Imminent", Alert.BAR, Sound.Ring);
 
 # Status Labels
@@ -135,21 +101,24 @@ AddLabel(enableAlerts, "Alerts ON", Color.GREEN);
 AddLabel(!enableAlerts, "Alerts OFF", Color.RED);
 AddLabel(yes, "ES Flag Pattern", Color.WHITE);
 AddLabel(yes, "Breakout: " + level3, Color.LIME);
-AddLabel(yes, "Key Support: " + level7, Color.ORANGE);
-AddLabel(yes, "Flag Range: " + Round(flagRange, 1) + " pts", Color.CYAN);
+AddLabel(yes, "Support: 6766/6756", Color.ORANGE);
 AddLabel(yes, "Current: " + Round(close, 2), Color.YELLOW);
 
-# Flag Pattern Status
-def flagPosition = (close - level7) / (level4 - level7) * 100;
-AddLabel(yes, "Flag: " + Round(flagPosition, 1) + "%", 
-    if flagPosition > 80 then Color.LIME 
-    else if flagPosition > 60 then Color.GREEN
-    else if flagPosition > 40 then Color.YELLOW
-    else if flagPosition > 20 then Color.ORANGE
-    else Color.RED);
+# Position relative to key support levels (6766/6756)
+def supportRange = level5 - level6; # 6766 - 6756 = 10 pts
+def positionInSupport = (close - level6) / supportRange * 100;
 
-# Bias Indicator - Fixed to use separate AddLabel calls
+AddLabel(yes and close >= level6 and close <= level5, "Support Zone: " + Round(positionInSupport, 0) + "%", 
+    if positionInSupport > 66 then Color.GREEN
+    else if positionInSupport > 33 then Color.YELLOW
+    else Color.ORANGE);
+
+AddLabel(yes and close > level5, "Above 6766: +" + Round(close - level5, 1) + " pts", Color.CYAN);
+AddLabel(yes and close < level6, "Below 6756: -" + Round(level6 - close, 1) + " pts", Color.RED);
+
+# Bias Indicator - Based on key levels from analysis
 AddLabel(yes and close > level3, "BULL BREAKOUT", Color.LIME);
-AddLabel(yes and close <= level3 and close >= level7 and close > level5, "BULL BIAS", Color.GREEN);
-AddLabel(yes and close < level7, "BEAR DIP", Color.RED);
-AddLabel(yes and close <= level5 and close >= level7, "BEAR BIAS", Color.ORANGE);
+AddLabel(yes and close <= level3 and close > level5, "BULL BIAS", Color.GREEN);
+AddLabel(yes and close <= level5 and close >= level6, "NEUTRAL", Color.YELLOW);
+AddLabel(yes and close < level6, "BEAR DIP", Color.RED);
+
