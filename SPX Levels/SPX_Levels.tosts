@@ -1,111 +1,65 @@
-# === SPX Levels: W-Shape Structure Trade Map ===
-# Updated: October 18, 2025
-# Based on: W-Shape pattern with key support at 6550 and resistance at 6725
-# Trade Map: Bullish above 6725 | Bearish below 6550 | Range-bound between
+# === SPX Levels: Q4 Binary Setup ===
+# Updated: October 23, 2025
+# Based on: 6483 core support | 6765 breakout resistance | Binary Q4 structure
+# Trade Map: Bullish above 6765 targets 7000 | Bearish below 6483 risks 4-6% drop
 
 # === Key Support & Resistance Levels ===
-input level1 = 6800; # Bullish breakout target zone
+input level1 = 7000; # Year-end melt-up target
 input level1_thickness = 2; # 1=normal, 2=(*), 3=(**)
-input level2 = 6725; # KEY RESISTANCE - W-Shape upper boundary
-input level2_thickness = 3;
-input level3 = 6650; # Mid-range level
+input level2 = 6850; # Acceleration target
+input level2_thickness = 1;
+input level3 = 6795; # Post-breakout target (±4 pts)
 input level3_thickness = 1;
-input level4 = 6600; # W-Shape mid-point
-input level4_thickness = 1;
-input level5 = 6550; # KEY SUPPORT - W-Shape lower boundary
-input level5_thickness = 3;
-input level6 = 6500; # Bearish breakdown zone
-input level6_thickness = 1;
-input level7 = 6450; # Extended downside target
+input level4 = 6765; # KEY RESISTANCE - High volume breakout level
+input level4_thickness = 3;
+input level5 = 6750; # Technical resistance (chartist focus)
+input level5_thickness = 2;
+input level6 = 6483; # CORE SUPPORT - Quantitative bullish star level
+input level6_thickness = 3;
+input level7 = 6200; # 4-6% downside risk target
 input level7_thickness = 1;
 
-# Alert Settings
-input enableAlerts = yes;
-input alertSensitivity = 2; # Points within level to trigger alert
-
-# Bullish Breakout Zone
+# Year-end Melt-up Target
 plot L1 = level1;
 L1.SetDefaultColor(Color.DARK_GREEN);
 L1.SetLineWeight(level1_thickness);
 L1.SetStyle(Curve.FIRM);
 
-# KEY RESISTANCE - W-Shape Upper Boundary
+# Acceleration Targets
 plot L2 = level2;
-L2.SetDefaultColor(Color.RED);
+L2.SetDefaultColor(Color.GREEN);
 L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
-L2.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
-# Range Levels
 plot L3 = level3;
-L3.SetDefaultColor(Color.GRAY);
+L3.SetDefaultColor(Color.CYAN);
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
+# KEY RESISTANCE - Breakout Level (needs high volume close)
 plot L4 = level4;
-L4.SetDefaultColor(Color.LIGHT_GRAY);
+L4.SetDefaultColor(Color.RED);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
+L4.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+AddChartBubble(yes, level4, "KEY RESISTANCE: " + level4, Color.RED, yes);
 
-# KEY SUPPORT - W-Shape Lower Boundary
+# Technical Resistance
 plot L5 = level5;
-L5.SetDefaultColor(Color.GREEN);
+L5.SetDefaultColor(Color.ORANGE);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
-L5.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
-# Bearish Breakdown Zone
+# CORE SUPPORT - Quantitative Bullish Star Level
 plot L6 = level6;
-L6.SetDefaultColor(Color.ORANGE);
+L6.SetDefaultColor(Color.MAGENTA);
 L6.SetLineWeight(level6_thickness);
 L6.SetStyle(Curve.FIRM);
+L6.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+AddChartBubble(yes, level6, "CORE SUPPORT: " + level6, Color.MAGENTA, no);
 
+# Downside Risk Target
 plot L7 = level7;
 L7.SetDefaultColor(Color.DARK_RED);
 L7.SetLineWeight(level7_thickness);
 L7.SetStyle(Curve.FIRM);
-
-# Fixed bubble logic - show only on last bar
-def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
-
-# Ultra-short bubble labels
-AddChartBubble(isLastBar, level1, "B " + level1, Color.DARK_GREEN, yes);
-AddChartBubble(isLastBar, level2, "R " + level2, Color.RED, yes);
-AddChartBubble(isLastBar, level3, "M " + level3, Color.GRAY, yes);
-AddChartBubble(isLastBar, level4, "P " + level4, Color.LIGHT_GRAY, no);
-AddChartBubble(isLastBar, level5, "S " + level5, Color.GREEN, no);
-AddChartBubble(isLastBar, level6, "BR " + level6, Color.ORANGE, no);
-AddChartBubble(isLastBar, level7, "BD " + level7, Color.DARK_RED, no);
-
-# === ALERT SYSTEM ===
-
-# Key Level Breakout Alerts (Primary Trading Signals)
-Alert(enableAlerts and close crosses above level2, "🚀 SPX BREAKOUT ABOVE 6725! BULLISH SIGNAL - Consider Bull Call Spread", Alert.BAR, Sound.Ding);
-Alert(enableAlerts and close crosses below level5, "🚨 SPX BREAKDOWN BELOW 6550! BEARISH SIGNAL - Consider Bear Put Spread", Alert.BAR, Sound.Bell);
-
-# Resistance Test Alerts
-Alert(enableAlerts and close >= level2 - alertSensitivity and close <= level2 + alertSensitivity, "⚠️ SPX Testing Key Resistance 6725 - Watch for Breakout/Rejection", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close crosses above level1, "🎯 SPX Bull Target Hit: 6800 - Take Profits on Long Positions", Alert.BAR, Sound.Ding);
-
-# Support Test Alerts
-Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "⚠️ SPX Testing Key Support 6550 - Watch for Bounce/Break", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close crosses below level6, "📉 SPX Bear Zone: 6500 - Breakdown Accelerating", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level7, "🔴 SPX Extended Breakdown: 6450 - Major Bearish Move", Alert.BAR, Sound.Bell);
-
-# Range Trading Alerts
-Alert(enableAlerts and close crosses above level3, "📈 SPX Above Mid-Range: 6650 - Bullish Bias", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close crosses below level3, "📉 SPX Below Mid-Range: 6650 - Bearish Bias", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close crosses above level4, "⚡ SPX Above Pivot: 6600 - Momentum Building", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close crosses below level4, "⚡ SPX Below Pivot: 6600 - Weakness Showing", Alert.BAR, Sound.Chimes);
-
-# Bounce/Rejection Alerts (Secondary Signals)
-Alert(enableAlerts and low[1] <= level5 and close > level5 + 5, "💪 SPX Bounce from 6550 Support - Long Setup", Alert.BAR, Sound.Ding);
-Alert(enableAlerts and high[1] >= level2 and close < level2 - 5, "🛑 SPX Rejection at 6725 Resistance - Short Setup", Alert.BAR, Sound.Bell);
-
-# Status Labels
-AddLabel(enableAlerts, "🔔 Alerts ON", Color.GREEN);
-AddLabel(!enableAlerts, "🔕 Alerts OFF", Color.RED);
-AddLabel(yes, "SPX W-Shape Levels", Color.WHITE);
-AddLabel(yes, "Bull Above: " + level2, Color.DARK_GREEN);
-AddLabel(yes, "Bear Below: " + level5, Color.RED);
-AddLabel(yes, "Current: " + Round(close, 2), Color.YELLOW);
