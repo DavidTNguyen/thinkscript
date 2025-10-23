@@ -1,0 +1,169 @@
+# === MSOS Levels: Support & Resistance Trade Map ===
+# Updated: October 22, 2025
+# Based on: Key technical levels with Fibonacci retracements
+# Trade Map: Multi-timeframe support/resistance with Fibonacci confluences
+
+# === Key Support & Resistance Levels ===
+input r2_level = 4.75; # R2 - Resistance Level 2
+input r2_thickness = 3;
+input r1_level = 4.57; # R1 - Resistance Level 1
+input r1_thickness = 3;
+input fib_6180 = 4.54; # Fibonacci 61.8% retracement
+input fib_6180_thickness = 2;
+input current_price = 4.38; # Current Price reference
+input price_thickness = 3;
+input fib_500 = 4.50; # Fibonacci 50% retracement
+input fib_500_thickness = 2;
+input fib_3820 = 4.47; # Fibonacci 38.2% retracement
+input fib_3820_thickness = 2;
+input s1_level = 4.28; # S1 - Support Level 1
+input s1_thickness = 3;
+input s2_level = 4.17; # S2 - Support Level 2
+input s2_thickness = 3;
+
+# Moving Averages (for reference)
+input sma50_level = 4.87; # SMA 50
+input sma200_level = 3.36; # SMA 200
+
+# Alert Settings
+input enableAlerts = yes;
+input alertSensitivity = 0.02; # Dollar amount within level to trigger alert
+
+# === RESISTANCE LEVELS ===
+
+# R2 - Strong Resistance
+plot R2 = r2_level;
+R2.SetDefaultColor(Color.RED);
+R2.SetLineWeight(r2_thickness);
+R2.SetStyle(Curve.FIRM);
+R2.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+
+# R1 - Primary Resistance
+plot R1 = r1_level;
+R1.SetDefaultColor(Color.DARK_RED);
+R1.SetLineWeight(r1_thickness);
+R1.SetStyle(Curve.FIRM);
+R1.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+
+# Fibonacci 61.8%
+plot Fib618 = fib_6180;
+Fib618.SetDefaultColor(Color.MAGENTA);
+Fib618.SetLineWeight(fib_6180_thickness);
+Fib618.SetStyle(Curve.LONG_DASH);
+
+# Current Price Line
+plot CurrentPrice = current_price;
+CurrentPrice.SetDefaultColor(Color.WHITE);
+CurrentPrice.SetLineWeight(price_thickness);
+CurrentPrice.SetStyle(Curve.FIRM);
+
+# Fibonacci 50%
+plot Fib50 = fib_500;
+Fib50.SetDefaultColor(Color.YELLOW);
+Fib50.SetLineWeight(fib_500_thickness);
+Fib50.SetStyle(Curve.LONG_DASH);
+
+# Fibonacci 38.2%
+plot Fib382 = fib_3820;
+Fib382.SetDefaultColor(Color.ORANGE);
+Fib382.SetLineWeight(fib_3820_thickness);
+Fib382.SetStyle(Curve.LONG_DASH);
+
+# === SUPPORT LEVELS ===
+
+# S1 - Primary Support
+plot S1 = s1_level;
+S1.SetDefaultColor(Color.CYAN);
+S1.SetLineWeight(s1_thickness);
+S1.SetStyle(Curve.FIRM);
+S1.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+
+# S2 - Strong Support
+plot S2 = s2_level;
+S2.SetDefaultColor(Color.GREEN);
+S2.SetLineWeight(s2_thickness);
+S2.SetStyle(Curve.FIRM);
+S2.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+
+# === Moving Averages (optional display) ===
+plot SMA50 = sma50_level;
+SMA50.SetDefaultColor(Color.LIGHT_GRAY);
+SMA50.SetLineWeight(1);
+SMA50.SetStyle(Curve.LONG_DASH);
+
+plot SMA200 = sma200_level;
+SMA200.SetDefaultColor(Color.DARK_GRAY);
+SMA200.SetLineWeight(1);
+SMA200.SetStyle(Curve.LONG_DASH);
+
+# Fixed bubble logic - show only on last bar
+def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
+
+# Ultra-short bubble labels
+AddChartBubble(isLastBar, r2_level, "R2 " + r2_level, Color.RED, yes);
+AddChartBubble(isLastBar, r1_level, "R1 " + r1_level, Color.DARK_RED, yes);
+AddChartBubble(isLastBar, fib_6180, "F61.8 " + fib_6180, Color.MAGENTA, yes);
+AddChartBubble(isLastBar, fib_500, "F50 " + fib_500, Color.YELLOW, yes);
+AddChartBubble(isLastBar, fib_3820, "F38.2 " + fib_3820, Color.ORANGE, no);
+AddChartBubble(isLastBar, s1_level, "S1 " + s1_level, Color.CYAN, no);
+AddChartBubble(isLastBar, s2_level, "S2 " + s2_level, Color.GREEN, no);
+AddChartBubble(isLastBar, sma50_level, "SMA50 " + sma50_level, Color.LIGHT_GRAY, yes);
+AddChartBubble(isLastBar, sma200_level, "SMA200 " + sma200_level, Color.DARK_GRAY, no);
+
+# === ALERT SYSTEM ===
+
+# Resistance Breakout Alerts
+Alert(enableAlerts and close crosses above r1_level, "MSOS BREAKOUT ABOVE R1: 4.57 - Bullish Signal", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and close crosses above r2_level, "MSOS BREAKOUT ABOVE R2: 4.75 - Strong Bull Move", Alert.BAR, Sound.Ding);
+
+# Support Breakdown Alerts
+Alert(enableAlerts and close crosses below s1_level, "MSOS BREAKDOWN BELOW S1: 4.28 - Bearish Signal", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below s2_level, "MSOS BREAKDOWN BELOW S2: 4.17 - Strong Bear Move", Alert.BAR, Sound.Bell);
+
+# Fibonacci Level Alerts
+Alert(enableAlerts and close crosses above fib_6180, "MSOS Above Fib 61.8%: 4.54 - Bullish Momentum", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses below fib_3820, "MSOS Below Fib 38.2%: 4.47 - Bearish Pressure", Alert.BAR, Sound.Chimes);
+
+# Resistance Test Alerts
+Alert(enableAlerts and close >= r1_level - alertSensitivity and close <= r1_level + alertSensitivity, "MSOS Testing R1: 4.57", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= r2_level - alertSensitivity and close <= r2_level + alertSensitivity, "MSOS Testing R2: 4.75", Alert.BAR, Sound.Chimes);
+
+# Support Test Alerts
+Alert(enableAlerts and close >= s1_level - alertSensitivity and close <= s1_level + alertSensitivity, "MSOS Testing S1: 4.28", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= s2_level - alertSensitivity and close <= s2_level + alertSensitivity, "MSOS Testing S2: 4.17", Alert.BAR, Sound.Chimes);
+
+# Moving Average Alerts
+Alert(enableAlerts and close crosses above sma50_level, "MSOS Above SMA50: 4.87 - Bullish Trend", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and close crosses below sma50_level, "MSOS Below SMA50: 4.87 - Bearish Trend", Alert.BAR, Sound.Bell);
+
+# Bounce/Rejection Alerts
+Alert(enableAlerts and low[1] <= s1_level and close > s1_level + 0.05, "MSOS Bounce from S1: 4.28 - Long Setup", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and high[1] >= r1_level and close < r1_level - 0.05, "MSOS Rejection at R1: 4.57 - Short Setup", Alert.BAR, Sound.Bell);
+
+# === STATUS LABELS ===
+
+AddLabel(enableAlerts, "Alerts ON", Color.GREEN);
+AddLabel(!enableAlerts, "Alerts OFF", Color.RED);
+AddLabel(yes, "MSOS Levels", Color.WHITE);
+AddLabel(yes, "Current: $" + Round(close, 2), Color.YELLOW);
+
+# Price Position Indicator
+def priceRange = r2_level - s2_level;
+def pricePosition = (close - s2_level) / priceRange * 100;
+AddLabel(yes, "Position: " + Round(pricePosition, 1) + "%", 
+    if pricePosition > 75 then Color.LIME
+    else if pricePosition > 50 then Color.GREEN
+    else if pricePosition > 25 then Color.ORANGE
+    else Color.RED);
+
+# Market Bias
+AddLabel(yes and close > r1_level, "BULLISH BREAKOUT", Color.LIME);
+AddLabel(yes and close > s1_level and close <= r1_level, "NEUTRAL RANGE", Color.YELLOW);
+AddLabel(yes and close < s1_level, "BEARISH BREAKDOWN", Color.RED);
+
+# Distance from Key Levels
+def distToR1 = ((r1_level - close) / close) * 100;
+def distToS1 = ((close - s1_level) / close) * 100;
+
+AddLabel(yes and close < r1_level, "To R1: " + Round(distToR1, 2) + "%", Color.PINK);
+AddLabel(yes and close > s1_level, "From S1: " + Round(distToS1, 2) + "%", Color.CYAN);
