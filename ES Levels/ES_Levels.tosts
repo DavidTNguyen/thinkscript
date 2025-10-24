@@ -23,7 +23,7 @@ input level8_thickness = 2;
 
 # Alert Settings
 input enableAlerts = yes;
-input alertSensitivity = 2; # Points within level to trigger alert
+input alertSensitivity = 0.5; # Tight sensitivity - triggers only near exact level touch
 
 # Fixed bubble logic - show only on last bar
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
