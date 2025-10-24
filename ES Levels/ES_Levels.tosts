@@ -1,124 +1,146 @@
-# === ES Levels: Flag Pattern Trade Map ===
-# Updated: October 22, 2025
-# Based on: Flag consolidation 6756-6782 with breakout targets at 6787, 6792+
-# Trade Map: Bullish above 6787 | Bearish below 6756 | Flag range between
+# === ES Levels: Breakout Extension Trade Map ===
+# Updated: October 24, 2025
+# Based on: 6732 reclaim long hit all targets | 100 points up | Next targets 6845, 6854
+# Trade Map: Let runners work until deep sell | Support watch: 6798/6803
 
 # === Key Support & Resistance Levels ===
-input level1 = 6800; # Extended bullish target (6792+)
-input level1_thickness = 3;
-input level2 = 6792; # PRIMARY BREAKOUT TARGET
-input level2_thickness = 3;
-input level3 = 6787; # BREAKOUT LEVEL - Flag upper boundary
+input level1 = 6854; # Extended target (bonus batch)
+input level1_thickness = 2;
+input level2 = 6845; # Next target up (bonus batch)
+input level2_thickness = 2;
+input level3 = 6832; # Target hit 1hr ago
 input level3_thickness = 3;
-input level4 = 6782; # Flag top resistance
+input level4 = 6820; # Target hit (given at 8am)
 input level4_thickness = 2;
-input level5 = 6766; # Primary support within flag
+input level5 = 6812; # Target hit (given at 8am)
 input level5_thickness = 2;
-input level6 = 6756; # KEY SUPPORT - Flag lower boundary / Break level
+input level6 = 6803; # Support watch level / Target hit (given at 8am)
 input level6_thickness = 3;
+input level7 = 6798; # Support watch level
+input level7_thickness = 3;
+input level8 = 6732; # Reclaim long level (yesterday 8am)
+input level8_thickness = 2;
 
 # Alert Settings
 input enableAlerts = yes;
 input alertSensitivity = 2; # Points within level to trigger alert
 
-# Extended Bull Target (6792+)
+# Fixed bubble logic - show only on last bar
+def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
+
+# Extended Target
 plot L1 = level1;
 L1.SetDefaultColor(Color.DARK_GREEN);
 L1.SetLineWeight(level1_thickness);
 L1.SetStyle(Curve.FIRM);
 
-# Primary Breakout Target
+# Next Target Up
 plot L2 = level2;
 L2.SetDefaultColor(Color.GREEN);
 L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
 
-# Breakout Level - 6787
+# Recent Target Hit
 plot L3 = level3;
 L3.SetDefaultColor(Color.LIME);
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
-L3.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
-# Flag Top - 6782
+# Target Hit
 plot L4 = level4;
-L4.SetDefaultColor(Color.YELLOW);
+L4.SetDefaultColor(Color.CYAN);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
-# Primary Support - 6766
+# Target Hit
 plot L5 = level5;
-L5.SetDefaultColor(Color.CYAN);
+L5.SetDefaultColor(Color.LIGHT_GRAY);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
 
-# KEY SUPPORT - Flag Lower Boundary (6756)
+# KEY SUPPORT - Watch level / Target hit
 plot L6 = level6;
 L6.SetDefaultColor(Color.ORANGE);
 L6.SetLineWeight(level6_thickness);
 L6.SetStyle(Curve.FIRM);
 L6.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
-# Fixed bubble logic - show only on last bar
-def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
+# KEY SUPPORT - Watch level
+plot L7 = level7;
+L7.SetDefaultColor(Color.RED);
+L7.SetLineWeight(level7_thickness);
+L7.SetStyle(Curve.FIRM);
+L7.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
-# Ultra-short bubble labels
-AddChartBubble(isLastBar, level1, "BT " + level1, Color.DARK_GREEN, yes);
-AddChartBubble(isLastBar, level2, "T1 " + level2, Color.GREEN, yes);
-AddChartBubble(isLastBar, level3, "BO " + level3, Color.LIME, yes);
-AddChartBubble(isLastBar, level4, "FT " + level4, Color.YELLOW, yes);
-AddChartBubble(isLastBar, level5, "S1 " + level5, Color.CYAN, no);
-AddChartBubble(isLastBar, level6, "S " + level6, Color.ORANGE, no);
+# Reclaim Long Level
+plot L8 = level8;
+L8.SetDefaultColor(Color.MAGENTA);
+L8.SetLineWeight(level8_thickness);
+L8.SetStyle(Curve.FIRM);
+
+# Chart bubbles - show only on last bar
+AddChartBubble(isLastBar, level1, "6854", Color.DARK_GREEN, yes);
+AddChartBubble(isLastBar, level2, "6845", Color.GREEN, yes);
+AddChartBubble(isLastBar, level3, "6832", Color.LIME, yes);
+AddChartBubble(isLastBar, level4, "6820", Color.CYAN, yes);
+AddChartBubble(isLastBar, level5, "6812", Color.LIGHT_GRAY, yes);
+AddChartBubble(isLastBar, level6, "S: 6803", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level7, "S: 6798", Color.RED, yes);
+AddChartBubble(isLastBar, level8, "6732", Color.MAGENTA, no);
 
 # === ALERT SYSTEM ===
 
-# Key Level Breakout Alerts (Primary Trading Signals)
-Alert(enableAlerts and close crosses above level3, "ES BREAKOUT ABOVE 6787! FLAG BREAKOUT", Alert.BAR, Sound.Ding);
-Alert(enableAlerts and close crosses above level2, "ES TARGET HIT: 6792! PRIMARY BREAKOUT", Alert.BAR, Sound.Ding);
-Alert(enableAlerts and close crosses below level6, "ES BREAKDOWN BELOW 6756! DIP INCOMING", Alert.BAR, Sound.Bell);
+# Target Alerts
+Alert(enableAlerts and close crosses above level2, "ES 6845 TARGET! Bonus Batch 2", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and close crosses above level1, "ES 6854 EXTENDED TARGET! Bonus Batch Complete", Alert.BAR, Sound.Ring);
 
-# Flag Pattern Alerts
-Alert(enableAlerts and close >= level3 - alertSensitivity and close <= level3 + alertSensitivity, "ES Testing Breakout Level 6787", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level6 - alertSensitivity and close <= level6 + alertSensitivity, "ES Testing Critical Support 6756", Alert.BAR, Sound.Chimes);
+# Support Breakdown Alerts (Watch Levels)
+Alert(enableAlerts and close crosses below level6, "ES BELOW 6803! Support Watch Level Break", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level7, "ES BELOW 6798! Key Support Break - Deep Sell Risk", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level8, "ES BELOW 6732! Reclaim Long Failed", Alert.BAR, Sound.Bell);
 
 # Support Test Alerts
-Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "ES Testing Primary Support 6766", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level6 - alertSensitivity and close <= level6 + alertSensitivity, "ES Testing 6803 Support Watch Level", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level7 - alertSensitivity and close <= level7 + alertSensitivity, "ES Testing 6798 Support Watch Level", Alert.BAR, Sound.Chimes);
 
-# Target Alerts
-Alert(enableAlerts and close crosses above level1, "ES Extended Target: 6800+ Major Bull Move", Alert.BAR, Sound.Ding);
+# Target Testing
+Alert(enableAlerts and close >= level2 - alertSensitivity and close <= level2 + alertSensitivity, "ES Testing 6845 Next Target", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level1 - alertSensitivity and close <= level1 + alertSensitivity, "ES Testing 6854 Extended Target", Alert.BAR, Sound.Chimes);
 
-# Flag Pattern Bounce/Rejection Alerts
-Alert(enableAlerts and low[1] <= level6 and close > level6 + 3, "ES Bounce from 6756 Support Long Setup", Alert.BAR, Sound.Ding);
-Alert(enableAlerts and high[1] >= level3 and close < level3 - 3, "ES Rejection at 6787 Breakout Short Setup", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and low[1] <= level5 and close > level5 + 2, "ES Bounce from 6766 Support Flag Hold", Alert.BAR, Sound.Chimes);
+# Bounce/Rejection Alerts
+Alert(enableAlerts and low[1] <= level6 and close > level6 + 3, "ES BOUNCE from 6803! Support Holding", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and low[1] <= level7 and close > level7 + 3, "ES BOUNCE from 6798! Key Support Holding", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and high[1] >= level2 and close < level2 - 3, "ES REJECTION at 6845! Resistance Test", Alert.BAR, Sound.Bell);
 
-# Flag Compression Alerts
-def flagRange = level4 - level6;
-Alert(enableAlerts and flagRange <= 30, "ES Flag Tightening Breakout Imminent", Alert.BAR, Sound.Ring);
+# Runner Management Alert
+Alert(enableAlerts and close < level7, "ES Deep Sell Starting - Consider Runner Management", Alert.BAR, Sound.Chimes);
 
 # Status Labels
 AddLabel(enableAlerts, "Alerts ON", Color.GREEN);
 AddLabel(!enableAlerts, "Alerts OFF", Color.RED);
-AddLabel(yes, "ES Flag Pattern", Color.WHITE);
-AddLabel(yes, "Breakout: " + level3, Color.LIME);
-AddLabel(yes, "Support: 6766/6756", Color.ORANGE);
+AddLabel(yes, "ES Breakout Extension", Color.WHITE);
+AddLabel(yes, "Next: 6845/6854", Color.GREEN);
+AddLabel(yes, "Support: 6798/6803", Color.ORANGE);
 AddLabel(yes, "Current: " + Round(close, 2), Color.YELLOW);
 
-# Position relative to key support levels (6766/6756)
-def supportRange = level5 - level6; # 6766 - 6756 = 10 pts
-def positionInSupport = (close - level6) / supportRange * 100;
+# Trade Status
+def pointsFrom6732 = close - level8;
+AddLabel(yes, "From 6732: +" + Round(pointsFrom6732, 1) + " pts", Color.LIME);
 
-AddLabel(yes and close >= level6 and close <= level5, "Support Zone: " + Round(positionInSupport, 0) + "%", 
-    if positionInSupport > 66 then Color.GREEN
-    else if positionInSupport > 33 then Color.YELLOW
-    else Color.ORANGE);
+# Position relative to support watch levels
+AddLabel(yes and close > level6, "Above 6803: +" + Round(close - level6, 1) + " pts", Color.CYAN);
+AddLabel(yes and close <= level6 and close > level7, "Between 6798-6803", Color.ORANGE);
+AddLabel(yes and close <= level7, "Below 6798: -" + Round(level7 - close, 1) + " pts", Color.RED);
 
-AddLabel(yes and close > level5, "Above 6766: +" + Round(close - level5, 1) + " pts", Color.CYAN);
-AddLabel(yes and close < level6, "Below 6756: -" + Round(level6 - close, 1) + " pts", Color.RED);
+# Trade Plan Status
+AddLabel(yes and close > level3, "LET RUNNERS WORK", Color.LIME);
+AddLabel(yes and close <= level3 and close > level6, "PROFIT ZONE - WATCH 6803", Color.GREEN);
+AddLabel(yes and close <= level6 and close > level7, "SUPPORT WATCH 6798", Color.ORANGE);
+AddLabel(yes and close <= level7, "DEEP SELL MODE", Color.RED);
 
-# Bias Indicator - Based on key levels from analysis
-AddLabel(yes and close > level3, "BULL BREAKOUT", Color.LIME);
-AddLabel(yes and close <= level3 and close > level5, "BULL BIAS", Color.GREEN);
-AddLabel(yes and close <= level5 and close >= level6, "NEUTRAL", Color.YELLOW);
-AddLabel(yes and close < level6, "BEAR DIP", Color.RED);
+# Distance to Next Targets
+def distTo6845 = level2 - close;
+def distTo6854 = level1 - close;
 
+AddLabel(yes and close < level2, "To 6845: " + Round(distTo6845, 1) + " pts", Color.GREEN);
+AddLabel(yes and close < level1, "To 6854: " + Round(distTo6854, 1) + " pts", Color.DARK_GREEN);

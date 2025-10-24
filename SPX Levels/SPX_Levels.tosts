@@ -2,49 +2,55 @@
 # Updated: October 23, 2025
 # Based on: 6483 core support | 6765 breakout resistance | Binary Q4 structure
 # Trade Map: Bullish above 6765 targets 7000 | Bearish below 6483 risks 4-6% drop
+# Transcript: 75% leverage flushed | High-volume close needed at 6765 ($13M+)
 
 # === Key Support & Resistance Levels ===
-input level1 = 7000; # Year-end melt-up target
-input level1_thickness = 2; # 1=normal, 2=(*), 3=(**)
-input level2 = 6850; # Acceleration target
-input level2_thickness = 1;
+input level1 = 7000; # Year-end melt-up target (6900-7000)
+input level1_thickness = 3;
+input level2 = 6850; # Acceleration target after breakout
+input level2_thickness = 2;
 input level3 = 6795; # Post-breakout target (±4 pts)
-input level3_thickness = 1;
-input level4 = 6765; # KEY RESISTANCE - High volume breakout level
+input level3_thickness = 2;
+input level4 = 6765; # KEY RESISTANCE - High volume breakout level ($13M/hour)
 input level4_thickness = 3;
 input level5 = 6750; # Technical resistance (chartist focus)
 input level5_thickness = 2;
 input level6 = 6483; # CORE SUPPORT - Quantitative bullish star level
 input level6_thickness = 3;
-input level7 = 6200; # 4-6% downside risk target
-input level7_thickness = 1;
 
-# Year-end Melt-up Target
+# Alert Settings
+input enableAlerts = yes;
+input alertSensitivity = 5; # Points within level to trigger alert
+
+# Fixed bubble logic - show only on last bar
+def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
+
+# Year-end Melt-up Target (6900-7000)
 plot L1 = level1;
 L1.SetDefaultColor(Color.DARK_GREEN);
 L1.SetLineWeight(level1_thickness);
 L1.SetStyle(Curve.FIRM);
 
-# Acceleration Targets
+# Acceleration Target
 plot L2 = level2;
 L2.SetDefaultColor(Color.GREEN);
 L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
 
+# Post-breakout Target
 plot L3 = level3;
 L3.SetDefaultColor(Color.CYAN);
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
-# KEY RESISTANCE - Breakout Level (needs high volume close)
+# KEY RESISTANCE - Breakout Level (needs high volume close $13M+/hour)
 plot L4 = level4;
 L4.SetDefaultColor(Color.RED);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 L4.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-AddChartBubble(yes, level4, "KEY RESISTANCE: " + level4, Color.RED, yes);
 
-# Technical Resistance
+# Technical Resistance (Chartist focus)
 plot L5 = level5;
 L5.SetDefaultColor(Color.ORANGE);
 L5.SetLineWeight(level5_thickness);
@@ -56,10 +62,66 @@ L6.SetDefaultColor(Color.MAGENTA);
 L6.SetLineWeight(level6_thickness);
 L6.SetStyle(Curve.FIRM);
 L6.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-AddChartBubble(yes, level6, "CORE SUPPORT: " + level6, Color.MAGENTA, no);
 
-# Downside Risk Target
-plot L7 = level7;
-L7.SetDefaultColor(Color.DARK_RED);
-L7.SetLineWeight(level7_thickness);
-L7.SetStyle(Curve.FIRM);
+# Chart bubbles - show only on last bar
+AddChartBubble(isLastBar, level1, "7000", Color.DARK_GREEN, yes);
+AddChartBubble(isLastBar, level2, "6850", Color.GREEN, yes);
+AddChartBubble(isLastBar, level3, "6795", Color.CYAN, yes);
+AddChartBubble(isLastBar, level4, "KEY R: 6765", Color.RED, yes);
+AddChartBubble(isLastBar, level5, "6750", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level6, "CORE S: 6483", Color.MAGENTA, no);
+
+# === ALERT SYSTEM ===
+
+# Key Breakout/Breakdown Alerts
+Alert(enableAlerts and close crosses above level4, "SPX BREAKOUT ABOVE 6765! High-Volume Melt-Up Starting", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and close crosses above level5, "SPX Above 6750! Chartist Resistance Cleared", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses below level6, "SPX BREAKDOWN BELOW 6483! 4-6% Drop Risk - Margin Unwind", Alert.BAR, Sound.Bell);
+
+# Target Progression Alerts
+Alert(enableAlerts and close crosses above level3, "SPX 6795 TARGET HIT! Next: 6850 Acceleration", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and close crosses above level2, "SPX 6850 ACCELERATION! Chasing to 6900-7000", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and close crosses above level1, "SPX 7000 YEAR-END TARGET! Melt-Up Complete", Alert.BAR, Sound.Ring);
+
+# Testing Key Levels
+Alert(enableAlerts and close >= level4 - alertSensitivity and close <= level4 + alertSensitivity, "SPX Testing 6765 Breakout - Need High Volume Close", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "SPX Testing 6750 Technical Resistance", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level6 - alertSensitivity and close <= level6 + alertSensitivity, "SPX Testing 6483 Core Support", Alert.BAR, Sound.Chimes);
+
+# Bounce/Rejection Alerts
+Alert(enableAlerts and low[1] <= level6 and close > level6 + 10, "SPX BOUNCE from 6483 Star Level! Dip-Buy Working", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and high[1] >= level4 and close < level4 - 10, "SPX REJECTION at 6765! Failed Breakout", Alert.BAR, Sound.Bell);
+
+# Range Alerts
+Alert(enableAlerts and high >= level5 and close < level4, "SPX in 6750-6765 Compression Zone - Breakout Imminent", Alert.BAR, Sound.Chimes);
+
+# === STATUS LABELS ===
+
+AddLabel(enableAlerts, "Alerts ON", Color.GREEN);
+AddLabel(!enableAlerts, "Alerts OFF", Color.RED);
+AddLabel(yes, "SPX Q4 Binary", Color.WHITE);
+AddLabel(yes, "BO: 6765", Color.RED);
+AddLabel(yes, "Core: 6483", Color.MAGENTA);
+AddLabel(yes, "Current: " + Round(close, 2), Color.YELLOW);
+
+# Binary Setup Status
+AddLabel(yes and close > level4, "MELT-UP MODE → 7000", Color.LIME);
+AddLabel(yes and close >= level5 and close <= level4, "BREAKOUT ZONE 6750-6765", Color.ORANGE);
+AddLabel(yes and close < level5 and close >= level6, "RANGE: 6483-6750", Color.YELLOW);
+AddLabel(yes and close < level6, "BREAKDOWN RISK 4-6%", Color.RED);
+
+# Key Level Distances
+def distTo6765 = level4 - close;
+def distTo6483 = close - level6;
+def distTo7000 = level1 - close;
+
+AddLabel(yes and close < level4, "To 6765: " + Round(distTo6765, 1) + " pts", Color.ORANGE);
+AddLabel(yes and close > level6, "Above 6483: " + Round(distTo6483, 1) + " pts", Color.CYAN);
+AddLabel(yes and close > level4, "To 7000: " + Round(distTo7000, 1) + " pts", Color.GREEN);
+AddLabel(yes and close < level6, "Below 6483: " + Round(AbsValue(distTo6483), 1) + " pts", Color.RED);
+
+# Market Structure
+def leverageFlushed = 75; # 75% of leverage flushed per transcript
+AddLabel(yes, "Leverage: " + leverageFlushed + "% Flushed", Color.LIGHT_GRAY);
+AddLabel(yes and close >= level6, "Bull Floor Holding", Color.GREEN);
+AddLabel(yes and close < level6, "Support Break - Margin Risk", Color.RED);
