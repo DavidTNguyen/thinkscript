@@ -1,25 +1,29 @@
-# === ES Levels: Breakout Extension Trade Map ===
-# Updated: October 24, 2025
-# Based on: 6732 reclaim long hit all targets | 100 points up | Next targets 6845, 6854
-# Trade Map: Let runners work until deep sell | Support watch: 6798/6803
+# === ES Levels: Two Week Bullish Triangle Breakout ===
+# Updated: October 25, 2025
+# Based on: 6766 breakout | Squeeze to 6798 next week | Triangle structure
+# Trade Map: 6855+ megaphone resistance | Triangle fail: 6760-66 → 6732, 6699-94, 6663
 
 # === Key Support & Resistance Levels ===
-input level1 = 6854; # Extended target (bonus batch)
+input level1 = 6950; # Green channel target
 input level1_thickness = 2;
-input level2 = 6845; # Next target up (bonus batch)
+input level2 = 6900; # Green channel target
 input level2_thickness = 2;
-input level3 = 6832; # Target hit 1hr ago
-input level3_thickness = 3;
-input level4 = 6820; # Target hit (given at 8am)
-input level4_thickness = 2;
-input level5 = 6812; # Target hit (given at 8am)
-input level5_thickness = 2;
-input level6 = 6803; # Support watch level / Target hit (given at 8am)
+input level3 = 6880; # Green channel target
+input level3_thickness = 2;
+input level4 = 6855; # Megaphone resistance - Big Test
+input level4_thickness = 3;
+input level5 = 6798; # Next week squeeze target
+input level5_thickness = 3;
+input level6 = 6766; # Breakout level / Key support next week
 input level6_thickness = 3;
-input level7 = 6798; # Support watch level
-input level7_thickness = 3;
-input level8 = 6732; # Reclaim long level (yesterday 8am)
+input level7 = 6760; # Triangle fail level (6760-66 range)
+input level7_thickness = 2;
+input level8 = 6732; # Structure support if triangle fails
 input level8_thickness = 2;
+input level9 = 6699; # Deep support (6699-94 range)
+input level9_thickness = 2;
+input level10 = 6663; # Final support level
+input level10_thickness = 2;
 
 # Alert Settings
 input enableAlerts = yes;
@@ -28,119 +32,116 @@ input alertSensitivity = 0.5; # Tight sensitivity - triggers only near exact lev
 # Fixed bubble logic - show only on last bar
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
 
-# Extended Target
+# Green Channel Targets
 plot L1 = level1;
 L1.SetDefaultColor(Color.DARK_GREEN);
 L1.SetLineWeight(level1_thickness);
 L1.SetStyle(Curve.FIRM);
 
-# Next Target Up
 plot L2 = level2;
 L2.SetDefaultColor(Color.GREEN);
 L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
 
-# Recent Target Hit
 plot L3 = level3;
 L3.SetDefaultColor(Color.LIME);
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
-# Target Hit
+# Megaphone Resistance - Big Test
 plot L4 = level4;
-L4.SetDefaultColor(Color.CYAN);
+L4.SetDefaultColor(Color.MAGENTA);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
+L4.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
-# Target Hit
+# Next Week Squeeze Target
 plot L5 = level5;
-L5.SetDefaultColor(Color.LIGHT_GRAY);
+L5.SetDefaultColor(Color.CYAN);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
+L5.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
-# KEY SUPPORT - Watch level / Target hit
+# KEY SUPPORT - Breakout Level / Next Week Support
 plot L6 = level6;
-L6.SetDefaultColor(Color.ORANGE);
+L6.SetDefaultColor(Color.YELLOW);
 L6.SetLineWeight(level6_thickness);
 L6.SetStyle(Curve.FIRM);
 L6.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
-# KEY SUPPORT - Watch level
+# Triangle Fail Level
 plot L7 = level7;
-L7.SetDefaultColor(Color.RED);
+L7.SetDefaultColor(Color.ORANGE);
 L7.SetLineWeight(level7_thickness);
 L7.SetStyle(Curve.FIRM);
-L7.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
-# Reclaim Long Level
+# Structure Support
 plot L8 = level8;
-L8.SetDefaultColor(Color.MAGENTA);
+L8.SetDefaultColor(Color.RED);
 L8.SetLineWeight(level8_thickness);
 L8.SetStyle(Curve.FIRM);
 
+# Deep Support Levels
+plot L9 = level9;
+L9.SetDefaultColor(Color.DARK_RED);
+L9.SetLineWeight(level9_thickness);
+L9.SetStyle(Curve.FIRM);
+
+plot L10 = level10;
+L10.SetDefaultColor(Color.DARK_RED);
+L10.SetLineWeight(level10_thickness);
+L10.SetStyle(Curve.FIRM);
+
 # Chart bubbles - show only on last bar
-AddChartBubble(isLastBar, level1, "6854", Color.DARK_GREEN, yes);
-AddChartBubble(isLastBar, level2, "6845", Color.GREEN, yes);
-AddChartBubble(isLastBar, level3, "6832", Color.LIME, yes);
-AddChartBubble(isLastBar, level4, "6820", Color.CYAN, yes);
-AddChartBubble(isLastBar, level5, "6812", Color.LIGHT_GRAY, yes);
-AddChartBubble(isLastBar, level6, "S: 6803", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level7, "S: 6798", Color.RED, yes);
-AddChartBubble(isLastBar, level8, "6732", Color.MAGENTA, no);
+AddChartBubble(isLastBar, level1, "R1: 6950", Color.DARK_GREEN, yes);
+AddChartBubble(isLastBar, level2, "R2: 6900", Color.GREEN, yes);
+AddChartBubble(isLastBar, level3, "R3: 6880", Color.LIME, yes);
+AddChartBubble(isLastBar, level4, "R4: 6855", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level5, "R5: 6798", Color.CYAN, yes);
+AddChartBubble(isLastBar, level6, "S1: 6766", Color.YELLOW, yes);
+AddChartBubble(isLastBar, level7, "S2: 6760", Color.ORANGE, no);
+AddChartBubble(isLastBar, level8, "S3: 6732", Color.RED, no);
+AddChartBubble(isLastBar, level9, "S4: 6699", Color.DARK_RED, no);
+AddChartBubble(isLastBar, level10, "S5: 6663", Color.DARK_RED, no);
 
 # === ALERT SYSTEM ===
 
-# Target Alerts
-Alert(enableAlerts and close crosses above level2, "ES 6845 TARGET! Bonus Batch 2", Alert.BAR, Sound.Ding);
-Alert(enableAlerts and close crosses above level1, "ES 6854 EXTENDED TARGET! Bonus Batch Complete", Alert.BAR, Sound.Ring);
+# Bullish Breakout Alerts
+Alert(enableAlerts and close crosses above level5, "ES 6798 Next Week Target!", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and close crosses above level4, "ES 6855 Megaphone Resistance!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level3, "ES 6880 Green Channel!", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and close crosses above level2, "ES 6900 Green Channel!", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and close crosses above level1, "ES 6950 Green Channel!", Alert.BAR, Sound.Ring);
 
-# Support Breakdown Alerts (Watch Levels)
-Alert(enableAlerts and close crosses below level6, "ES BELOW 6803! Support Watch Level Break", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level7, "ES BELOW 6798! Key Support Break - Deep Sell Risk", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level8, "ES BELOW 6732! Reclaim Long Failed", Alert.BAR, Sound.Bell);
+# Triangle Failure Alerts
+Alert(enableAlerts and close crosses below level6, "ES Below 6766 Breakout Support!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level7, "ES Triangle Fail 6760-66!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level8, "ES Below 6732 Structure!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level9, "ES 6699-94 Deep Support!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level10, "ES Below 6663 Final Support!", Alert.BAR, Sound.Bell);
 
-# Support Test Alerts
-Alert(enableAlerts and close >= level6 - alertSensitivity and close <= level6 + alertSensitivity, "ES Testing 6803 Support Watch Level", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level7 - alertSensitivity and close <= level7 + alertSensitivity, "ES Testing 6798 Support Watch Level", Alert.BAR, Sound.Chimes);
-
-# Target Testing
-Alert(enableAlerts and close >= level2 - alertSensitivity and close <= level2 + alertSensitivity, "ES Testing 6845 Next Target", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level1 - alertSensitivity and close <= level1 + alertSensitivity, "ES Testing 6854 Extended Target", Alert.BAR, Sound.Chimes);
-
-# Bounce/Rejection Alerts
-Alert(enableAlerts and low[1] <= level6 and close > level6 + 3, "ES BOUNCE from 6803! Support Holding", Alert.BAR, Sound.Ding);
-Alert(enableAlerts and low[1] <= level7 and close > level7 + 3, "ES BOUNCE from 6798! Key Support Holding", Alert.BAR, Sound.Ding);
-Alert(enableAlerts and high[1] >= level2 and close < level2 - 3, "ES REJECTION at 6845! Resistance Test", Alert.BAR, Sound.Bell);
-
-# Runner Management Alert
-Alert(enableAlerts and close < level7, "ES Deep Sell Starting - Consider Runner Management", Alert.BAR, Sound.Chimes);
+# Testing Key Levels
+Alert(enableAlerts and close >= level4 - alertSensitivity and close <= level4 + alertSensitivity, "ES Testing 6855", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "ES Testing 6798", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level6 - alertSensitivity and close <= level6 + alertSensitivity, "ES Testing 6766", Alert.BAR, Sound.Chimes);
 
 # Status Labels
 AddLabel(enableAlerts, "Alerts ON", Color.GREEN);
 AddLabel(!enableAlerts, "Alerts OFF", Color.RED);
-AddLabel(yes, "ES Breakout Extension", Color.WHITE);
-AddLabel(yes, "Next: 6845/6854", Color.GREEN);
-AddLabel(yes, "Support: 6798/6803", Color.ORANGE);
+AddLabel(yes, "ES Triangle BO", Color.WHITE);
+AddLabel(yes, "NW: 6798", Color.CYAN);
+AddLabel(yes, "Big: 6855", Color.MAGENTA);
 AddLabel(yes, "Current: " + Round(close, 2), Color.YELLOW);
 
-# Trade Status
-def pointsFrom6732 = close - level8;
-AddLabel(yes, "From 6732: +" + Round(pointsFrom6732, 1) + " pts", Color.LIME);
+# Market Structure
+AddLabel(yes and close > level4, "GREEN CHANNEL", Color.LIME);
+AddLabel(yes and close <= level4 and close > level5, "ABOVE 6798", Color.CYAN);
+AddLabel(yes and close <= level5 and close > level6, "6766-6798 SQUEEZE", Color.YELLOW);
+AddLabel(yes and close <= level6, "TRIANGLE FAIL", Color.RED);
 
-# Position relative to support watch levels
-AddLabel(yes and close > level6, "Above 6803: +" + Round(close - level6, 1) + " pts", Color.CYAN);
-AddLabel(yes and close <= level6 and close > level7, "Between 6798-6803", Color.ORANGE);
-AddLabel(yes and close <= level7, "Below 6798: -" + Round(level7 - close, 1) + " pts", Color.RED);
+# Distance to Key Levels
+def distTo6855 = level4 - close;
+def distTo6798 = level5 - close;
 
-# Trade Plan Status
-AddLabel(yes and close > level3, "LET RUNNERS WORK", Color.LIME);
-AddLabel(yes and close <= level3 and close > level6, "PROFIT ZONE - WATCH 6803", Color.GREEN);
-AddLabel(yes and close <= level6 and close > level7, "SUPPORT WATCH 6798", Color.ORANGE);
-AddLabel(yes and close <= level7, "DEEP SELL MODE", Color.RED);
-
-# Distance to Next Targets
-def distTo6845 = level2 - close;
-def distTo6854 = level1 - close;
-
-AddLabel(yes and close < level2, "To 6845: " + Round(distTo6845, 1) + " pts", Color.GREEN);
-AddLabel(yes and close < level1, "To 6854: " + Round(distTo6854, 1) + " pts", Color.DARK_GREEN);
+AddLabel(yes and close < level4, "To 6855: " + Round(distTo6855, 1), Color.MAGENTA);
+AddLabel(yes and close < level5, "To 6798: " + Round(distTo6798, 1), Color.CYAN);
