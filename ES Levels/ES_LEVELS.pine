@@ -1,0 +1,136 @@
+//@version=5
+indicator("ES Levels: Two Week Bullish Triangle Breakout", overlay=true, max_lines_count=500, max_labels_count=500)
+
+// === ES Levels: Two Week Bullish Triangle Breakout ===
+// Updated: October 25, 2025
+// Based on: 6766 breakout | Squeeze to 6798 next week | Triangle structure
+// Trade Map: 6855+ megaphone resistance | Triangle fail: 6760-66 → 6732, 6699-94, 6663
+
+// === Key Support & Resistance Levels ===
+level1 = input.float(6950, "R1: Green Channel Target", group="Resistance Levels")
+level1_thickness = input.int(2, "R1 Line Weight", minval=1, maxval=5, group="Resistance Levels")
+level2 = input.float(6900, "R2: Green Channel Target", group="Resistance Levels")
+level2_thickness = input.int(2, "R2 Line Weight", minval=1, maxval=5, group="Resistance Levels")
+level3 = input.float(6880, "R3: Green Channel Target", group="Resistance Levels")
+level3_thickness = input.int(2, "R3 Line Weight", minval=1, maxval=5, group="Resistance Levels")
+level4 = input.float(6855, "R4: Megaphone Resistance - Big Test", group="Resistance Levels")
+level4_thickness = input.int(3, "R4 Line Weight", minval=1, maxval=5, group="Resistance Levels")
+level5 = input.float(6798, "R5: Next Week Squeeze Target", group="Resistance Levels")
+level5_thickness = input.int(3, "R5 Line Weight", minval=1, maxval=5, group="Resistance Levels")
+
+level6 = input.float(6766, "S1: Breakout Level / Key Support", group="Support Levels")
+level6_thickness = input.int(3, "S1 Line Weight", minval=1, maxval=5, group="Support Levels")
+level7 = input.float(6760, "S2: Triangle Fail Level", group="Support Levels")
+level7_thickness = input.int(2, "S2 Line Weight", minval=1, maxval=5, group="Support Levels")
+level8 = input.float(6732, "S3: Structure Support", group="Support Levels")
+level8_thickness = input.int(2, "S3 Line Weight", minval=1, maxval=5, group="Support Levels")
+level9 = input.float(6699, "S4: Deep Support", group="Support Levels")
+level9_thickness = input.int(2, "S4 Line Weight", minval=1, maxval=5, group="Support Levels")
+level10 = input.float(6663, "S5: Final Support", group="Support Levels")
+level10_thickness = input.int(2, "S5 Line Weight", minval=1, maxval=5, group="Support Levels")
+
+// Alert Settings
+enableAlerts = input.bool(true, "Enable Alerts", group="Alert Settings")
+alertSensitivity = input.float(0.5, "Alert Sensitivity (pts)", minval=0.1, maxval=5.0, group="Alert Settings")
+
+// === Plot Levels ===
+// Green Channel Targets
+plot(level1, "R1: 6950", color=color.new(color.green, 0), linewidth=level1_thickness, style=plot.style_line)
+plot(level2, "R2: 6900", color=color.new(color.lime, 0), linewidth=level2_thickness, style=plot.style_line)
+plot(level3, "R3: 6880", color=color.new(#00ff00, 0), linewidth=level3_thickness, style=plot.style_line)
+
+// Megaphone Resistance
+plot(level4, "R4: 6855 BIG TEST", color=color.new(color.fuchsia, 0), linewidth=level4_thickness, style=plot.style_line)
+
+// Next Week Target
+plot(level5, "R5: 6798 NW", color=color.new(color.aqua, 0), linewidth=level5_thickness, style=plot.style_line)
+
+// KEY SUPPORT
+plot(level6, "S1: 6766 BO", color=color.new(color.yellow, 0), linewidth=level6_thickness, style=plot.style_line)
+
+// Triangle Fail Zone
+plot(level7, "S2: 6760 FAIL", color=color.new(color.orange, 0), linewidth=level7_thickness, style=plot.style_line)
+
+// Structure Supports
+plot(level8, "S3: 6732", color=color.new(color.red, 0), linewidth=level8_thickness, style=plot.style_line)
+plot(level9, "S4: 6699", color=color.new(color.maroon, 0), linewidth=level9_thickness, style=plot.style_line)
+plot(level10, "S5: 6663", color=color.new(#800000, 0), linewidth=level10_thickness, style=plot.style_line)
+
+// === Labels on Last Bar ===
+if barstate.islast
+    label.new(bar_index, level1, "R1: 6950", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.green, 80), textcolor=color.green, style=label.style_label_left, size=size.small)
+    label.new(bar_index, level2, "R2: 6900", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.lime, 80), textcolor=color.lime, style=label.style_label_left, size=size.small)
+    label.new(bar_index, level3, "R3: 6880", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00ff00, 80), textcolor=#00ff00, style=label.style_label_left, size=size.small)
+    label.new(bar_index, level4, "R4: 6855", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.fuchsia, 80), textcolor=color.fuchsia, style=label.style_label_left, size=size.small)
+    label.new(bar_index, level5, "R5: 6798", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.aqua, 80), textcolor=color.aqua, style=label.style_label_left, size=size.small)
+    label.new(bar_index, level6, "S1: 6766", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.yellow, 80), textcolor=color.yellow, style=label.style_label_right, size=size.small)
+    label.new(bar_index, level7, "S2: 6760", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.orange, 80), textcolor=color.orange, style=label.style_label_right, size=size.small)
+    label.new(bar_index, level8, "S3: 6732", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.red, 80), textcolor=color.red, style=label.style_label_right, size=size.small)
+    label.new(bar_index, level9, "S4: 6699", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.maroon, 80), textcolor=color.maroon, style=label.style_label_right, size=size.small)
+    label.new(bar_index, level10, "S5: 6663", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#800000, 80), textcolor=#800000, style=label.style_label_right, size=size.small)
+
+// === Alert Conditions ===
+// Bullish Breakout Alerts
+alertcondition(ta.crossover(close, level5), "ES 6798 Breakout", "ES 6798 Next Week Target!")
+alertcondition(ta.crossover(close, level4), "ES 6855 Breakout", "ES 6855 Megaphone Resistance!")
+alertcondition(ta.crossover(close, level3), "ES 6880 Breakout", "ES 6880 Green Channel!")
+alertcondition(ta.crossover(close, level2), "ES 6900 Breakout", "ES 6900 Green Channel!")
+alertcondition(ta.crossover(close, level1), "ES 6950 Breakout", "ES 6950 Green Channel!")
+
+// Triangle Failure Alerts
+alertcondition(ta.crossunder(close, level6), "ES 6766 Breakdown", "ES Below 6766 Breakout Support!")
+alertcondition(ta.crossunder(close, level7), "ES 6760 Triangle Fail", "ES Triangle Fail 6760-66!")
+alertcondition(ta.crossunder(close, level8), "ES 6732 Breakdown", "ES Below 6732 Structure!")
+alertcondition(ta.crossunder(close, level9), "ES 6699 Breakdown", "ES 6699-94 Deep Support!")
+alertcondition(ta.crossunder(close, level10), "ES 6663 Breakdown", "ES Below 6663 Final Support!")
+
+// Testing Key Levels
+testingL4 = close >= level4 - alertSensitivity and close <= level4 + alertSensitivity
+testingL5 = close >= level5 - alertSensitivity and close <= level5 + alertSensitivity
+testingL6 = close >= level6 - alertSensitivity and close <= level6 + alertSensitivity
+
+alertcondition(testingL4, "ES Testing 6855", "ES Testing 6855 Megaphone")
+alertcondition(testingL5, "ES Testing 6798", "ES Testing 6798 Next Week Target")
+alertcondition(testingL6, "ES Testing 6766", "ES Testing 6766 Breakout Support")
+
+// === Market Structure Status ===
+var table statusTable = table.new(position.top_right, 2, 6, border_width=1)
+
+if barstate.islast
+    table.cell(statusTable, 0, 0, "ES Triangle BO", text_color=color.white, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 0, str.tostring(close, "#.00"), text_color=color.yellow, bgcolor=color.new(color.gray, 50))
+    
+    table.cell(statusTable, 0, 1, "Big Test", text_color=color.white, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 1, "6855", text_color=color.fuchsia, bgcolor=color.new(color.gray, 50))
+    
+    table.cell(statusTable, 0, 2, "NW Target", text_color=color.white, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 2, "6798", text_color=color.aqua, bgcolor=color.new(color.gray, 50))
+    
+    // Market Structure
+    structure = close > level4 ? "GREEN CHANNEL" : 
+                close > level5 ? "ABOVE 6798" : 
+                close > level6 ? "6766-6798 SQUEEZE" : "TRIANGLE FAIL"
+    structureColor = close > level4 ? color.lime : 
+                     close > level5 ? color.aqua : 
+                     close > level6 ? color.yellow : color.red
+    
+    table.cell(statusTable, 0, 3, "Structure", text_color=color.white, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 3, structure, text_color=structureColor, bgcolor=color.new(color.gray, 50))
+    
+    // Distance to Key Levels
+    distTo6855 = level4 - close
+    distTo6798 = level5 - close
+    
+    if close < level4
+        table.cell(statusTable, 0, 4, "To 6855", text_color=color.white, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 1, 4, str.tostring(distTo6855, "#.0"), text_color=color.fuchsia, bgcolor=color.new(color.gray, 50))
+    
+    if close < level5
+        table.cell(statusTable, 0, 5, "To 6798", text_color=color.white, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 1, 5, str.tostring(distTo6798, "#.0"), text_color=color.aqua, bgcolor=color.new(color.gray, 50))
+
+// Background color based on structure
+bgcolor(close > level4 ? color.new(color.lime, 95) : 
+        close > level5 ? color.new(color.aqua, 95) : 
+        close > level6 ? color.new(color.yellow, 95) : 
+        color.new(color.red, 95), title="Structure Background")
