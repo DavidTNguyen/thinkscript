@@ -107,9 +107,7 @@ if barstate.islast
     table.cell(statusTable, 1, 2, "6798", text_color=color.aqua, bgcolor=color.new(color.gray, 50))
     
     // Market Structure
-    structure = close > level4 ? "GREEN CHANNEL" : 
-                close > level5 ? "ABOVE 6798" : 
-                close > level6 ? "6766-6798 SQUEEZE" : "TRIANGLE FAIL"
+    structure = close > level4 ? "GREEN CHANNEL" : close > level5 ? "ABOVE 6798" : close > level6 ? "6766-6798 SQUEEZE" : "TRIANGLE FAIL"
     structureColor = close > level4 ? color.lime : 
                      close > level5 ? color.aqua : 
                      close > level6 ? color.yellow : color.red
@@ -130,7 +128,4 @@ if barstate.islast
         table.cell(statusTable, 1, 5, str.tostring(distTo6798, "#.0"), text_color=color.aqua, bgcolor=color.new(color.gray, 50))
 
 // Background color based on structure
-bgcolor(close > level4 ? color.new(color.lime, 95) : 
-        close > level5 ? color.new(color.aqua, 95) : 
-        close > level6 ? color.new(color.yellow, 95) : 
-        color.new(color.red, 95), title="Structure Background")
+bgcolor(close > level4 ? color.new(color.lime, 95) :  close > level5 ? color.new(color.aqua, 95) :  close > level6 ? color.new(color.yellow, 95) : color.new(color.red, 95), title="Structure Background")
