@@ -99,12 +99,8 @@ if barstate.islast
     table.cell(statusTable, 1, 2, "6872", text_color=color.aqua, bgcolor=color.new(color.gray, 50))
     
     // Market Structure
-    structure = close >= level3 ? "ABOVE R1 → R2/R3" : 
-                close >= level4 ? "RANGE: 6872-6885" : 
-                close >= level5 ? "SUPPORT TEST" : "DIP BELOW 6858"
-    structureColor = close >= level3 ? color.lime : 
-                     close >= level4 ? color.yellow : 
-                     close >= level5 ? color.orange : color.red
+    structure = close >= level3 ? "ABOVE R1 → R2/R3" : close >= level4 ? "RANGE: 6872-6885" : close >= level5 ? "SUPPORT TEST" : "DIP BELOW 6858"
+    structureColor = close >= level3 ? color.lime : close >= level4 ? color.yellow : close >= level5 ? color.orange : color.red
     
     table.cell(statusTable, 0, 3, "Structure", text_color=color.white, bgcolor=color.new(color.gray, 50))
     table.cell(statusTable, 1, 3, structure, text_color=structureColor, bgcolor=color.new(color.gray, 50))
@@ -130,7 +126,4 @@ if barstate.islast
         table.cell(statusTable, 1, 6, "-" + str.tostring(math.abs(distFromS1), "#.0") + " pts", text_color=color.orange, bgcolor=color.new(color.gray, 50))
 
 // Background color based on structure
-bgcolor(close >= level3 ? color.new(color.lime, 95) : 
-        close >= level4 ? color.new(color.yellow, 95) : 
-        close >= level5 ? color.new(color.orange, 95) : 
-        color.new(color.red, 95), title="Structure Background")
+bgcolor(close >= level3 ? color.new(color.lime, 95) : close >= level4 ? color.new(color.yellow, 95) : close >= level5 ? color.new(color.orange, 95) : color.new(color.red, 95), title="Structure Background")
