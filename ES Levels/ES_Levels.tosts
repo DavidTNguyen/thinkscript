@@ -1,29 +1,21 @@
 # === ES Levels: Current Trade Levels ===
-# Updated: October 26, 2025
-# Current ES: 6872
-# Resistance (above): 6885, 6900, 6914
-# Support (below): 6872, 6858, 6841
+# Updated: October 27, 2025
+# Current ES: 6884
+# Resistance (above): 6885, 6900+
+# Support (below): 6877, 6870 (watch sweeps)
+# If 6870 fails → dip to 6858
 
 # === Key Support & Resistance Levels ===
-input level1 = 6914; # R3 - Next upside target
+input level1 = 6900; # R2 - Next upside target
 input level1_thickness = 2;
-input level2 = 6900; # R2 - Resistance
-input level2_thickness = 2;
-input level3 = 6885; # R1 - Resistance
-input level3_thickness = 2;
-input level4 = 6872; # S1 - Current level / Support
+input level2 = 6885; # R1 - Resistance
+input level2_thickness = 1;
+input level3 = 6877; # S1 - Support (watch sweeps)
+input level3_thickness = 1;
+input level4 = 6870; # S2 - Key support (watch sweeps) - If fails → 6858
 input level4_thickness = 3;
-input level5 = 6858; # S2 - Support
+input level5 = 6858; # S3 - Dip target if 6870 fails
 input level5_thickness = 2;
-input level6 = 6841; # S3 - Dip below level
-input level6_thickness = 2;
-
-# Alert Settings
-input enableAlerts = yes;
-input alertSensitivity = 0.5; # Tight sensitivity - triggers only near exact level touch
-
-# Fixed bubble logic - show only on last bar
-def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
 
 # Resistance Levels (Above Current)
 plot L1 = level1;
@@ -36,83 +28,19 @@ L2.SetDefaultColor(Color.ORANGE);
 L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
 
+# Support Levels (Below Current - Watch for Sweeps)
 plot L3 = level3;
-L3.SetDefaultColor(Color.YELLOW);
+L3.SetDefaultColor(Color.CYAN);
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
-# Support Levels (Below Current)
 plot L4 = level4;
-L4.SetDefaultColor(Color.CYAN);
+L4.SetDefaultColor(Color.GREEN);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
-L4.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
+# Dip Target if 6870 Fails
 plot L5 = level5;
-L5.SetDefaultColor(Color.GREEN);
+L5.SetDefaultColor(Color.MAGENTA);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
-
-plot L6 = level6;
-L6.SetDefaultColor(Color.MAGENTA);
-L6.SetLineWeight(level6_thickness);
-L6.SetStyle(Curve.FIRM);
-
-# Chart bubbles - show only on last bar
-AddChartBubble(isLastBar, level1, "R3: 6914", Color.RED, yes);
-AddChartBubble(isLastBar, level2, "R2: 6900", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level3, "R1: 6885", Color.YELLOW, yes);
-AddChartBubble(isLastBar, level4, "S1: 6872", Color.CYAN, yes);
-AddChartBubble(isLastBar, level5, "S2: 6858", Color.GREEN, no);
-AddChartBubble(isLastBar, level6, "S3: 6841", Color.MAGENTA, no);
-
-# === ALERT SYSTEM ===
-
-# Bullish Breakout Alerts
-Alert(enableAlerts and close crosses above level3, "ES ABOVE 6885 R1!", Alert.BAR, Sound.Ding);
-Alert(enableAlerts and close crosses above level2, "ES ABOVE 6900 R2!", Alert.BAR, Sound.Ding);
-Alert(enableAlerts and close crosses above level1, "ES 6914 R3 TARGET!", Alert.BAR, Sound.Ring);
-
-# Support Breakdown Alerts
-Alert(enableAlerts and close crosses below level4, "ES BELOW 6872 S1!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level5, "ES BELOW 6858 S2!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level6, "ES DIP BELOW 6841 S3!", Alert.BAR, Sound.Bell);
-
-# Testing Key Levels
-Alert(enableAlerts and close >= level3 - alertSensitivity and close <= level3 + alertSensitivity, "ES Testing 6885 R1", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level2 - alertSensitivity and close <= level2 + alertSensitivity, "ES Testing 6900 R2", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level1 - alertSensitivity and close <= level1 + alertSensitivity, "ES Testing 6914 R3", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level4 - alertSensitivity and close <= level4 + alertSensitivity, "ES Testing 6872 S1", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "ES Testing 6858 S2", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level6 - alertSensitivity and close <= level6 + alertSensitivity, "ES Testing 6841 S3", Alert.BAR, Sound.Chimes);
-
-# Bounce/Rejection Alerts
-Alert(enableAlerts and low[1] <= level4 and close > level4 + 3, "ES BOUNCE from 6872 S1!", Alert.BAR, Sound.Ding);
-Alert(enableAlerts and low[1] <= level5 and close > level5 + 3, "ES BOUNCE from 6858 S2!", Alert.BAR, Sound.Ding);
-Alert(enableAlerts and low[1] <= level6 and close > level6 + 3, "ES BOUNCE from 6841 S3!", Alert.BAR, Sound.Ding);
-Alert(enableAlerts and high[1] >= level3 and close < level3 - 3, "ES REJECTION at 6885 R1!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and high[1] >= level2 and close < level2 - 3, "ES REJECTION at 6900 R2!", Alert.BAR, Sound.Bell);
-
-# Status Labels
-AddLabel(enableAlerts, "Alerts ON", Color.GREEN);
-AddLabel(!enableAlerts, "Alerts OFF", Color.RED);
-AddLabel(yes, "ES Levels", Color.WHITE);
-AddLabel(yes, "Current: " + Round(close, 2), Color.YELLOW);
-AddLabel(yes, "Next R: 6885", Color.ORANGE);
-AddLabel(yes, "Key S: 6872", Color.CYAN);
-
-# Market Structure
-AddLabel(yes and close >= level3, "ABOVE R1 → R2/R3", Color.LIME);
-AddLabel(yes and close < level3 and close >= level4, "RANGE: 6872-6885", Color.YELLOW);
-AddLabel(yes and close < level4 and close >= level5, "SUPPORT TEST", Color.ORANGE);
-AddLabel(yes and close < level5, "DIP BELOW 6858", Color.RED);
-
-# Distance to Key Levels
-def distToR1 = level3 - close;
-def distToR3 = level1 - close;
-def distFromS1 = close - level4;
-
-AddLabel(yes and close < level3, "To R1: " + Round(distToR1, 1) + " pts", Color.YELLOW);
-AddLabel(yes and close < level1, "To R3: " + Round(distToR3, 1) + " pts", Color.RED);
-AddLabel(yes and close >= level4, "Above S1: +" + Round(distFromS1, 1) + " pts", Color.CYAN);
-AddLabel(yes and close < level4, "Below S1: -" + Round(AbsValue(distFromS1), 1) + " pts", Color.ORANGE);
