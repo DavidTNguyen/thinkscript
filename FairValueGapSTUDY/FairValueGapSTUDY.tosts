@@ -1,39 +1,73 @@
-# Fair Value Gap (FVG) Example
+# Author - VietRoadie - SuperLuckeee Community
+# 08/14/2025
 
-input lookback = 3; # How many bars back to check
+input useManualTimeFrame = no;
+input manualTimeFrame = AggregationPeriod.HOUR;
+input autoTimeFrameMultiplier = 4;
 
-def prevHigh = high[lookback + 1];
-def prevLow = low[lookback + 1];
-def currHigh = high[lookback];
-def currLow = low[lookback];
-def nextHigh = high;
-def nextLow = low;
+# Dynamically set timeFrame
+def chartAgg = GetAggregationPeriod();
+def autoTimeFrame = chartAgg * autoTimeFrameMultiplier;
+def timeFrame = if useManualTimeFrame then manualTimeFrame else autoTimeFrame;
 
-# Bullish FVG: previous high < next low
-def bullishFVG = prevHigh < nextLow;
-# Bearish FVG: previous low > next high
-def bearishFVG = prevLow > nextHigh;
+# Get the low of the last 3 periods
+def lowN3 = low(period = timeFrame);
 
-# Draw gaps as colored rectangles using AddCloud
-# Bullish gaps - light green
-def bullishUpperBound = if bullishFVG then nextLow else Double.NaN;
-def bullishLowerBound = if bullishFVG then prevHigh else Double.NaN;
+# Get the high of the first period 2 periods ago
+def highN1 = high(period = timeFrame)[2];
 
-# Bearish gaps - light pink
-def bearishUpperBound = if bearishFVG then prevLow else Double.NaN;
-def bearishLowerBound = if bearishFVG then nextHigh else Double.NaN;
+# Check if the price is increasing
+def priceIsIncreasing = lowN3 > highN1;
 
-AddCloud(bullishUpperBound, bullishLowerBound, Color.LIGHT_GREEN, Color.LIGHT_GREEN, yes);
-AddCloud(bearishUpperBound, bearishLowerBound, Color.PINK, Color.PINK, yes);
+# Calculate the Fractal Vertical Gap (FVG) for increasing prices
+def fvgIncrease = if priceIsIncreasing then lowN3 - highN1 else Double.NaN;
 
-# Gap mitigation detection
-# Bullish gap is mitigated when price comes back down into the gap
-def bullishGapMitigated = bullishFVG[1] and !IsNaN(bullishUpperBound[1]) and low <= bullishLowerBound[1];
+# Get the high of the last 3 periods
+def highN3 = high(period = timeFrame);
 
-# Bearish gap is mitigated when price comes back up into the gap  
-def bearishGapMitigated = bearishFVG[1] and !IsNaN(bearishUpperBound[1]) and high >= bearishUpperBound[1];
+# Get the low of the first period 2 periods ago
+def lowN1 = low(period = timeFrame)[2];
 
-# Alert conditions
-def gapMitigated = bullishGapMitigated or bearishGapMitigated;
+# Check if the price is decreasing
+def priceIsDecreasing = lowN1 > highN3;
 
-Alert(gapMitigated, "Fair Value Gap Mitigated!", Alert.BAR, Sound.Ding);
+# Calculate the Fractal Vertical Gap (FVG) for decreasing prices
+def fvgDecrease = if priceIsDecreasing then lowN1 - highN3 else Double.NaN;
+
+# Determine the highest high (H) and lowest low (L) among the given conditions
+def H = if priceIsIncreasing then lowN3 else H[1];
+def L = if priceIsIncreasing then highN1 else L[1];
+def HD = if priceIsDecreasing then lowN1 else HD[1];
+def LD = if priceIsDecreasing then highN3 else LD[1];
+
+# Alert if the price is increasing or decreasing
+Alert(priceIsIncreasing or priceIsDecreasing, "", Alert.BAR, Sound.Bell);
+
+# Add labels to display H and L with timeframe info
+def tfMinutes = timeFrame / 60000;
+def tfHours = tfMinutes / 60;
+def tfDays = tfMinutes / 1440;
+
+def showMinutes = tfMinutes < 60;
+def showHours = tfMinutes >= 60 and tfMinutes < 1440;
+def showDays = tfMinutes >= 1440;
+
+AddLabel(showMinutes, "FVG TF: " + tfMinutes + "m" + (if useManualTimeFrame then " (Manual)" else " (Auto)"), Color.GRAY);
+AddLabel(showHours, "FVG TF: " + tfHours + "H" + (if useManualTimeFrame then " (Manual)" else " (Auto)"), Color.GRAY);
+AddLabel(showDays, "FVG TF: " + tfDays + "D" + (if useManualTimeFrame then " (Manual)" else " (Auto)"), Color.GRAY);
+
+AddLabel(yes, " H: " + Round(H, 2) + " L: " + Round(L, 2), if priceIsIncreasing then Color.GREEN else if priceIsDecreasing then Color.RED else Color.WHITE);
+
+# Plot H and L
+plot H1 = H;
+plot L1 = L;
+H1.SetHiding(yes);
+L1.SetHiding(yes);
+plot H2 = HD;
+plot L2 = LD;
+H2.SetHiding(yes);
+L2.SetHiding(yes);
+
+# Add cloud to highlight the area between H and L
+AddCloud(H1, L1, color1 = Color.LIGHT_GREEN, color2 = Color.LIGHT_GREEN);
+AddCloud(H2, L2, color1 = Color.LIGHT_RED, color2 = Color.LIGHT_RED);
