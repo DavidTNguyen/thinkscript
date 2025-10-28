@@ -1,20 +1,24 @@
 # === ES Levels: Current Trade Levels ===
 # Updated: October 27, 2025
-# Current ES: 6885 area (stuck at 1st resistance)
-# Resistance (above): 6900, 6907, 6914 (if ES wants more)
-# Support (below): 6877 (held to the tick)
+# Current ES: 6910 area (up 215 pts from last Wednesday)
+# Resistance (above): 6918, 6928, 6942, 6959-62 (next batch of targets)
+# Support (below): 6889, 6870 (key supports - 6870 must fail to start gap fill)
 
 # === Key Support & Resistance Levels ===
-input level1 = 6914; # R4 - Extended resistance (if ES wants more)
+input level1 = 6962; # R4-High - Extended target (upper range)
 input level1_thickness = 2;
-input level2 = 6907; # R3 - Extended resistance (if ES wants more)
+input level2 = 6959; # R4-Low - Extended target (lower range)
 input level2_thickness = 2;
-input level3 = 6900; # R2 - Next resistance (if ES wants more)
+input level3 = 6942; # R3 - Next target
 input level3_thickness = 2;
-input level4 = 6885; # R1 - 1st resistance (stuck here for hours)
-input level4_thickness = 3;
-input level5 = 6877; # S1 - 1st support (held to the tick)
-input level5_thickness = 3;
+input level4 = 6928; # R2 - Next target
+input level4_thickness = 2;
+input level5 = 6918; # R1 - Next target
+input level5_thickness = 2;
+input level6 = 6889; # S1 - Key support on dips
+input level6_thickness = 3;
+input level7 = 6870; # S2 - Key support (must fail to start gap fill)
+input level7_thickness = 3;
 
 # Alert Settings
 input enableAlerts = yes;
@@ -23,91 +27,113 @@ input alertSensitivity = 0.5; # Tight sensitivity - triggers only near exact lev
 # Fixed bubble logic - show only on last bar
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
 
-# Extended Resistance (If ES Wants More)
+# Resistance Levels (Next Batch of Targets)
 plot L1 = level1;
-L1.SetDefaultColor(Color.RED);
+L1.SetDefaultColor(Color.DARK_RED);
 L1.SetLineWeight(level1_thickness);
 L1.SetStyle(Curve.FIRM);
 
 plot L2 = level2;
-L2.SetDefaultColor(Color.ORANGE);
+L2.SetDefaultColor(Color.RED);
 L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
 
 plot L3 = level3;
-L3.SetDefaultColor(Color.YELLOW);
+L3.SetDefaultColor(Color.ORANGE);
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
-# 1st Resistance - Stuck Here
 plot L4 = level4;
-L4.SetDefaultColor(Color.MAGENTA);
+L4.SetDefaultColor(Color.YELLOW);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
-L4.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
-# 1st Support - Held to the Tick
 plot L5 = level5;
-L5.SetDefaultColor(Color.GREEN);
+L5.SetDefaultColor(Color.MAGENTA);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
-L5.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+
+# Key Support Levels
+plot L6 = level6;
+L6.SetDefaultColor(Color.CYAN);
+L6.SetLineWeight(level6_thickness);
+L6.SetStyle(Curve.FIRM);
+L6.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+
+plot L7 = level7;
+L7.SetDefaultColor(Color.GREEN);
+L7.SetLineWeight(level7_thickness);
+L7.SetStyle(Curve.FIRM);
+L7.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
 # Chart bubbles - show only on last bar
-AddChartBubble(isLastBar, level1, "R4: 6914", Color.RED, yes);
-AddChartBubble(isLastBar, level2, "R3: 6907", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level3, "R2: 6900", Color.YELLOW, yes);
-AddChartBubble(isLastBar, level4, "R1: 6885", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level5, "S1: 6877", Color.GREEN, no);
+AddChartBubble(isLastBar, level1, "R4: 6962", Color.DARK_RED, yes);
+AddChartBubble(isLastBar, level2, "R4: 6959", Color.RED, yes);
+AddChartBubble(isLastBar, level3, "R3: 6942", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level4, "R2: 6928", Color.YELLOW, yes);
+AddChartBubble(isLastBar, level5, "R1: 6918", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level6, "S1: 6889", Color.CYAN, no);
+AddChartBubble(isLastBar, level7, "S2: 6870", Color.GREEN, no);
 
 # === ALERT SYSTEM ===
 
-# Breakout Above 6885 (Stuck Zone)
-Alert(enableAlerts and close crosses above level4, "ES BREAKOUT ABOVE 6885! Runner Working", Alert.BAR, Sound.Ding);
-Alert(enableAlerts and close crosses above level3, "ES 6900! If ES Wants More", Alert.BAR, Sound.Ding);
-Alert(enableAlerts and close crosses above level2, "ES 6907! Extended Target", Alert.BAR, Sound.Ding);
-Alert(enableAlerts and close crosses above level1, "ES 6914! Maximum Extension", Alert.BAR, Sound.Ring);
+# Breakout Alerts (Next Batch of Targets)
+Alert(enableAlerts and close crosses above level5, "ES 6918 R1 TARGET!", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and close crosses above level4, "ES 6928 R2 TARGET!", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and close crosses above level3, "ES 6942 R3 TARGET!", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and close crosses above level2, "ES 6959-62 R4 ZONE!", Alert.BAR, Sound.Ring);
 
-# Support Break
-Alert(enableAlerts and close crosses below level5, "ES BELOW 6877! 1st Support Failed", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level4, "ES BELOW 6885! Back in Range", Alert.BAR, Sound.Bell);
+# Support Break Alerts
+Alert(enableAlerts and close crosses below level6, "ES BELOW 6889 S1! Key Support Test", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level7, "ES BELOW 6870 S2! Gap Fill Starting", Alert.BAR, Sound.Bell);
 
 # Testing Key Levels
-Alert(enableAlerts and close >= level4 - alertSensitivity and close <= level4 + alertSensitivity, "ES Testing 6885 - Stuck Here", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "ES Testing 6877 Support", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level3 - alertSensitivity and close <= level3 + alertSensitivity, "ES Testing 6900", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "ES Testing 6918 R1", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level4 - alertSensitivity and close <= level4 + alertSensitivity, "ES Testing 6928 R2", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level3 - alertSensitivity and close <= level3 + alertSensitivity, "ES Testing 6942 R3", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level6 - alertSensitivity and close <= level6 + alertSensitivity, "ES Testing 6889 S1", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level7 - alertSensitivity and close <= level7 + alertSensitivity, "ES Testing 6870 S2 - Critical", Alert.BAR, Sound.Chimes);
 
 # Bounce/Rejection Alerts
-Alert(enableAlerts and low[1] <= level5 and close > level5 + 3, "ES BOUNCE from 6877! Support Held to Tick", Alert.BAR, Sound.Ding);
-Alert(enableAlerts and high[1] >= level4 and close < level4 - 3, "ES REJECTION at 6885! Still Stuck", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and low[1] <= level6 and close > level6 + 3, "ES BOUNCE from 6889 S1!", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and low[1] <= level7 and close > level7 + 3, "ES BOUNCE from 6870 S2! Gap Fill Avoided", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and high[1] >= level5 and close < level5 - 3, "ES REJECTION at 6918 R1", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and high[1] >= level4 and close < level4 - 3, "ES REJECTION at 6928 R2", Alert.BAR, Sound.Bell);
 
 # Status Labels
 AddLabel(enableAlerts, "Alerts ON", Color.GREEN);
 AddLabel(!enableAlerts, "Alerts OFF", Color.RED);
-AddLabel(yes, "ES Runner Mode", Color.WHITE);
+AddLabel(yes, "ES Parabolic Lock Out Rally", Color.WHITE);
 AddLabel(yes, "Current: " + Round(close, 2), Color.YELLOW);
-AddLabel(yes, "Stuck: 6885", Color.MAGENTA);
-AddLabel(yes, "Support: 6877", Color.GREEN);
+AddLabel(yes, "Ride Runners", Color.LIME);
+AddLabel(yes, "Key S: 6870", Color.GREEN);
 
 # Market Structure
-AddLabel(yes and close > level4, "ABOVE 6885 → RUNNER WORKING", Color.LIME);
-AddLabel(yes and close >= level5 and close <= level4, "STUCK 6877-6885", Color.ORANGE);
-AddLabel(yes and close < level5, "BELOW 6877 SUPPORT", Color.RED);
+AddLabel(yes and close > level6, "RUNNER MODE -> TARGETS 6918+", Color.LIME);
+AddLabel(yes and close >= level7 and close <= level6, "SUPPORT ZONE 6870-6889", Color.CYAN);
+AddLabel(yes and close < level7, "BELOW 6870 -> GAP FILL ACTIVE", Color.RED);
 
 # Trade Plan Status
-AddLabel(yes and close >= level5 and close <= level4, "HOLD RUNNER - WAIT FOR SELL", Color.YELLOW);
-AddLabel(yes and close > level4, "RUNNER WORKING - TARGETS 6900+", Color.LIME);
+AddLabel(yes and close >= level6, "RIDE RUNNERS - PARABOLIC RALLY", Color.LIME);
+AddLabel(yes and close < level6 and close >= level7, "WATCH 6870 - MUST HOLD", Color.ORANGE);
+AddLabel(yes and close < level7, "GAP FILL MODE", Color.RED);
 
 # Distance to Key Levels
-def distTo6885 = level4 - close;
-def distTo6900 = level3 - close;
-def distFrom6877 = close - level5;
+def distTo6918 = level5 - close;
+def distTo6942 = level3 - close;
+def distFrom6889 = close - level6;
+def distFrom6870 = close - level7;
 
-AddLabel(yes and close < level4, "To 6885: " + Round(distTo6885, 1) + " pts", Color.MAGENTA);
-AddLabel(yes and close > level4, "Above 6885: +" + Round(AbsValue(distTo6885), 1) + " pts", Color.LIME);
-AddLabel(yes and close < level3, "To 6900: " + Round(distTo6900, 1) + " pts", Color.YELLOW);
-AddLabel(yes and close >= level5, "Above 6877: +" + Round(distFrom6877, 1) + " pts", Color.GREEN);
-AddLabel(yes and close < level5, "Below 6877: -" + Round(AbsValue(distFrom6877), 1) + " pts", Color.RED);
+AddLabel(yes and close < level5, "To 6918: " + Round(distTo6918, 1) + " pts", Color.MAGENTA);
+AddLabel(yes and close < level3, "To 6942: " + Round(distTo6942, 1) + " pts", Color.ORANGE);
+AddLabel(yes and close >= level6, "Above 6889: +" + Round(distFrom6889, 1) + " pts", Color.CYAN);
+AddLabel(yes and close >= level7, "Above 6870: +" + Round(distFrom6870, 1) + " pts", Color.GREEN);
+AddLabel(yes and close < level7, "Below 6870: -" + Round(AbsValue(distFrom6870), 1) + " pts", Color.RED);
 
 # Next Targets
-AddLabel(yes and close > level4, "Next: 6900/6907/6914", Color.YELLOW);
+AddLabel(yes and close >= level6, "Targets: 6918/6928/6942/6959-62", Color.YELLOW);
+AddLabel(yes and close < level6, "Critical: Hold 6870", Color.ORANGE);
+
+# Rally Context
+AddLabel(yes, "Up 215pts from 6994/98", Color.WHITE);
+AddLabel(yes, "Best Long of 2025", Color.LIME);
