@@ -11,6 +11,7 @@
 # - Full-range levels
 # - Extension levels
 # - Trend label based on the 8-21-34 Pivot Ribbon
+# - Price crossing alerts for all visible levels
 #
 # Special thanks to Gabriel Viana.
 # Based on my own ideas and ideas from Ripster, drippy2hard, 
@@ -27,6 +28,7 @@ input show_info = yes;
 input fast_ema = 8;
 input pivot_ema = 21;
 input slow_ema = 34;
+input enable_alerts = yes;
 
 def trading_period;
 switch (trading_type) {
@@ -281,6 +283,60 @@ upper_3000_level = if show_extensions then upper_3000 else Double.NaN;
 upper_3000_level.SetDefaultColor(Color.WHITE);
 upper_3000_level.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
+# === ALERT SYSTEM ===
+
+# Previous Close Alerts
+Alert(enable_alerts and close crosses above previous_close, "Price crossed ABOVE Previous Close ($" + Round(previous_close, 2) + ")", Alert.BAR, Sound.Ding);
+Alert(enable_alerts and close crosses below previous_close, "Price crossed BELOW Previous Close ($" + Round(previous_close, 2) + ")", Alert.BAR, Sound.Bell);
+
+# Trigger Level Alerts
+Alert(enable_alerts and close crosses above upper_trigger, "Price crossed ABOVE Upper Trigger ($" + Round(upper_trigger, 2) + ") - " + (if use_options_labels then "CALLS" else "LONG") + " Signal!", Alert.BAR, Sound.Ring);
+Alert(enable_alerts and close crosses below lower_trigger, "Price crossed BELOW Lower Trigger ($" + Round(lower_trigger, 2) + ") - " + (if use_options_labels then "PUTS" else "SHORT") + " Signal!", Alert.BAR, Sound.Ring);
+
+# 0.618 Level Alerts
+Alert(enable_alerts and close crosses above upper_0618, "Price crossed ABOVE +0.618 ATR ($" + Round(upper_0618, 2) + ")", Alert.BAR, Sound.Ding);
+Alert(enable_alerts and close crosses below lower_0618, "Price crossed BELOW -0.618 ATR ($" + Round(lower_0618, 2) + ")", Alert.BAR, Sound.Bell);
+
+# 1 ATR Level Alerts
+Alert(enable_alerts and close crosses above upper_1000, "Price crossed ABOVE +1 ATR ($" + Round(upper_1000, 2) + ")", Alert.BAR, Sound.Ring);
+Alert(enable_alerts and close crosses below lower_1000, "Price crossed BELOW -1 ATR ($" + Round(lower_1000, 2) + ")", Alert.BAR, Sound.Ring);
+
+# Optional Fibonacci Level Alerts
+Alert(enable_alerts and show_all_fibonacci_levels and close crosses above upper_0382, "Price crossed ABOVE +0.382 ATR ($" + Round(upper_0382, 2) + ")", Alert.BAR, Sound.Chimes);
+Alert(enable_alerts and show_all_fibonacci_levels and close crosses below lower_0382, "Price crossed BELOW -0.382 ATR ($" + Round(lower_0382, 2) + ")", Alert.BAR, Sound.Chimes);
+Alert(enable_alerts and show_all_fibonacci_levels and close crosses above upper_0500, "Price crossed ABOVE +0.5 ATR ($" + Round(upper_0500, 2) + ")", Alert.BAR, Sound.Chimes);
+Alert(enable_alerts and show_all_fibonacci_levels and close crosses below lower_0500, "Price crossed BELOW -0.5 ATR ($" + Round(lower_0500, 2) + ")", Alert.BAR, Sound.Chimes);
+Alert(enable_alerts and show_all_fibonacci_levels and close crosses above upper_0786, "Price crossed ABOVE +0.786 ATR ($" + Round(upper_0786, 2) + ")", Alert.BAR, Sound.Chimes);
+Alert(enable_alerts and show_all_fibonacci_levels and close crosses below lower_0786, "Price crossed BELOW -0.786 ATR ($" + Round(lower_0786, 2) + ")", Alert.BAR, Sound.Chimes);
+
+# Extension Level Alerts
+Alert(enable_alerts and show_extensions and close crosses above upper_1236, "Price crossed ABOVE +1.236 ATR ($" + Round(upper_1236, 2) + ")", Alert.BAR, Sound.Ding);
+Alert(enable_alerts and show_extensions and close crosses below lower_1236, "Price crossed BELOW -1.236 ATR ($" + Round(lower_1236, 2) + ")", Alert.BAR, Sound.Bell);
+Alert(enable_alerts and show_extensions and close crosses above upper_1618, "Price crossed ABOVE +1.618 ATR ($" + Round(upper_1618, 2) + ")", Alert.BAR, Sound.Ding);
+Alert(enable_alerts and show_extensions and close crosses below lower_1618, "Price crossed BELOW -1.618 ATR ($" + Round(lower_1618, 2) + ")", Alert.BAR, Sound.Bell);
+Alert(enable_alerts and show_extensions and close crosses above upper_2000, "Price crossed ABOVE +2 ATR ($" + Round(upper_2000, 2) + ")", Alert.BAR, Sound.Ring);
+Alert(enable_alerts and show_extensions and close crosses below lower_2000, "Price crossed BELOW -2 ATR ($" + Round(lower_2000, 2) + ")", Alert.BAR, Sound.Ring);
+Alert(enable_alerts and show_extensions and close crosses above upper_2236, "Price crossed ABOVE +2.236 ATR ($" + Round(upper_2236, 2) + ")", Alert.BAR, Sound.Ding);
+Alert(enable_alerts and show_extensions and close crosses below lower_2236, "Price crossed BELOW -2.236 ATR ($" + Round(lower_2236, 2) + ")", Alert.BAR, Sound.Bell);
+Alert(enable_alerts and show_extensions and close crosses above upper_2618, "Price crossed ABOVE +2.618 ATR ($" + Round(upper_2618, 2) + ")", Alert.BAR, Sound.Ding);
+Alert(enable_alerts and show_extensions and close crosses below lower_2618, "Price crossed BELOW -2.618 ATR ($" + Round(lower_2618, 2) + ")", Alert.BAR, Sound.Bell);
+Alert(enable_alerts and show_extensions and close crosses above upper_3000, "Price crossed ABOVE +3 ATR ($" + Round(upper_3000, 2) + ")", Alert.BAR, Sound.Ring);
+Alert(enable_alerts and show_extensions and close crosses below lower_3000, "Price crossed BELOW -3 ATR ($" + Round(lower_3000, 2) + ")", Alert.BAR, Sound.Ring);
+
+# Extension Fibonacci Alerts (when both extensions and fib levels are enabled)
+Alert(enable_alerts and show_extensions and show_all_fibonacci_levels and close crosses above upper_1382, "Price crossed ABOVE +1.382 ATR ($" + Round(upper_1382, 2) + ")", Alert.BAR, Sound.Chimes);
+Alert(enable_alerts and show_extensions and show_all_fibonacci_levels and close crosses below lower_1382, "Price crossed BELOW -1.382 ATR ($" + Round(lower_1382, 2) + ")", Alert.BAR, Sound.Chimes);
+Alert(enable_alerts and show_extensions and show_all_fibonacci_levels and close crosses above upper_1500, "Price crossed ABOVE +1.5 ATR ($" + Round(upper_1500, 2) + ")", Alert.BAR, Sound.Chimes);
+Alert(enable_alerts and show_extensions and show_all_fibonacci_levels and close crosses below lower_1500, "Price crossed BELOW -1.5 ATR ($" + Round(lower_1500, 2) + ")", Alert.BAR, Sound.Chimes);
+Alert(enable_alerts and show_extensions and show_all_fibonacci_levels and close crosses above upper_1786, "Price crossed ABOVE +1.786 ATR ($" + Round(upper_1786, 2) + ")", Alert.BAR, Sound.Chimes);
+Alert(enable_alerts and show_extensions and show_all_fibonacci_levels and close crosses below lower_1786, "Price crossed BELOW -1.786 ATR ($" + Round(lower_1786, 2) + ")", Alert.BAR, Sound.Chimes);
+Alert(enable_alerts and show_extensions and show_all_fibonacci_levels and close crosses above upper_2382, "Price crossed ABOVE +2.382 ATR ($" + Round(upper_2382, 2) + ")", Alert.BAR, Sound.Chimes);
+Alert(enable_alerts and show_extensions and show_all_fibonacci_levels and close crosses below lower_2382, "Price crossed BELOW -2.382 ATR ($" + Round(lower_2382, 2) + ")", Alert.BAR, Sound.Chimes);
+Alert(enable_alerts and show_extensions and show_all_fibonacci_levels and close crosses above upper_2500, "Price crossed ABOVE +2.5 ATR ($" + Round(upper_2500, 2) + ")", Alert.BAR, Sound.Chimes);
+Alert(enable_alerts and show_extensions and show_all_fibonacci_levels and close crosses below lower_2500, "Price crossed BELOW -2.5 ATR ($" + Round(lower_2500, 2) + ")", Alert.BAR, Sound.Chimes);
+Alert(enable_alerts and show_extensions and show_all_fibonacci_levels and close crosses above upper_2786, "Price crossed ABOVE +2.786 ATR ($" + Round(upper_2786, 2) + ")", Alert.BAR, Sound.Chimes);
+Alert(enable_alerts and show_extensions and show_all_fibonacci_levels and close crosses below lower_2786, "Price crossed BELOW -2.786 ATR ($" + Round(lower_2786, 2) + ")", Alert.BAR, Sound.Chimes);
+
 def rangeNotAvailable = IsNaN(tr);
 def atrNotAvailable = IsNaN(atr);
 
@@ -288,7 +344,7 @@ DefineGlobalColor("Long Label", Color.CYAN);
 DefineGlobalColor("Short Label", Color.ORANGE);
 
 # Labels
-AddLabel(show_info, "Saty ATR Levels ", if bullish then Color.GREEN else if bearish then Color.RED else Color.ORANGE);
+AddLabel(show_info, "Saty ATR Levels " + (if enable_alerts then "(Alerts ON)" else ""), if bullish then Color.GREEN else if bearish then Color.RED else Color.ORANGE);
 AddLabel (show_info, (if trading_period == AggregationPeriod.YEAR then "Long-term " else if trading_period == AggregationPeriod.QUARTER then "Position "  else if trading_period == AggregationPeriod.MONTH then "Swing " else if trading_period == AggregationPeriod.WEEK then "Multiday " else if trading_period == AggregationPeriod.FOUR_HOURS then "Scalp " else "Day ") + (if (rangeNotAvailable) then "Range N/A Pre-Market" + " | ATR ($" + Round (atr, 2) + ")   " else if (atrNotAvailable) then " Range - Not Enough Data" else "Range ($" + Round (tr , 2) + ") is " + Round (tr_percent_of_atr, 0) + "% of ATR ($" + Round (atr, 2) + ")   ") , (if (rangeNotAvailable or atrNotAvailable) then Color.GRAY else (if tr_percent_of_atr <= 70 then Color.GREEN else if tr_percent_of_atr >= 90 then Color.RED else Color.ORANGE)));
 AddLabel (show_info, (if use_options_labels then "Calls" else "Long") + " > $" + Round (upper_trigger, 2) + " | +1 ATR: $" + Round (upper_1000, 2) + "   ", GlobalColor("Long Label"));
 AddLabel (show_info, (if use_options_labels then "Puts" else "Short") + " < $" + Round (lower_trigger, 2) + " | -1 ATR: $" +  Round (lower_1000, 2) + "   ", GlobalColor("Short Label"));
