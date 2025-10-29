@@ -1,20 +1,20 @@
 # === ES Levels: Current Trade Levels ===
 # Updated: October 29, 2025
-# Current ES: 6943 (yesterday's 8am target, still here)
-# Resistance (above): 6956, 6973, 7000 (next batch)
-# Support (below): 6928 (reclaimed last eve), 6907
+# Current ES: Around 6928 (support - watch traps)
+# Resistance (above): 6956, 6974, 7000
+# Support (below): 6916, 6907
 
 # === Key Support & Resistance Levels ===
-input level1 = 7000; # R3 - Next batch
+input level1 = 7000; # R3 - Target
 input level1_thickness = 2;
-input level2 = 6973; # R2 - Next batch
+input level2 = 6974; # R2 - Target
 input level2_thickness = 2;
-input level3 = 6956; # R1 - Next batch
+input level3 = 6956; # R1 - Target
 input level3_thickness = 2;
-input level4 = 6943; # Yesterday's target (still here)
-input level4_thickness = 2;
-input level5 = 6928; # S1 - Support (reclaimed last eve)
-input level5_thickness = 3;
+input level4 = 6928; # Current - Support (watch traps)
+input level4_thickness = 3;
+input level5 = 6916; # S1 - Support below
+input level5_thickness = 2;
 input level6 = 6907; # S2 - Support below
 input level6_thickness = 3;
 
@@ -25,7 +25,7 @@ input alertSensitivity = 0.5; # Tight sensitivity - triggers only near exact lev
 # Fixed bubble logic - show only on last bar
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
 
-# Resistance Levels (Next Batch)
+# Resistance Levels
 plot L1 = level1;
 L1.SetDefaultColor(Color.RED);
 L1.SetLineWeight(level1_thickness);
@@ -41,13 +41,13 @@ L3.SetDefaultColor(Color.YELLOW);
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
-# Current Level (Yesterday's Target)
+# Current Level (Support - Watch Traps)
 plot L4 = level4;
 L4.SetDefaultColor(Color.MAGENTA);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
-# Support Levels
+# Support Levels Below
 plot L5 = level5;
 L5.SetDefaultColor(Color.CYAN);
 L5.SetLineWeight(level5_thickness);
@@ -62,65 +62,71 @@ L6.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
 # Chart bubbles - show only on last bar
 AddChartBubble(isLastBar, level1, "7000", Color.RED, yes);
-AddChartBubble(isLastBar, level2, "6973", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level2, "6974", Color.ORANGE, yes);
 AddChartBubble(isLastBar, level3, "6956", Color.YELLOW, yes);
-AddChartBubble(isLastBar, level4, "6943 (Here)", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level5, "6928 (Reclaimed)", Color.CYAN, no);
+AddChartBubble(isLastBar, level4, "6928 (Traps)", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level5, "6916", Color.CYAN, no);
 AddChartBubble(isLastBar, level6, "6907", Color.GREEN, no);
 
 # === ALERT SYSTEM ===
 
-# Breakout Alerts (Next Batch)
+# Breakout Alerts
 Alert(enableAlerts and close crosses above level3, "ES 6956 R1 TARGET!", Alert.BAR, Sound.Ding);
-Alert(enableAlerts and close crosses above level2, "ES 6973 R2 TARGET!", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and close crosses above level2, "ES 6974 R2 TARGET!", Alert.BAR, Sound.Ding);
 Alert(enableAlerts and close crosses above level1, "ES 7000 R3 TARGET!", Alert.BAR, Sound.Ring);
 
 # Support Break Alerts
-Alert(enableAlerts and close crosses below level5, "ES BELOW 6928! Support Break", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level4, "ES BELOW 6928! Watch Traps", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level5, "ES BELOW 6916!", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and close crosses below level6, "ES BELOW 6907!", Alert.BAR, Sound.Bell);
 
 # Testing Key Levels
 Alert(enableAlerts and close >= level3 - alertSensitivity and close <= level3 + alertSensitivity, "ES Testing 6956", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level2 - alertSensitivity and close <= level2 + alertSensitivity, "ES Testing 6973", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level2 - alertSensitivity and close <= level2 + alertSensitivity, "ES Testing 6974", Alert.BAR, Sound.Chimes);
 Alert(enableAlerts and close >= level1 - alertSensitivity and close <= level1 + alertSensitivity, "ES Testing 7000", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "ES Testing 6928", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level4 - alertSensitivity and close <= level4 + alertSensitivity, "ES Testing 6928 - Watch Traps", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "ES Testing 6916", Alert.BAR, Sound.Chimes);
 Alert(enableAlerts and close >= level6 - alertSensitivity and close <= level6 + alertSensitivity, "ES Testing 6907", Alert.BAR, Sound.Chimes);
 
 # Bounce/Rejection Alerts
-Alert(enableAlerts and low[1] <= level5 and close > level5 + 3, "ES BOUNCE from 6928!", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and low[1] <= level4 and close > level4 + 3, "ES BOUNCE from 6928!", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and low[1] <= level5 and close > level5 + 3, "ES BOUNCE from 6916!", Alert.BAR, Sound.Ding);
 Alert(enableAlerts and low[1] <= level6 and close > level6 + 3, "ES BOUNCE from 6907!", Alert.BAR, Sound.Ding);
 Alert(enableAlerts and high[1] >= level3 and close < level3 - 3, "ES REJECTION at 6956", Alert.BAR, Sound.Bell);
+
+# Trap Detection at 6928
+def trapSetup = low <= level4 and close > level4;
+Alert(enableAlerts and trapSetup, "ES TRAP at 6928 - Swept and Recovered!", Alert.BAR, Sound.Ring);
 
 # Status Labels
 AddLabel(enableAlerts, "Alerts ON", Color.GREEN);
 AddLabel(!enableAlerts, "Alerts OFF", Color.RED);
-AddLabel(yes, "ES at Yesterday's Target", Color.WHITE);
+AddLabel(yes, "ES Support Watch", Color.WHITE);
 AddLabel(yes, "Current: " + Round(close, 2), Color.YELLOW);
-AddLabel(yes, "6943 Still Here", Color.MAGENTA);
 
 # Market Structure
-AddLabel(yes and close >= level5, "ABOVE 6928 RECLAIM", Color.LIME);
-AddLabel(yes and close >= level6 and close < level5, "SUPPORT ZONE 6907-6928", Color.CYAN);
+AddLabel(yes and close >= level4, "ABOVE 6928", Color.LIME);
+AddLabel(yes and close >= level5 and close < level4, "SUPPORT ZONE 6916-6928", Color.CYAN);
+AddLabel(yes and close < level5, "BELOW 6916", Color.ORANGE);
 AddLabel(yes and close < level6, "BELOW 6907", Color.RED);
 
 # Trade Plan Status
-AddLabel(yes and close >= level5, "TARGETS: 6956/6973/7000", Color.LIME);
-AddLabel(yes and close < level5, "WATCH 6928 SUPPORT", Color.ORANGE);
+AddLabel(yes and close >= level4, "TARGETS: 6956/6974/7000", Color.LIME);
+AddLabel(yes and close < level4, "WATCH 6928 TRAPS", Color.MAGENTA);
 
 # Distance to Key Levels
 def distTo6956 = level3 - close;
-def distTo6973 = level2 - close;
+def distTo6974 = level2 - close;
 def distTo7000 = level1 - close;
-def distFrom6928 = close - level5;
-def distFrom6907 = close - level6;
+def distFrom6928 = close - level4;
 
 AddLabel(yes and close < level3, "To 6956: " + Round(distTo6956, 1) + " pts", Color.YELLOW);
-AddLabel(yes and close < level2, "To 6973: " + Round(distTo6973, 1) + " pts", Color.ORANGE);
+AddLabel(yes and close < level2, "To 6974: " + Round(distTo6974, 1) + " pts", Color.ORANGE);
 AddLabel(yes and close < level1, "To 7000: " + Round(distTo7000, 1) + " pts", Color.RED);
-AddLabel(yes and close >= level5, "Above 6928: +" + Round(distFrom6928, 1) + " pts", Color.CYAN);
-AddLabel(yes and close >= level6, "Above 6907: +" + Round(distFrom6907, 1) + " pts", Color.GREEN);
-AddLabel(yes and close < level5, "Below 6928: -" + Round(AbsValue(distFrom6928), 1) + " pts", Color.ORANGE);
+AddLabel(yes and close >= level4, "Above 6928: +" + Round(distFrom6928, 1) + " pts", Color.MAGENTA);
+AddLabel(yes and close < level4, "Below 6928: -" + Round(AbsValue(distFrom6928), 1) + " pts", Color.ORANGE);
 
 # Context
-AddLabel(yes, "6928 Reclaimed Last Eve", Color.CYAN);
-AddLabel(yes, "Next Batch: 6956/6973/7000", Color.YELLOW);
+AddLabel(yes, "6928 Support - Watch Traps", Color.MAGENTA);
+AddLabel(yes, "Targets: 6956/6974/7000", Color.YELLOW);
+AddLabel(yes, "Support Below: 6916/6907", Color.CYAN);
