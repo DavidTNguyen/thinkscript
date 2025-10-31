@@ -2,132 +2,125 @@
 indicator("ES Levels: Current Trade Levels", overlay=true, max_lines_count=500, max_labels_count=500)
 
 // === ES Levels: Current Trade Levels ===
-// Updated: October 27, 2025
-// Current ES: 6910 area (up 215 pts from last Wednesday)
-// Resistance (above): 6918, 6928, 6942, 6959-62 (next batch of targets)
-// Support (below): 6889, 6870 (key supports - 6870 must fail to start gap fill)
+// Updated: October 29, 2025
+// Current ES: 6943 (yesterday's 8am target, still here)
+// Resistance (above): 6956, 6973, 7000 (next batch)
+// Support (below): 6928 (reclaimed last eve), 6907
 
 // === Key Support & Resistance Levels ===
-level1 = input.float(6962, "R4-High: Extended target (upper range)", group="Resistance Levels")
-level1_thickness = input.int(2, "R4-High Line Weight", minval=1, maxval=5, group="Resistance Levels")
-level2 = input.float(6959, "R4-Low: Extended target (lower range)", group="Resistance Levels")
-level2_thickness = input.int(2, "R4-Low Line Weight", minval=1, maxval=5, group="Resistance Levels")
-level3 = input.float(6942, "R3: Next target", group="Resistance Levels")
-level3_thickness = input.int(2, "R3 Line Weight", minval=1, maxval=5, group="Resistance Levels")
-level4 = input.float(6928, "R2: Next target", group="Resistance Levels")
-level4_thickness = input.int(2, "R2 Line Weight", minval=1, maxval=5, group="Resistance Levels")
-level5 = input.float(6918, "R1: Next target", group="Resistance Levels")
-level5_thickness = input.int(2, "R1 Line Weight", minval=1, maxval=5, group="Resistance Levels")
+level1 = input.float(7000, "R3: Next batch", group="Resistance Levels")
+level1_thickness = input.int(2, "R3 Line Weight", minval=1, maxval=5, group="Resistance Levels")
+level2 = input.float(6973, "R2: Next batch", group="Resistance Levels")
+level2_thickness = input.int(2, "R2 Line Weight", minval=1, maxval=5, group="Resistance Levels")
+level3 = input.float(6956, "R1: Next batch", group="Resistance Levels")
+level3_thickness = input.int(2, "R1 Line Weight", minval=1, maxval=5, group="Resistance Levels")
+level4 = input.float(6943, "Yesterday's target (still here)", group="Reference Levels")
+level4_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="Reference Levels")
 
-level6 = input.float(6889, "S1: Key support on dips", group="Support Levels")
-level6_thickness = input.int(3, "S1 Line Weight", minval=1, maxval=5, group="Support Levels")
-level7 = input.float(6870, "S2: Key support (must fail to start gap fill)", group="Support Levels")
-level7_thickness = input.int(3, "S2 Line Weight", minval=1, maxval=5, group="Support Levels")
+level5 = input.float(6928, "S1: Support (reclaimed last eve)", group="Support Levels")
+level5_thickness = input.int(3, "S1 Line Weight", minval=1, maxval=5, group="Support Levels")
+level6 = input.float(6907, "S2: Support below", group="Support Levels")
+level6_thickness = input.int(3, "S2 Line Weight", minval=1, maxval=5, group="Support Levels")
 
 // Alert Settings
 enableAlerts = input.bool(true, "Enable Alerts", group="Alert Settings")
 alertSensitivity = input.float(0.5, "Alert Sensitivity (pts)", minval=0.1, maxval=5.0, group="Alert Settings")
 
 // === Plot Levels ===
-// Resistance Levels (Next Batch of Targets)
-plot(level1, "R4: 6962", color=color.new(#8B0000, 0), linewidth=level1_thickness, style=plot.style_line)
-plot(level2, "R4: 6959", color=color.new(color.red, 0), linewidth=level2_thickness, style=plot.style_line)
-plot(level3, "R3: 6942", color=color.new(color.orange, 0), linewidth=level3_thickness, style=plot.style_line)
-plot(level4, "R2: 6928", color=color.new(color.yellow, 0), linewidth=level4_thickness, style=plot.style_line)
-plot(level5, "R1: 6918", color=color.new(color.fuchsia, 0), linewidth=level5_thickness, style=plot.style_line)
+// Resistance Levels (Next Batch)
+plot(level1, "R3: 7000", color=color.new(color.red, 0), linewidth=level1_thickness, style=plot.style_line)
+plot(level2, "R2: 6973", color=color.new(color.orange, 0), linewidth=level2_thickness, style=plot.style_line)
+plot(level3, "R1: 6956", color=color.new(color.yellow, 0), linewidth=level3_thickness, style=plot.style_line)
+plot(level4, "6943 (Here)", color=color.new(color.fuchsia, 0), linewidth=level4_thickness, style=plot.style_line)
 
-// Key Support Levels
-plot(level6, "S1: 6889", color=color.new(color.aqua, 0), linewidth=level6_thickness, style=plot.style_line)
-plot(level7, "S2: 6870", color=color.new(color.green, 0), linewidth=level7_thickness, style=plot.style_line)
+// Support Levels
+plot(level5, "S1: 6928", color=color.new(color.aqua, 0), linewidth=level5_thickness, style=plot.style_line)
+plot(level6, "S2: 6907", color=color.new(color.green, 0), linewidth=level6_thickness, style=plot.style_line)
 
 // === Labels on Last Bar ===
 if barstate.islast
-    label.new(bar_index, level1, "R4: 6962", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#8B0000, 80), textcolor=#8B0000, style=label.style_label_left, size=size.small)
-    label.new(bar_index, level2, "R4: 6959", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.red, 80), textcolor=color.red, style=label.style_label_left, size=size.small)
-    label.new(bar_index, level3, "R3: 6942", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.orange, 80), textcolor=color.orange, style=label.style_label_left, size=size.small)
-    label.new(bar_index, level4, "R2: 6928", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.yellow, 80), textcolor=color.yellow, style=label.style_label_left, size=size.small)
-    label.new(bar_index, level5, "R1: 6918", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.fuchsia, 80), textcolor=color.fuchsia, style=label.style_label_left, size=size.small)
-    label.new(bar_index, level6, "S1: 6889", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.aqua, 80), textcolor=color.aqua, style=label.style_label_right, size=size.small)
-    label.new(bar_index, level7, "S2: 6870", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.green, 80), textcolor=color.green, style=label.style_label_right, size=size.small)
+    label.new(bar_index, level1, "7000", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.red, 80), textcolor=color.red, style=label.style_label_left, size=size.small)
+    label.new(bar_index, level2, "6973", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.orange, 80), textcolor=color.orange, style=label.style_label_left, size=size.small)
+    label.new(bar_index, level3, "6956", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.yellow, 80), textcolor=color.yellow, style=label.style_label_left, size=size.small)
+    label.new(bar_index, level4, "6943 (Here)", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.fuchsia, 80), textcolor=color.fuchsia, style=label.style_label_left, size=size.small)
+    label.new(bar_index, level5, "6928 (Reclaimed)", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.aqua, 80), textcolor=color.aqua, style=label.style_label_right, size=size.small)
+    label.new(bar_index, level6, "6907", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.green, 80), textcolor=color.green, style=label.style_label_right, size=size.small)
 
 // === Alert Conditions ===
-// Breakout Alerts (Next Batch of Targets)
-alertcondition(ta.crossover(close, level5), "ES 6918 R1 Target", "ES 6918 R1 TARGET!")
-alertcondition(ta.crossover(close, level4), "ES 6928 R2 Target", "ES 6928 R2 TARGET!")
-alertcondition(ta.crossover(close, level3), "ES 6942 R3 Target", "ES 6942 R3 TARGET!")
-alertcondition(ta.crossover(close, level2), "ES 6959-62 R4 Zone", "ES 6959-62 R4 ZONE!")
+// Breakout Alerts (Next Batch)
+alertcondition(ta.crossover(close, level3), "ES 6956 R1 Target", "ES 6956 R1 TARGET!")
+alertcondition(ta.crossover(close, level2), "ES 6973 R2 Target", "ES 6973 R2 TARGET!")
+alertcondition(ta.crossover(close, level1), "ES 7000 R3 Target", "ES 7000 R3 TARGET!")
 
 // Support Break Alerts
-alertcondition(ta.crossunder(close, level6), "ES Below 6889 S1", "ES BELOW 6889 S1! Key Support Test")
-alertcondition(ta.crossunder(close, level7), "ES Below 6870 S2", "ES BELOW 6870 S2! Gap Fill Starting")
+alertcondition(ta.crossunder(close, level5), "ES Below 6928", "ES BELOW 6928! Support Break")
+alertcondition(ta.crossunder(close, level6), "ES Below 6907", "ES BELOW 6907!")
 
 // Testing Key Levels
-testingR1 = close >= level5 - alertSensitivity and close <= level5 + alertSensitivity
-testingR2 = close >= level4 - alertSensitivity and close <= level4 + alertSensitivity
-testingR3 = close >= level3 - alertSensitivity and close <= level3 + alertSensitivity
-testingS1 = close >= level6 - alertSensitivity and close <= level6 + alertSensitivity
-testingS2 = close >= level7 - alertSensitivity and close <= level7 + alertSensitivity
+testingR1 = close >= level3 - alertSensitivity and close <= level3 + alertSensitivity
+testingR2 = close >= level2 - alertSensitivity and close <= level2 + alertSensitivity
+testingR3 = close >= level1 - alertSensitivity and close <= level1 + alertSensitivity
+testingS1 = close >= level5 - alertSensitivity and close <= level5 + alertSensitivity
+testingS2 = close >= level6 - alertSensitivity and close <= level6 + alertSensitivity
 
-alertcondition(testingR1, "ES Testing 6918 R1", "ES Testing 6918 R1")
-alertcondition(testingR2, "ES Testing 6928 R2", "ES Testing 6928 R2")
-alertcondition(testingR3, "ES Testing 6942 R3", "ES Testing 6942 R3")
-alertcondition(testingS1, "ES Testing 6889 S1", "ES Testing 6889 S1")
-alertcondition(testingS2, "ES Testing 6870 S2", "ES Testing 6870 S2 - Critical")
+alertcondition(testingR1, "ES Testing 6956", "ES Testing 6956")
+alertcondition(testingR2, "ES Testing 6973", "ES Testing 6973")
+alertcondition(testingR3, "ES Testing 7000", "ES Testing 7000")
+alertcondition(testingS1, "ES Testing 6928", "ES Testing 6928")
+alertcondition(testingS2, "ES Testing 6907", "ES Testing 6907")
 
 // Bounce/Rejection Alerts
-bounceS1 = low[1] <= level6 and close > level6 + 3
-bounceS2 = low[1] <= level7 and close > level7 + 3
-rejectR1 = high[1] >= level5 and close < level5 - 3
-rejectR2 = high[1] >= level4 and close < level4 - 3
+bounceS1 = low[1] <= level5 and close > level5 + 3
+bounceS2 = low[1] <= level6 and close > level6 + 3
+rejectR1 = high[1] >= level3 and close < level3 - 3
 
-alertcondition(bounceS1, "ES Bounce 6889", "ES BOUNCE from 6889 S1!")
-alertcondition(bounceS2, "ES Bounce 6870", "ES BOUNCE from 6870 S2! Gap Fill Avoided")
-alertcondition(rejectR1, "ES Reject 6918", "ES REJECTION at 6918 R1")
-alertcondition(rejectR2, "ES Reject 6928", "ES REJECTION at 6928 R2")
+alertcondition(bounceS1, "ES Bounce 6928", "ES BOUNCE from 6928!")
+alertcondition(bounceS2, "ES Bounce 6907", "ES BOUNCE from 6907!")
+alertcondition(rejectR1, "ES Reject 6956", "ES REJECTION at 6956")
 
 // === Market Structure Status ===
-var table statusTable = table.new(position.top_right, 2, 8, border_width=1)
+var table statusTable = table.new(position.top_right, 2, 7, border_width=1)
 
 if barstate.islast
-    table.cell(statusTable, 0, 0, "ES Parabolic Rally", text_color=color.white, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 0, 0, "ES Yesterday's Target", text_color=color.white, bgcolor=color.new(color.gray, 50))
     table.cell(statusTable, 1, 0, str.tostring(close, "#.00"), text_color=color.yellow, bgcolor=color.new(color.gray, 50))
     
-    table.cell(statusTable, 0, 1, "Ride Runners", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 1, "6918+", text_color=color.lime, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 0, 1, "6943", text_color=color.white, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 1, "Still Here", text_color=color.fuchsia, bgcolor=color.new(color.gray, 50))
     
-    table.cell(statusTable, 0, 2, "Key S", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 2, "6870", text_color=color.green, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 0, 2, "6928", text_color=color.white, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 2, "Reclaimed Last Eve", text_color=color.aqua, bgcolor=color.new(color.gray, 50))
     
     // Market Structure
-    structure = close > level6 ? "RUNNER MODE → 6918+" : close >= level7 ? "SUPPORT ZONE 6870-6889" : "GAP FILL ACTIVE"
-    structureColor = close > level6 ? color.lime : close >= level7 ? color.aqua : color.red
+    structure = close >= level5 ? "ABOVE 6928 RECLAIM" : close >= level6 ? "SUPPORT ZONE 6907-6928" : "BELOW 6907"
+    structureColor = close >= level5 ? color.lime : close >= level6 ? color.aqua : color.red
     
     table.cell(statusTable, 0, 3, "Structure", text_color=color.white, bgcolor=color.new(color.gray, 50))
     table.cell(statusTable, 1, 3, structure, text_color=structureColor, bgcolor=color.new(color.gray, 50))
     
     // Trade Plan
-    tradePlan = close >= level6 ? "RIDE RUNNERS" : close >= level7 ? "WATCH 6870" : "GAP FILL MODE"
-    planColor = close >= level6 ? color.lime : close >= level7 ? color.orange : color.red
+    tradePlan = close >= level5 ? "TARGETS: 6956/6973/7000" : "WATCH 6928 SUPPORT"
+    planColor = close >= level5 ? color.lime : color.orange
     
     table.cell(statusTable, 0, 4, "Trade Plan", text_color=color.white, bgcolor=color.new(color.gray, 50))
     table.cell(statusTable, 1, 4, tradePlan, text_color=planColor, bgcolor=color.new(color.gray, 50))
     
     // Distance to Key Levels
-    distTo6918 = level5 - close
-    distTo6942 = level3 - close
-    distFrom6889 = close - level6
-    distFrom6870 = close - level7
-    
-    if close < level5
-        table.cell(statusTable, 0, 5, "To 6918", text_color=color.white, bgcolor=color.new(color.gray, 50))
-        table.cell(statusTable, 1, 5, str.tostring(distTo6918, "#.0") + " pts", text_color=color.fuchsia, bgcolor=color.new(color.gray, 50))
+    distTo6956 = level3 - close
+    distTo6973 = level2 - close
+    distTo7000 = level1 - close
+    distFrom6928 = close - level5
     
     if close < level3
-        table.cell(statusTable, 0, 6, "To 6942", text_color=color.white, bgcolor=color.new(color.gray, 50))
-        table.cell(statusTable, 1, 6, str.tostring(distTo6942, "#.0") + " pts", text_color=color.orange, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 0, 5, "To 6956", text_color=color.white, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 1, 5, str.tostring(distTo6956, "#.0") + " pts", text_color=color.yellow, bgcolor=color.new(color.gray, 50))
     
-    table.cell(statusTable, 0, 7, "Context", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 7, "Up 215pts - Best 2025", text_color=color.lime, bgcolor=color.new(color.gray, 50))
+    if close >= level5
+        table.cell(statusTable, 0, 6, "Above 6928", text_color=color.white, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 1, 6, "+" + str.tostring(distFrom6928, "#.0") + " pts", text_color=color.aqua, bgcolor=color.new(color.gray, 50))
+    else
+        table.cell(statusTable, 0, 6, "Below 6928", text_color=color.white, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 1, 6, "-" + str.tostring(math.abs(distFrom6928), "#.0") + " pts", text_color=color.orange, bgcolor=color.new(color.gray, 50))
 
 // Background color based on structure
-bgcolor(close > level6 ? color.new(color.lime, 95) : close >= level7 ? color.new(color.aqua, 95) : color.new(color.red, 95), title="Structure Background")
+bgcolor(close >= level5 ? color.new(color.lime, 95) : close >= level6 ? color.new(color.aqua, 95) : color.new(color.red, 95), title="Structure Background")
