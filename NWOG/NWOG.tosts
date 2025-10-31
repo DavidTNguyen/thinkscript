@@ -1,139 +1,136 @@
-# Global Color setup
-# Created by @VietRoadie inspired by SuperLuckee AndrewBCrypto
+# === ICT New Week Opening Gap (NWOG) ===
+# Based on Inner Circle Trader methodology
+# NWOG = Gap between Friday's close (4:59 PM EST) and Sunday/Monday's open (6:00 PM EST)
+# Acts as liquidity magnet with 50% level being key reactive zone
+# Updated: October 31, 2025
 
-DefineGlobalColor("weekly", Color.DARK_ORANGE);
-DefineGlobalColor("weekly2", CreateColor(136, 93, 100));
-DefineGlobalColor("weekly3", Color.PLUM);
-DefineGlobalColor("weekly4", Color.WHITE);
-DefineGlobalColor("weekly5", Color.CYAN);
+# Color Definitions for Gap Levels
+DefineGlobalColor("gap_high", Color.RED);
+DefineGlobalColor("gap_low", Color.GREEN);
+DefineGlobalColor("gap_50", Color.YELLOW);
+DefineGlobalColor("gap_zone", CreateColor(100, 100, 100));
+DefineGlobalColor("bullish_bias", Color.CYAN);
+DefineGlobalColor("bearish_bias", Color.MAGENTA);
 
-#Calculate the gaps and the midpoints
+# === User Inputs ===
+input showCurrentWeek = yes;
+input showPreviousWeek = yes;
+input show50Percent = yes;
+input showFibLevels = yes;
+input highlightGapZone = yes;
+input showLabelsOnChart = yes;
+
+# === Calculate NWOG - Liquidity Void Between Friday Close & New Week Open ===
 input aggregationPeriod = AggregationPeriod.WEEK;
 def weeklyClose = close(period = aggregationPeriod);
 def weeklyOpen = open(period = aggregationPeriod);
 def weeklyChange = weeklyClose != weeklyClose[1];
-def prevWeeklyClose = if weeklyChange then Round(weeklyClose[1], 2) else prevWeeklyClose[1];
+
+# Current Week NWOG
+def fridayClose = if weeklyChange then Round(weeklyClose[1], 2) else fridayClose[1];
 def newWeekOpen = if weeklyChange then Round(weeklyOpen, 2) else newWeekOpen[1];
-def gapUp = newWeekOpen > prevWeeklyClose;
-def halfAmount = AbsValue(newWeekOpen - prevWeeklyClose) / 2;
-def halfGap = if gapUp then (prevWeeklyClose + halfAmount) else (newWeekOpen + halfAmount);
-def oneBackClose = if weeklyChange then prevWeeklyClose[1] else oneBackClose[1];
-def oneBackOpen = if weeklyChange then newWeekOpen[1] else oneBackOpen[1];
-def twoBackClose = if weeklyChange then oneBackClose[1] else twoBackClose[1];
-def twoBackOpen = if weeklyChange then oneBackOpen[1] else twoBackOpen[1];
-def halfAmount2 = AbsValue(oneBackOpen - oneBackClose) / 2;
-def gapUp2 = oneBackOpen > oneBackClose;
-def halfGap2 = if gapUp2 then (oneBackClose + halfAmount2) else (oneBackOpen + halfAmount2);
-def halfAmount3 = AbsValue(twoBackOpen - twoBackClose) / 2;
-def gapUp3 = twoBackOpen > twoBackClose;
-def halfGap3 = if gapUp3 then (twoBackClose + halfAmount3) else (twoBackOpen + halfAmount3);
-def threeBackClose = if weeklyChange then twoBackClose[1] else threeBackClose[1];
-def threeBackOpen = if weeklyChange then twoBackOpen[1] else threeBackOpen[1];
 
-def halfAmount4 = AbsValue(threeBackOpen - threeBackClose) / 2;
-def gapUp4 = threeBackOpen > threeBackClose;
-def halfGap4 = if gapUp4 then (threeBackClose + halfAmount4) else (threeBackOpen + halfAmount4);
-def fourBackClose = if weeklyChange then threeBackClose[1] else fourBackClose[1];
-def fourBackOpen = if weeklyChange then threeBackOpen[1] else fourBackOpen[1];
+# NWOG Direction - Gap Up or Gap Down
+def isGapUp = newWeekOpen > fridayClose;
+def isGapDown = newWeekOpen < fridayClose;
+def gapSize = AbsValue(newWeekOpen - fridayClose);
 
-def halfAmount5 = AbsValue(fourBackOpen - fourBackClose) / 2;
-def gapUp5 = fourBackOpen > fourBackClose;
-def halfGap5 = if gapUp5 then (fourBackClose + halfAmount5) else (fourBackOpen + halfAmount5);
+# Key NWOG Levels - ICT Consequent Encroachment (50% Level)
+def nwog_high = if isGapUp then newWeekOpen else fridayClose;
+def nwog_low = if isGapUp then fridayClose else newWeekOpen;
+def nwog_50 = (nwog_high + nwog_low) / 2;
 
-input plotLines = yes;
-input onDaily = yes;
-def Today = if onDaily then GetLastWeek() == GetWeek() else GetLastDay() == GetDay();
-input showOnRight = yes;
-input offset = 1;
-def exp = if showOnRight then IsNaN(close[offset]) else yes;
+# Fibonacci Levels within NWOG (0%, 25%, 50%, 75%, 100%)
+def nwog_0 = nwog_low;
+def nwog_25 = nwog_low + (gapSize * 0.25);
+def nwog_75 = nwog_low + (gapSize * 0.75);
+def nwog_100 = nwog_high;
 
-plot week1 = if exp and Today and plotLines then prevWeeklyClose else Double.NaN;
-week1.SetDefaultColor(GlobalColor("weekly"));
-week1.SetLineWeight(2);
-week1.HideBubble();
+# Previous Week NWOG (for historical context)
+def prevFridayClose = if weeklyChange then fridayClose[1] else prevFridayClose[1];
+def prevWeekOpen = if weeklyChange then newWeekOpen[1] else prevWeekOpen[1];
+def prevIsGapUp = prevWeekOpen > prevFridayClose;
+def prevGapSize = AbsValue(prevWeekOpen - prevFridayClose);
+def prevNwog_high = if prevIsGapUp then prevWeekOpen else prevFridayClose;
+def prevNwog_low = if prevIsGapUp then prevFridayClose else prevWeekOpen;
+def prevNwog_50 = (prevNwog_high + prevNwog_low) / 2;
 
-plot week2 = if exp and Today and plotLines then newWeekOpen else Double.NaN;
-week2.SetDefaultColor(GlobalColor("weekly"));
-week2.SetLineWeight(2);
-week2.HideBubble();
+# Market Bias Based on Price Position Relative to NWOG
+def priceAboveGap = close > nwog_high;
+def priceBelowGap = close < nwog_low;
+def priceInsideGap = close >= nwog_low and close <= nwog_high;
+def marketBias = if priceAboveGap then 1 else if priceBelowGap then -1 else 0;
 
-plot week3 = if exp and Today and plotLines then oneBackClose else Double.NaN;
-week3.SetDefaultColor(GlobalColor("weekly2"));
-week3.SetLineWeight(2);
-week3.HideBubble();
+# === Plot Current Week NWOG Levels ===
+# NWOG High (100% - Top of Gap / Friday Close or New Week Open)
+plot CurrentHigh = if showCurrentWeek then nwog_high else Double.NaN;
+CurrentHigh.SetDefaultColor(GlobalColor("gap_high"));
+CurrentHigh.SetLineWeight(2);
+CurrentHigh.SetStyle(Curve.FIRM);
 
-plot week4 = if exp and Today and plotLines then oneBackOpen else Double.NaN;
-week4.SetDefaultColor(GlobalColor("weekly2"));
-week4.SetLineWeight(2);
-week4.HideBubble();
+# NWOG Low (0% - Bottom of Gap / Friday Close or New Week Open)
+plot CurrentLow = if showCurrentWeek then nwog_low else Double.NaN;
+CurrentLow.SetDefaultColor(GlobalColor("gap_low"));
+CurrentLow.SetLineWeight(2);
+CurrentLow.SetStyle(Curve.FIRM);
 
-plot week5 = if exp and Today and plotLines then twoBackClose else Double.NaN;
-week5.SetDefaultColor(GlobalColor("weekly3"));
-week5.SetLineWeight(2);
-week5.HideBubble();
+# NWOG 50% - ICT Consequent Encroachment (Key Liquidity Magnet)
+plot Current50 = if showCurrentWeek and show50Percent then nwog_50 else Double.NaN;
+Current50.SetDefaultColor(GlobalColor("gap_50"));
+Current50.SetLineWeight(3);
+Current50.SetStyle(Curve.FIRM);
 
-plot week6 = if exp and Today and plotLines then twoBackOpen else Double.NaN;
-week6.SetDefaultColor(GlobalColor("weekly3"));
-week6.SetLineWeight(2);
-week6.HideBubble();
+# Fibonacci Levels within NWOG
+plot Current25 = if showCurrentWeek and showFibLevels then nwog_25 else Double.NaN;
+Current25.SetDefaultColor(GlobalColor("gap_zone"));
+Current25.SetLineWeight(1);
+Current25.SetStyle(Curve.SHORT_DASH);
 
-plot week7 = if exp and Today and plotLines then threeBackClose else Double.NaN;
-week7.SetDefaultColor(GlobalColor("weekly4"));
-week7.SetLineWeight(2);
-week7.HideBubble();
+plot Current75 = if showCurrentWeek and showFibLevels then nwog_75 else Double.NaN;
+Current75.SetDefaultColor(GlobalColor("gap_zone"));
+Current75.SetLineWeight(1);
+Current75.SetStyle(Curve.SHORT_DASH);
 
-plot week8 = if exp and Today and plotLines then threeBackOpen else Double.NaN;
-week8.SetDefaultColor(GlobalColor("weekly4"));
-week8.SetLineWeight(2);
-week8.HideBubble();
+# === Plot Previous Week NWOG (For Historical Context) ===
+plot PrevHigh = if showPreviousWeek then prevNwog_high else Double.NaN;
+PrevHigh.SetDefaultColor(CreateColor(150, 50, 50));
+PrevHigh.SetLineWeight(1);
+PrevHigh.SetStyle(Curve.LONG_DASH);
 
-plot week9 = if exp and Today and plotLines then fourBackClose else Double.NaN;
-week9.SetDefaultColor(GlobalColor("weekly5"));
-week9.SetLineWeight(2);
-week9.HideBubble();
+plot PrevLow = if showPreviousWeek then prevNwog_low else Double.NaN;
+PrevLow.SetDefaultColor(CreateColor(50, 150, 50));
+PrevLow.SetLineWeight(1);
+PrevLow.SetStyle(Curve.LONG_DASH);
 
-plot week10 = if exp and Today and plotLines then fourBackOpen else Double.NaN;
-week10.SetDefaultColor(GlobalColor("weekly5"));
-week10.SetLineWeight(2);
-week10.HideBubble();
+plot Prev50 = if showPreviousWeek and show50Percent then prevNwog_50 else Double.NaN;
+Prev50.SetDefaultColor(CreateColor(150, 150, 50));
+Prev50.SetLineWeight(1);
+Prev50.SetStyle(Curve.LONG_DASH);
 
-plot halfWay = if exp and Today and plotLines then halfGap else Double.NaN;
-halfWay.SetDefaultColor(Color.GRAY);
-halfWay.HideBubble();
+# === Gap Zone Cloud (Liquidity Void Visualization) ===
+AddCloud(if showCurrentWeek and highlightGapZone then nwog_high else Double.NaN, 
+         if showCurrentWeek and highlightGapZone then nwog_low else Double.NaN, 
+         CreateColor(100, 50, 50), CreateColor(50, 100, 50));
 
-plot halfWay2 = if exp and Today and plotLines then halfGap2 else Double.NaN;
-halfWay2.SetDefaultColor(Color.GRAY);
-halfWay2.HideBubble();
+# === Chart Bubbles for NWOG Levels ===
+def lastBar = !IsNaN(close) and IsNaN(close[-1]);
+AddChartBubble(showLabelsOnChart and lastBar, nwog_high, "NWOG High: " + Round(nwog_high, 2), GlobalColor("gap_high"), yes);
+AddChartBubble(showLabelsOnChart and lastBar, nwog_low, "NWOG Low: " + Round(nwog_low, 2), GlobalColor("gap_low"), no);
+AddChartBubble(showLabelsOnChart and lastBar, nwog_50, "50% CE: " + Round(nwog_50, 2), GlobalColor("gap_50"), yes);
 
-plot halfWay3 = if exp and Today and plotLines then halfGap3 else Double.NaN;
-halfWay3.SetDefaultColor(Color.GRAY);
-halfWay3.HideBubble();
+# === Market Bias Labels ===
+AddLabel(yes, "NWOG: " + Round(gapSize, 2) + " pts", Color.WHITE);
+AddLabel(yes, if isGapUp then "Gap UP" else if isGapDown then "Gap DOWN" else "No Gap", 
+         if isGapUp then Color.GREEN else if isGapDown then Color.RED else Color.GRAY);
+AddLabel(yes, "50% Level: " + Round(nwog_50, 2), GlobalColor("gap_50"));
+AddLabel(yes, if priceAboveGap then "BULLISH BIAS (Above Gap)" 
+         else if priceBelowGap then "BEARISH BIAS (Below Gap)" 
+         else "INSIDE GAP (Rejection Zone)",
+         if priceAboveGap then GlobalColor("bullish_bias") 
+         else if priceBelowGap then GlobalColor("bearish_bias") 
+         else Color.ORANGE);
 
-plot halfWay4 = if exp and Today and plotLines then halfGap4 else Double.NaN;
-halfWay4.SetDefaultColor(Color.GRAY);
-halfWay4.HideBubble();
-
-plot halfWay5 = if exp and Today and plotLines then halfGap5 else Double.NaN;
-halfWay5.SetDefaultColor(Color.GRAY);
-halfWay5.HideBubble();
-
-input showBubbles = no;
-AddChartBubble(showBubbles and exp and !exp[1], if gapUp then week1 else week2, "Current", GlobalColor("weekly"), no);
-AddChartBubble(showBubbles and exp and !exp[1], if gapUp2 then week3 else week4, "Previous", GlobalColor("weekly2"), no);
-AddChartBubble(showBubbles and exp and !exp[1], if gapUp3 then week5 else week6, "Two Back", GlobalColor("weekly3"), no);
-AddChartBubble(showBubbles and exp and !exp[1], if gapUp4 then week7 else week8, "Three Back", GlobalColor("weekly4"), no);
-AddChartBubble(showBubbles and exp and !exp[1], if gapUp5 then week9 else week10, "Four Back", GlobalColor("weekly5"), no);
-
-input showBubblesLeft = no;
-AddChartBubble(showBubblesLeft and Today and !Today[1], if gapUp then week1 else week2, "Current", GlobalColor("weekly"), no);
-AddChartBubble(showBubblesLeft and Today and !Today[1], if gapUp2 then week3 else week4, "Previous", GlobalColor("weekly2"), no);
-AddChartBubble(showBubblesLeft and Today and !Today[1], if gapUp3 then week5 else week6, "Two Back", GlobalColor("weekly3"), no);
-AddChartBubble(showBubblesLeft and Today and !Today[1], if gapUp4 then week7 else week8, "Three Back", GlobalColor("weekly4"), no);
-AddChartBubble(showBubblesLeft and Today and !Today[1], if gapUp5 then week9 else week10, "Four Back", GlobalColor("weekly5"), no);
-
-input showLabels = no;
-AddLabel(showLabels, "Current", GlobalColor("weekly"));
-AddLabel(showLabels, "Previous", GlobalColor("weekly2"));
-AddLabel(showLabels, "Two Back", GlobalColor("weekly3"));
-AddLabel(showLabels, "Three Back", GlobalColor("weekly4"));
-AddLabel(showLabels, "Four Back", GlobalColor("weekly5"));
+# === Trading Signals ===
+# Price approaching 50% level for potential reversion
+def approaching50 = AbsValue(close - nwog_50) < (gapSize * 0.10);
+AddLabel(approaching50, "PRICE NEAR 50% - Watch for Reversal!", Color.YELLOW);
