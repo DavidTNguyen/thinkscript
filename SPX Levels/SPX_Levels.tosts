@@ -1,44 +1,170 @@
 # === SPX Levels: Current Trade Levels ===
-# Updated: October 26, 2025
-# Current ES: 6872
-# Resistance (above): 6885, 6900, 6914
-# Support (below): 6858, 6841
+# Updated: November 2, 2025
+# Current ES: ~6880
+# Bull trigger: 6880 - must break early week
+# Decision Zone: 6880 ↔ 6820.5
+# Path Up: 6880 → 6911.5 → 6920.5 → 6949.5 → 6995 ±
+# Path Down: 6820.5 → 6765 → 6745 → 6715 → 6699 ± 6
 
-# === Key Support & Resistance Levels ===
-input level1 = 6914; # R3 - Resistance
-input level1_thickness = 2; # 1=normal, 2=(*), 3=(**)
-input level2 = 6900; # R2 - Resistance
+# === RESISTANCE LEVELS (Bull Path) ===
+input level1 = 6995; # R5 - Seasonal Nov Exp Target
+input level1_thickness = 3;
+input level2 = 6949.5; # R4 - Target after squeeze
 input level2_thickness = 2;
-input level3 = 6885; # R1 - Resistance
-input level3_thickness = 1;
-input level4 = 6858; # S1 - Support
+input level3 = 6920.5; # R3 - Short stop, squeeze zone
+input level3_thickness = 2;
+input level4 = 6911.5; # R2 - Heavy short position
 input level4_thickness = 2;
-input level5 = 6841; # S2 - Support
-input level5_thickness = 2;
+input level5 = 6880; # R1 - Bull trigger (must break early week)
+input level5_thickness = 3;
 
-# Resistance Levels (Above Current)
+# === SUPPORT LEVELS (Bear Path) ===
+input level6 = 6820.5; # S1 - Decision Zone low / Long stop (bear acceleration)
+input level6_thickness = 3;
+input level7 = 6765; # S2 - Low-volume drop target
+input level7_thickness = 2;
+input level8 = 6745; # S3 - High-volume drop target
+input level8_thickness = 2;
+input level9 = 6715; # S4 - Extreme macro shock zone
+input level9_thickness = 2;
+input level10 = 6699; # S5 - Final defensive long stop (± 6)
+input level10_thickness = 3;
+
+# Alert Settings
+input enableAlerts = yes;
+input alertSensitivity = 0.5;
+
+# Label Visibility
+input showLabels = yes;
+
+# Fixed bubble logic - show only on last bar
+def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
+
+# === RESISTANCE: Bull Path ===
 plot L1 = level1;
-L1.SetDefaultColor(Color.RED);
+L1.SetDefaultColor(Color.MAGENTA);
 L1.SetLineWeight(level1_thickness);
 L1.SetStyle(Curve.FIRM);
 
 plot L2 = level2;
-L2.SetDefaultColor(Color.ORANGE);
+L2.SetDefaultColor(Color.CYAN);
 L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
 
 plot L3 = level3;
-L3.SetDefaultColor(Color.YELLOW);
+L3.SetDefaultColor(Color.LIME);
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
-# Support Levels (Below Current)
 plot L4 = level4;
-L4.SetDefaultColor(Color.GREEN);
+L4.SetDefaultColor(Color.LIME);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
 plot L5 = level5;
-L5.SetDefaultColor(Color.MAGENTA);
+L5.SetDefaultColor(Color.YELLOW);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
+
+# === SUPPORT: Bear Path ===
+plot L6 = level6;
+L6.SetDefaultColor(Color.RED);
+L6.SetLineWeight(level6_thickness);
+L6.SetStyle(Curve.FIRM);
+
+plot L7 = level7;
+L7.SetDefaultColor(Color.RED);
+L7.SetLineWeight(level7_thickness);
+L7.SetStyle(Curve.FIRM);
+
+plot L8 = level8;
+L8.SetDefaultColor(Color.RED);
+L8.SetLineWeight(level8_thickness);
+L8.SetStyle(Curve.FIRM);
+
+plot L9 = level9;
+L9.SetDefaultColor(Color.RED);
+L9.SetLineWeight(level9_thickness);
+L9.SetStyle(Curve.FIRM);
+
+plot L10 = level10;
+L10.SetDefaultColor(Color.MAGENTA);
+L10.SetLineWeight(level10_thickness);
+L10.SetStyle(Curve.FIRM);
+
+# === DECISION ZONE (6880-6820.5) ===
+AddCloud(level5, level6, Color.YELLOW, Color.YELLOW);
+
+# Chart bubbles - show only on last bar with S/R designation
+AddChartBubble(isLastBar, level1, "R5: 6995 (Nov Target)", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level2, "R4: 6949.5 (Squeeze)", Color.CYAN, yes);
+AddChartBubble(isLastBar, level3, "R3: 6920.5 (Squeeze Zone)", Color.LIME, yes);
+AddChartBubble(isLastBar, level4, "R2: 6911.5 (Heavy Shorts)", Color.LIME, yes);
+AddChartBubble(isLastBar, level5, "R1: 6880 (Bull Trigger)", Color.YELLOW, yes);
+AddChartBubble(isLastBar, level6, "S1: 6820.5 (Long Stop)", Color.RED, no);
+AddChartBubble(isLastBar, level7, "S2: 6765 (Low Vol)", Color.RED, no);
+AddChartBubble(isLastBar, level8, "S3: 6745 (High Vol)", Color.RED, no);
+AddChartBubble(isLastBar, level9, "S4: 6715 (Macro Shock)", Color.RED, no);
+AddChartBubble(isLastBar, level10, "S5: 6699±6 (Final)", Color.MAGENTA, no);
+
+# === ALERT SYSTEM ===
+
+# RESISTANCE Breakout Alerts
+Alert(enableAlerts and close crosses above level5, "ES ABOVE R1: 6880 - BULL TRIGGER!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level4, "ES ABOVE R2: 6911.5 - HEAVY SHORTS!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level3, "ES ABOVE R3: 6920.5 - SQUEEZE ZONE!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level2, "ES ABOVE R4: 6949.5 - SQUEEZE TARGET!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level1, "ES ABOVE R5: 6995 - NOV TARGET!", Alert.BAR, Sound.Ring);
+
+# CRITICAL: SUPPORT Break Alerts
+Alert(enableAlerts and close crosses below level6, "ES BELOW S1: 6820.5 - BEAR ACCELERATION!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level7, "ES BELOW S2: 6765 - LOW VOL DROP!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level8, "ES BELOW S3: 6745 - HIGH VOL DROP!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level9, "ES BELOW S4: 6715 - MACRO SHOCK!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level10, "ES BELOW S5: 6699 - FINAL STOP!", Alert.BAR, Sound.Bell);
+
+# Testing Key Levels
+Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "ES Testing R1: 6880 Bull Trigger", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level6 - alertSensitivity and close <= level6 + alertSensitivity, "ES Testing S1: 6820.5 Long Stop", Alert.BAR, Sound.Chimes);
+
+# Bounce/Rejection Alerts
+Alert(enableAlerts and low[1] <= level6 and close > level6 + 3, "ES BOUNCE from S1: 6820.5! Long Stop Held", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and high[1] >= level5 and close < level5 - 3, "ES REJECTION at R1: 6880 Bull Trigger", Alert.BAR, Sound.Bell);
+
+# Status Labels
+AddLabel(showLabels and enableAlerts, "Alerts ON", Color.GREEN);
+AddLabel(showLabels and !enableAlerts, "Alerts OFF", Color.RED);
+AddLabel(showLabels, "DZ: 6880-6820.5", Color.WHITE);
+AddLabel(showLabels, "Now: " + Round(close, 2), Color.YELLOW);
+
+# Market Structure with S/R Labels
+AddLabel(showLabels and close >= level5, "ABOVE R1 - BULL", Color.LIME);
+AddLabel(showLabels and close >= level6 and close < level5, "DZ - BATTLE", Color.YELLOW);
+AddLabel(showLabels and close < level6, "BELOW S1 - BEAR", Color.RED);
+
+# Trade Plan Status
+AddLabel(showLabels and close >= level5, "BULL: R2->R3->R4->R5", Color.LIME);
+AddLabel(showLabels and close >= level6 and close < level5, "BREAK R1 EARLY WK", Color.YELLOW);
+AddLabel(showLabels and close < level6, "BEAR: S2->S3->S4->S5", Color.RED);
+
+# Distance to Key Levels with S/R
+def distTo6880 = level5 - close;
+def distTo6911 = level4 - close;
+def distTo6920 = level3 - close;
+def distTo6949 = level2 - close;
+def distTo6995 = level1 - close;
+def distFrom6820 = close - level6;
+
+AddLabel(showLabels and close < level5, "->R1: " + Round(distTo6880, 1), Color.YELLOW);
+AddLabel(showLabels and close < level4, "->R2: " + Round(distTo6911, 1), Color.LIME);
+AddLabel(showLabels and close < level3, "->R3: " + Round(distTo6920, 1), Color.LIME);
+AddLabel(showLabels and close < level2, "->R4: " + Round(distTo6949, 1), Color.CYAN);
+AddLabel(showLabels and close < level1, "->R5: " + Round(distTo6995, 1), Color.MAGENTA);
+AddLabel(showLabels and close >= level6, "S1+: " + Round(distFrom6820, 1), Color.LIME);
+AddLabel(showLabels and close < level6, "S1-: " + Round(AbsValue(distFrom6820), 1), Color.RED);
+
+# Context with S/R Designation
+AddLabel(showLabels, "R: 6995-6949-6920-6911-6880", Color.LIME);
+AddLabel(showLabels, "S: 6820-6765-6745-6715-6699", Color.RED);
+AddLabel(showLabels, "Bull: Vol>R1->R5±", Color.LIME);
+AddLabel(showLabels, "Bear: FailR1->S5±6", Color.RED);
