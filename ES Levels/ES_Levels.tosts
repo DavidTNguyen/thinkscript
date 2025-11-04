@@ -1,31 +1,34 @@
-# === ES Levels: Monday Flag Structure ===
-# Updated: November 2, 2025 - Large Flag Formation
-# Support: 6841-38 (critical for bulls)
-# Resistance: 6924, 6944-48
-# Failed Breakdown: Thursday 6851 daily low held
-# Bulls need to hold 6869 Monday (or quickly trap below)
-# Target sequence: 6893, 6907, 6924, then 6944-48
-# If 6841-39 fails, we sell
+# === ES Levels: 6857 Failed Breakdown Watch ===
+# Updated: November 3, 2025
+# Failed breakdowns are of interest (bonus if hits 6865 first)
+# Flush cluster of lows at 2:20PM and 3:50PM - 6857 below
+# Core rule: No knife catching - if elevator down, don't touch
+# If 6857 fails, sell hard (nothing until 6837-41)
+# Wait for hold and recovery at 6865 to defend 6843 daily low
+# Support: 6865, 6857, 6843, 6837-41
+# Resistance: 6877 (reclaim), 6888, 6893, 6907
 
 # === RESISTANCE LEVELS ===
-input level1 = 6948; # R4 - Bulls need to clear for next leg
-input level1_thickness = 3;
-input level2 = 6944; # R3 - Flag resistance
-input level2_thickness = 3;
-input level3 = 6924; # R2 - Flag resistance
+input level1 = 6907; # R4 - Prior target
+input level1_thickness = 2;
+input level2 = 6893; # R3 - Resistance
+input level2_thickness = 2;
+input level3 = 6888; # R2 - Resistance
 input level3_thickness = 2;
-input level4 = 6907; # R1 - Target
+input level4 = 6877; # R1 - Must reclaim
 input level4_thickness = 2;
-input level5 = 6893; # First target
-input level5_thickness = 2;
 
 # === SUPPORT LEVELS ===
-input level6 = 6869; # S1 - Bulls need to hold Monday
-input level6_thickness = 2;
-input level7 = 6841; # S2 - Support zone high (critical)
-input level7_thickness = 3;
-input level8 = 6838; # S3 - Support zone low (critical)
-input level8_thickness = 3;
+input level5 = 6865; # S1 - Hold and recover (bonus if hits first)
+input level5_thickness = 3;
+input level6 = 6857; # S2 - CRITICAL: If fails, sell hard
+input level6_thickness = 3;
+input level7 = 6843; # S3 - Friday's daily low to defend
+input level7_thickness = 2;
+input level8 = 6841; # S4 - Support zone (high)
+input level8_thickness = 2;
+input level9 = 6837; # S5 - Support zone (low)
+input level9_thickness = 2;
 
 # Alert Settings
 input enableAlerts = yes;
@@ -37,129 +40,121 @@ input showLabels = yes;
 # Fixed bubble logic - show only on last bar
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
 
-# === RESISTANCE: Flag Top - Bulls Must Clear ===
+# === RESISTANCE: Reclaim Path ===
 plot L1 = level1;
 L1.SetDefaultColor(Color.MAGENTA);
 L1.SetLineWeight(level1_thickness);
 L1.SetStyle(Curve.FIRM);
 
 plot L2 = level2;
-L2.SetDefaultColor(Color.MAGENTA);
+L2.SetDefaultColor(Color.ORANGE);
 L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
 
-# === RESISTANCE: Targets ===
 plot L3 = level3;
-L3.SetDefaultColor(Color.ORANGE);
+L3.SetDefaultColor(Color.YELLOW);
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
 plot L4 = level4;
-L4.SetDefaultColor(Color.YELLOW);
+L4.SetDefaultColor(Color.LIME);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
+# === SUPPORT: Critical Failure Watch ===
 plot L5 = level5;
 L5.SetDefaultColor(Color.CYAN);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
 
-# === SUPPORT: Bull Defense Level ===
 plot L6 = level6;
-L6.SetDefaultColor(Color.LIME);
+L6.SetDefaultColor(Color.RED);
 L6.SetLineWeight(level6_thickness);
 L6.SetStyle(Curve.FIRM);
 
-# === SUPPORT: Critical Zone ===
 plot L7 = level7;
-L7.SetDefaultColor(Color.RED);
+L7.SetDefaultColor(Color.PINK);
 L7.SetLineWeight(level7_thickness);
 L7.SetStyle(Curve.FIRM);
 
 plot L8 = level8;
-L8.SetDefaultColor(Color.RED);
+L8.SetDefaultColor(Color.PINK);
 L8.SetLineWeight(level8_thickness);
 L8.SetStyle(Curve.FIRM);
 
-# === CRITICAL ZONE (S2-S3) ===
-AddCloud(level7, level8, Color.RED, Color.RED);
+plot L9 = level9;
+L9.SetDefaultColor(Color.PINK);
+L9.SetLineWeight(level9_thickness);
+L9.SetStyle(Curve.FIRM);
 
 # Chart bubbles - show only on last bar with S/R designation
-AddChartBubble(isLastBar, level1, "R4: 6948 (Next Leg)", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level2, "R3: 6944 (Flag Top)", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level3, "R2: 6924", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level4, "R1: 6907", Color.YELLOW, yes);
-AddChartBubble(isLastBar, level5, "R: 6893 (1st Target)", Color.CYAN, yes);
-AddChartBubble(isLastBar, level6, "S1: 6869 (Hold Monday)", Color.LIME, no);
-AddChartBubble(isLastBar, level7, "S2: 6841 (Critical Zone)", Color.RED, no);
-AddChartBubble(isLastBar, level8, "S3: 6838 (Critical Zone)", Color.RED, no);
+AddChartBubble(isLastBar, level1, "R4: 6907", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level2, "R3: 6893", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level3, "R2: 6888", Color.YELLOW, yes);
+AddChartBubble(isLastBar, level4, "R1: 6877", Color.LIME, yes);
+AddChartBubble(isLastBar, level5, "S1: 6865 (Hold/Recover)", Color.CYAN, no);
+AddChartBubble(isLastBar, level6, "S2: 6857 (FAIL=SELL)", Color.RED, no);
+AddChartBubble(isLastBar, level7, "S3: 6843 (Fri Low)", Color.PINK, no);
+AddChartBubble(isLastBar, level8, "S4: 6841", Color.PINK, no);
+AddChartBubble(isLastBar, level9, "S5: 6837", Color.PINK, no);
 
 # === ALERT SYSTEM ===
 
 # RESISTANCE Breakout Alerts
-Alert(enableAlerts and close crosses above level5, "ES ABOVE R: 6893 TARGET!", Alert.BAR, Sound.Ding);
-Alert(enableAlerts and close crosses above level4, "ES ABOVE R1: 6907 TARGET!", Alert.BAR, Sound.Ding);
-Alert(enableAlerts and close crosses above level3, "ES ABOVE R2: 6924 TARGET!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level2, "ES ABOVE R3: 6944 FLAG TOP!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level1, "ES ABOVE R4: 6948 - NEXT LEG UP!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level4, "ES ABOVE R1: 6877 - RECLAIMED!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level3, "ES ABOVE R2: 6888!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level2, "ES ABOVE R3: 6893!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level1, "ES ABOVE R4: 6907!", Alert.BAR, Sound.Ring);
 
 # CRITICAL: SUPPORT Break Alerts
-Alert(enableAlerts and close crosses below level6, "ES BELOW S1: 6869! Bulls Must Defend", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level7, "ES BELOW S2: 6841! CRITICAL ZONE - SELL SIGNAL", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level8, "ES BELOW S3: 6838! CRITICAL ZONE FAILED - EXIT", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level5, "ES BELOW S1: 6865 - WATCH 6857!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level6, "ES BELOW S2: 6857 - SELL HARD! NO KNIFE CATCHING!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level7, "ES BELOW S3: 6843 - FRIDAY LOW BROKEN!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level8, "ES BELOW S4: 6841!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level9, "ES BELOW S5: 6837!", Alert.BAR, Sound.Bell);
 
 # Testing Key Levels
-Alert(enableAlerts and close >= level3 - alertSensitivity and close <= level3 + alertSensitivity, "ES Testing R2: 6924", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level2 - alertSensitivity and close <= level2 + alertSensitivity, "ES Testing R3: 6944 Flag Top", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level6 - alertSensitivity and close <= level6 + alertSensitivity, "ES Testing S1: 6869 Defense", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level7 - alertSensitivity and close <= level7 + alertSensitivity, "ES Testing S2: 6841 Critical Zone", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "ES Testing S1: 6865 Hold/Recover", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level6 - alertSensitivity and close <= level6 + alertSensitivity, "ES Testing S2: 6857 CRITICAL - NO KNIFE CATCH", Alert.BAR, Sound.Chimes);
 
-# Bounce/Rejection Alerts
-Alert(enableAlerts and low[1] <= level6 and close > level6 + 3, "ES BOUNCE from S1: 6869! Bulls Defending", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and low[1] <= level7 and close > level7 + 3, "ES BOUNCE from S2-S3: Critical Zone! Support Holding", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and high[1] >= level2 and close < level2 - 3, "ES REJECTION at R3: 6944 Flag Top", Alert.BAR, Sound.Bell);
+# Bounce/Rejection Alerts - ONLY if holding 6857
+Alert(enableAlerts and low[1] <= level5 and close > level5 + 3 and low > level6, "ES BOUNCE from S1: 6865! (Held 6857)", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and low[1] <= level6 and close > level6 + 3, "ES BOUNCE from S2: 6857! Hold and Recover - Wait for Confirmation", Alert.BAR, Sound.Ring);
 
 # Status Labels
 AddLabel(showLabels and enableAlerts, "Alerts ON", Color.GREEN);
 AddLabel(showLabels and !enableAlerts, "Alerts OFF", Color.RED);
-AddLabel(showLabels, "Monday: Large Flag Structure", Color.WHITE);
-AddLabel(showLabels, "Current: " + Round(close, 2), Color.YELLOW);
+AddLabel(showLabels, "Failed BD Watch", Color.WHITE);
+AddLabel(showLabels, "Now: " + Round(close, 2), Color.YELLOW);
 
 # Market Structure with S/R Labels
-AddLabel(showLabels and close >= level2, "ABOVE R3 (6944) - NEXT LEG", Color.LIME);
-AddLabel(showLabels and close >= level5 and close < level2, "WORKING UP TO RESISTANCE", Color.CYAN);
-AddLabel(showLabels and close >= level6 and close < level5, "ABOVE S1 (6869) - HOLD MONDAY", Color.YELLOW);
-AddLabel(showLabels and close >= level7 and close < level6, "BELOW S1 - WATCH CRITICAL ZONE", Color.ORANGE);
-AddLabel(showLabels and close < level7, "IN CRITICAL ZONE - SELL SIGNAL", Color.RED);
+AddLabel(showLabels and close >= level4, "ABOVE R1 (6877) - RECLAIMED", Color.LIME);
+AddLabel(showLabels and close >= level5 and close < level4, "ABOVE S1 (6865) - OK", Color.CYAN);
+AddLabel(showLabels and close >= level6 and close < level5, "BELOW S1 - WATCH S2 (6857)", Color.ORANGE);
+AddLabel(showLabels and close < level6, "BELOW S2 (6857) - SOLD / WAIT 6837-41", Color.RED);
 
 # Trade Plan Status
-AddLabel(showLabels and close >= level5, "TARGET: R1-R2-R3-R4", Color.LIME);
-AddLabel(showLabels and close >= level6 and close < level5, "HOLD S1 (6869) -> TARGET R (6893)", Color.CYAN);
-AddLabel(showLabels and close >= level7 and close < level6, "WATCH CRITICAL ZONE (6841-38)", Color.ORANGE);
-AddLabel(showLabels and close < level7, "IN CRITICAL ZONE (6841-38) - SELL", Color.RED);
+AddLabel(showLabels and close >= level4, "RECLAIMED - TARGET UP", Color.LIME);
+AddLabel(showLabels and close >= level5 and close < level4, "HOLD 6865, WATCH 6857", Color.CYAN);
+AddLabel(showLabels and close >= level6 and close < level5, "NO KNIFE CATCH - WAIT 6865 HOLD", Color.ORANGE);
+AddLabel(showLabels and close < level6, "ELEVATOR DOWN - SOLD / WAIT 6837-41", Color.RED);
 
 # Distance to Key Levels with S/R
-def distTo6893 = level5 - close;
-def distTo6907 = level4 - close;
-def distTo6924 = level3 - close;
-def distTo6944 = level2 - close;
-def distTo6948 = level1 - close;
-def distFrom6869 = close - level6;
-def distFrom6841 = close - level7;
+def distTo6877 = level4 - close;
+def distFrom6865 = close - level5;
+def distFrom6857 = close - level6;
+def distFrom6843 = close - level7;
 
-AddLabel(showLabels and close < level5, "->R: " + Round(distTo6893, 1), Color.CYAN);
-AddLabel(showLabels and close < level4, "->R1: " + Round(distTo6907, 1), Color.YELLOW);
-AddLabel(showLabels and close < level3, "->R2: " + Round(distTo6924, 1), Color.ORANGE);
-AddLabel(showLabels and close < level2, "->R3: " + Round(distTo6944, 1), Color.MAGENTA);
-AddLabel(showLabels and close < level1, "->R4: " + Round(distTo6948, 1), Color.MAGENTA);
-AddLabel(showLabels and close >= level6, "S1+: " + Round(distFrom6869, 1), Color.LIME);
-AddLabel(showLabels and close >= level7, "S2+: " + Round(distFrom6841, 1), Color.RED);
-AddLabel(showLabels and close < level7, "CRITICAL: " + Round(AbsValue(distFrom6841), 1) + " SELL", Color.RED);
+AddLabel(showLabels and close < level4, "->R1: " + Round(distTo6877, 1), Color.LIME);
+AddLabel(showLabels and close >= level5, "S1+: " + Round(distFrom6865, 1), Color.CYAN);
+AddLabel(showLabels and close >= level6 and close < level5, "S2+: " + Round(distFrom6857, 1) + " WATCH", Color.ORANGE);
+AddLabel(showLabels and close < level6, "S2-: " + Round(AbsValue(distFrom6857), 1) + " SOLD", Color.RED);
 
 # Context with S/R Designation
-AddLabel(showLabels, "R: 6948-44-24-07-93", Color.MAGENTA);
-AddLabel(showLabels, "S1: 6869 | CRITICAL: 6841-38", Color.RED);
-AddLabel(showLabels, "Thu 6851 Held (FBD)", Color.CYAN);
-AddLabel(showLabels, "Hold S1 Mon", Color.LIME);
-AddLabel(showLabels, "Trap S1 OK", Color.YELLOW);
-AddLabel(showLabels, "Critical Fail = SELL", Color.RED);
+AddLabel(showLabels, "R: 6907-93-88-77", Color.MAGENTA);
+AddLabel(showLabels, "S: 6865-57-43-41-37", Color.CYAN);
+AddLabel(showLabels, "Core Rule: NO KNIFE CATCHING", Color.RED);
+AddLabel(showLabels, "If 6857 Fails -> SELL HARD", Color.RED);
+AddLabel(showLabels, "Wait 6865 Hold/Recover to Defend 6843", Color.CYAN);
+
+
