@@ -1,34 +1,34 @@
 //@version=5
-indicator("ES Levels: 6851/62 Backtest Complete", overlay=true, max_lines_count=500, max_labels_count=500)
+indicator("ES Levels: Bears Control After 6841 - Reclaim Overnight Low", overlay=true, max_lines_count=500, max_labels_count=500)
 
-// === ES Levels: 6851/62 Backtest Complete - 50pt Sell, Bounce ===
+// === ES Levels: Bears Control After 6841 Pop ===
 // Updated: November 6, 2025
-// 6798 reclaim was long trigger. Target was 6851/62 to backtest Monday's big breakdown.
-// Backtest completed, sold 50 points, bounced.
-// Plan: 6832, 6815 = 1st supports. Base above, then 6841, 6851, 6869 next targets.
-// Dip under 6815 to 6798.
+// After pop to 6841 (1st res), bears took over.
+// Yesterday: 6851 rally target (backtest Monday's breakdown). Hit & sold.
+// Bulls need above 6851 to regain macro control.
+// No change: Overnight low must reclaim to pop. 6782-85 next. 6766 below.
 
-// === RESISTANCE LEVELS (Next Targets) ===
-level1 = input.float(6869, "R4: Next extended target", group="Resistance")
+// === RESISTANCE LEVELS (Bull Recovery) ===
+level1 = input.float(6869, "R4: Extended target", group="Resistance")
 level1_thickness = input.int(2, "R4 Line Weight", minval=1, maxval=5, group="Resistance")
-level2 = input.float(6851, "R3: Backtest target", group="Resistance")
-level2_thickness = input.int(2, "R3 Line Weight", minval=1, maxval=5, group="Resistance")
-level3 = input.float(6841, "R2: Next target", group="Resistance")
+level2 = input.float(6851, "R3: MACRO CONTROL (Monday breakdown backtest)", group="Resistance")
+level2_thickness = input.int(3, "R3 Line Weight", minval=1, maxval=5, group="Resistance")
+level3 = input.float(6841, "R2: 1st res - Bears took over", group="Resistance")
 level3_thickness = input.int(2, "R2 Line Weight", minval=1, maxval=5, group="Resistance")
-level4 = input.float(6832, "R1: Immediate resistance", group="Resistance")
+level4 = input.float(6815, "R1: Reclaim for pop", group="Resistance")
 level4_thickness = input.int(2, "R1 Line Weight", minval=1, maxval=5, group="Resistance")
 
 // === SUPPORT LEVELS ===
-level5 = input.float(6815, "S1: 1st support", group="Support")
+level5 = input.float(6785, "S1: Next target (high)", group="Support")
 level5_thickness = input.int(3, "S1 Line Weight", minval=1, maxval=5, group="Support")
-level6 = input.float(6798, "S2: Key reclaim support", group="Support")
+level6 = input.float(6782, "S2: Next target (low)", group="Support")
 level6_thickness = input.int(3, "S2 Line Weight", minval=1, maxval=5, group="Support")
-level7 = input.float(6785, "S3: Support (high)", group="Support")
+level7 = input.float(6766, "S3: Below support", group="Support")
 level7_thickness = input.int(2, "S3 Line Weight", minval=1, maxval=5, group="Support")
-level8 = input.float(6782, "S4: Support (low)", group="Support")
-level8_thickness = input.int(2, "S4 Line Weight", minval=1, maxval=5, group="Support")
-level9 = input.float(6766, "S5: Newsletter entry", group="Support")
-level9_thickness = input.int(2, "S5 Line Weight", minval=1, maxval=5, group="Support")
+
+// Overnight Low
+overnightLow = input.float(6798, "Overnight Low: MUST RECLAIM", group="Key Levels")
+overnightLow_thickness = input.int(3, "Overnight Low Line Weight", minval=1, maxval=5, group="Key Levels")
 
 // Alert Settings
 enableAlerts = input.bool(true, "Enable Alerts", group="Alert Settings")
@@ -36,118 +36,150 @@ alertSensitivity = input.float(0.5, "Alert Sensitivity (pts)", minval=0.1, maxva
 
 // === Plot Resistance Levels ===
 plot(level1, "R4: 6869", color=color.new(color.fuchsia, 0), linewidth=level1_thickness, style=plot.style_line)
-plot(level2, "R3: 6851 (Backtest)", color=color.new(color.fuchsia, 0), linewidth=level2_thickness, style=plot.style_line)
-plot(level3, "R2: 6841", color=color.new(color.orange, 0), linewidth=level3_thickness, style=plot.style_line)
-plot(level4, "R1: 6832", color=color.new(color.aqua, 0), linewidth=level4_thickness, style=plot.style_line)
+plot(level2, "R3: 6851 (MACRO CONTROL)", color=color.new(color.red, 0), linewidth=level2_thickness, style=plot.style_line)
+plot(level3, "R2: 6841 (Bears Took Over)", color=color.new(color.orange, 0), linewidth=level3_thickness, style=plot.style_line)
+plot(level4, "R1: 6815", color=color.new(color.aqua, 0), linewidth=level4_thickness, style=plot.style_line)
+
+// === Plot Key Level - Overnight Low ===
+plot(overnightLow, "Overnight Low (MUST RECLAIM)", color=color.new(color.yellow, 0), linewidth=overnightLow_thickness, style=plot.style_cross)
 
 // === Plot Support Levels ===
-plot(level5, "S1: 6815", color=color.new(color.lime, 0), linewidth=level5_thickness, style=plot.style_line)
-plot(level6, "S2: 6798 (Reclaim)", color=color.new(color.yellow, 0), linewidth=level6_thickness, style=plot.style_line)
-plot(level7, "S3: 6785", color=color.new(color.lime, 0), linewidth=level7_thickness, style=plot.style_line)
-plot(level8, "S4: 6782", color=color.new(color.lime, 0), linewidth=level8_thickness, style=plot.style_line)
-plot(level9, "S5: 6766 (Newsletter)", color=color.new(color.green, 0), linewidth=level9_thickness, style=plot.style_line)
+plot(level5, "S1: 6785", color=color.new(color.lime, 0), linewidth=level5_thickness, style=plot.style_line)
+plot(level6, "S2: 6782", color=color.new(color.lime, 0), linewidth=level6_thickness, style=plot.style_line)
+plot(level7, "S3: 6766", color=color.new(color.green, 0), linewidth=level7_thickness, style=plot.style_line)
 
 // === Labels on Last Bar ===
 if barstate.islast
     label.new(bar_index, level1, "R4: 6869", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.fuchsia, 80), textcolor=color.fuchsia, style=label.style_label_left, size=size.small)
-    label.new(bar_index, level2, "R3: 6851 (Backtest)", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.fuchsia, 80), textcolor=color.fuchsia, style=label.style_label_left, size=size.small)
-    label.new(bar_index, level3, "R2: 6841", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.orange, 80), textcolor=color.orange, style=label.style_label_left, size=size.small)
-    label.new(bar_index, level4, "R1: 6832", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.aqua, 80), textcolor=color.aqua, style=label.style_label_left, size=size.small)
-    label.new(bar_index, level5, "S1: 6815 (Support)", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.lime, 80), textcolor=color.lime, style=label.style_label_right, size=size.small)
-    label.new(bar_index, level6, "S2: 6798 (Reclaim)", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.yellow, 80), textcolor=color.yellow, style=label.style_label_right, size=size.small)
-    label.new(bar_index, level7, "S3: 6785", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.lime, 80), textcolor=color.lime, style=label.style_label_right, size=size.small)
-    label.new(bar_index, level8, "S4: 6782", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.lime, 80), textcolor=color.lime, style=label.style_label_right, size=size.small)
-    label.new(bar_index, level9, "S5: 6766 (Newsletter)", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.green, 80), textcolor=color.green, style=label.style_label_right, size=size.small)
+    label.new(bar_index, level2, "R3: 6851 (MACRO)", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.red, 80), textcolor=color.red, style=label.style_label_left, size=size.small)
+    label.new(bar_index, level3, "R2: 6841 (Bears)", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.orange, 80), textcolor=color.orange, style=label.style_label_left, size=size.small)
+    label.new(bar_index, level4, "R1: 6815", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.aqua, 80), textcolor=color.aqua, style=label.style_label_left, size=size.small)
+    label.new(bar_index, overnightLow, "ON Low: RECLAIM", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.yellow, 80), textcolor=color.yellow, style=label.style_label_center, size=size.normal)
+    label.new(bar_index, level5, "S1: 6785", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.lime, 80), textcolor=color.lime, style=label.style_label_right, size=size.small)
+    label.new(bar_index, level6, "S2: 6782", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.lime, 80), textcolor=color.lime, style=label.style_label_right, size=size.small)
+    label.new(bar_index, level7, "S3: 6766", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.green, 80), textcolor=color.green, style=label.style_label_right, size=size.small)
 
 // === Alert Conditions ===
 // RESISTANCE Breakout Alerts
-alertcondition(ta.crossover(close, level4), "ES ABOVE R1: 6832", "ES ABOVE R1: 6832 - Next 6841+")
-alertcondition(ta.crossover(close, level3), "ES ABOVE R2: 6841", "ES ABOVE R2: 6841!")
-alertcondition(ta.crossover(close, level2), "ES ABOVE R3: 6851", "ES ABOVE R3: 6851!")
+alertcondition(ta.crossover(close, overnightLow), "ES RECLAIM Overnight Low", "ES RECLAIMED Overnight Low - Pop Setup!")
+alertcondition(ta.crossover(close, level4), "ES ABOVE R1: 6815", "ES ABOVE R1: 6815!")
+alertcondition(ta.crossover(close, level3), "ES ABOVE R2: 6841", "ES ABOVE R2: 6841 - Bulls Fighting Back!")
+alertcondition(ta.crossover(close, level2), "ES ABOVE R3: 6851 MACRO", "ES ABOVE R3: 6851 - BULLS REGAIN MACRO CONTROL!")
 alertcondition(ta.crossover(close, level1), "ES ABOVE R4: 6869", "ES ABOVE R4: 6869 - Extended Target!")
 
 // SUPPORT Break Alerts
-alertcondition(ta.crossunder(close, level5), "ES BELOW S1: 6815", "ES BELOW S1: 6815 - Watch 6798!")
-alertcondition(ta.crossunder(close, level6), "ES BELOW S2: 6798", "ES BELOW S2: 6798 - Key Support Lost!")
+alertcondition(ta.crossunder(close, overnightLow), "ES LOST Overnight Low", "ES LOST Overnight Low - Watch 6782-85!")
+alertcondition(ta.crossunder(close, level5), "ES BELOW S1: 6785", "ES BELOW S1: 6785 - Next 6782!")
+alertcondition(ta.crossunder(close, level6), "ES BELOW S2: 6782", "ES BELOW S2: 6782 - 6766 Below!")
+alertcondition(ta.crossunder(close, level7), "ES BELOW S3: 6766", "ES BELOW S3: 6766 - Support Lost!")
 
 // Testing Key Levels
-testingS1 = close >= level5 - alertSensitivity and close <= level5 + alertSensitivity
-testingR1 = close >= level4 - alertSensitivity and close <= level4 + alertSensitivity
+testingONLow = close >= overnightLow - alertSensitivity and close <= overnightLow + alertSensitivity
+testingR2 = close >= level3 - alertSensitivity and close <= level3 + alertSensitivity
+testingMacro = close >= level2 - alertSensitivity and close <= level2 + alertSensitivity
 
-alertcondition(testingS1, "ES Testing S1: 6815", "ES Testing S1: 6815 Support")
-alertcondition(testingR1, "ES Testing R1: 6832", "ES Testing R1: 6832 Resistance")
+alertcondition(testingONLow, "ES Testing Overnight Low", "ES Testing Overnight Low - Critical Reclaim Level")
+alertcondition(testingR2, "ES Testing R2: 6841", "ES Testing R2: 6841 - Where Bears Took Over")
+alertcondition(testingMacro, "ES Testing R3: 6851", "ES Testing R3: 6851 - MACRO CONTROL Level")
 
 // Bounce/Rejection Alerts
-bounceS1 = low[1] <= level5 and close > level5 + 3
-rejectR1 = high[1] >= level4 and close < level4 - 3
+bounceONLow = low[1] <= overnightLow and close > overnightLow + 3
+rejectR2 = high[1] >= level3 and close < level3 - 3
+rejectMacro = high[1] >= level2 and close < level2 - 3
 
-alertcondition(bounceS1, "ES BOUNCE from S1: 6815", "ES BOUNCE from S1: 6815! Continuation")
-alertcondition(rejectR1, "ES REJECTION at R1: 6832", "ES REJECTION at R1: 6832")
+alertcondition(bounceONLow, "ES BOUNCE from ON Low", "ES BOUNCE from Overnight Low! Pop Active")
+alertcondition(rejectR2, "ES REJECTION at R2: 6841", "ES REJECTION at R2: 6841 - Bears Still Control")
+alertcondition(rejectMacro, "ES REJECTION at R3: 6851", "ES REJECTION at R3: 6851 - Macro Control Denied")
 
 // === Market Structure Status Table ===
-var table statusTable = table.new(position.top_right, 2, 10, border_width=1)
+var table statusTable = table.new(position.top_right, 2, 12, border_width=1)
 
 if barstate.islast
-    table.cell(statusTable, 0, 0, "6851/62 BACKTEST COMPLETE", text_color=color.white, bgcolor=color.new(color.lime, 50))
-    table.cell(statusTable, 1, 0, "Sold 50pts, Bounce", text_color=color.yellow, bgcolor=color.new(color.lime, 50))
+    table.cell(statusTable, 0, 0, "BEARS CONTROL AFTER 6841", text_color=color.white, bgcolor=color.new(color.red, 50))
+    table.cell(statusTable, 1, 0, "Hit 6851 & Sold", text_color=color.yellow, bgcolor=color.new(color.red, 50))
     
     table.cell(statusTable, 0, 1, "Now", text_color=color.white, bgcolor=color.new(color.gray, 50))
     table.cell(statusTable, 1, 1, str.tostring(close, "#.00"), text_color=color.aqua, bgcolor=color.new(color.gray, 50))
     
     // Market Structure
-    structure = close >= level3 ? "ABOVE R2 (6841) - EXTENDED!" : close >= level4 ? "AT 6832 - NEXT 6841-51-69" : close >= level5 ? "BASE ABOVE 6815 - READY FOR UPSIDE" : "DIP ZONE - WATCH 6798"
-    structureColor = close >= level3 ? color.lime : close >= level4 ? color.aqua : close >= level5 ? color.yellow : color.red
+    structure = close >= level2 ? "ABOVE 6851 - BULLS MACRO CONTROL!" : close >= level3 ? "ABOVE 6841 - BULLS FIGHTING" : close >= overnightLow ? "ABOVE ON LOW - POP SETUP" : close >= level5 ? "BELOW ON LOW - NEXT 6782-85" : "BELOW 6785 - WATCH 6766"
+    structureColor = close >= level2 ? color.lime : close >= level3 ? color.aqua : close >= overnightLow ? color.yellow : close >= level5 ? color.orange : color.red
     
     table.cell(statusTable, 0, 2, "Structure", text_color=color.white, bgcolor=color.new(color.gray, 50))
     table.cell(statusTable, 1, 2, structure, text_color=structureColor, bgcolor=color.new(color.gray, 50))
     
-    // Trade Plan
-    tradePlan = close >= level4 ? "TARGETS: 6841-6851-6869" : close >= level5 ? "SUPPORT: 6815/6798" : "DIP TO 6798"
-    planColor = close >= level4 ? color.lime : close >= level5 ? color.yellow : color.red
+    // Control Status
+    control = close >= level2 ? "BULLS MACRO" : "BEARS CONTROL"
+    controlColor = close >= level2 ? color.lime : color.red
     
-    table.cell(statusTable, 0, 3, "Trade Plan", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 3, tradePlan, text_color=planColor, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 0, 3, "Control", text_color=color.white, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 3, control, text_color=controlColor, bgcolor=color.new(color.gray, 50))
+    
+    // Trade Plan
+    tradePlan = close >= level2 ? "MACRO RECLAIMED - 6869+" : close >= overnightLow ? "RECLAIM: TARGET 6815-41-51" : "MUST RECLAIM ON LOW"
+    planColor = close >= level2 ? color.lime : close >= overnightLow ? color.yellow : color.red
+    
+    table.cell(statusTable, 0, 4, "Trade Plan", text_color=color.white, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 4, tradePlan, text_color=planColor, bgcolor=color.new(color.gray, 50))
     
     // Distance to Key Levels
-    distTo6832 = level4 - close
+    distToONLow = overnightLow - close
+    distTo6815 = level4 - close
     distTo6841 = level3 - close
     distTo6851 = level2 - close
     distTo6869 = level1 - close
-    distFrom6815 = close - level5
-    distFrom6798 = close - level6
+    distFrom6785 = close - level5
+    distFrom6782 = close - level6
+    distFrom6766 = close - level7
+    
+    rowNum = 5
+    
+    if close < overnightLow
+        table.cell(statusTable, 0, rowNum, "->ON Low", text_color=color.white, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 1, rowNum, str.tostring(distToONLow, "#.0") + " pts", text_color=color.yellow, bgcolor=color.new(color.gray, 50))
+        rowNum += 1
     
     if close < level4
-        table.cell(statusTable, 0, 4, "->R1", text_color=color.white, bgcolor=color.new(color.gray, 50))
-        table.cell(statusTable, 1, 4, str.tostring(distTo6832, "#.0") + " pts", text_color=color.aqua, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 0, rowNum, "->R1", text_color=color.white, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 1, rowNum, str.tostring(distTo6815, "#.0") + " pts", text_color=color.aqua, bgcolor=color.new(color.gray, 50))
+        rowNum += 1
     
     if close < level3
-        table.cell(statusTable, 0, 5, "->R2", text_color=color.white, bgcolor=color.new(color.gray, 50))
-        table.cell(statusTable, 1, 5, str.tostring(distTo6841, "#.0") + " pts", text_color=color.orange, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 0, rowNum, "->R2 (Bears)", text_color=color.white, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 1, rowNum, str.tostring(distTo6841, "#.0") + " pts", text_color=color.orange, bgcolor=color.new(color.gray, 50))
+        rowNum += 1
     
     if close < level2
-        table.cell(statusTable, 0, 6, "->R3", text_color=color.white, bgcolor=color.new(color.gray, 50))
-        table.cell(statusTable, 1, 6, str.tostring(distTo6851, "#.0") + " pts", text_color=color.fuchsia, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 0, rowNum, "->R3 (MACRO)", text_color=color.white, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 1, rowNum, str.tostring(distTo6851, "#.0") + " pts", text_color=color.red, bgcolor=color.new(color.gray, 50))
+        rowNum += 1
     
     if close < level1
-        table.cell(statusTable, 0, 7, "->R4", text_color=color.white, bgcolor=color.new(color.gray, 50))
-        table.cell(statusTable, 1, 7, str.tostring(distTo6869, "#.0") + " pts", text_color=color.fuchsia, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 0, rowNum, "->R4", text_color=color.white, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 1, rowNum, str.tostring(distTo6869, "#.0") + " pts", text_color=color.fuchsia, bgcolor=color.new(color.gray, 50))
+        rowNum += 1
     
     if close >= level5
-        table.cell(statusTable, 0, 8, "S1+", text_color=color.white, bgcolor=color.new(color.gray, 50))
-        table.cell(statusTable, 1, 8, "+" + str.tostring(distFrom6815, "#.0") + " pts", text_color=color.lime, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 0, rowNum, "S1+", text_color=color.white, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 1, rowNum, "+" + str.tostring(distFrom6785, "#.0") + " pts", text_color=color.lime, bgcolor=color.new(color.gray, 50))
+        rowNum += 1
     
     if close >= level6
-        table.cell(statusTable, 0, 9, "S2+", text_color=color.white, bgcolor=color.new(color.gray, 50))
-        table.cell(statusTable, 1, 9, "+" + str.tostring(distFrom6798, "#.0") + " pts", text_color=color.yellow, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 0, rowNum, "S2+", text_color=color.white, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 1, rowNum, "+" + str.tostring(distFrom6782, "#.0") + " pts", text_color=color.lime, bgcolor=color.new(color.gray, 50))
+        rowNum += 1
     
     // Context
     table.cell(statusTable, 0, 10, "R:", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 10, "6869-6851-6841-6832", text_color=color.fuchsia, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 10, "6869-6851-6841-6815", text_color=color.fuchsia, bgcolor=color.new(color.gray, 50))
     
     table.cell(statusTable, 0, 11, "S:", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 11, "6815-6798-85-82-66", text_color=color.lime, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 11, "6785-6782-6766", text_color=color.lime, bgcolor=color.new(color.gray, 50))
+    
+    table.cell(statusTable, 0, 12, "Key:", text_color=color.white, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 12, "6851=Macro, ON Low=Pop", text_color=color.yellow, bgcolor=color.new(color.gray, 50))
 
 // Background color based on structure
-bgColor = close >= level3 ? color.new(color.lime, 95) : close >= level4 ? color.new(color.aqua, 95) : close >= level5 ? color.new(color.yellow, 95) : color.new(color.red, 95)
+bgColor = close >= level2 ? color.new(color.lime, 95) : close >= level3 ? color.new(color.aqua, 95) : close >= overnightLow ? color.new(color.yellow, 95) : close >= level5 ? color.new(color.orange, 95) : color.new(color.red, 95)
 
 bgcolor(bgColor, title="Structure Background")
