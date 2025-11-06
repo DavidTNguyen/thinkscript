@@ -1,33 +1,31 @@
-# === ES Levels: 6862 Reached - Up 96pts from 6766 Reclaim ===
-# Updated: November 5, 2025
-# 6766 reclaim long (newsletter) -> +96 points to 6862!
-# 6798 support below (was resistance)
-# Targets hit: 6807 ✓, 6815-18 ✓, 6830 ✓, 6838 ✓, 6851 ✓, 6862 ✓ (all targets hit)
-# Plan: Watch for 6851/6862 resistance, 6798 support
+# === ES Levels: 6851/62 Backtest Complete - 50pt Sell, Bounce ===
+# Updated: November 6, 2025
+# 6798 reclaim was long trigger. Target was 6851/62 to backtest Monday's big breakdown.
+# Backtest completed, sold 50 points, bounced.
+# Plan: 6832, 6815 = 1st supports. Base above, then 6841, 6851, 6869 next targets.
+# Dip under 6815 to 6798.
 
-# === RESISTANCE LEVELS (All Targets Hit) ===
-input level1 = 6862; # R5 - Extended target (high)
+# === RESISTANCE LEVELS (Next Targets) ===
+input level1 = 6869; # R4 - Next extended target
 input level1_thickness = 2;
-input level2 = 6851; # R4 - Extended target
+input level2 = 6851; # R3 - Backtest target
 input level2_thickness = 2;
-input level3 = 6838; # R3 - Target
+input level3 = 6841; # R2 - Next target
 input level3_thickness = 2;
-input level4 = 6830; # R2 - Target
+input level4 = 6832; # R1 - Immediate resistance
 input level4_thickness = 2;
-input level5 = 6815; # R1 - 6798 support retest
-input level5_thickness = 2;
 
-# === SUPPORT LEVELS (Reclaim Zones) ===
-input level6 = 6798; # S1 - 8am public entry
+# === SUPPORT LEVELS ===
+input level5 = 6815; # S1 - 1st support
+input level5_thickness = 3;
+input level6 = 6798; # S2 - Key reclaim support
 input level6_thickness = 3;
-input level7 = 6785; # S2 - Support (high)
+input level7 = 6785; # S3 - Support (high)
 input level7_thickness = 2;
-input level8 = 6782; # S3 - Support (low)
+input level8 = 6782; # S4 - Support (low)
 input level8_thickness = 2;
-input level9 = 6766; # S4 - Newsletter entry (+96pts from here)
-input level9_thickness = 3;
-input level10 = 6750; # S5 - Extended support zone
-input level10_thickness = 2;
+input level9 = 6766; # S5 - Newsletter entry
+input level9_thickness = 2;
 
 # Alert Settings
 input enableAlerts = yes;
@@ -39,7 +37,7 @@ input showLabels = yes;
 # Fixed bubble logic - show only on last bar
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
 
-# === RESISTANCE: All Targets Hit ===
+# === RESISTANCE: Next Targets ===
 plot L1 = level1;
 L1.SetDefaultColor(Color.MAGENTA);
 L1.SetLineWeight(level1_thickness);
@@ -56,18 +54,18 @@ L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
 plot L4 = level4;
-L4.SetDefaultColor(Color.ORANGE);
+L4.SetDefaultColor(Color.CYAN);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
+# === SUPPORT: Key Zones ===
 plot L5 = level5;
-L5.SetDefaultColor(Color.CYAN);
+L5.SetDefaultColor(Color.LIME);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
 
-# === SUPPORT: Reclaim Zones ===
 plot L6 = level6;
-L6.SetDefaultColor(Color.LIME);
+L6.SetDefaultColor(Color.YELLOW);
 L6.SetLineWeight(level6_thickness);
 L6.SetStyle(Curve.FIRM);
 
@@ -82,95 +80,78 @@ L8.SetLineWeight(level8_thickness);
 L8.SetStyle(Curve.FIRM);
 
 plot L9 = level9;
-L9.SetDefaultColor(Color.YELLOW);
+L9.SetDefaultColor(Color.GREEN);
 L9.SetLineWeight(level9_thickness);
 L9.SetStyle(Curve.FIRM);
 
-plot L10 = level10;
-L10.SetDefaultColor(Color.GREEN);
-L10.SetLineWeight(level10_thickness);
-L10.SetStyle(Curve.FIRM);
-
 # Chart bubbles - show only on last bar with S/R designation
-AddChartBubble(isLastBar, level1, "R5: 6862", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level2, "R4: 6851", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level3, "R3: 6838", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level4, "R2: 6830", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level5, "R1: 6815", Color.CYAN, yes);
-AddChartBubble(isLastBar, level6, "S1: 6798 (8am Entry)", Color.LIME, no);
-AddChartBubble(isLastBar, level7, "S2: 6785", Color.LIME, no);
-AddChartBubble(isLastBar, level8, "S3: 6782", Color.LIME, no);
-AddChartBubble(isLastBar, level9, "S4: 6766 (Newsletter +96pts)", Color.YELLOW, no);
-AddChartBubble(isLastBar, level10, "S5: 6750 (Support Zone)", Color.GREEN, no);
+AddChartBubble(isLastBar, level1, "R4: 6869", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level2, "R3: 6851 (Backtest)", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level3, "R2: 6841", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level4, "R1: 6832", Color.CYAN, yes);
+AddChartBubble(isLastBar, level5, "S1: 6815 (Support)", Color.LIME, no);
+AddChartBubble(isLastBar, level6, "S2: 6798 (Reclaim)", Color.YELLOW, no);
+AddChartBubble(isLastBar, level7, "S3: 6785", Color.LIME, no);
+AddChartBubble(isLastBar, level8, "S4: 6782", Color.LIME, no);
+AddChartBubble(isLastBar, level9, "S5: 6766 (Newsletter)", Color.GREEN, no);
 
 # === ALERT SYSTEM ===
 
 # RESISTANCE Breakout Alerts
-Alert(enableAlerts and close crosses above level5, "ES ABOVE R1: 6815 - 6798 Support Retest", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level4, "ES ABOVE R2: 6830!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level3, "ES ABOVE R3: 6838!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level2, "ES ABOVE R4: 6851!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level1, "ES ABOVE R5: 6862 - Extended Target!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level4, "ES ABOVE R1: 6832 - Next 6841+", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level3, "ES ABOVE R2: 6841!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level2, "ES ABOVE R3: 6851!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level1, "ES ABOVE R4: 6869 - Extended Target!", Alert.BAR, Sound.Ring);
 
-# CRITICAL: SUPPORT Break Alerts
-Alert(enableAlerts and close crosses below level5, "ES BELOW R1: 6815 - Support Lost!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level8, "ES BELOW S3: 6782 - Support Lost!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level9, "ES BELOW S4: 6766 - Newsletter Entry Lost!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level10, "ES BELOW S5: 6750 - Extended Support Lost!", Alert.BAR, Sound.Bell);
+# SUPPORT Break Alerts
+Alert(enableAlerts and close crosses below level5, "ES BELOW S1: 6815 - Watch 6798!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level6, "ES BELOW S2: 6798 - Key Support Lost!", Alert.BAR, Sound.Bell);
 
 # Testing Key Levels
-Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "ES Testing R1: 6815 Support/Resistance", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level4 - alertSensitivity and close <= level4 + alertSensitivity, "ES Testing R2: 6830 Next Target", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "ES Testing S1: 6815 Support", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level4 - alertSensitivity and close <= level4 + alertSensitivity, "ES Testing R1: 6832 Resistance", Alert.BAR, Sound.Chimes);
 
 # Bounce/Rejection Alerts
-Alert(enableAlerts and low[1] <= level5 and close > level5 + 3, "ES BOUNCE from R1: 6815! Continuation", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and high[1] >= level4 and close < level4 - 3, "ES REJECTION at R2: 6830", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and low[1] <= level5 and close > level5 + 3, "ES BOUNCE from S1: 6815! Continuation", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and high[1] >= level4 and close < level4 - 3, "ES REJECTION at R1: 6832", Alert.BAR, Sound.Bell);
 
 # Status Labels
 AddLabel(showLabels and enableAlerts, "Alerts ON", Color.GREEN);
 AddLabel(showLabels and !enableAlerts, "Alerts OFF", Color.RED);
-AddLabel(showLabels, "6862 REACHED - ALL TARGETS HIT", Color.LIME);
-AddLabel(showLabels, "Now: " + Round(close, 2), Color.YELLOW);
+AddLabel(showLabels, "6851/62 BACKTEST COMPLETE", Color.LIME);
+AddLabel(showLabels, "Sold 50pts, Bounce", Color.YELLOW);
+AddLabel(showLabels, "Now: " + Round(close, 2), Color.CYAN);
 
 # Market Structure with S/R Labels
-AddLabel(showLabels and close >= level4, "ABOVE R2 (6830) - EXTENDED!", Color.LIME);
-AddLabel(showLabels and close >= level5 and close < level4, "AT 6815 - NEXT 6830-38", Color.CYAN);
-AddLabel(showLabels and close >= level8 and close < level5, "PULLBACK TO 6782-6815", Color.YELLOW);
-AddLabel(showLabels and close < level8, "BELOW 6782 - WATCH 6798", Color.ORANGE);
+AddLabel(showLabels and close >= level3, "ABOVE R2 (6841) - EXTENDED!", Color.LIME);
+AddLabel(showLabels and close >= level4 and close < level3, "AT 6832 - NEXT 6841-51-69", Color.CYAN);
+AddLabel(showLabels and close >= level5 and close < level4, "BASE ABOVE 6815 - READY FOR UPSIDE", Color.YELLOW);
+AddLabel(showLabels and close < level5, "DIP ZONE - WATCH 6798", Color.RED);
 
 # Trade Plan Status
-AddLabel(showLabels and close >= level5, "TARGETS: R2->R5 (6830-38-51)", Color.LIME);
-AddLabel(showLabels and close >= level8 and close < level5, "HOLD 6815 - RESUME TO 6830+", Color.CYAN);
-AddLabel(showLabels and close >= level9 and close < level8, "PULLBACK - HOLD 6798", Color.YELLOW);
-AddLabel(showLabels and close < level9, "BELOW 6798 - WATCH 6766", Color.ORANGE);
+AddLabel(showLabels and close >= level4, "TARGETS: 6841-6851-6869", Color.LIME);
+AddLabel(showLabels and close >= level5 and close < level4, "SUPPORT: 6815/6798", Color.YELLOW);
+AddLabel(showLabels and close < level5, "DIP TO 6798", Color.RED);
 
 # Distance to Key Levels with S/R
-def distTo6815 = level5 - close;
-def distTo6830 = level4 - close;
-def distTo6838 = level3 - close;
+def distTo6832 = level4 - close;
+def distTo6841 = level3 - close;
 def distTo6851 = level2 - close;
-def distTo6862 = level1 - close;
+def distTo6869 = level1 - close;
 def distFrom6815 = close - level5;
-def distFrom6782 = close - level8;
-def distFrom6798 = close - level9;
-def distFrom6766 = close - level10;
+def distFrom6798 = close - level6;
 
-AddLabel(showLabels and close < level5, "->R1: " + Round(distTo6815, 1), Color.CYAN);
-AddLabel(showLabels and close < level4, "->R2: " + Round(distTo6830, 1), Color.ORANGE);
-AddLabel(showLabels and close < level3, "->R3: " + Round(distTo6838, 1), Color.ORANGE);
-AddLabel(showLabels and close < level2, "->R4: " + Round(distTo6851, 1), Color.MAGENTA);
-AddLabel(showLabels and close < level1, "->R5: " + Round(distTo6862, 1), Color.MAGENTA);
-AddLabel(showLabels and close >= level5, "R1+: " + Round(distFrom6815, 1), Color.CYAN);
-AddLabel(showLabels and close >= level9, "From 6766: +" + Round(distFrom6766, 1), Color.GREEN);
-AddLabel(showLabels and close < level5, "R1-: " + Round(AbsValue(distTo6815), 1), Color.RED);
+AddLabel(showLabels and close < level4, "->R1: " + Round(distTo6832, 1), Color.CYAN);
+AddLabel(showLabels and close < level3, "->R2: " + Round(distTo6841, 1), Color.ORANGE);
+AddLabel(showLabels and close < level2, "->R3: " + Round(distTo6851, 1), Color.MAGENTA);
+AddLabel(showLabels and close < level1, "->R4: " + Round(distTo6869, 1), Color.MAGENTA);
+AddLabel(showLabels and close >= level5, "S1+: " + Round(distFrom6815, 1), Color.LIME);
+AddLabel(showLabels and close >= level6, "S2+: " + Round(distFrom6798, 1), Color.YELLOW);
 
 # Context with S/R Designation
-AddLabel(showLabels, "R: 6862-51-38-30(hit)", Color.MAGENTA);
-AddLabel(showLabels, "S: 6798-82-66(dip)", Color.LIME);
-AddLabel(showLabels, "6766 Newsletter Entry: +96pts", Color.GREEN);
-AddLabel(showLabels, "6798 8am Public Entry", Color.YELLOW);
-AddLabel(showLabels, "All Targets Hit: 6807✓ 6815-18✓ 6830✓ 6838✓ 6851✓ 6862✓", Color.LIME);
-AddLabel(showLabels, "6862 = Extended Resistance", Color.RED);
-AddLabel(showLabels, "Short Squeeze Perfectly Executed", Color.LIME);
+AddLabel(showLabels, "R: 6869-6851-6841-6832", Color.MAGENTA);
+AddLabel(showLabels, "S: 6815-6798-85-82-66", Color.LIME);
+AddLabel(showLabels, "Backtest Complete: 6851/62", Color.LIME);
+AddLabel(showLabels, "Base Above 6815/6832 for Upside", Color.CYAN);
 
 
