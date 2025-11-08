@@ -1,34 +1,37 @@
-# === SPX Levels: Current Trade Levels ===
-# Updated: November 2, 2025
-# Current ES: ~6880
-# Bull trigger: 6880 - must break early week
-# Decision Zone: 6880 ↔ 6820.5
-# Path Up: 6880 → 6911.5 → 6920.5 → 6949.5 → 6995 ±
-# Path Down: 6820.5 → 6765 → 6745 → 6715 → 6699 ± 6
+# === SPX Levels: Bear Star Structure ===
+# Updated: November 7, 2025
+# Major Bear Star at 6881.9 - bull break trigger
+# Current close: ~6728
+# Resistance: 6915, 6881.9 (bull trigger), 6819 (fade), 6765 (range scalp)
+# Short bias trigger: 6717
+# Critical support: 6635 (panic trigger)
+# Downside: 6599 (continuation), 6555 (liquidation), 6480 (free fall)
 
-# === RESISTANCE LEVELS (Bull Path) ===
-input level1 = 6995; # R5 - Seasonal Nov Exp Target
-input level1_thickness = 3;
-input level2 = 6949.5; # R4 - Target after squeeze
-input level2_thickness = 2;
-input level3 = 6920.5; # R3 - Short stop, squeeze zone
+# === RESISTANCE LEVELS ===
+input level1 = 6915; # R2 - Resistance
+input level1_thickness = 4;
+input level2 = 6881.9; # R1 - Major Bull Trigger (Bear Star)
+input level2_thickness = 4;
+input level3 = 6819; # Short-term fade zone
 input level3_thickness = 2;
-input level4 = 6911.5; # R2 - Heavy short position
+input level4 = 6765; # Range scalp level
 input level4_thickness = 2;
-input level5 = 6880; # R1 - Bull trigger (must break early week)
-input level5_thickness = 3;
 
-# === SUPPORT LEVELS (Bear Path) ===
-input level6 = 6820.5; # S1 - Decision Zone low / Long stop (bear acceleration)
-input level6_thickness = 3;
-input level7 = 6765; # S2 - Low-volume drop target
+# === CURRENT LEVEL ===
+input currentLevel = 6728; # Current close marker
+input currentLevel_thickness = 2;
+
+# === SUPPORT LEVELS ===
+input level5 = 6717; # S1 - Short Bias Trigger
+input level5_thickness = 2;
+input level6 = 6635; # S2 - Critical Support (Panic Trigger)
+input level6_thickness = 4;
+input level7 = 6599; # S3 - Downside continuation
 input level7_thickness = 2;
-input level8 = 6745; # S3 - High-volume drop target
+input level8 = 6555; # S4 - Liquidation Zone
 input level8_thickness = 2;
-input level9 = 6715; # S4 - Extreme macro shock zone
-input level9_thickness = 2;
-input level10 = 6699; # S5 - Final defensive long stop (± 6)
-input level10_thickness = 3;
+input level9 = 6480; # S5 - Free Fall
+input level9_thickness = 4;
 
 # Alert Settings
 input enableAlerts = yes;
@@ -40,33 +43,39 @@ input showLabels = yes;
 # Fixed bubble logic - show only on last bar
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
 
-# === RESISTANCE: Bull Path ===
+# === RESISTANCE ===
 plot L1 = level1;
-L1.SetDefaultColor(Color.MAGENTA);
+L1.SetDefaultColor(Color.GREEN);
 L1.SetLineWeight(level1_thickness);
 L1.SetStyle(Curve.FIRM);
 
 plot L2 = level2;
-L2.SetDefaultColor(Color.CYAN);
+L2.SetDefaultColor(Color.GREEN);
 L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
 
 plot L3 = level3;
-L3.SetDefaultColor(Color.LIME);
+L3.SetDefaultColor(Color.YELLOW);
 L3.SetLineWeight(level3_thickness);
-L3.SetStyle(Curve.FIRM);
+L3.SetStyle(Curve.SHORT_DASH);
 
 plot L4 = level4;
-L4.SetDefaultColor(Color.LIME);
+L4.SetDefaultColor(Color.YELLOW);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
+# === CURRENT LEVEL ===
+plot Current = currentLevel;
+Current.SetDefaultColor(Color.WHITE);
+Current.SetLineWeight(currentLevel_thickness);
+Current.SetStyle(Curve.FIRM);
+
+# === SUPPORT ===
 plot L5 = level5;
-L5.SetDefaultColor(Color.YELLOW);
+L5.SetDefaultColor(Color.ORANGE);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
 
-# === SUPPORT: Bear Path ===
 plot L6 = level6;
 L6.SetDefaultColor(Color.RED);
 L6.SetLineWeight(level6_thickness);
@@ -80,91 +89,114 @@ L7.SetStyle(Curve.FIRM);
 plot L8 = level8;
 L8.SetDefaultColor(Color.RED);
 L8.SetLineWeight(level8_thickness);
-L8.SetStyle(Curve.FIRM);
+L8.SetStyle(Curve.SHORT_DASH);
 
 plot L9 = level9;
-L9.SetDefaultColor(Color.RED);
+L9.SetDefaultColor(Color.DARK_RED);
 L9.SetLineWeight(level9_thickness);
 L9.SetStyle(Curve.FIRM);
 
-plot L10 = level10;
-L10.SetDefaultColor(Color.MAGENTA);
-L10.SetLineWeight(level10_thickness);
-L10.SetStyle(Curve.FIRM);
-
-# === DECISION ZONE (6880-6820.5) ===
-AddCloud(level5, level6, Color.YELLOW, Color.YELLOW);
-
-# Chart bubbles - show only on last bar with S/R designation
-AddChartBubble(isLastBar, level1, "R5: 6995 (Nov Target)", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level2, "R4: 6949.5 (Squeeze)", Color.CYAN, yes);
-AddChartBubble(isLastBar, level3, "R3: 6920.5 (Squeeze Zone)", Color.LIME, yes);
-AddChartBubble(isLastBar, level4, "R2: 6911.5 (Heavy Shorts)", Color.LIME, yes);
-AddChartBubble(isLastBar, level5, "R1: 6880 (Bull Trigger)", Color.YELLOW, yes);
-AddChartBubble(isLastBar, level6, "S1: 6820.5 (Long Stop)", Color.RED, no);
-AddChartBubble(isLastBar, level7, "S2: 6765 (Low Vol)", Color.RED, no);
-AddChartBubble(isLastBar, level8, "S3: 6745 (High Vol)", Color.RED, no);
-AddChartBubble(isLastBar, level9, "S4: 6715 (Macro Shock)", Color.RED, no);
-AddChartBubble(isLastBar, level10, "S5: 6699±6 (Final)", Color.MAGENTA, no);
+# Chart bubbles - show only on last bar with labels
+AddChartBubble(isLastBar, level1, "R2: 6915", Color.GREEN, yes);
+AddChartBubble(isLastBar, level2, "🚩 R1: 6881.9 - Major Bear Star/Bull Break Trigger", Color.GREEN, yes);
+AddChartBubble(isLastBar, level3, "6819 - Short-term fade zone", Color.YELLOW, yes);
+AddChartBubble(isLastBar, level4, "6765 - Range scalp level", Color.YELLOW, yes);
+AddChartBubble(isLastBar, currentLevel, "6728 - Current Close", Color.WHITE, yes);
+AddChartBubble(isLastBar, level5, "📉 S1: 6717 - Short Bias Trigger", Color.ORANGE, no);
+AddChartBubble(isLastBar, level6, "🚨 S2: 6635 - Critical Support/Panic Trigger", Color.RED, no);
+AddChartBubble(isLastBar, level7, "S3: 6599 - Downside continuation", Color.RED, no);
+AddChartBubble(isLastBar, level8, "💥 S4: 6555 - Liquidation Zone", Color.RED, no);
+AddChartBubble(isLastBar, level9, "💣 S5: 6480 - Free Fall", Color.DARK_RED, no);
 
 # === ALERT SYSTEM ===
 
 # RESISTANCE Breakout Alerts
-Alert(enableAlerts and close crosses above level5, "ES ABOVE R1: 6880 - BULL TRIGGER!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level4, "ES ABOVE R2: 6911.5 - HEAVY SHORTS!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level3, "ES ABOVE R3: 6920.5 - SQUEEZE ZONE!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level2, "ES ABOVE R4: 6949.5 - SQUEEZE TARGET!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level1, "ES ABOVE R5: 6995 - NOV TARGET!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level2, "SPX ABOVE 6881.9 - 🚩 MAJOR BULL BREAK! BEAR STAR BROKEN!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level1, "SPX ABOVE R2: 6915!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level3, "SPX ABOVE 6819 - Fade Zone", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level4, "SPX ABOVE 6765 - Range Scalp Level", Alert.BAR, Sound.Ring);
 
 # CRITICAL: SUPPORT Break Alerts
-Alert(enableAlerts and close crosses below level6, "ES BELOW S1: 6820.5 - BEAR ACCELERATION!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level7, "ES BELOW S2: 6765 - LOW VOL DROP!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level8, "ES BELOW S3: 6745 - HIGH VOL DROP!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level9, "ES BELOW S4: 6715 - MACRO SHOCK!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level10, "ES BELOW S5: 6699 - FINAL STOP!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below currentLevel, "SPX BELOW 6728 - Current Level Break", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level5, "SPX BELOW 6717 - 📉 SHORT BIAS TRIGGER!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level6, "SPX BELOW 6635 - 🚨 CRITICAL SUPPORT! PANIC TRIGGER!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level7, "SPX BELOW 6599 - DOWNSIDE CONTINUATION!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level8, "SPX BELOW 6555 - 💥 LIQUIDATION ZONE!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level9, "SPX BELOW 6480 - 💣 FREE FALL!", Alert.BAR, Sound.Bell);
 
 # Testing Key Levels
-Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "ES Testing R1: 6880 Bull Trigger", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level6 - alertSensitivity and close <= level6 + alertSensitivity, "ES Testing S1: 6820.5 Long Stop", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level2 - alertSensitivity and close <= level2 + alertSensitivity, "SPX Testing 6881.9 - Bear Star/Bull Trigger", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "SPX Testing 6717 - Short Bias Trigger", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level6 - alertSensitivity and close <= level6 + alertSensitivity, "SPX Testing 6635 - 🚨 PANIC TRIGGER!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level8 - alertSensitivity and close <= level8 + alertSensitivity, "SPX Testing 6555 - 💥 LIQUIDATION ZONE!", Alert.BAR, Sound.Chimes);
 
 # Bounce/Rejection Alerts
-Alert(enableAlerts and low[1] <= level6 and close > level6 + 3, "ES BOUNCE from S1: 6820.5! Long Stop Held", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and high[1] >= level5 and close < level5 - 3, "ES REJECTION at R1: 6880 Bull Trigger", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and low[1] <= level5 and close > level5 + 3, "SPX BOUNCE from 6717! Short Bias Held", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and low[1] <= level6 and close > level6 + 3, "SPX BOUNCE from 6635! 🚨 Panic Trigger Held!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and low[1] <= level8 and close > level8 + 3, "SPX BOUNCE from 6555! 💥 Liquidation Zone Held!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and high[1] >= level2 and close < level2 - 3, "SPX REJECTION at 6881.9 - Bear Star Holds", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and high[1] >= level4 and close < level4 - 3, "SPX REJECTION at 6765 - Range Scalp Fails", Alert.BAR, Sound.Bell);
 
 # Status Labels
 AddLabel(showLabels and enableAlerts, "Alerts ON", Color.GREEN);
 AddLabel(showLabels and !enableAlerts, "Alerts OFF", Color.RED);
-AddLabel(showLabels, "DZ: 6880-6820.5", Color.WHITE);
-AddLabel(showLabels, "Now: " + Round(close, 2), Color.YELLOW);
+AddLabel(showLabels, "🚩 Bear Star: 6881.9", Color.GREEN);
+AddLabel(showLabels, "Current: 6728", Color.WHITE);
+AddLabel(showLabels, "Now: " + Round(close, 2), Color.CYAN);
 
-# Market Structure with S/R Labels
-AddLabel(showLabels and close >= level5, "ABOVE R1 - BULL", Color.LIME);
-AddLabel(showLabels and close >= level6 and close < level5, "DZ - BATTLE", Color.YELLOW);
-AddLabel(showLabels and close < level6, "BELOW S1 - BEAR", Color.RED);
+# Market Structure Labels
+AddLabel(showLabels and close >= level2, "ABOVE BEAR STAR - BULL MODE!", Color.GREEN);
+AddLabel(showLabels and close >= level4 and close < level2, "RANGE: 6765-6881.9", Color.YELLOW);
+AddLabel(showLabels and close >= currentLevel and close < level4, "NEAR CURRENT: 6728", Color.WHITE);
+AddLabel(showLabels and close >= level5 and close < currentLevel, "APPROACHING SHORT TRIGGER", Color.ORANGE);
+AddLabel(showLabels and close >= level6 and close < level5, "BELOW 6717 - SHORT BIAS", Color.RED);
+AddLabel(showLabels and close >= level7 and close < level6, "NEAR PANIC ZONE!", Color.RED);
+AddLabel(showLabels and close >= level8 and close < level7, "DOWNSIDE CONTINUATION", Color.RED);
+AddLabel(showLabels and close >= level9 and close < level8, "NEAR LIQUIDATION!", Color.DARK_RED);
+AddLabel(showLabels and close < level9, "FREE FALL ZONE!", Color.MAGENTA);
 
 # Trade Plan Status
-AddLabel(showLabels and close >= level5, "BULL: R2->R3->R4->R5", Color.LIME);
-AddLabel(showLabels and close >= level6 and close < level5, "BREAK R1 EARLY WK", Color.YELLOW);
-AddLabel(showLabels and close < level6, "BEAR: S2->S3->S4->S5", Color.RED);
+AddLabel(showLabels and close >= level2, "BULL PATH: 6915+", Color.GREEN);
+AddLabel(showLabels and close >= level4 and close < level2, "BREAK 6881.9 FOR BULL", Color.YELLOW);
+AddLabel(showLabels and close >= level5 and close < level4, "SCALP RANGE 6765", Color.YELLOW);
+AddLabel(showLabels and close >= level6 and close < level5, "SHORT BIAS ACTIVE", Color.ORANGE);
+AddLabel(showLabels and close < level6, "BEAR PATH: 6599-6555-6480", Color.RED);
 
-# Distance to Key Levels with S/R
-def distTo6880 = level5 - close;
-def distTo6911 = level4 - close;
-def distTo6920 = level3 - close;
-def distTo6949 = level2 - close;
-def distTo6995 = level1 - close;
-def distFrom6820 = close - level6;
+# Critical Warnings
+AddLabel(showLabels and close < level6 + 20, "🚨 PANIC ZONE NEAR!", Color.RED);
+AddLabel(showLabels and close < level6, "🚨 CRITICAL SUPPORT BROKEN!", Color.MAGENTA);
+AddLabel(showLabels and close < level8 + 15, "💥 LIQUIDATION APPROACHING!", Color.RED);
+AddLabel(showLabels and close < level8, "💥 LIQUIDATION ZONE!", Color.MAGENTA);
+AddLabel(showLabels and close < level9 + 20, "💣 FREE FALL WARNING!", Color.DARK_RED);
+AddLabel(showLabels and close < level9, "💣 FREE FALL!", Color.MAGENTA);
 
-AddLabel(showLabels and close < level5, "->R1: " + Round(distTo6880, 1), Color.YELLOW);
-AddLabel(showLabels and close < level4, "->R2: " + Round(distTo6911, 1), Color.LIME);
-AddLabel(showLabels and close < level3, "->R3: " + Round(distTo6920, 1), Color.LIME);
-AddLabel(showLabels and close < level2, "->R4: " + Round(distTo6949, 1), Color.CYAN);
-AddLabel(showLabels and close < level1, "->R5: " + Round(distTo6995, 1), Color.MAGENTA);
-AddLabel(showLabels and close >= level6, "S1+: " + Round(distFrom6820, 1), Color.LIME);
-AddLabel(showLabels and close < level6, "S1-: " + Round(AbsValue(distFrom6820), 1), Color.RED);
+# Distance to Key Levels
+def distTo6881 = level2 - close;
+def distTo6915 = level1 - close;
+def distTo6819 = level3 - close;
+def distTo6765 = level4 - close;
+def distFromCurrent = close - currentLevel;
+def distFrom6717 = close - level5;
+def distFrom6635 = close - level6;
+def distFrom6599 = close - level7;
+def distFrom6555 = close - level8;
+def distFrom6480 = close - level9;
 
-# Context with S/R Designation
-AddLabel(showLabels, "R: 6995-6949-6920-6911-6880", Color.LIME);
-AddLabel(showLabels, "S: 6820-6765-6745-6715-6699", Color.RED);
-AddLabel(showLabels, "Bull: Vol>R1->R5±", Color.LIME);
-AddLabel(showLabels, "Bear: FailR1->S5±6", Color.RED);
+AddLabel(showLabels and close < level2, "->Bear Star: " + Round(distTo6881, 1), Color.GREEN);
+AddLabel(showLabels and close < level1, "->R2 (6915): " + Round(distTo6915, 1), Color.GREEN);
+AddLabel(showLabels and close < level3, "->Fade (6819): " + Round(distTo6819, 1), Color.YELLOW);
+AddLabel(showLabels and close < level4, "->Scalp (6765): " + Round(distTo6765, 1), Color.YELLOW);
+AddLabel(showLabels and close >= currentLevel, "Current+: " + Round(distFromCurrent, 1), Color.WHITE);
+AddLabel(showLabels and close < currentLevel, "Current-: " + Round(AbsValue(distFromCurrent), 1), Color.WHITE);
+AddLabel(showLabels and close >= level5, "6717+: " + Round(distFrom6717, 1), Color.LIME);
+AddLabel(showLabels and close < level5, "6717-: " + Round(AbsValue(distFrom6717), 1), Color.ORANGE);
+AddLabel(showLabels and close >= level6, "Panic+: " + Round(distFrom6635, 1), Color.YELLOW);
+AddLabel(showLabels and close < level6, "Panic-: " + Round(AbsValue(distFrom6635), 1), Color.RED);
+
+# Context Summary
+AddLabel(showLabels, "🚩 Bull Trigger: 6881.9", Color.GREEN);
+AddLabel(showLabels, "R: 6915-6881.9-6819-6765", Color.GREEN);
+AddLabel(showLabels, "Current: 6728", Color.WHITE);
+AddLabel(showLabels, "📉 Short: 6717", Color.ORANGE);
+AddLabel(showLabels, "S: 6635-6599-6555-6480", Color.RED);
+AddLabel(showLabels, "Bear Star Structure", Color.ORANGE);
