@@ -1,64 +1,143 @@
-# === ETH Levels: Updated October 2025 Key Levels ===
-# Updated: October 11, 2025  
-# Based on: Q4 Tactical Range, resistance zones, and critical support levels
+# === ETH Levels: Bear Star Structure ===
+# Updated: November 7, 2025
+# Current price: ~3,480
+# Key resistance: 3,480 (first bear star ~3,479.9), 3,550 (technical resistance)
+# Critical support: 3,100 (stay long above)
+# Major resistance: 3,940 (must break for genuine rally), 4,100 (bullish trend threshold)
 
-# === Key Ethereum Support & Resistance Levels ===
-input level1 = 4065; # Upper call target
-input level1_thickness = 3; # 1=normal, 2=(*), 3=(**)
-input level2 = 3970; # Resistance zone into year-end
-input level2_thickness = 2;
-input level3 = 3880; # Resistance level
-input level3_thickness = 1;
-input level4 = 3710; # Resistance level
-input level4_thickness = 1;
-input level5 = 3490; # Neutral-to-upside pivot
-input level5_thickness = 2;
-input level6 = 3500; # Support zone (bull defense)
-input level6_thickness = 2;
-input level7 = 3460; # Critical downside level
-input level7_thickness = 3;
+# === RESISTANCE LEVELS ===
+input level1 = 4100; # R7 - Threshold for bullish trend to develop
+input level1_thickness = 3;
+input level2 = 3940; # R6 - Major resistance, rallies below not trustworthy
+input level2_thickness = 3;
+input level3 = 3845; # R5 - Resistance with stop pins
+input level3_thickness = 2;
+input level4 = 3665; # R4 - Next resistance (wide strike area)
+input level4_thickness = 2;
+input level5 = 3550; # R3 - Key technical resistance
+input level5_thickness = 3;
+input level6 = 3480; # R2 - First bear star resistance (~3,479.9)
+input level6_thickness = 4;
 
-# Major Resistance Levels
+# === CURRENT LEVEL ===
+input currentLevel = 3480; # Current approximate price level
+input currentLevel_thickness = 2;
+
+# === SUPPORT LEVELS ===
+input level7 = 3249; # S1 - Lower strikes where bottom fishing might occur (3199 & 3249)
+input level7_thickness = 2;
+input level8 = 3199; # S2 - Lower strikes where bottom fishing might occur
+input level8_thickness = 2;
+input level9 = 3100; # S3 - Critical support for 1x long positions
+input level9_thickness = 4;
+
+# Alert Settings
+input enableAlerts = yes;
+input alertSensitivity = 0.5;
+
+# Label Visibility
+input showLabels = yes;
+
+# Fixed bubble logic - show only on last bar
+def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
+
+# === RESISTANCE ===
 plot L1 = level1;
-L1.SetDefaultColor(Color.DARK_RED);
+L1.SetDefaultColor(Color.MAGENTA);
 L1.SetLineWeight(level1_thickness);
 L1.SetStyle(Curve.FIRM);
-AddLabel(yes, "R4: " + AsText(level1) + " (Upper Call Target)" + (if level1_thickness == 3 then " (**)" else if level1_thickness == 2 then " (*)" else ""), Color.DARK_RED);
 
 plot L2 = level2;
 L2.SetDefaultColor(Color.RED);
 L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
-AddLabel(yes, "R3: " + AsText(level2) + " (Resistance into Year-End)" + (if level2_thickness == 3 then " (**)" else if level2_thickness == 2 then " (*)" else ""), Color.RED);
 
 plot L3 = level3;
 L3.SetDefaultColor(Color.ORANGE);
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
-AddLabel(yes, "R2: " + AsText(level3) + " (Resistance)" + (if level3_thickness == 3 then " (**)" else if level3_thickness == 2 then " (*)" else ""), Color.ORANGE);
 
 plot L4 = level4;
-L4.SetDefaultColor(Color.YELLOW);
+L4.SetDefaultColor(Color.CYAN);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
-AddLabel(yes, "R1: " + AsText(level4) + " (Resistance)" + (if level4_thickness == 3 then " (**)" else if level4_thickness == 2 then " (*)" else ""), Color.YELLOW);
 
-# Pivot Level
 plot L5 = level5;
-L5.SetDefaultColor(Color.MAGENTA);
+L5.SetDefaultColor(Color.YELLOW);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
-AddLabel(yes, "PIV: " + AsText(level5) + " (Neutral-to-Upside Pivot)" + (if level5_thickness == 3 then " (**)" else if level5_thickness == 2 then " (*)" else ""), Color.MAGENTA);
 
-# Support Levels
 plot L6 = level6;
-L6.SetDefaultColor(Color.CYAN);
+L6.SetDefaultColor(Color.ORANGE);
 L6.SetLineWeight(level6_thickness);
-L6.SetStyle(Curve.FIRM);
-AddLabel(yes, "S1: " + AsText(level6) + " (Support Zone - Bull Defense)" + (if level6_thickness == 3 then " (**)" else if level6_thickness == 2 then " (*)" else ""), Color.CYAN);
+L6.SetStyle(Curve.SHORT_DASH);
 
+# === CURRENT LEVEL ===
+plot Current = currentLevel;
+Current.SetDefaultColor(Color.WHITE);
+Current.SetLineWeight(currentLevel_thickness);
+Current.SetStyle(Curve.FIRM);
+
+# === SUPPORT ===
 plot L7 = level7;
-L7.SetDefaultColor(Color.GREEN);
+L7.SetDefaultColor(Color.CYAN);
 L7.SetLineWeight(level7_thickness);
 L7.SetStyle(Curve.FIRM);
-AddLabel(yes, "S2: " + AsText(level7) + " (CRITICAL Downside Level)" + (if level7_thickness == 3 then " (**)" else if level7_thickness == 2 then " (*)" else ""), Color.GREEN);
+
+plot L8 = level8;
+L8.SetDefaultColor(Color.CYAN);
+L8.SetLineWeight(level8_thickness);
+L8.SetStyle(Curve.FIRM);
+
+plot L9 = level9;
+L9.SetDefaultColor(Color.GREEN);
+L9.SetLineWeight(level9_thickness);
+L9.SetStyle(Curve.FIRM);
+
+# Chart bubbles - show only on last bar with labels
+AddChartBubble(isLastBar, level1, "R7: 4,100 - Bullish Trend Threshold", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level2, "R6: 3,940 - Major Resistance (No Rally Trust Below)", Color.RED, yes);
+AddChartBubble(isLastBar, level3, "R5: 3,845 - Resistance w/ Stop Pins", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level4, "R4: 3,665 - Wide Strike Area (Stop Losses)", Color.CYAN, yes);
+AddChartBubble(isLastBar, level5, "R3: 3,550 - Key Technical (Must Break for Chartist)", Color.YELLOW, yes);
+AddChartBubble(isLastBar, level6, "** R2: 3,480 - 1st Bear Star (~3,479.9) No Rally Below", Color.ORANGE, yes);
+AddChartBubble(isLastBar, currentLevel, "3,480 - Current Price", Color.WHITE, yes);
+AddChartBubble(isLastBar, level7, "S1: 3,249 - Bottom Fishing Zone", Color.CYAN, no);
+AddChartBubble(isLastBar, level8, "S2: 3,199 - Bottom Fishing Zone", Color.CYAN, no);
+AddChartBubble(isLastBar, level9, "S3: 3,100 - CRITICAL (Stay Long Above)", Color.GREEN, no);
+
+# === ALERT SYSTEM ===
+
+# RESISTANCE Breakout Alerts
+Alert(enableAlerts and close crosses above level6, "ETH ABOVE 3,480 - BEAR STAR BREAK! RALLY POSSIBLE!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level5, "ETH ABOVE 3,550 - KEY TECHNICAL BREAK! CHARTIST INTEREST!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level4, "ETH ABOVE 3,665 - WIDE STRIKE AREA!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level3, "ETH ABOVE 3,845 - OVERCOME STOP PINS!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level2, "ETH ABOVE 3,940 - MAJOR RESISTANCE BREAK! GENUINE RALLY!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level1, "ETH ABOVE 4,100 - BULLISH TREND CONFIRMED!", Alert.BAR, Sound.Ring);
+
+# SUPPORT Break Alerts
+Alert(enableAlerts and close crosses below currentLevel, "ETH BELOW 3,480 - Current Level Break", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level7, "ETH BELOW 3,249 - Bottom Fishing Zone", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level8, "ETH BELOW 3,199 - Lower Bottom Fishing", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level9, "ETH BELOW 3,100 - CRITICAL SUPPORT BROKEN! PANIC SELL-OFF RISK!", Alert.BAR, Sound.Bell);
+
+# Testing Key Levels
+Alert(enableAlerts and close >= level6 - alertSensitivity and close <= level6 + alertSensitivity, "ETH Testing 3,480 - Bear Star Level", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "ETH Testing 3,550 - Key Technical Level", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level2 - alertSensitivity and close <= level2 + alertSensitivity, "ETH Testing 3,940 - MAJOR RESISTANCE!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level9 - alertSensitivity and close <= level9 + alertSensitivity, "ETH Testing 3,100 - CRITICAL SUPPORT!", Alert.BAR, Sound.Chimes);
+
+# Bounce/Rejection Alerts
+Alert(enableAlerts and low[1] <= level9 and close > level9 + 20, "ETH BOUNCE from 3,100 - Critical Support Holds!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and low[1] <= level7 and close > level7 + 20, "ETH BOUNCE from 3,249 - Bottom Fishing Success!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and high[1] >= level6 and close < level6 - 20, "ETH REJECTION at 3,480 - Bear Star Defended", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and high[1] >= level5 and close < level5 - 20, "ETH REJECTION at 3,550 - Technical Resistance Holds", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and high[1] >= level2 and close < level2 - 20, "ETH REJECTION at 3,940 - Rally Not Trustworthy", Alert.BAR, Sound.Bell);
+
+# Status Labels
+AddLabel(showLabels and enableAlerts, "Alerts ON", Color.GREEN);
+AddLabel(showLabels and !enableAlerts, "Alerts OFF", Color.RED);
+AddLabel(showLabels, "** Bear Star: 3,480", Color.ORANGE);
+AddLabel(showLabels, "Current: ~3,480", Color.WHITE);
+AddLabel(showLabels, "Now: " + Round(close, 2), Color.CYAN);
