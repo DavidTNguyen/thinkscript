@@ -181,22 +181,3 @@ def distFrom6635 = close - level6;
 def distFrom6599 = close - level7;
 def distFrom6555 = close - level8;
 def distFrom6480 = close - level9;
-
-AddLabel(showLabels and close < level2, "->Bear Star: " + Round(distTo6881, 1), Color.GREEN);
-AddLabel(showLabels and close < level1, "->R2 (6915): " + Round(distTo6915, 1), Color.GREEN);
-AddLabel(showLabels and close < level3, "->Fade (6819): " + Round(distTo6819, 1), Color.YELLOW);
-AddLabel(showLabels and close < level4, "->Scalp (6765): " + Round(distTo6765, 1), Color.YELLOW);
-AddLabel(showLabels and close >= currentLevel, "Current+: " + Round(distFromCurrent, 1), Color.WHITE);
-AddLabel(showLabels and close < currentLevel, "Current-: " + Round(AbsValue(distFromCurrent), 1), Color.WHITE);
-AddLabel(showLabels and close >= level5, "6717+: " + Round(distFrom6717, 1), Color.LIME);
-AddLabel(showLabels and close < level5, "6717-: " + Round(AbsValue(distFrom6717), 1), Color.ORANGE);
-AddLabel(showLabels and close >= level6, "Panic+: " + Round(distFrom6635, 1), Color.YELLOW);
-AddLabel(showLabels and close < level6, "Panic-: " + Round(AbsValue(distFrom6635), 1), Color.RED);
-
-# Context Summary
-AddLabel(showLabels, "🚩 Bull Trigger: 6881.9", Color.GREEN);
-AddLabel(showLabels, "R: 6915-6881.9-6819-6765", Color.GREEN);
-AddLabel(showLabels, "Current: 6728", Color.WHITE);
-AddLabel(showLabels, "📉 Short: 6717", Color.ORANGE);
-AddLabel(showLabels, "S: 6635-6599-6555-6480", Color.RED);
-AddLabel(showLabels, "Bear Star Structure", Color.ORANGE);
