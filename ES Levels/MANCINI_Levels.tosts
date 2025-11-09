@@ -1,0 +1,115 @@
+# === MANCINI ES Levels: Next Week Plan ===
+# Updated: November 9, 2025
+# 
+# PLAN NEXT WEEK:
+# As long as 6728-32 (6685-90 lowest) holds → 6806 flag resistance is next
+# Breakout then 6851, 6899+
+# If 6685 fails → New lows 6632
+
+# === RESISTANCE LEVELS ===
+input level1 = 6899; # R4 - Breakout continuation target
+input level1_thickness = 3;
+input level2 = 6851; # R3 - Breakout target
+input level2_thickness = 3;
+input level3 = 6806; # R2 - Flag resistance (next target if bulls hold)
+input level3_thickness = 4;
+input level4 = 6732; # R1 - Upper hold level
+input level4_thickness = 3;
+input level5 = 6728; # R1 - Lower hold level (bulls must hold)
+input level5_thickness = 3;
+
+# === SUPPORT LEVELS ===
+input level6 = 6690; # S1 - Lowest hold level high
+input level6_thickness = 3;
+input level7 = 6685; # S2 - Lowest hold level (CRITICAL - fails = new lows)
+input level7_thickness = 4;
+input level8 = 6632; # S3 - New lows target if 6685 fails
+input level8_thickness = 4;
+
+# Alert Settings
+input enableAlerts = yes;
+input alertSensitivity = 0.5;
+
+# Label Visibility
+input showLabels = yes;
+
+# Fixed bubble logic - show only on last bar
+def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
+
+# === RESISTANCE ===
+plot L1 = level1;
+L1.SetDefaultColor(Color.MAGENTA);
+L1.SetLineWeight(level1_thickness);
+L1.SetStyle(Curve.FIRM);
+
+plot L2 = level2;
+L2.SetDefaultColor(Color.CYAN);
+L2.SetLineWeight(level2_thickness);
+L2.SetStyle(Curve.FIRM);
+
+plot L3 = level3;
+L3.SetDefaultColor(Color.YELLOW);
+L3.SetLineWeight(level3_thickness);
+L3.SetStyle(Curve.FIRM);
+
+plot L4 = level4;
+L4.SetDefaultColor(Color.ORANGE);
+L4.SetLineWeight(level4_thickness);
+L4.SetStyle(Curve.FIRM);
+
+plot L5 = level5;
+L5.SetDefaultColor(Color.ORANGE);
+L5.SetLineWeight(level5_thickness);
+L5.SetStyle(Curve.FIRM);
+
+# === SUPPORT ===
+plot L6 = level6;
+L6.SetDefaultColor(Color.GREEN);
+L6.SetLineWeight(level6_thickness);
+L6.SetStyle(Curve.FIRM);
+
+plot L7 = level7;
+L7.SetDefaultColor(Color.GREEN);
+L7.SetLineWeight(level7_thickness);
+L7.SetStyle(Curve.FIRM);
+
+plot L8 = level8;
+L8.SetDefaultColor(Color.RED);
+L8.SetLineWeight(level8_thickness);
+L8.SetStyle(Curve.FIRM);
+
+# Chart bubbles - show only on last bar
+AddChartBubble(isLastBar, level1, "R4: 6899+ - Breakout Continuation", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level2, "R3: 6851 - Breakout Target", Color.CYAN, yes);
+AddChartBubble(isLastBar, level3, "R2: 6806 - Flag Resistance (Next if Hold)", Color.YELLOW, yes);
+AddChartBubble(isLastBar, level4, "R1: 6732 - Upper Hold Level", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level5, "R1: 6728 - Lower Hold Level", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level6, "S1: 6690 - Lowest Hold High", Color.GREEN, no);
+AddChartBubble(isLastBar, level7, "S2: 6685 - Lowest Hold (FAILS = New Lows)", Color.GREEN, no);
+AddChartBubble(isLastBar, level8, "S3: 6632 - New Lows Target", Color.RED, no);
+
+# === ALERT SYSTEM ===
+
+# RESISTANCE Breakout Alerts
+Alert(enableAlerts and close crosses above level5, "ES ABOVE 6728 - HOLD LEVEL! NEXT 6806!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level4, "ES ABOVE 6732 - UPPER HOLD! NEXT 6806!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level3, "ES ABOVE 6806 - FLAG RESISTANCE BREAK! NEXT 6851!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level2, "ES ABOVE 6851 - BREAKOUT TARGET! NEXT 6899+!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level1, "ES ABOVE 6899 - BREAKOUT CONTINUATION!", Alert.BAR, Sound.Ring);
+
+# SUPPORT Break Alerts
+Alert(enableAlerts and close crosses below level5, "ES BELOW 6728 - HOLD LEVEL TESTED!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level6, "ES BELOW 6690 - APPROACHING CRITICAL 6685!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level7, "ES BELOW 6685 - CRITICAL LEVEL FAILS! NEW LOWS TO 6632!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level8, "ES BELOW 6632 - NEW LOWS TARGET HIT!", Alert.BAR, Sound.Bell);
+
+# Testing Key Levels
+Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "ES Testing 6728 - Hold Level", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level7 - alertSensitivity and close <= level7 + alertSensitivity, "ES Testing 6685 - CRITICAL LOWEST HOLD!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level3 - alertSensitivity and close <= level3 + alertSensitivity, "ES Testing 6806 - Flag Resistance", Alert.BAR, Sound.Chimes);
+
+# Bounce/Rejection Alerts
+Alert(enableAlerts and low[1] <= level7 and close > level7 + 5, "ES BOUNCE from 6685 - CRITICAL HOLD!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and low[1] <= level8 and close > level8 + 5, "ES BOUNCE from 6632 - New Lows Rejected!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and high[1] >= level3 and close < level3 - 5, "ES REJECTION at 6806 - Flag Resistance Holds", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and high[1] >= level2 and close < level2 - 5, "ES REJECTION at 6851 - Breakout Failed", Alert.BAR, Sound.Bell);

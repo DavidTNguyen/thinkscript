@@ -1,29 +1,21 @@
-# === ES Levels: Sellers Control - Failed 6751, New Weekly Lows ===
-# Updated: November 7, 2025
-# ES failed 6751 overnight and made new weekly lows.
-# Buyers have to clear 6733 for upside. If 6720 fails we continue lower into 6702 and 6672.
-# Sellers continue to control the price action, defending backtests and making lower highs.
-# Multi-day continuation. Be selective on longs, wait for failed breakdowns or momentum reclaims.
+# === ES Levels: Short-Term Low Attempt - Key Pivot at 6850 ===
+# Updated: November 9, 2025
+# ES saw continuation of correction from ATHs with steady downtrend and bounces sold.
+# Friday: Buyers attempt short-term low with short squeeze into close.
+# 6850 key pivot for sellers to defend to prevent larger reversal back to ATHs.
+# If Friday low/prior week low fails, we can take another leg down.
 
-# === RESISTANCE LEVELS (Seller Control) ===
-input level1 = 6785; # R4 - Backtest short (Grade B)
-input level1_thickness = 2;
-input level2 = 6764; # R3 - Key resistance
-input level2_thickness = 2;
-input level3 = 6751; # R2 - Failed overnight
-input level3_thickness = 3;
-input level4 = 6733; # R1 - Buyers must clear for upside (Reclaim long Grade C)
+# === RESISTANCE LEVELS (Reversal Potential) ===
+input level1 = 6850; # R2 - Backtest pivot (Sellers must defend to prevent ATH reversal)
+input level1_thickness = 4;
+input level2 = 6800; # R1 - Reclaim pivot (Bulls need to reclaim to test 6850)
+input level2_thickness = 4;
+
+# === SUPPORT LEVELS (Downside Risk) ===
+input level3 = 6654; # S1 - Prior week low (Sellers hold under to test 6552)
+input level3_thickness = 4;
+input level4 = 6552; # S2 - Next leg down target
 input level4_thickness = 3;
-
-# === SUPPORT LEVELS (Continue Lower) ===
-input level5 = 6720; # S1 - Critical support
-input level5_thickness = 3;
-input level6 = 6702; # S2 - Next if 6720 fails
-input level6_thickness = 2;
-input level7 = 6691; # S3 - Failed Breakdown long (Grade A)
-input level7_thickness = 3;
-input level8 = 6672; # S4 - Lower continuation target
-input level8_thickness = 2;
 
 # Alert Settings
 input enableAlerts = yes;
@@ -35,139 +27,71 @@ input showLabels = yes;
 # Fixed bubble logic - show only on last bar
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
 
-# === RESISTANCE: Seller Defended ===
+# === RESISTANCE: Reversal Levels ===
 plot L1 = level1;
-L1.SetDefaultColor(Color.MAGENTA);
+L1.SetDefaultColor(Color.RED);
 L1.SetLineWeight(level1_thickness);
 L1.SetStyle(Curve.FIRM);
 
 plot L2 = level2;
-L2.SetDefaultColor(Color.RED);
+L2.SetDefaultColor(Color.YELLOW);
 L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
 
+# === SUPPORT: Breakdown Levels ===
 plot L3 = level3;
-L3.SetDefaultColor(Color.ORANGE);
+L3.SetDefaultColor(Color.CYAN);
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
 plot L4 = level4;
-L4.SetDefaultColor(Color.YELLOW);
+L4.SetDefaultColor(Color.GREEN);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
-# === SUPPORT: Continue Lower ===
-plot L5 = level5;
-L5.SetDefaultColor(Color.CYAN);
-L5.SetLineWeight(level5_thickness);
-L5.SetStyle(Curve.FIRM);
-
-plot L6 = level6;
-L6.SetDefaultColor(Color.LIME);
-L6.SetLineWeight(level6_thickness);
-L6.SetStyle(Curve.FIRM);
-
-plot L7 = level7;
-L7.SetDefaultColor(Color.WHITE);
-L7.SetLineWeight(level7_thickness);
-L7.SetStyle(Curve.SHORT_DASH);
-
-plot L8 = level8;
-L8.SetDefaultColor(Color.GREEN);
-L8.SetLineWeight(level8_thickness);
-L8.SetStyle(Curve.FIRM);
-
-# Chart bubbles - show only on last bar with S/R designation
-AddChartBubble(isLastBar, level1, "R4: 6785 (BT Short-B)", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level2, "R3: 6764", Color.RED, yes);
-AddChartBubble(isLastBar, level3, "R2: 6751 (Failed)", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level4, "R1: 6733 (Reclaim-C)", Color.YELLOW, yes);
-AddChartBubble(isLastBar, level5, "S1: 6720 (Critical)", Color.CYAN, no);
-AddChartBubble(isLastBar, level6, "S2: 6702", Color.LIME, no);
-AddChartBubble(isLastBar, level7, "S3: 6691 (FBD-A)", Color.WHITE, no);
-AddChartBubble(isLastBar, level8, "S4: 6672", Color.GREEN, no);
+# Chart bubbles - show only on last bar with labels
+AddChartBubble(isLastBar, level1, "R2: 6850 - Backtest Pivot (Defend = No ATH Reversal)", Color.RED, yes);
+AddChartBubble(isLastBar, level2, "R1: 6800 - Reclaim Pivot (Bulls Test 6850)", Color.YELLOW, yes);
+AddChartBubble(isLastBar, level3, "S1: 6654 - Prior Week Low (Hold Under = 6552)", Color.CYAN, no);
+AddChartBubble(isLastBar, level4, "S2: 6552 - Next Leg Down Target", Color.GREEN, no);
 
 # === ALERT SYSTEM ===
 
-# RESISTANCE Breakout Alerts
-Alert(enableAlerts and close crosses above level4, "ES ABOVE 6733 - BUYERS CLEAR FOR UPSIDE!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level3, "ES ABOVE 6751 - Failed Level Reclaimed!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level2, "ES ABOVE R3: 6764!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level1, "ES ABOVE R4: 6785 - Backtest Level!", Alert.BAR, Sound.Ring);
+# RESISTANCE Breakout Alerts (Reversal Potential)
+Alert(enableAlerts and close crosses above level2, "ES ABOVE 6800 - RECLAIM PIVOT! TESTING 6850!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level1, "ES ABOVE 6850 - BACKTEST PIVOT BROKEN! LARGER REVERSAL TO ATHs!", Alert.BAR, Sound.Ring);
 
-# SUPPORT Break Alerts
-Alert(enableAlerts and close crosses below level5, "ES BELOW 6720 - CONTINUE LOWER TO 6702-6672!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level6, "ES BELOW S2: 6702 - Next 6691!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level7, "ES BELOW S3: 6691 - Failed Breakdown Level!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level8, "ES BELOW S4: 6672!", Alert.BAR, Sound.Bell);
+# SUPPORT Break Alerts (Downside Continuation)
+Alert(enableAlerts and close crosses below level3, "ES BELOW 6654 - PRIOR WEEK LOW BROKEN! NEXT LEG DOWN TO 6552!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level4, "ES BELOW 6552 - NEXT LEG DOWN TARGET HIT!", Alert.BAR, Sound.Bell);
 
-# Testing Key Levels
-Alert(enableAlerts and close >= level4 - alertSensitivity and close <= level4 + alertSensitivity, "ES Testing 6733 - Buyers Must Clear", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "ES Testing 6720 - CRITICAL SUPPORT", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level7 - alertSensitivity and close <= level7 + alertSensitivity, "ES Testing 6691 - Failed Breakdown Zone", Alert.BAR, Sound.Chimes);
+# Testing Key Pivots
+Alert(enableAlerts and close >= level2 - alertSensitivity and close <= level2 + alertSensitivity, "ES Testing 6800 - Reclaim Pivot", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level1 - alertSensitivity and close <= level1 + alertSensitivity, "ES Testing 6850 - BACKTEST PIVOT (CRITICAL!)", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level3 - alertSensitivity and close <= level3 + alertSensitivity, "ES Testing 6654 - Prior Week Low", Alert.BAR, Sound.Chimes);
 
 # Bounce/Rejection Alerts
-Alert(enableAlerts and low[1] <= level5 and close > level5 + 3, "ES BOUNCE from 6720 - Critical Support Holds!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and low[1] <= level7 and close > level7 + 3, "ES BOUNCE from 6691 - Failed Breakdown Setup!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and high[1] >= level4 and close < level4 - 3, "ES REJECTION at 6733 - Sellers Defending", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and high[1] >= level3 and close < level3 - 3, "ES REJECTION at 6751 - Lower High Made", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and high[1] >= level1 and close < level1 - 3, "ES REJECTION at 6785 - Backtest Failed", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and low[1] <= level3 and close > level3 + 5, "ES BOUNCE from 6654 - Prior Week Low Holds! Short-Term Low?", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and high[1] >= level2 and close < level2 - 5, "ES REJECTION at 6800 - Reclaim Pivot Failed", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and high[1] >= level1 and close < level1 - 5, "ES REJECTION at 6850 - SELLERS DEFEND PIVOT! No ATH Reversal", Alert.BAR, Sound.Bell);
+
+# Short Squeeze Detection
+Alert(enableAlerts and close > close[1] + 10 and volume > volume[1] * 1.3, "ES SHORT SQUEEZE DETECTED!", Alert.BAR, Sound.Ring);
 
 # Status Labels
 AddLabel(showLabels and enableAlerts, "Alerts ON", Color.GREEN);
 AddLabel(showLabels and !enableAlerts, "Alerts OFF", Color.RED);
-AddLabel(showLabels, "SELLERS CONTROL", Color.RED);
-AddLabel(showLabels, "New Weekly Lows", Color.RED);
-AddLabel(showLabels, "Failed 6751 Overnight", Color.ORANGE);
+AddLabel(showLabels, "Short-Term Low Attempt", Color.YELLOW);
+AddLabel(showLabels, "Friday: Short Squeeze Close", Color.CYAN);
 AddLabel(showLabels, "Now: " + Round(close, 2), Color.CYAN);
 
-# Market Mode Status
-AddLabel(showLabels, "Multi-Day Continuation", Color.RED);
-AddLabel(showLabels, "Defending Backtests", Color.ORANGE);
-AddLabel(showLabels, "Making Lower Highs", Color.ORANGE);
+# Trade Plan - Bull Scenario
+AddLabel(showLabels and close >= level2, "BULL PATH: 6800 -> 6850 -> ATHs", Color.LIME);
+AddLabel(showLabels and close < level2 and close >= level3, "BULL PLAN: Reclaim 6800 First", Color.YELLOW);
 
-# Control Status
-AddLabel(showLabels and close >= level4, "BUYERS CLEARED 6733!", Color.LIME);
-AddLabel(showLabels and close < level4, "SELLERS CONTROL BELOW 6733", Color.RED);
-
-# Market Structure with S/R Labels
-AddLabel(showLabels and close >= level3, "ABOVE 6751 - RECLAIM!", Color.LIME);
-AddLabel(showLabels and close >= level4 and close < level3, "ABOVE 6733 - WORKING TO 6751", Color.YELLOW);
-AddLabel(showLabels and close >= level5 and close < level4, "MUST CLEAR 6733 FOR UPSIDE", Color.ORANGE);
-AddLabel(showLabels and close >= level6 and close < level5, "BELOW 6720 - CONTINUE LOWER", Color.RED);
-AddLabel(showLabels and close >= level7 and close < level6, "NEXT: 6691 FAILED BREAKDOWN", Color.CYAN);
-AddLabel(showLabels and close < level7, "CONTINUATION TO 6672", Color.RED);
-
-# Trade Plan Status
-AddLabel(showLabels and close >= level4, "UPSIDE: 6751-6764-6785", Color.LIME);
-AddLabel(showLabels and close >= level5 and close < level4, "CLEAR 6733 FOR UPSIDE", Color.YELLOW);
-AddLabel(showLabels and close < level5, "DOWNSIDE: 6702-6691-6672", Color.RED);
-
-# Trading Guidelines
-AddLabel(showLabels, "BE SELECTIVE ON LONGS", Color.ORANGE);
-AddLabel(showLabels, "Wait: FBD or Momentum Reclaims", Color.YELLOW);
-
-# Watchlist Status
-AddLabel(showLabels and close >= level1 - 5, "Backtest Short 6785: B", Color.MAGENTA);
-AddLabel(showLabels and close >= level4 - 5 and close < level4 + 5, "Reclaim Long 6733: C", Color.YELLOW);
-AddLabel(showLabels and close <= level7 + 5, "Failed Breakdown 6691: A", Color.WHITE);
-
-# Distance to Key Levels with S/R
-def distTo6733 = level4 - close;
-def distTo6751 = level3 - close;
-def distTo6764 = level2 - close;
-def distTo6785 = level1 - close;
-def distFrom6720 = close - level5;
-def distFrom6702 = close - level6;
-def distFrom6691 = close - level7;
-def distFrom6672 = close - level8;
-
-# Context with S/R Designation
-AddLabel(showLabels, "R: 6785(BT-B)-6764-6751(Failed)-6733(Clear-C)", Color.MAGENTA);
-AddLabel(showLabels, "S: 6720(Critical)-6702-6691(FBD-A)-6672", Color.CYAN);
-AddLabel(showLabels, "Sellers: Defending/Lower Highs", Color.RED);
-AddLabel(showLabels, "Strategy: Selective Longs Only", Color.ORANGE);
-
+# Trade Plan - Bear Scenario
+AddLabel(showLabels and close < level3, "BEAR PATH: 6654 -> 6552", Color.RED);
+AddLabel(showLabels and close >= level3, "BEAR WATCH: Hold Under 6654", Color.ORANGE);
 
 
 
