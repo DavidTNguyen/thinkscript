@@ -1,21 +1,29 @@
-# === ES Levels: Short-Term Low Attempt - Key Pivot at 6850 ===
-# Updated: November 9, 2025
-# ES saw continuation of correction from ATHs with steady downtrend and bounces sold.
-# Friday: Buyers attempt short-term low with short squeeze into close.
-# 6850 key pivot for sellers to defend to prevent larger reversal back to ATHs.
-# If Friday low/prior week low fails, we can take another leg down.
+# === ES Levels: Choppy Fade - Bank Holiday Digest ===
+# Updated: November 11, 2025
+# 
+# OVERNIGHT: Choppy fade lower, unable to sustain above 6850
+# TODAY: Bank holiday - slow action, digesting yesterday's trend move
+# 
+# BULL PLAN: Reclaim 6850 → push to 6875
+# BEAR PLAN: Fail 6822 → 6796 target
+# 
+# WATCHLIST:
+# Backtest Long 6822: C setup
+# Failed Breakdown 6793: A setup
 
-# === RESISTANCE LEVELS (Reversal Potential) ===
-input level1 = 6850; # R2 - Backtest pivot (Sellers must defend to prevent ATH reversal)
+# === RESISTANCE LEVELS ===
+input level1 = 6875; # R2 - Push target if 6850 reclaims
 input level1_thickness = 4;
-input level2 = 6800; # R1 - Reclaim pivot (Bulls need to reclaim to test 6850)
+input level2 = 6850; # R1 - Key pivot (Must reclaim for bull push)
 input level2_thickness = 4;
 
-# === SUPPORT LEVELS (Downside Risk) ===
-input level3 = 6654; # S1 - Prior week low (Sellers hold under to test 6552)
+# === SUPPORT LEVELS ===
+input level3 = 6822; # S1 - Backtest Long setup (C)
 input level3_thickness = 4;
-input level4 = 6552; # S2 - Next leg down target
+input level4 = 6796; # S2 - Key support zone
 input level4_thickness = 3;
+input level5 = 6793; # S3 - Failed Breakdown setup (A)
+input level5_thickness = 4;
 
 # Alert Settings
 input enableAlerts = yes;
@@ -27,71 +35,85 @@ input showLabels = yes;
 # Fixed bubble logic - show only on last bar
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
 
-# === RESISTANCE: Reversal Levels ===
+# === RESISTANCE ===
 plot L1 = level1;
-L1.SetDefaultColor(Color.RED);
+L1.SetDefaultColor(Color.MAGENTA);
 L1.SetLineWeight(level1_thickness);
 L1.SetStyle(Curve.FIRM);
 
 plot L2 = level2;
-L2.SetDefaultColor(Color.YELLOW);
+L2.SetDefaultColor(Color.ORANGE);
 L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
 
-# === SUPPORT: Breakdown Levels ===
+# === SUPPORT ===
 plot L3 = level3;
 L3.SetDefaultColor(Color.CYAN);
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
 plot L4 = level4;
-L4.SetDefaultColor(Color.GREEN);
+L4.SetDefaultColor(Color.YELLOW);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
-# Chart bubbles - show only on last bar with labels
-AddChartBubble(isLastBar, level1, "R2: 6850 - Backtest Pivot (Defend = No ATH Reversal)", Color.RED, yes);
-AddChartBubble(isLastBar, level2, "R1: 6800 - Reclaim Pivot (Bulls Test 6850)", Color.YELLOW, yes);
-AddChartBubble(isLastBar, level3, "S1: 6654 - Prior Week Low (Hold Under = 6552)", Color.CYAN, no);
-AddChartBubble(isLastBar, level4, "S2: 6552 - Next Leg Down Target", Color.GREEN, no);
+plot L5 = level5;
+L5.SetDefaultColor(Color.GREEN);
+L5.SetLineWeight(level5_thickness);
+L5.SetStyle(Curve.FIRM);
+
+# Chart bubbles - show only on last bar
+AddChartBubble(isLastBar, level1, "R2: 6875 - Bull Push Target", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level2, "R1: 6850 - KEY PIVOT (Must Reclaim)", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level3, "S1: 6822 - Backtest Long (C Setup)", Color.CYAN, no);
+AddChartBubble(isLastBar, level4, "S2: 6796 - Support Zone", Color.YELLOW, no);
+AddChartBubble(isLastBar, level5, "S3: 6793 - Failed Breakdown (A Setup)", Color.GREEN, no);
 
 # === ALERT SYSTEM ===
 
-# RESISTANCE Breakout Alerts (Reversal Potential)
-Alert(enableAlerts and close crosses above level2, "ES ABOVE 6800 - RECLAIM PIVOT! TESTING 6850!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level1, "ES ABOVE 6850 - BACKTEST PIVOT BROKEN! LARGER REVERSAL TO ATHs!", Alert.BAR, Sound.Ring);
+# RESISTANCE Breakout Alerts
+Alert(enableAlerts and close crosses above level2, "ES ABOVE 6850 - KEY PIVOT RECLAIMED! PUSH TO 6875!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level1, "ES ABOVE 6875 - BULL PUSH TARGET HIT!", Alert.BAR, Sound.Ring);
 
-# SUPPORT Break Alerts (Downside Continuation)
-Alert(enableAlerts and close crosses below level3, "ES BELOW 6654 - PRIOR WEEK LOW BROKEN! NEXT LEG DOWN TO 6552!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level4, "ES BELOW 6552 - NEXT LEG DOWN TARGET HIT!", Alert.BAR, Sound.Bell);
+# SUPPORT Break Alerts
+Alert(enableAlerts and close crosses below level3, "ES BELOW 6822 - BACKTEST LONG FAILS! TARGET 6796!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level4, "ES BELOW 6796 - SUPPORT ZONE BROKEN! TESTING 6793!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level5, "ES BELOW 6793 - FAILED BREAKDOWN LEVEL BROKEN!", Alert.BAR, Sound.Bell);
 
-# Testing Key Pivots
-Alert(enableAlerts and close >= level2 - alertSensitivity and close <= level2 + alertSensitivity, "ES Testing 6800 - Reclaim Pivot", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level1 - alertSensitivity and close <= level1 + alertSensitivity, "ES Testing 6850 - BACKTEST PIVOT (CRITICAL!)", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level3 - alertSensitivity and close <= level3 + alertSensitivity, "ES Testing 6654 - Prior Week Low", Alert.BAR, Sound.Chimes);
+# Testing Key Levels
+Alert(enableAlerts and close >= level2 - alertSensitivity and close <= level2 + alertSensitivity, "ES Testing 6850 - KEY PIVOT!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level3 - alertSensitivity and close <= level3 + alertSensitivity, "ES Testing 6822 - Backtest Long (C Setup)", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "ES Testing 6793 - Failed Breakdown (A Setup)", Alert.BAR, Sound.Chimes);
 
-# Bounce/Rejection Alerts
-Alert(enableAlerts and low[1] <= level3 and close > level3 + 5, "ES BOUNCE from 6654 - Prior Week Low Holds! Short-Term Low?", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and high[1] >= level2 and close < level2 - 5, "ES REJECTION at 6800 - Reclaim Pivot Failed", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and high[1] >= level1 and close < level1 - 5, "ES REJECTION at 6850 - SELLERS DEFEND PIVOT! No ATH Reversal", Alert.BAR, Sound.Bell);
+# Bounce/Rejection Alerts - WATCHLIST SETUPS
+Alert(enableAlerts and low[1] <= level3 and close > level3 + 5, "ES BOUNCE from 6822 - BACKTEST LONG (C) TRIGGERED!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and low[1] <= level5 and close > level5 + 3, "ES BOUNCE from 6793 - FAILED BREAKDOWN (A) TRIGGERED!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and low[1] <= level4 and close > level4 + 5, "ES BOUNCE from 6796 - Support Zone Holds!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and high[1] >= level2 and close < level2 - 5, "ES REJECTION at 6850 - Key Pivot Fails! Watch 6822!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and high[1] >= level1 and close < level1 - 5, "ES REJECTION at 6875 - Bull Push Failed!", Alert.BAR, Sound.Bell);
 
-# Short Squeeze Detection
-Alert(enableAlerts and close > close[1] + 10 and volume > volume[1] * 1.3, "ES SHORT SQUEEZE DETECTED!", Alert.BAR, Sound.Ring);
+# Choppy Market Detection
+Alert(enableAlerts and AbsValue(close - open) < 5 and volume < Average(volume, 20) * 0.7, "ES CHOPPY - Bank Holiday Light Volume", Alert.BAR, Sound.Chimes);
 
 # Status Labels
 AddLabel(showLabels and enableAlerts, "Alerts ON", Color.GREEN);
 AddLabel(showLabels and !enableAlerts, "Alerts OFF", Color.RED);
-AddLabel(showLabels, "Short-Term Low Attempt", Color.YELLOW);
-AddLabel(showLabels, "Friday: Short Squeeze Close", Color.CYAN);
+AddLabel(showLabels, "Bank Holiday - Digest Mode", Color.YELLOW);
+AddLabel(showLabels, "Choppy Fade Overnight", Color.ORANGE);
 AddLabel(showLabels, "Now: " + Round(close, 2), Color.CYAN);
 
 # Trade Plan - Bull Scenario
-AddLabel(showLabels and close >= level2, "BULL PATH: 6800 -> 6850 -> ATHs", Color.LIME);
-AddLabel(showLabels and close < level2 and close >= level3, "BULL PLAN: Reclaim 6800 First", Color.YELLOW);
+AddLabel(showLabels and close >= level2, "BULL PATH: 6850 -> 6875", Color.LIME);
+AddLabel(showLabels and close < level2 and close >= level3, "BULL PLAN: Reclaim 6850 First", Color.YELLOW);
 
 # Trade Plan - Bear Scenario
-AddLabel(showLabels and close < level3, "BEAR PATH: 6654 -> 6552", Color.RED);
-AddLabel(showLabels and close >= level3, "BEAR WATCH: Hold Under 6654", Color.ORANGE);
+AddLabel(showLabels and close < level3, "BEAR PATH: 6822 -> 6796 -> 6793", Color.RED);
+AddLabel(showLabels and close >= level3 and close < level2, "RANGE: 6822-6850 (Stay Patient)", Color.ORANGE);
+
+# Watchlist Setup Labels
+AddLabel(showLabels, "WATCHLIST: C @ 6822 | A @ 6793", Color.CYAN);
+AddLabel(showLabels and close <= level3 + 2 and close >= level3 - 2, "NEAR C SETUP (6822)", Color.MAGENTA);
+AddLabel(showLabels and close <= level5 + 2 and close >= level5 - 2, "NEAR A SETUP (6793)", Color.MAGENTA);
 
 
 
