@@ -6,6 +6,7 @@ input dailyHigh = 0.0;
 input dailyLow = 0.0;
 input weeklyHigh = 0.0;
 input weeklyLow = 0.0;
+input bubbleOffset = 10; # bars from current bar
 
 def symbolSPY = GetSymbol() == "SPY";
 def symbolSPX = GetSymbol() == "SPX";
@@ -15,7 +16,7 @@ def symbolIWM = GetSymbol() == "IWM";
 
 def defaultDailyHigh =
     if symbolSPY then 653.44
-    else if symbolSPX then 6542.94
+    else if symbolSPX then 6869.91
     else if symbolXSP then Double.NaN
     else if symbolQQQ then 584.10
     else if symbolIWM then 239.12
@@ -23,7 +24,7 @@ def defaultDailyHigh =
 
 def defaultDailyLow =
     if symbolSPY then 647.22
-    else if symbolSPX then 6482.28
+    else if symbolSPX then 6829.62
     else if symbolXSP then Double.NaN
     else if symbolQQQ then 576.92
     else if symbolIWM then 234.58
@@ -31,7 +32,7 @@ def defaultDailyLow =
 
 def defaultWeeklyHigh =
     if symbolSPY then 655.94
-    else if symbolSPX then 6567.21
+    else if symbolSPX then 6891
     else if symbolXSP then 8.59
     else if symbolQQQ then 585.97
     else if symbolIWM then 243.14
@@ -39,7 +40,7 @@ def defaultWeeklyHigh =
 
 def defaultWeeklyLow =
     if symbolSPY then 638.54
-    else if symbolSPX then 6395.79
+    else if symbolSPX then 6809
     else if symbolXSP then 639.71
     else if symbolQQQ then 566.15
     else if symbolIWM then 232.40
@@ -49,6 +50,12 @@ def activeDailyHigh = if dailyHigh != 0 then dailyHigh else defaultDailyHigh;
 def activeDailyLow = if dailyLow != 0 then dailyLow else defaultDailyLow;
 def activeWeeklyHigh = if weeklyHigh != 0 then weeklyHigh else defaultWeeklyHigh;
 def activeWeeklyLow = if weeklyLow != 0 then weeklyLow else defaultWeeklyLow;
+
+# Calculate ranges
+def dailyRange = activeDailyHigh - activeDailyLow;
+def weeklyRange = activeWeeklyHigh - activeWeeklyLow;
+def dailyMidpoint = (activeDailyHigh + activeDailyLow) / 2;
+def weeklyMidpoint = (activeWeeklyHigh + activeWeeklyLow) / 2;
 
 plot Daily_High = activeDailyHigh;
 plot Daily_Low = activeDailyLow;
@@ -68,10 +75,12 @@ Weekly_Low.SetDefaultColor(Color.MAGENTA);
 Weekly_Low.SetLineWeight(3);
 Weekly_Low.SetStyle(Curve.FIRM);
 
-def lastBarNum = HighestAll(BarNumber());
-def showBubbleBar = BarNumber() == lastBarNum;
-def offset = 5; # number of bars to the left from the last bar
+# Bubble positioning - show at offset from last bar
+def bn = BarNumber();
+def lastBar = HighestAll(if !IsNaN(close) then bn else Double.NaN);
+def showBubbleBar = bn == lastBar - bubbleOffset;
 
+# High/Low bubbles
 AddChartBubble(
     showBubbles and showBubbleBar and !IsNaN(Weekly_High),
     Weekly_High,
@@ -101,9 +110,28 @@ AddChartBubble(
     no
 );
 
+# Range bubbles at midpoint
+AddChartBubble(
+    showBubbles and showBubbleBar and !IsNaN(weeklyMidpoint),
+    weeklyMidpoint,
+    "W Range: " + Round(weeklyRange, 2) + " (" + Round(weeklyRange / activeWeeklyLow * 100, 2) + "%)",
+    Color.MAGENTA,
+    yes
+);
+AddChartBubble(
+    showBubbles and showBubbleBar and !IsNaN(dailyMidpoint),
+    dailyMidpoint,
+    "D Range: " + Round(dailyRange, 2) + " (" + Round(dailyRange / activeDailyLow * 100, 2) + "%)",
+    Color.LIGHT_GRAY,
+    yes
+);
+
+# Labels
 AddLabel(showBubbles and !IsNaN(Weekly_High), "W Hi: " + activeWeeklyHigh, Color.MAGENTA);
 AddLabel(showBubbles and !IsNaN(Weekly_Low), "W Lo: " + activeWeeklyLow, Color.MAGENTA);
+AddLabel(showBubbles and !IsNaN(weeklyRange), "W Range: " + Round(weeklyRange, 2) + " (" + Round(weeklyRange / activeWeeklyLow * 100, 2) + "%)", Color.MAGENTA);
 AddLabel(showBubbles and !IsNaN(Daily_High), "D Hi: " + activeDailyHigh, Color.LIGHT_GRAY);
 AddLabel(showBubbles and !IsNaN(Daily_Low), "D Lo: " + activeDailyLow, Color.LIGHT_GRAY);
+AddLabel(showBubbles and !IsNaN(dailyRange), "D Range: " + Round(dailyRange, 2) + " (" + Round(dailyRange / activeDailyLow * 100, 2) + "%)", Color.LIGHT_GRAY);
 
 # End of script

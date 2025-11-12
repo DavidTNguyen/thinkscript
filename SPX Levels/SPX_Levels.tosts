@@ -1,17 +1,20 @@
 # === SPX Levels: Bear Star Structure ===
-# Updated: November 7, 2025
+# Updated: November 12, 2025
 # Major Bear Star at 6881.9 - bull break trigger
+# Secondary Bear Star at 6850
 # Current close: ~6728
-# Resistance: 6915, 6881.9 (bull trigger), 6819 (fade), 6765 (range scalp)
+# Resistance: 6915, 6881.9 (bull trigger), 6850 (bear star), 6819 (fade), 6765 (range scalp)
 # Short bias trigger: 6717
 # Critical support: 6635 (panic trigger)
 # Downside: 6599 (continuation), 6555 (liquidation), 6480 (free fall)
 
 # === RESISTANCE LEVELS ===
-input level1 = 6915; # R2 - Resistance
+input level1 = 6915; # R3 - Resistance
 input level1_thickness = 4;
-input level2 = 6881.9; # R1 - Major Bull Trigger (Bear Star)
+input level2 = 6881.9; # R2 - Major Bull Trigger (Bear Star)
 input level2_thickness = 4;
+input level2a = 6850; # R1a - Secondary Bear Star
+input level2a_thickness = 4;
 input level3 = 6819; # Short-term fade zone
 input level3_thickness = 2;
 input level4 = 6765; # Range scalp level
@@ -53,6 +56,11 @@ plot L2 = level2;
 L2.SetDefaultColor(Color.GREEN);
 L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
+
+plot L2a = level2a;
+L2a.SetDefaultColor(Color.CYAN);
+L2a.SetLineWeight(level2a_thickness);
+L2a.SetStyle(Curve.FIRM);
 
 plot L3 = level3;
 L3.SetDefaultColor(Color.YELLOW);
@@ -97,8 +105,9 @@ L9.SetLineWeight(level9_thickness);
 L9.SetStyle(Curve.FIRM);
 
 # Chart bubbles - show only on last bar with labels
-AddChartBubble(isLastBar, level1, "R2: 6915", Color.GREEN, yes);
-AddChartBubble(isLastBar, level2, "🚩 R1: 6881.9 - Major Bear Star/Bull Break Trigger", Color.GREEN, yes);
+AddChartBubble(isLastBar, level1, "R3: 6915", Color.GREEN, yes);
+AddChartBubble(isLastBar, level2, "🚩 R2: 6881.9 - Major Bear Star/Bull Break Trigger", Color.GREEN, yes);
+AddChartBubble(isLastBar, level2a, "🚩 R1a: 6850 - Secondary Bear Star", Color.CYAN, yes);
 AddChartBubble(isLastBar, level3, "6819 - Short-term fade zone", Color.YELLOW, yes);
 AddChartBubble(isLastBar, level4, "6765 - Range scalp level", Color.YELLOW, yes);
 AddChartBubble(isLastBar, currentLevel, "6728 - Current Close", Color.WHITE, yes);
@@ -112,7 +121,8 @@ AddChartBubble(isLastBar, level9, "💣 S5: 6480 - Free Fall", Color.DARK_RED, n
 
 # RESISTANCE Breakout Alerts
 Alert(enableAlerts and close crosses above level2, "SPX ABOVE 6881.9 - 🚩 MAJOR BULL BREAK! BEAR STAR BROKEN!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level1, "SPX ABOVE R2: 6915!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level2a, "SPX ABOVE 6850 - 🚩 SECONDARY BEAR STAR BROKEN!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level1, "SPX ABOVE R3: 6915!", Alert.BAR, Sound.Ring);
 Alert(enableAlerts and close crosses above level3, "SPX ABOVE 6819 - Fade Zone", Alert.BAR, Sound.Ring);
 Alert(enableAlerts and close crosses above level4, "SPX ABOVE 6765 - Range Scalp Level", Alert.BAR, Sound.Ring);
 
@@ -125,7 +135,8 @@ Alert(enableAlerts and close crosses below level8, "SPX BELOW 6555 - 💥 LIQUID
 Alert(enableAlerts and close crosses below level9, "SPX BELOW 6480 - 💣 FREE FALL!", Alert.BAR, Sound.Bell);
 
 # Testing Key Levels
-Alert(enableAlerts and close >= level2 - alertSensitivity and close <= level2 + alertSensitivity, "SPX Testing 6881.9 - Bear Star/Bull Trigger", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level2 - alertSensitivity and close <= level2 + alertSensitivity, "SPX Testing 6881.9 - Major Bear Star/Bull Trigger", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level2a - alertSensitivity and close <= level2a + alertSensitivity, "SPX Testing 6850 - Secondary Bear Star", Alert.BAR, Sound.Chimes);
 Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "SPX Testing 6717 - Short Bias Trigger", Alert.BAR, Sound.Chimes);
 Alert(enableAlerts and close >= level6 - alertSensitivity and close <= level6 + alertSensitivity, "SPX Testing 6635 - 🚨 PANIC TRIGGER!", Alert.BAR, Sound.Chimes);
 Alert(enableAlerts and close >= level8 - alertSensitivity and close <= level8 + alertSensitivity, "SPX Testing 6555 - 💥 LIQUIDATION ZONE!", Alert.BAR, Sound.Chimes);
@@ -134,19 +145,21 @@ Alert(enableAlerts and close >= level8 - alertSensitivity and close <= level8 + 
 Alert(enableAlerts and low[1] <= level5 and close > level5 + 3, "SPX BOUNCE from 6717! Short Bias Held", Alert.BAR, Sound.Ring);
 Alert(enableAlerts and low[1] <= level6 and close > level6 + 3, "SPX BOUNCE from 6635! 🚨 Panic Trigger Held!", Alert.BAR, Sound.Ring);
 Alert(enableAlerts and low[1] <= level8 and close > level8 + 3, "SPX BOUNCE from 6555! 💥 Liquidation Zone Held!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and high[1] >= level2 and close < level2 - 3, "SPX REJECTION at 6881.9 - Bear Star Holds", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and high[1] >= level2 and close < level2 - 3, "SPX REJECTION at 6881.9 - Major Bear Star Holds", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and high[1] >= level2a and close < level2a - 3, "SPX REJECTION at 6850 - Secondary Bear Star Holds", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and high[1] >= level4 and close < level4 - 3, "SPX REJECTION at 6765 - Range Scalp Fails", Alert.BAR, Sound.Bell);
 
 # Status Labels
 AddLabel(showLabels and enableAlerts, "Alerts ON", Color.GREEN);
 AddLabel(showLabels and !enableAlerts, "Alerts OFF", Color.RED);
-AddLabel(showLabels, "🚩 Bear Star: 6881.9", Color.GREEN);
+AddLabel(showLabels, "🚩 Bear Stars: 6881.9 | 6850", Color.GREEN);
 AddLabel(showLabels, "Current: 6728", Color.WHITE);
 AddLabel(showLabels, "Now: " + Round(close, 2), Color.CYAN);
 
 # Market Structure Labels
-AddLabel(showLabels and close >= level2, "ABOVE BEAR STAR - BULL MODE!", Color.GREEN);
-AddLabel(showLabels and close >= level4 and close < level2, "RANGE: 6765-6881.9", Color.YELLOW);
+AddLabel(showLabels and close >= level2, "ABOVE 6881.9 - BULL MODE!", Color.GREEN);
+AddLabel(showLabels and close >= level2a and close < level2, "ABOVE 6850 - Testing 6881.9", Color.CYAN);
+AddLabel(showLabels and close >= level4 and close < level2a, "RANGE: 6765-6850", Color.YELLOW);
 AddLabel(showLabels and close >= currentLevel and close < level4, "NEAR CURRENT: 6728", Color.WHITE);
 AddLabel(showLabels and close >= level5 and close < currentLevel, "APPROACHING SHORT TRIGGER", Color.ORANGE);
 AddLabel(showLabels and close >= level6 and close < level5, "BELOW 6717 - SHORT BIAS", Color.RED);
@@ -157,7 +170,8 @@ AddLabel(showLabels and close < level9, "FREE FALL ZONE!", Color.MAGENTA);
 
 # Trade Plan Status
 AddLabel(showLabels and close >= level2, "BULL PATH: 6915+", Color.GREEN);
-AddLabel(showLabels and close >= level4 and close < level2, "BREAK 6881.9 FOR BULL", Color.YELLOW);
+AddLabel(showLabels and close >= level2a and close < level2, "BREAK 6881.9 FOR FULL BULL", Color.CYAN);
+AddLabel(showLabels and close >= level4 and close < level2a, "BREAK 6850 BEAR STAR", Color.YELLOW);
 AddLabel(showLabels and close >= level5 and close < level4, "SCALP RANGE 6765", Color.YELLOW);
 AddLabel(showLabels and close >= level6 and close < level5, "SHORT BIAS ACTIVE", Color.ORANGE);
 AddLabel(showLabels and close < level6, "BEAR PATH: 6599-6555-6480", Color.RED);
@@ -172,6 +186,7 @@ AddLabel(showLabels and close < level9, "💣 FREE FALL!", Color.MAGENTA);
 
 # Distance to Key Levels
 def distTo6881 = level2 - close;
+def distTo6850 = level2a - close;
 def distTo6915 = level1 - close;
 def distTo6819 = level3 - close;
 def distTo6765 = level4 - close;

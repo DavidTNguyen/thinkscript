@@ -1,39 +1,37 @@
-# === MANCINI ES Levels: Protect Gains - Flagging ===
+# === MANCINI ES Levels: Choppy Recharge - 6877 Key ===
 # Updated: November 11, 2025 (Quasi-Holiday)
 # 
 # PLAN UPDATE:
-# Friday: 6690 macro Failed Breakdown long triggered → +170 points
-# Yesterday: 6807 reclaim long triggered → Hit 6863 target, then 1st retrace overnight
+# Very choppy, low volatility day as #ES_F recharges after its 210 point squeeze from Friday's 6690 Failed Breakdown.
+# Most of the day spent chopping around 6865/6857 supports.
+# There's 6877 again - key level.
 # 
-# TODAY'S EXECUTION:
-# 8am: Called 6836 support, 6841 reclaim → 6851 (HIT)
-# 35min ago: 6841 triggered again → 6851 (HIT AGAIN)
-# Now: FLAGGING - Protect gains
-# 
-# NEXT TARGETS IF BULLS WANT MORE:
-# 6857, 6863, 6877
+# No change: 6877 must reclaim to see 6888, 6893, 6899+
+# Support: 6848 next fresh support
 
 # === RESISTANCE LEVELS ===
-input level1 = 6877; # R4 - HUGE POINT (if bulls push)
+input level1 = 6920; # R5 - Next resistance slate
 input level1_thickness = 4;
-input level2 = 6863; # R3 - Extension target
+input level2 = 6909; # R4 - Resistance
 input level2_thickness = 3;
-input level3 = 6857; # R2 - Next target
-input level3_thickness = 3;
-input level4 = 6851; # R1 - TWICE HIT (flagging zone)
+input level3 = 6899; # R3 - Target if 6877 reclaims
+input level3_thickness = 4;
+input level4 = 6893; # R2 - Target if 6877 reclaims
 input level4_thickness = 4;
+input level5 = 6888; # R1 - Target if 6877 reclaims
+input level5_thickness = 3;
 
-# === CURRENT ZONE ===
-input level5 = 6841; # Key - Reclaim level (triggered 2x today)
-input level5_thickness = 4;
-input level6 = 6836; # S1 - Support called at 8am (holding)
+# === KEY LEVEL ===
+input level6 = 6877; # Key - MUST RECLAIM for upside
 input level6_thickness = 4;
 
 # === SUPPORT LEVELS ===
-input level7 = 6820; # S2 - Dip target if 6836 fails
+input level7 = 6865; # S1 - Chop zone support
 input level7_thickness = 3;
-input level8 = 6807; # S3 - Yesterday's reclaim level
-input level8_thickness = 4;
+input level8 = 6857; # S2 - Chop zone support
+input level8_thickness = 3;
+input level9 = 6848; # S3 - Fresh support
+input level9_thickness = 4;
 
 # Alert Settings
 input enableAlerts = yes;
@@ -66,62 +64,70 @@ L4.SetDefaultColor(Color.ORANGE);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
-# === CURRENT ZONE ===
 plot L5 = level5;
-L5.SetDefaultColor(Color.WHITE);
+L5.SetDefaultColor(Color.CYAN);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
 
+# === KEY LEVEL ===
 plot L6 = level6;
-L6.SetDefaultColor(Color.GREEN);
+L6.SetDefaultColor(Color.WHITE);
 L6.SetLineWeight(level6_thickness);
 L6.SetStyle(Curve.FIRM);
 
 # === SUPPORT ===
 plot L7 = level7;
-L7.SetDefaultColor(Color.GREEN);
+L7.SetDefaultColor(Color.YELLOW);
 L7.SetLineWeight(level7_thickness);
 L7.SetStyle(Curve.FIRM);
 
 plot L8 = level8;
-L8.SetDefaultColor(Color.GREEN);
+L8.SetDefaultColor(Color.YELLOW);
 L8.SetLineWeight(level8_thickness);
 L8.SetStyle(Curve.FIRM);
 
+plot L9 = level9;
+L9.SetDefaultColor(Color.GREEN);
+L9.SetLineWeight(level9_thickness);
+L9.SetStyle(Curve.FIRM);
+
 # Chart bubbles - show only on last bar
-AddChartBubble(isLastBar, level1, "R4: 6877 - HUGE POINT (if bulls push)", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level2, "R3: 6863 - Extension", Color.CYAN, yes);
-AddChartBubble(isLastBar, level3, "R2: 6857 - Next if bulls want more", Color.YELLOW, yes);
-AddChartBubble(isLastBar, level4, "R1: 6851 - HIT 2x TODAY (FLAGGING)", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level5, "6841 - Triggered 2x (8am & 35min ago)", Color.WHITE, yes);
-AddChartBubble(isLastBar, level6, "S1: 6836 - 8am Support Call (Holding)", Color.GREEN, no);
-AddChartBubble(isLastBar, level7, "S2: 6820 - Dip if 6836 fails", Color.GREEN, no);
-AddChartBubble(isLastBar, level8, "S3: 6807 - Yesterday's level", Color.GREEN, no);
+AddChartBubble(isLastBar, level1, "R5: 6920 - Next Resistance", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level2, "R4: 6909 - Resistance", Color.CYAN, yes);
+AddChartBubble(isLastBar, level3, "R3: 6899 - If 6877 reclaims", Color.YELLOW, yes);
+AddChartBubble(isLastBar, level4, "R2: 6893 - If 6877 reclaims", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level5, "R1: 6888 - If 6877 reclaims", Color.CYAN, yes);
+AddChartBubble(isLastBar, level6, "KEY: 6877 - MUST RECLAIM for upside", Color.WHITE, yes);
+AddChartBubble(isLastBar, level7, "S1: 6865 - Chop Zone", Color.YELLOW, no);
+AddChartBubble(isLastBar, level8, "S2: 6857 - Chop Zone", Color.YELLOW, no);
+AddChartBubble(isLastBar, level9, "S3: 6848 - Fresh Support", Color.GREEN, no);
 
 # === ALERT SYSTEM ===
 
-# RESISTANCE Breakout Alerts - EXTENSION TARGETS
-Alert(enableAlerts and close crosses above level4, "ES ABOVE 6851 - 3rd HIT! FLAGGING! Next 6857 if bulls push!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level3, "ES ABOVE 6857 - Bulls pushing! Next 6863!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level2, "ES ABOVE 6863 - Extension! Next 6877 HUGE POINT!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level1, "ES ABOVE 6877 - HUGE POINT CLEARED!", Alert.BAR, Sound.Ring);
+# RESISTANCE Breakout Alerts - REQUIRES 6877 RECLAIM
+Alert(enableAlerts and close crosses above level6, "ES ABOVE 6877 - RECLAIM! Targets: 6888, 6893, 6899+!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level5, "ES ABOVE 6888 - Target Hit! Next 6893!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level4, "ES ABOVE 6893 - Target Hit! Next 6899!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level3, "ES ABOVE 6899 - Target cleared! Next 6909!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level2, "ES ABOVE 6909 - Resistance cleared! Next 6920!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level1, "ES ABOVE 6920 - Next resistance slate!", Alert.BAR, Sound.Ring);
 
-# SUPPORT Break Alerts - PROTECT GAINS
-Alert(enableAlerts and close crosses below level5, "ES BELOW 6841 - Reclaim lost! PROTECT GAINS! Test 6836!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level6, "ES BELOW 6836 - 8am SUPPORT FAILS! DIP TO 6820!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level7, "ES BELOW 6820 - Next dip 6807!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level8, "ES BELOW 6807 - Yesterday's level broken!", Alert.BAR, Sound.Bell);
+# SUPPORT Break Alerts
+Alert(enableAlerts and close crosses below level7, "ES BELOW 6865 - Chop zone break! Watch 6857!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level8, "ES BELOW 6857 - Chop zone low! Next 6848!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level9, "ES BELOW 6848 - Fresh support broken!", Alert.BAR, Sound.Bell);
 
 # Testing Key Levels
-Alert(enableAlerts and close >= level4 - alertSensitivity and close <= level4 + alertSensitivity, "ES Testing 6851 - FLAGGING ZONE! Protect gains!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level3 - alertSensitivity and close <= level3 + alertSensitivity, "ES Testing 6857 - Extension target!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "ES Testing 6841 - Reclaim level (2x trigger today)", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level6 - alertSensitivity and close <= level6 + alertSensitivity, "ES Testing 6836 - 8am SUPPORT!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level6 - alertSensitivity and close <= level6 + alertSensitivity, "ES Testing 6877 - KEY RECLAIM LEVEL!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level7 - alertSensitivity and close <= level7 + alertSensitivity, "ES Testing 6865 - Chop zone support", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level8 - alertSensitivity and close <= level8 + alertSensitivity, "ES Testing 6857 - Chop zone support", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close >= level9 - alertSensitivity and close <= level9 + alertSensitivity, "ES Testing 6848 - Fresh support", Alert.BAR, Sound.Chimes);
 
-# Bounce/Rejection Alerts - GAIN PROTECTION
-Alert(enableAlerts and low[1] <= level5 and close > level5 + 5, "ES BOUNCE from 6841 - Reclaim holds again!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and low[1] <= level6 and close > level6 + 5, "ES BOUNCE from 6836 - 8am SUPPORT HOLDS!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and low[1] <= level7 and close > level7 + 5, "ES BOUNCE from 6820 - Dip bought!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and high[1] >= level4 and close < level4 - 5, "ES REJECTION at 6851 - FLAGGING! Take profits!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and high[1] >= level3 and close < level3 - 5, "ES REJECTION at 6857 - Extension failed!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and high[1] >= level1 and close < level1 - 5, "ES REJECTION at 6877 - HUGE POINT Holds!", Alert.BAR, Sound.Bell);
+# Bounce/Rejection Alerts
+Alert(enableAlerts and low[1] <= level7 and close > level7 + 5, "ES BOUNCE from 6865 - Chop zone holds!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and low[1] <= level8 and close > level8 + 5, "ES BOUNCE from 6857 - Chop zone holds!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and low[1] <= level9 and close > level9 + 5, "ES BOUNCE from 6848 - Fresh support holds!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and high[1] >= level6 and close < level6 - 5, "ES REJECTION at 6877 - Reclaim failed! Back to chop!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and high[1] >= level5 and close < level5 - 5, "ES REJECTION at 6888 - Need 6877 reclaim first!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and high[1] >= level4 and close < level4 - 5, "ES REJECTION at 6893 - Resistance holds!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and high[1] >= level3 and close < level3 - 5, "ES REJECTION at 6899 - Resistance holds!", Alert.BAR, Sound.Bell);
