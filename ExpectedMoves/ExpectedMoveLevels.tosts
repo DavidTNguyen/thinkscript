@@ -13,37 +13,49 @@ def symbolSPX = GetSymbol() == "SPX";
 def symbolXSP = GetSymbol() == "XSP";
 def symbolQQQ = GetSymbol() == "QQQ";
 def symbolIWM = GetSymbol() == "IWM";
+def symbolES = GetSymbol() == "/ES";
+def symbolNQ = GetSymbol() == "/NQ";
 
+# Daily Expected Move Ranges - Updated 11/13/2025
 def defaultDailyHigh =
-    if symbolSPY then 653.44
-    else if symbolSPX then 6869.91
+    if symbolSPY then 683.38
+    else if symbolSPX then 6809.59
     else if symbolXSP then Double.NaN
-    else if symbolQQQ then 584.10
-    else if symbolIWM then 239.12
+    else if symbolQQQ then 626.62
+    else if symbolIWM then 245.80
+    else if symbolES then 6906.10
+    else if symbolNQ then 25902.47
     else Double.NaN;
 
 def defaultDailyLow =
-    if symbolSPY then 647.22
-    else if symbolSPX then 6829.62
+    if symbolSPY then 679.14
+    else if symbolSPX then 6809.59
     else if symbolXSP then Double.NaN
-    else if symbolQQQ then 576.92
-    else if symbolIWM then 234.58
+    else if symbolQQQ then 615.54
+    else if symbolIWM then 241.48
+    else if symbolES then 6821.90
+    else if symbolNQ then 25339.03
     else Double.NaN;
 
+# Weekly Expected Move Ranges - Updated 11/7/2025
 def defaultWeeklyHigh =
-    if symbolSPY then 655.94
-    else if symbolSPX then 6891
-    else if symbolXSP then 8.59
-    else if symbolQQQ then 585.97
-    else if symbolIWM then 243.14
+    if symbolSPY then 683.45
+    else if symbolSPX then 6859.06
+    else if symbolXSP then Double.NaN
+    else if symbolQQQ then 625.97
+    else if symbolIWM then 248.36
+    else if symbolES then 6883.83
+    else if symbolNQ then 25847.01
     else Double.NaN;
 
 def defaultWeeklyLow =
-    if symbolSPY then 638.54
-    else if symbolSPX then 6809
-    else if symbolXSP then 639.71
-    else if symbolQQQ then 566.15
-    else if symbolIWM then 232.40
+    if symbolSPY then 658.49
+    else if symbolSPX then 6605.10
+    else if symbolXSP then Double.NaN
+    else if symbolQQQ then 593.51
+    else if symbolIWM then 234.86
+    else if symbolES then 6646.17
+    else if symbolNQ then 24606.49
     else Double.NaN;
 
 def activeDailyHigh = if dailyHigh != 0 then dailyHigh else defaultDailyHigh;
@@ -54,8 +66,6 @@ def activeWeeklyLow = if weeklyLow != 0 then weeklyLow else defaultWeeklyLow;
 # Calculate ranges
 def dailyRange = activeDailyHigh - activeDailyLow;
 def weeklyRange = activeWeeklyHigh - activeWeeklyLow;
-def dailyMidpoint = (activeDailyHigh + activeDailyLow) / 2;
-def weeklyMidpoint = (activeWeeklyHigh + activeWeeklyLow) / 2;
 
 plot Daily_High = activeDailyHigh;
 plot Daily_Low = activeDailyLow;
@@ -80,7 +90,7 @@ def bn = BarNumber();
 def lastBar = HighestAll(if !IsNaN(close) then bn else Double.NaN);
 def showBubbleBar = bn == lastBar - bubbleOffset;
 
-# High/Low bubbles
+# Only High/Low bubbles - no range bubbles to avoid overlap
 AddChartBubble(
     showBubbles and showBubbleBar and !IsNaN(Weekly_High),
     Weekly_High,
@@ -88,6 +98,7 @@ AddChartBubble(
     Color.MAGENTA,
     yes
 );
+
 AddChartBubble(
     showBubbles and showBubbleBar and !IsNaN(Weekly_Low),
     Weekly_Low,
@@ -95,6 +106,7 @@ AddChartBubble(
     Color.MAGENTA,
     no
 );
+
 AddChartBubble(
     showBubbles and showBubbleBar and !IsNaN(Daily_High),
     Daily_High,
@@ -102,6 +114,7 @@ AddChartBubble(
     Color.LIGHT_GRAY,
     yes
 );
+
 AddChartBubble(
     showBubbles and showBubbleBar and !IsNaN(Daily_Low),
     Daily_Low,
@@ -110,23 +123,7 @@ AddChartBubble(
     no
 );
 
-# Range bubbles at midpoint
-AddChartBubble(
-    showBubbles and showBubbleBar and !IsNaN(weeklyMidpoint),
-    weeklyMidpoint,
-    "W Range: " + Round(weeklyRange, 2) + " (" + Round(weeklyRange / activeWeeklyLow * 100, 2) + "%)",
-    Color.MAGENTA,
-    yes
-);
-AddChartBubble(
-    showBubbles and showBubbleBar and !IsNaN(dailyMidpoint),
-    dailyMidpoint,
-    "D Range: " + Round(dailyRange, 2) + " (" + Round(dailyRange / activeDailyLow * 100, 2) + "%)",
-    Color.LIGHT_GRAY,
-    yes
-);
-
-# Labels
+# Labels - including range info
 AddLabel(showBubbles and !IsNaN(Weekly_High), "W Hi: " + activeWeeklyHigh, Color.MAGENTA);
 AddLabel(showBubbles and !IsNaN(Weekly_Low), "W Lo: " + activeWeeklyLow, Color.MAGENTA);
 AddLabel(showBubbles and !IsNaN(weeklyRange), "W Range: " + Round(weeklyRange, 2) + " (" + Round(weeklyRange / activeWeeklyLow * 100, 2) + "%)", Color.MAGENTA);
