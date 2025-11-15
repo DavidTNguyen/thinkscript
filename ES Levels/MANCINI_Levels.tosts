@@ -1,37 +1,38 @@
-# === MANCINI ES Levels: Choppy Recharge - 6877 Key ===
-# Updated: November 11, 2025 (Quasi-Holiday)
+# === MANCINI ES Levels: 6764 Hit - Bulls Need Accept ===
+# Updated: November 14, 2025
 # 
 # PLAN UPDATE:
-# Very choppy, low volatility day as #ES_F recharges after its 210 point squeeze from Friday's 6690 Failed Breakdown.
-# Most of the day spent chopping around 6865/6857 supports.
-# There's 6877 again - key level.
-# 
-# No change: 6877 must reclaim to see 6888, 6893, 6899+
-# Support: 6848 next fresh support
+# 6764 hit & back to ground 0 (based all last eve).
+# 6705 reclaim triggered: 6712 ✓, 6728 ✓, 6746 ✓, 6764 ✓ - BONUS NOW!
+# 6764 big shelf - bulls need to accept it.
+# Resistance: 6772, 6777, 6796 above.
+# Same supports on retracement.
 
 # === RESISTANCE LEVELS ===
-input level1 = 6920; # R5 - Next resistance slate
-input level1_thickness = 4;
-input level2 = 6909; # R4 - Resistance
+input level1 = 6796; # R8 - Resistance
+input level1_thickness = 3;
+input level2 = 6777; # R7 - Resistance
 input level2_thickness = 3;
-input level3 = 6899; # R3 - Target if 6877 reclaims
-input level3_thickness = 4;
-input level4 = 6893; # R2 - Target if 6877 reclaims
-input level4_thickness = 4;
-input level5 = 6888; # R1 - Target if 6877 reclaims
+input level3 = 6772; # R6 - Resistance
+input level3_thickness = 3;
+input level4 = 6764; # R5 - BIG SHELF - Bulls need to accept **
+input level4_thickness = 5;
+input level5 = 6746; # R4 - Hit ✓
 input level5_thickness = 3;
+input level6 = 6728; # R3 - Hit ✓
+input level6_thickness = 3;
+input level7 = 6712; # R2 - Hit ✓
+input level7_thickness = 3;
 
 # === KEY LEVEL ===
-input level6 = 6877; # Key - MUST RECLAIM for upside
-input level6_thickness = 4;
+input level8 = 6705; # KEY - Reclaim triggered ✓
+input level8_thickness = 5;
 
 # === SUPPORT LEVELS ===
-input level7 = 6865; # S1 - Chop zone support
-input level7_thickness = 3;
-input level8 = 6857; # S2 - Chop zone support
-input level8_thickness = 3;
-input level9 = 6848; # S3 - Fresh support
+input level9 = 6685; # S1 - Newsletter support - Held exact **
 input level9_thickness = 4;
+input level10 = 6663; # S2 - Dip level if 6685 fails
+input level10_thickness = 4;
 
 # Alert Settings
 input enableAlerts = yes;
@@ -40,24 +41,36 @@ input alertSensitivity = 0.5;
 # Label Visibility
 input showLabels = yes;
 
+# === ANCHORED VWAP SETTINGS ===
+input anchorDate = 20250825; # Aug 25, 2025 low
+input showVWAP = yes;
+
 # Fixed bubble logic - show only on last bar
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
 
+# === ANCHORED VWAP CALCULATION ===
+def anchorBar = GetYYYYMMDD() == anchorDate;
+def postAnchor = CompoundValue(1, if anchorBar then 1 else if postAnchor[1] then 1 else 0, 0);
+
+def sumTPV = CompoundValue(1, if postAnchor then sumTPV[1] + (high + low + close) / 3 * volume else 0, 0);
+def sumVol = CompoundValue(1, if postAnchor then sumVol[1] + volume else 0, 0);
+def vwapValue = if sumVol > 0 then sumTPV / sumVol else Double.NaN;
+
 # === RESISTANCE ===
 plot L1 = level1;
-L1.SetDefaultColor(Color.MAGENTA);
+L1.SetDefaultColor(Color.LIGHT_GRAY);
 L1.SetLineWeight(level1_thickness);
-L1.SetStyle(Curve.FIRM);
+L1.SetStyle(Curve.SHORT_DASH);
 
 plot L2 = level2;
-L2.SetDefaultColor(Color.CYAN);
+L2.SetDefaultColor(Color.LIGHT_GRAY);
 L2.SetLineWeight(level2_thickness);
-L2.SetStyle(Curve.FIRM);
+L2.SetStyle(Curve.SHORT_DASH);
 
 plot L3 = level3;
-L3.SetDefaultColor(Color.YELLOW);
+L3.SetDefaultColor(Color.LIGHT_GRAY);
 L3.SetLineWeight(level3_thickness);
-L3.SetStyle(Curve.FIRM);
+L3.SetStyle(Curve.SHORT_DASH);
 
 plot L4 = level4;
 L4.SetDefaultColor(Color.ORANGE);
@@ -69,65 +82,88 @@ L5.SetDefaultColor(Color.CYAN);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
 
-# === KEY LEVEL ===
 plot L6 = level6;
-L6.SetDefaultColor(Color.WHITE);
+L6.SetDefaultColor(Color.CYAN);
 L6.SetLineWeight(level6_thickness);
 L6.SetStyle(Curve.FIRM);
 
-# === SUPPORT ===
 plot L7 = level7;
-L7.SetDefaultColor(Color.YELLOW);
+L7.SetDefaultColor(Color.CYAN);
 L7.SetLineWeight(level7_thickness);
 L7.SetStyle(Curve.FIRM);
 
+# === KEY LEVEL ===
 plot L8 = level8;
-L8.SetDefaultColor(Color.YELLOW);
+L8.SetDefaultColor(Color.WHITE);
 L8.SetLineWeight(level8_thickness);
 L8.SetStyle(Curve.FIRM);
 
+# === SUPPORT ===
 plot L9 = level9;
 L9.SetDefaultColor(Color.GREEN);
 L9.SetLineWeight(level9_thickness);
 L9.SetStyle(Curve.FIRM);
 
+plot L10 = level10;
+L10.SetDefaultColor(Color.MAGENTA);
+L10.SetLineWeight(level10_thickness);
+L10.SetStyle(Curve.FIRM);
+
+# === ANCHORED VWAP PLOTS ===
+plot VWAP = if showVWAP and postAnchor then vwapValue else Double.NaN;
+VWAP.SetDefaultColor(Color.YELLOW);
+VWAP.SetLineWeight(2);
+VWAP.SetStyle(Curve.FIRM);
+
 # Chart bubbles - show only on last bar
-AddChartBubble(isLastBar, level1, "R5: 6920 - Next Resistance", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level2, "R4: 6909 - Resistance", Color.CYAN, yes);
-AddChartBubble(isLastBar, level3, "R3: 6899 - If 6877 reclaims", Color.YELLOW, yes);
-AddChartBubble(isLastBar, level4, "R2: 6893 - If 6877 reclaims", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level5, "R1: 6888 - If 6877 reclaims", Color.CYAN, yes);
-AddChartBubble(isLastBar, level6, "KEY: 6877 - MUST RECLAIM for upside", Color.WHITE, yes);
-AddChartBubble(isLastBar, level7, "S1: 6865 - Chop Zone", Color.YELLOW, no);
-AddChartBubble(isLastBar, level8, "S2: 6857 - Chop Zone", Color.YELLOW, no);
-AddChartBubble(isLastBar, level9, "S3: 6848 - Fresh Support", Color.GREEN, no);
+AddChartBubble(isLastBar, level1, "R8: 6796 - Resistance", Color.LIGHT_GRAY, yes);
+AddChartBubble(isLastBar, level2, "R7: 6777 - Resistance", Color.LIGHT_GRAY, yes);
+AddChartBubble(isLastBar, level3, "R6: 6772 - Resistance", Color.LIGHT_GRAY, yes);
+AddChartBubble(isLastBar, level4, "R5: 6764 - BIG SHELF - Bulls Need Accept **", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level5, "R4: 6746 - Hit", Color.CYAN, yes);
+AddChartBubble(isLastBar, level6, "R3: 6728 - Hit", Color.CYAN, yes);
+AddChartBubble(isLastBar, level7, "R2: 6712 - Hit", Color.CYAN, yes);
+AddChartBubble(isLastBar, level8, "KEY: 6705 - Reclaim Triggered", Color.WHITE, yes);
+AddChartBubble(isLastBar, level9, "S1: 6685 - Newsletter Support **", Color.GREEN, no);
+AddChartBubble(isLastBar, level10, "S2: 6663 - Dip Level", Color.MAGENTA, no);
+
+# VWAP bubble
+AddChartBubble(isLastBar and showVWAP, vwapValue, "VWAP (Aug 25)", Color.YELLOW, yes);
 
 # === ALERT SYSTEM ===
 
-# RESISTANCE Breakout Alerts - REQUIRES 6877 RECLAIM
-Alert(enableAlerts and close crosses above level6, "ES ABOVE 6877 - RECLAIM! Targets: 6888, 6893, 6899+!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level5, "ES ABOVE 6888 - Target Hit! Next 6893!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level4, "ES ABOVE 6893 - Target Hit! Next 6899!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level3, "ES ABOVE 6899 - Target cleared! Next 6909!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level2, "ES ABOVE 6909 - Resistance cleared! Next 6920!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level1, "ES ABOVE 6920 - Next resistance slate!", Alert.BAR, Sound.Ring);
+# 6764 BIG SHELF Alerts
+Alert(enableAlerts and close crosses above level4, "ES ABOVE 6764 - BIG SHELF ACCEPTED! Next: 6772!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level4, "ES BELOW 6764 - BIG SHELF REJECTED! Watch supports!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close >= level4 - alertSensitivity and close <= level4 + alertSensitivity, "ES Testing 6764 - BIG SHELF - Bulls Need Accept!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and high[1] >= level4 and close < level4 - 5, "ES REJECTION at 6764 - BIG SHELF Failed!", Alert.BAR, Sound.Bell);
 
-# SUPPORT Break Alerts
-Alert(enableAlerts and close crosses below level7, "ES BELOW 6865 - Chop zone break! Watch 6857!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level8, "ES BELOW 6857 - Chop zone low! Next 6848!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level9, "ES BELOW 6848 - Fresh support broken!", Alert.BAR, Sound.Bell);
+# Upper Resistance Alerts
+Alert(enableAlerts and close crosses above level3, "ES ABOVE 6772 - Next: 6777!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level2, "ES ABOVE 6777 - Next: 6796!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level1, "ES ABOVE 6796 - New Highs!", Alert.BAR, Sound.Ring);
 
-# Testing Key Levels
-Alert(enableAlerts and close >= level6 - alertSensitivity and close <= level6 + alertSensitivity, "ES Testing 6877 - KEY RECLAIM LEVEL!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level7 - alertSensitivity and close <= level7 + alertSensitivity, "ES Testing 6865 - Chop zone support", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level8 - alertSensitivity and close <= level8 + alertSensitivity, "ES Testing 6857 - Chop zone support", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level9 - alertSensitivity and close <= level9 + alertSensitivity, "ES Testing 6848 - Fresh support", Alert.BAR, Sound.Chimes);
+# Hit Levels - Retracement Alerts
+Alert(enableAlerts and close crosses below level5, "ES BELOW 6746 - Retracing from highs", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level6, "ES BELOW 6728 - Deeper retracement", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level7, "ES BELOW 6712 - Watch 6705!", Alert.BAR, Sound.Bell);
 
-# Bounce/Rejection Alerts
-Alert(enableAlerts and low[1] <= level7 and close > level7 + 5, "ES BOUNCE from 6865 - Chop zone holds!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and low[1] <= level8 and close > level8 + 5, "ES BOUNCE from 6857 - Chop zone holds!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and low[1] <= level9 and close > level9 + 5, "ES BOUNCE from 6848 - Fresh support holds!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and high[1] >= level6 and close < level6 - 5, "ES REJECTION at 6877 - Reclaim failed! Back to chop!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and high[1] >= level5 and close < level5 - 5, "ES REJECTION at 6888 - Need 6877 reclaim first!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and high[1] >= level4 and close < level4 - 5, "ES REJECTION at 6893 - Resistance holds!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and high[1] >= level3 and close < level3 - 5, "ES REJECTION at 6899 - Resistance holds!", Alert.BAR, Sound.Bell);
+# KEY LEVEL - 6705
+Alert(enableAlerts and close crosses below level8, "ES BELOW 6705 - Reclaim broken! Watch 6685!", Alert.BAR, Sound.Bell);
+
+# Support Level Alerts
+Alert(enableAlerts and close crosses below level9, "ES BELOW 6685 - NEWSLETTER SUPPORT BROKEN! Dip to 6663!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level10, "ES BELOW 6663 - DIP LEVEL BROKEN!", Alert.BAR, Sound.Bell);
+
+# Bounce Alerts - Same supports on retracement
+Alert(enableAlerts and low[1] <= level4 and close > level4 + 5, "ES BOUNCE from 6764 - Big Shelf Holds!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and low[1] <= level5 and close > level5 + 5, "ES BOUNCE from 6746!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and low[1] <= level6 and close > level6 + 5, "ES BOUNCE from 6728!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and low[1] <= level7 and close > level7 + 5, "ES BOUNCE from 6712!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and low[1] <= level8 and close > level8 + 5, "ES BOUNCE from 6705 - Key Level Holds!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and low[1] <= level9 and close > level9 + 5, "ES BOUNCE from 6685 - Newsletter Support Holds!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and low[1] <= level10 and close > level10 + 5, "ES BOUNCE from 6663 - Dip Level Holds!", Alert.BAR, Sound.Ring);
+
+# VWAP Alerts
+Alert(enableAlerts and showVWAP and close crosses above vwapValue, "ES ABOVE Aug 25 VWAP!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and showVWAP and close crosses below vwapValue, "ES BELOW Aug 25 VWAP!", Alert.BAR, Sound.Bell);
