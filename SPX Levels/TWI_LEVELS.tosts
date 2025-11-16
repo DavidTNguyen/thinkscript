@@ -1,0 +1,279 @@
+# === TWI GAMMA LEVELS: Week of Nov 17-21 ===
+# Updated: November 15, 2025
+# 
+# SPX GAMMA CHEAT CARD: WEEK OF NOV 17-21
+#
+# MONDAY 11/17 - The Steering Wheel
+# Dealers short gamma - two-way rocket fuel
+# • Break above 6750 → accelerates to 6800+
+# • Break below 6720 → amplifies to 6660
+# • Spot ~6735 = dead center of gamma vacuum
+#
+# KEY LEVELS ALL WEEK:
+# • 6600-6650 = Long gamma floor (recurring support)
+# • 6800 = Neutral inflection/breakpoint
+# • 6850-6900 = Resistance ceiling
+#
+# SCENARIOS:
+# IF MONDAY → ~6800: Compression week, pin 6780-6850
+# IF MONDAY → <6700: Bounce to fortress support, NVDA drives outcome
+# IF MONDAY → 6720-6780: Stabilization, pure NVDA variance play
+#
+# WILD CARDS:
+# • WED 11/19: VIX expiry AM + NVDA PM
+# • THU 11/20: Extremely thin gamma + QYLD bid support
+# • FRI 11/21: Monthly OPEX - 6600/6900 bracket with 6800 fulcrum
+
+# === RESISTANCE LEVELS ===
+input level1 = 6900; # R4 - Resistance ceiling (top)
+input level1_thickness = 4;
+input level2 = 6850; # R3 - Resistance ceiling (bottom)
+input level2_thickness = 4;
+input level3 = 6800; # R2 - NEUTRAL INFLECTION/BREAKPOINT **
+input level3_thickness = 5;
+input level4 = 6750; # R1 - Monday break triggers acceleration to 6800+
+input level4_thickness = 3;
+
+# === GAMMA VACUUM ZONE ===
+input level5 = 6735; # PIVOT - Dead center of gamma vacuum (Monday spot)
+input level5_thickness = 2;
+input level6 = 6720; # S1 - Monday break triggers amplification to 6660
+input level6_thickness = 3;
+
+# === SUPPORT LEVELS ===
+input level7 = 6680; # S2 - Fortress support (bounce zone)
+input level7_thickness = 3;
+input level8 = 6660; # S3 - Amplification target if <6720 breaks
+input level8_thickness = 3;
+input level9 = 6650; # S4 - Long gamma floor (top)
+input level9_thickness = 4;
+input level10 = 6600; # S5 - Long gamma floor (bottom) - RECURRING SUPPORT **
+input level10_thickness = 5;
+
+# Alert Settings
+input enableAlerts = yes;
+input alertSensitivity = 0.5;
+
+# Label Visibility
+input showLabels = yes;
+
+# Wild Card Events
+input showEventWarnings = yes;
+
+# Arrow Display
+input showArrows = yes;
+
+# Fixed bubble logic - show only on last bar
+def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
+
+# Day of week detection
+def dayOfWeek = GetDayOfWeek(GetYYYYMMDD());
+def isMonday = dayOfWeek == 1;
+def isTuesday = dayOfWeek == 2;
+def isWednesday = dayOfWeek == 3;
+def isThursday = dayOfWeek == 4;
+def isFriday = dayOfWeek == 5;
+
+# Scenario detection (based on current price)
+def mondayScenario1 = close >= 6780 and close <= 6820; # ~6800
+def mondayScenario2 = close < 6700; # <6700
+def mondayScenario3 = close >= 6720 and close < 6780; # 6720-6780
+
+# === RESISTANCE ===
+plot L1 = level1;
+L1.SetDefaultColor(Color.RED);
+L1.SetLineWeight(level1_thickness);
+L1.SetStyle(Curve.FIRM);
+
+plot L2 = level2;
+L2.SetDefaultColor(Color.ORANGE);
+L2.SetLineWeight(level2_thickness);
+L2.SetStyle(Curve.FIRM);
+
+plot L3 = level3;
+L3.SetDefaultColor(Color.YELLOW);
+L3.SetLineWeight(level3_thickness);
+L3.SetStyle(Curve.FIRM);
+
+plot L4 = level4;
+L4.SetDefaultColor(Color.CYAN);
+L4.SetLineWeight(level4_thickness);
+L4.SetStyle(Curve.FIRM);
+
+# === GAMMA VACUUM ZONE ===
+plot L5 = level5;
+L5.SetDefaultColor(Color.LIGHT_GRAY);
+L5.SetLineWeight(level5_thickness);
+L5.SetStyle(Curve.SHORT_DASH);
+
+plot L6 = level6;
+L6.SetDefaultColor(Color.MAGENTA);
+L6.SetLineWeight(level6_thickness);
+L6.SetStyle(Curve.FIRM);
+
+# === SUPPORT ===
+plot L7 = level7;
+L7.SetDefaultColor(Color.GREEN);
+L7.SetLineWeight(level7_thickness);
+L7.SetStyle(Curve.FIRM);
+
+plot L8 = level8;
+L8.SetDefaultColor(Color.LIGHT_GREEN);
+L8.SetLineWeight(level8_thickness);
+L8.SetStyle(Curve.FIRM);
+
+plot L9 = level9;
+L9.SetDefaultColor(Color.GREEN);
+L9.SetLineWeight(level9_thickness);
+L9.SetStyle(Curve.FIRM);
+
+plot L10 = level10;
+L10.SetDefaultColor(Color.DARK_GREEN);
+L10.SetLineWeight(level10_thickness);
+L10.SetStyle(Curve.FIRM);
+
+# === BUILT-IN ARROW PLOTS ===
+# Breakout above 6750 - Acceleration signal
+plot UpBreak6750 = showArrows and close crosses above level4;
+UpBreak6750.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+UpBreak6750.SetDefaultColor(Color.CYAN);
+UpBreak6750.SetLineWeight(3);
+
+# Breakdown below 6720 - Amplification signal
+plot DnBreak6720 = showArrows and close crosses below level6;
+DnBreak6720.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+DnBreak6720.SetDefaultColor(Color.MAGENTA);
+DnBreak6720.SetLineWeight(3);
+
+# Neutral Inflection breaks
+plot UpBreak6800 = showArrows and close crosses above level3;
+UpBreak6800.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+UpBreak6800.SetDefaultColor(Color.YELLOW);
+UpBreak6800.SetLineWeight(3);
+
+plot DnBreak6800 = showArrows and close crosses below level3;
+DnBreak6800.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+DnBreak6800.SetDefaultColor(Color.YELLOW);
+DnBreak6800.SetLineWeight(3);
+
+# Long Gamma Floor breaks
+plot UpBreak6600 = showArrows and close crosses above level10;
+UpBreak6600.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+UpBreak6600.SetDefaultColor(Color.GREEN);
+UpBreak6600.SetLineWeight(3);
+
+plot DnBreak6600 = showArrows and close crosses below level10;
+DnBreak6600.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+DnBreak6600.SetDefaultColor(Color.RED);
+DnBreak6600.SetLineWeight(3);
+
+# Resistance Ceiling breaks
+plot UpBreak6850 = showArrows and close crosses above level2;
+UpBreak6850.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+UpBreak6850.SetDefaultColor(Color.ORANGE);
+UpBreak6850.SetLineWeight(3);
+
+plot UpBreak6900 = showArrows and close crosses above level1;
+UpBreak6900.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+UpBreak6900.SetDefaultColor(Color.RED);
+UpBreak6900.SetLineWeight(3);
+
+# Chart bubbles - show only on last bar
+AddChartBubble(isLastBar, level1, "R4: 6900 - Resistance Ceiling (Top)", Color.RED, yes);
+AddChartBubble(isLastBar, level2, "R3: 6850 - Resistance Ceiling (Bottom)", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level3, "R2: 6800 - NEUTRAL INFLECTION **", Color.YELLOW, yes);
+AddChartBubble(isLastBar, level4, "R1: 6750 - Break = Accelerate to 6800+", Color.CYAN, yes);
+AddChartBubble(isLastBar, level5, "PIVOT: 6735 - Gamma Vacuum Center", Color.LIGHT_GRAY, yes);
+AddChartBubble(isLastBar, level6, "S1: 6720 - Break = Amplify to 6660", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level7, "S2: 6680 - Fortress Support (Bounce)", Color.GREEN, no);
+AddChartBubble(isLastBar, level8, "S3: 6660 - Amplification Target", Color.LIGHT_GREEN, no);
+AddChartBubble(isLastBar, level9, "S4: 6650 - Long Gamma Floor (Top)", Color.GREEN, no);
+AddChartBubble(isLastBar, level10, "S5: 6600 - Long Gamma Floor **", Color.DARK_GREEN, no);
+
+# === ALERT SYSTEM ===
+
+# CRITICAL: Neutral Inflection (6800)
+Alert(enableAlerts and close crosses above level3, "SPX ABOVE 6800 - NEUTRAL INFLECTION BROKEN! Compression week likely!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level3, "SPX BELOW 6800 - NEUTRAL INFLECTION LOST! Watch fortress support!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close >= level3 - alertSensitivity and close <= level3 + alertSensitivity, "SPX Testing 6800 - NEUTRAL INFLECTION - Key fulcrum!", Alert.BAR, Sound.Chimes);
+
+# CRITICAL: Long Gamma Floor (6600)
+Alert(enableAlerts and close crosses above level10, "SPX ABOVE 6600 - Long Gamma Floor reclaim! Bounce zone active!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level10, "SPX BELOW 6600 - LONG GAMMA FLOOR BROKEN! Recurring support failed!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close >= level10 - alertSensitivity and close <= level10 + alertSensitivity, "SPX Testing 6600 - LONG GAMMA FLOOR - Recurring support!", Alert.BAR, Sound.Chimes);
+
+# MONDAY STEERING WHEEL - Two-way rocket fuel
+Alert(enableAlerts and isMonday and close crosses above level4, "MONDAY: SPX ABOVE 6750 - ACCELERATION TO 6800+ TRIGGERED!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and isMonday and close crosses below level6, "MONDAY: SPX BELOW 6720 - AMPLIFICATION TO 6660 TRIGGERED!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and isMonday and close >= level5 - 5 and close <= level5 + 5, "MONDAY: SPX at 6735 - Dead Center Gamma Vacuum! Short gamma = rocket fuel!", Alert.BAR, Sound.Chimes);
+
+# Resistance Ceiling Alerts
+Alert(enableAlerts and close crosses above level2, "SPX ABOVE 6850 - Resistance ceiling broken! Next: 6900!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level1, "SPX ABOVE 6900 - Resistance ceiling (top) broken! Weekly high!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and high[1] >= level2 and close < level2 - 5, "SPX REJECTION at 6850 - Resistance ceiling holds!", Alert.BAR, Sound.Bell);
+
+# Support Floor Alerts
+Alert(enableAlerts and close crosses below level9, "SPX BELOW 6650 - Long gamma floor (top) broken! Watch 6600!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level8, "SPX BELOW 6660 - Amplification target reached!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and low[1] <= level7 and close > level7 + 5, "SPX BOUNCE from 6680 - Fortress support holds!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and low[1] <= level10 and close > level10 + 5, "SPX BOUNCE from 6600 - Long gamma floor holds!", Alert.BAR, Sound.Ring);
+
+# Gamma Vacuum Alerts
+Alert(enableAlerts and close >= level6 and close <= level4, "SPX IN GAMMA VACUUM (6720-6750) - Dealers short gamma = two-way rocket!", Alert.BAR, Sound.Chimes);
+
+# WEDNESDAY Wild Card
+Alert(enableAlerts and isWednesday and showEventWarnings, "WED 11/19: VIX EXPIRY AM + NVDA PM - WILD CARD DAY!", Alert.BAR, Sound.Chimes);
+
+# THURSDAY Wild Card
+Alert(enableAlerts and isThursday and showEventWarnings, "THU 11/20: Extremely thin gamma + QYLD bid support - Flows > Greeks!", Alert.BAR, Sound.Chimes);
+
+# FRIDAY OPEX
+Alert(enableAlerts and isFriday and showEventWarnings, "FRI 11/21: MONTHLY OPEX - 6600/6900 bracket, 6800 fulcrum!", Alert.BAR, Sound.Chimes);
+
+# Status Labels
+AddLabel(showLabels and enableAlerts, "Alerts ON", Color.GREEN);
+AddLabel(showLabels and !enableAlerts, "Alerts OFF", Color.RED);
+AddLabel(showLabels, "Week: Nov 17-21 | Gamma Cheat Card", Color.WHITE);
+AddLabel(showLabels, "Now: " + Round(close, 2), Color.CYAN);
+
+# Key Levels Label
+AddLabel(showLabels, "Inflection: 6800 | Floor: 6600 | Ceiling: 6850-6900", Color.YELLOW);
+
+# Day of Week Labels
+AddLabel(showLabels and isMonday, "MONDAY - THE STEERING WHEEL", Color.ORANGE);
+AddLabel(showLabels and isTuesday, "TUESDAY", Color.CYAN);
+AddLabel(showLabels and isWednesday, "WEDNESDAY - VIX + NVDA", Color.RED);
+AddLabel(showLabels and isThursday, "THURSDAY - THIN GAMMA", Color.MAGENTA);
+AddLabel(showLabels and isFriday, "FRIDAY - OPEX", Color.YELLOW);
+
+# Gamma Status Labels
+AddLabel(showLabels and close >= level6 and close <= level4, "GAMMA VACUUM - Two-way rocket!", Color.ORANGE);
+AddLabel(showLabels and close > level3, "Above 6800 - Compression zone", Color.GREEN);
+AddLabel(showLabels and close < level10, "Below 6600 - Floor broken!", Color.RED);
+AddLabel(showLabels and close >= level10 and close <= level3, "Support zone active", Color.CYAN);
+
+# Monday Scenario Labels (only show on Monday)
+AddLabel(showLabels and isMonday and mondayScenario1, "SCENARIO: ~6800 -> Compression week ahead", Color.YELLOW);
+AddLabel(showLabels and isMonday and mondayScenario2, "SCENARIO: <6700 -> Bounce to fortress, NVDA drives", Color.ORANGE);
+AddLabel(showLabels and isMonday and mondayScenario3, "SCENARIO: 6720-6780 -> Stabilization, pure NVDA play", Color.CYAN);
+
+# Position Labels
+AddLabel(showLabels and close >= level1 - 10 and close <= level1 + 10, "NEAR 6900 - Resistance ceiling (top)", Color.RED);
+AddLabel(showLabels and close >= level3 - 10 and close <= level3 + 10, "NEAR 6800 - NEUTRAL INFLECTION", Color.YELLOW);
+AddLabel(showLabels and close >= level10 - 10 and close <= level10 + 10, "NEAR 6600 - LONG GAMMA FLOOR", Color.GREEN);
+AddLabel(showLabels and close >= level5 - 5 and close <= level5 + 5, "AT 6735 - GAMMA VACUUM CENTER", Color.LIGHT_GRAY);
+
+# Wild Card Warning Labels
+AddLabel(showLabels and isWednesday and showEventWarnings, "VIX EXPIRY AM + NVDA PM", Color.RED);
+AddLabel(showLabels and isThursday and showEventWarnings, "THIN GAMMA - Flows > Greeks", Color.MAGENTA);
+AddLabel(showLabels and isFriday and showEventWarnings, "MONTHLY OPEX", Color.ORANGE);
+
+# Trade Guidance Labels
+AddLabel(showLabels and isMonday, "MONDAY sets the path - Size modest!", Color.ORANGE);
+AddLabel(showLabels and isThursday or isFriday, "THU/FRI thin structure - Flows > Greeks", Color.MAGENTA);
+AddLabel(showLabels, "NVDA earnings = biggest wild card", Color.RED);
+AddLabel(showLabels, "This is RECON, not CONVICTION", Color.YELLOW);
+
+# Dealer Positioning
+AddLabel(showLabels and close >= level6 and close <= level4, "Dealers SHORT GAMMA - Amplified moves!", Color.RED);
+AddLabel(showLabels and close >= level9 and close <= level10, "Dealers LONG GAMMA - Dampened moves", Color.GREEN);

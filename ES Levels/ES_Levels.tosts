@@ -1,30 +1,47 @@
-# === ES Levels: Key Areas & Watchlist ===
-# Updated: November 14, 2025
+# === ES Levels: Range Structure & Key Pivots ===
+# Updated: November 16, 2025
 # 
-# KEY AREAS:
-# Resistance: 6702, 6720, 6751
-# Support: 6665-72
+# MARKET STRUCTURE:
+# Large range structure below 6902 with trend moves up/down past two weeks
+# Week closed with short squeeze back to range middle
+# This week focused on 6702 and 6850
 # 
-# WATCHLIST:
-# Backtest Short 6751: A setup
-# Gamma Long 6665: B setup
-# Failed Breakdown 6655: A setup
+# KEY THESIS:
+# 6850 = Supply zone from Thursday liquidation - sellers defend backtests
+# Acceptance above 6850 → push toward 6902 and ATHs
+# 6702 failure + trendline of higher lows breaks → corrective leg to 6594 and below
+# Inside range = mostly neutral, two-way trading
+# NVDA earnings = high impact event
+#
+# CRITICAL LEVELS:
+# 🐂 need: Reclaim 6796 to test 6850
+# 🐻 need: Hold under 6702 to test 6654
+#
+# KEY PIVOTS:
+# 6850 - Key supply zone
+# 6796 - Mid pivot
+# 6702 - Key support
+# 6670 - Prior week low
 
 # === RESISTANCE LEVELS ===
-input level1 = 6751; # R3 - Backtest Short (A Setup)
-input level1_thickness = 4;
-input level2 = 6720; # R2 - Resistance
-input level2_thickness = 3;
-input level3 = 6702; # R1 - Resistance
-input level3_thickness = 3;
+input level1 = 6902; # R4 - ATH / Range Top
+input level1_thickness = 5;
+input level2 = 6850; # R3 - KEY SUPPLY ZONE (Thursday liquidation) **
+input level2_thickness = 5;
+input level3 = 6796; # R2 - MID PIVOT - 🐂 need reclaim to test 6850 **
+input level3_thickness = 4;
+
+# === NEUTRAL ZONE ===
+input level4 = 6702; # N1 - KEY SUPPORT - 🐻 hold here to test 6654 **
+input level4_thickness = 5;
 
 # === SUPPORT LEVELS ===
-input level4 = 6672; # S1 - Support zone (top)
-input level4_thickness = 4;
-input level5 = 6665; # S2 - Gamma Long (B Setup)
-input level5_thickness = 4;
-input level6 = 6655; # S3 - Failed Breakdown (A Setup)
+input level5 = 6670; # S1 - Prior Week Low
+input level5_thickness = 3;
+input level6 = 6654; # S2 - Downside target if 6702 fails
 input level6_thickness = 4;
+input level7 = 6594; # S3 - Corrective leg target
+input level7_thickness = 4;
 
 # Alert Settings
 input enableAlerts = yes;
@@ -33,12 +50,25 @@ input alertSensitivity = 0.5;
 # Label Visibility
 input showLabels = yes;
 
+# Arrow Display
+input showArrows = yes;
+
 # === ANCHORED VWAP SETTINGS ===
-input anchorDate = 20250801; # Aug 1, 2025
+input anchorDate = 20250803; # Aug 1, 2025
 input showVWAP = yes;
 
 # Fixed bubble logic - show only on last bar
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
+
+# Day of week detection for NVDA earnings week
+def dayOfWeek = GetDayOfWeek(GetYYYYMMDD());
+def isMonday = dayOfWeek == 1;
+def isWednesday = dayOfWeek == 3;
+
+# Range position detection
+def inUpperRange = close > level3; # Above mid pivot
+def inMidRange = close >= level4 and close <= level3; # Between 6702-6796
+def inLowerRange = close < level4; # Below key support
 
 # === ANCHORED VWAP CALCULATION ===
 def anchorBar = GetYYYYMMDD() == anchorDate;
@@ -50,35 +80,41 @@ def vwapValue = if sumVol > 0 then sumTPV / sumVol else Double.NaN;
 
 # === RESISTANCE ===
 plot L1 = level1;
-L1.SetDefaultColor(Color.ORANGE);
+L1.SetDefaultColor(Color.RED);
 L1.SetLineWeight(level1_thickness);
 L1.SetStyle(Curve.FIRM);
 
 plot L2 = level2;
-L2.SetDefaultColor(Color.LIGHT_GRAY);
+L2.SetDefaultColor(Color.ORANGE);
 L2.SetLineWeight(level2_thickness);
-L2.SetStyle(Curve.SHORT_DASH);
+L2.SetStyle(Curve.FIRM);
 
 plot L3 = level3;
-L3.SetDefaultColor(Color.LIGHT_GRAY);
+L3.SetDefaultColor(Color.YELLOW);
 L3.SetLineWeight(level3_thickness);
-L3.SetStyle(Curve.SHORT_DASH);
+L3.SetStyle(Curve.FIRM);
 
-# === SUPPORT ===
+# === NEUTRAL ZONE ===
 plot L4 = level4;
 L4.SetDefaultColor(Color.CYAN);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
+# === SUPPORT ===
 plot L5 = level5;
-L5.SetDefaultColor(Color.GREEN);
+L5.SetDefaultColor(Color.LIGHT_GRAY);
 L5.SetLineWeight(level5_thickness);
-L5.SetStyle(Curve.FIRM);
+L5.SetStyle(Curve.SHORT_DASH);
 
 plot L6 = level6;
 L6.SetDefaultColor(Color.MAGENTA);
 L6.SetLineWeight(level6_thickness);
 L6.SetStyle(Curve.FIRM);
+
+plot L7 = level7;
+L7.SetDefaultColor(Color.DARK_RED);
+L7.SetLineWeight(level7_thickness);
+L7.SetStyle(Curve.FIRM);
 
 # === ANCHORED VWAP PLOTS ===
 plot VWAP = if showVWAP and postAnchor then vwapValue else Double.NaN;
@@ -86,42 +122,110 @@ VWAP.SetDefaultColor(Color.YELLOW);
 VWAP.SetLineWeight(2);
 VWAP.SetStyle(Curve.FIRM);
 
+# === BUILT-IN ARROW PLOTS ===
+# 🐂 reclaim 6796 - Test 6850
+plot BullReclaim6796 = no;
+BullReclaim6796.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+BullReclaim6796.SetDefaultColor(Color.YELLOW);
+BullReclaim6796.SetLineWeight(4);
+
+# Break above 6850 - Push to ATH
+plot BreakSupply6850 = no;
+BreakSupply6850.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+BreakSupply6850.SetDefaultColor(Color.ORANGE);
+BreakSupply6850.SetLineWeight(4);
+
+# Break 6702 - Test 6654
+plot Break6702 = no;
+Break6702.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+Break6702.SetDefaultColor(Color.CYAN);
+Break6702.SetLineWeight(4);
+
+# Break 6654 - Corrective leg
+plot Break6654 = no;
+Break6654.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+Break6654.SetDefaultColor(Color.MAGENTA);
+Break6654.SetLineWeight(4);
+
+# ATH breakout
+plot ATHBreak = no;
+ATHBreak.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+ATHBreak.SetDefaultColor(Color.RED);
+ATHBreak.SetLineWeight(4);
+
 # Chart bubbles - show only on last bar
-AddChartBubble(isLastBar, level1, "R3: 6751 - Backtest Short (A Setup)", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level2, "R2: 6720 - Resistance", Color.LIGHT_GRAY, yes);
-AddChartBubble(isLastBar, level3, "R1: 6702 - Resistance", Color.LIGHT_GRAY, yes);
-AddChartBubble(isLastBar, level4, "S1: 6672 - Support Zone (Top)", Color.CYAN, no);
-AddChartBubble(isLastBar, level5, "S2: 6665 - Gamma Long (B Setup)", Color.GREEN, no);
-AddChartBubble(isLastBar, level6, "S3: 6655 - Failed Breakdown (A Setup)", Color.MAGENTA, no);
+AddChartBubble(isLastBar, level1, "R4: 6902 - ATH / Range Top", Color.RED, yes);
+AddChartBubble(isLastBar, level2, "R3: 6850 - KEY SUPPLY ZONE **", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level3, "R2: 6796 - MID PIVOT (🐂 reclaim)", Color.YELLOW, yes);
+AddChartBubble(isLastBar, level4, "N1: 6702 - KEY SUPPORT **", Color.CYAN, yes);
+AddChartBubble(isLastBar, level5, "S1: 6670 - Prior Week Low", Color.LIGHT_GRAY, no);
+AddChartBubble(isLastBar, level6, "S2: 6654 - Downside Target", Color.MAGENTA, no);
+AddChartBubble(isLastBar, level7, "S3: 6594 - Corrective Leg", Color.DARK_RED, no);
 
 # VWAP bubble
-AddChartBubble(isLastBar and showVWAP, vwapValue, "VWAP (Aug 1)", Color.YELLOW, yes);
+AddChartBubble(isLastBar and showVWAP, vwapValue, "VWAP (Aug 3)", Color.YELLOW, yes);
 
 # === ALERT SYSTEM ===
 
-# RESISTANCE Breakout Alerts
-Alert(enableAlerts and close crosses above level3, "ES ABOVE 6702 - Next: 6720!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level2, "ES ABOVE 6720 - Next: 6751!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level1, "ES ABOVE 6751 - BACKTEST SHORT (A) INVALIDATED!", Alert.BAR, Sound.Ring);
+# CRITICAL: 6850 Supply Zone
+Alert(enableAlerts and close crosses above level2, "ES ↑ 6850 - SUPPLY ZONE BROKEN! Push toward 6902 ATH!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level2, "ES ↓ 6850 - Supply zone holds, back into range", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close >= level2 - alertSensitivity and close <= level2 + alertSensitivity, "ES Testing 6850 - KEY SUPPLY ZONE from Thursday liquidation", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and high[1] >= level2 and close < level2 - 5, "ES REJECTION at 6850 - Sellers defend supply zone!", Alert.BAR, Sound.Bell);
 
-# SUPPORT Break Alerts
-Alert(enableAlerts and close crosses below level4, "ES BELOW 6672 - Support Zone Broken! Watch 6665!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level5, "ES BELOW 6665 - GAMMA LONG (B) INVALIDATED! Watch 6655!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level6, "ES BELOW 6655 - FAILED BREAKDOWN (A) INVALIDATED!", Alert.BAR, Sound.Bell);
+# CRITICAL: 6796 Mid Pivot
+Alert(enableAlerts and close crosses above level3, "ES ↑ 6796 - 🐂 RECLAIM MID PIVOT! Test 6850 next!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level3, "ES ↓ 6796 - Mid pivot lost, watch 6702", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close >= level3 - alertSensitivity and close <= level3 + alertSensitivity, "ES Testing 6796 - MID PIVOT - 🐂 need reclaim!", Alert.BAR, Sound.Chimes);
 
-# Testing Key Levels
-Alert(enableAlerts and close >= level1 - alertSensitivity and close <= level1 + alertSensitivity, "ES Testing 6751 - Backtest Short (A Setup)!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "ES Testing 6665 - Gamma Long (B Setup)!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close >= level6 - alertSensitivity and close <= level6 + alertSensitivity, "ES Testing 6655 - Failed Breakdown (A Setup)!", Alert.BAR, Sound.Chimes);
+# CRITICAL: 6702 Key Support
+Alert(enableAlerts and close crosses above level4, "ES ↑ 6702 - Key support reclaim!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level4, "ES ↓ 6702 - KEY SUPPORT BROKEN! Test 6654 next!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close >= level4 - alertSensitivity and close <= level4 + alertSensitivity, "ES Testing 6702 - KEY SUPPORT - 🐻 hold here to test 6654!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and low[1] <= level4 and close > level4 + 5, "ES BOUNCE from 6702 - Key support holds!", Alert.BAR, Sound.Ring);
 
-# Bounce/Rejection Alerts - WATCHLIST SETUPS
-Alert(enableAlerts and high[1] >= level1 and close < level1 - 5, "ES REJECTION at 6751 - BACKTEST SHORT (A) TRIGGERED!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and low[1] <= level5 and close > level5 + 5, "ES BOUNCE from 6665 - GAMMA LONG (B) TRIGGERED!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and low[1] <= level6 and close > level6 + 3, "ES BOUNCE from 6655 - FAILED BREAKDOWN (A) TRIGGERED!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and low[1] <= level4 and close > level4 + 5, "ES BOUNCE from 6672 - Support Zone Holds!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and high[1] >= level3 and close < level3 - 5, "ES REJECTION at 6702 - Resistance Holds!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and high[1] >= level2 and close < level2 - 5, "ES REJECTION at 6720 - Resistance Holds!", Alert.BAR, Sound.Bell);
+# ATH Level
+Alert(enableAlerts and close crosses above level1, "ES ↑ 6902 - NEW ATH! Range top broken!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close >= level1 - alertSensitivity and close <= level1 + alertSensitivity, "ES Testing 6902 - ATH / Range Top", Alert.BAR, Sound.Chimes);
+
+# Support Levels
+Alert(enableAlerts and close crosses below level5, "ES ↓ 6670 - Prior week low broken! Watch 6654!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level6, "ES ↓ 6654 - Downside target hit! Corrective leg to 6594?", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level7, "ES ↓ 6594 - CORRECTIVE LEG COMPLETE!", Alert.BAR, Sound.Bell);
+
+# Bounce Alerts
+Alert(enableAlerts and low[1] <= level5 and close > level5 + 5, "ES BOUNCE from 6670 - Prior week low holds!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and low[1] <= level6 and close > level6 + 5, "ES BOUNCE from 6654 - Downside target holds!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and low[1] <= level7 and close > level7 + 5, "ES BOUNCE from 6594 - Corrective leg holds!", Alert.BAR, Sound.Ring);
 
 # VWAP Alerts
-Alert(enableAlerts and showVWAP and close crosses above vwapValue, "ES ABOVE Aug 1 VWAP!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and showVWAP and close crosses below vwapValue, "ES BELOW Aug 1 VWAP!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and showVWAP and close crosses above vwapValue, "ES ↑ Aug 3 VWAP!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and showVWAP and close crosses below vwapValue, "ES ↓ Aug 3 VWAP!", Alert.BAR, Sound.Bell);
+
+# NVDA Earnings Week Alert
+Alert(enableAlerts and isWednesday, "NVDA EARNINGS THIS WEEK - High impact event!", Alert.BAR, Sound.Chimes);
+
+# Status Labels
+AddLabel(showLabels and enableAlerts, "Alerts ON", Color.GREEN);
+AddLabel(showLabels and !enableAlerts, "Alerts OFF", Color.RED);
+AddLabel(showLabels, "Range Structure: 6594-6902", Color.WHITE);
+AddLabel(showLabels, "Now: " + Round(close, 2), Color.CYAN);
+
+# Week Focus Label
+AddLabel(showLabels, "This Week: 6702 vs 6850", Color.YELLOW);
+AddLabel(showLabels and isWednesday, "NVDA EARNINGS WEEK", Color.ORANGE);
+
+# Range Position Labels
+AddLabel(showLabels and inUpperRange, "↑ Mid Pivot - Test 6850 supply", Color.GREEN);
+AddLabel(showLabels and inMidRange, "NEUTRAL RANGE - Two-way trading", Color.YELLOW);
+AddLabel(showLabels and inLowerRange, "↓ Key Support - Watch 6654", Color.RED);
+
+# 🐂/🐻 Thesis Labels
+AddLabel(showLabels and close > level3, "🐂: Reclaim 6796 -> Test 6850 -> Push 6902", Color.GREEN);
+AddLabel(showLabels and close < level4, "🐻: Hold <6702 -> Test 6654 -> Corrective to 6594", Color.RED);
+
+# Critical Level Labels
+AddLabel(showLabels and close >= level2 - 10 and close <= level2 + 10, "NEAR 6850 - KEY SUPPLY ZONE", Color.ORANGE);
+AddLabel(showLabels and close >= level3 - 10 and close <= level3 + 10, "NEAR 6796 - MID PIVOT", Color.YELLOW);
+AddLabel(showLabels and close >= level4 - 10 and close <= level4 + 10, "NEAR 6702 - KEY SUPPORT", Color.CYAN);
+
