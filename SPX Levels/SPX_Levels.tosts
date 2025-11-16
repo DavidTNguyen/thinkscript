@@ -25,9 +25,9 @@
 # Breakdown = Waterfall Risk
 
 # === RESISTANCE LEVELS ===
-input level1 = 6880; # R1 - 🐻 Star (Major Short Zone) - No 🐂 Bias
+input level1 = 6880; # R1 - 🐻 * (Major Short Zone) - No 🐂 Bias
 input level1_thickness = 5;
-input level2 = 6825; # R2 - Small 🐻 Star
+input level2 = 6825; # R2 - Small 🐻 *
 input level2_thickness = 3;
 input level3 = 6765; # R3 - Intermediate Strike
 input level3_thickness = 3;
@@ -35,13 +35,13 @@ input level4 = 6725; # R4 - "Greek Chase" Strike - Scalps only
 input level4_thickness = 2;
 
 # === NEUTRAL ZONE ===
-input level5 = 6705; # N1 - Gap-Down Play Zone
+input level5 = 6705; # N1 - Gap-🔻 Play Zone
 input level5_thickness = 2;
 input level6 = 6695; # N2 - Dead Volume Dip Buy Area
 input level6_thickness = 2;
 
 # === SUPPORT LEVELS ===
-input level7 = 6635; # S1 - 🐂 Star (Major Long Zone / Buy Support) - No 🐻 Bias
+input level7 = 6635; # S1 - 🐂 * (Major Long Zone / Buy Support) - No 🐻 Bias
 input level7_thickness = 5;
 input level8 = 6620; # S2 - Lower Range Edge
 input level8_thickness = 3;
@@ -100,41 +100,41 @@ L8.SetLineWeight(level8_thickness);
 L8.SetStyle(Curve.FIRM);
 
 # Chart bubbles - show only on last bar
-AddChartBubble(isLastBar, level1, "R1: 6880 - 🐻 STAR (Major Short)", Color.RED, yes);
-AddChartBubble(isLastBar, level2, "R2: 6825 - Small 🐻 Star", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level1, "R1: 6880 - 🐻 * (Major Short)", Color.RED, yes);
+AddChartBubble(isLastBar, level2, "R2: 6825 - Small 🐻 *", Color.ORANGE, yes);
 AddChartBubble(isLastBar, level3, "R3: 6765 - Intermediate Strike", Color.YELLOW, yes);
 AddChartBubble(isLastBar, level4, "R4: 6725 - Greek Chase (Scalps Only)", Color.LIGHT_GRAY, yes);
-AddChartBubble(isLastBar, level5, "N1: 6705 - Gap-Down Play", Color.CYAN, yes);
+AddChartBubble(isLastBar, level5, "N1: 6705 - Gap-🔻 Play", Color.CYAN, yes);
 AddChartBubble(isLastBar, level6, "N2: 6695 - Dead Volume Dip Buy", Color.CYAN, yes);
-AddChartBubble(isLastBar, level7, "S1: 6635 - 🐂 STAR (Major Long)", Color.GREEN, no);
+AddChartBubble(isLastBar, level7, "S1: 6635 - 🐂 * (🔑 Long)", Color.GREEN, no);
 AddChartBubble(isLastBar, level8, "S2: 6620 - Lower Range Edge", Color.MAGENTA, no);
 
 # === ALERT SYSTEM ===
 
-# CRITICAL: 🐻 Star Alerts (6880 - MOST CRITICAL)
-Alert(enableAlerts and close crosses above level1, "SPX ⬆️ 6880 - 🐻 STAR BROKEN! 🐂 BIAS ON!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level1, "SPX ⬇️ 6880 - NO 🐂 BIAS! Fade rallies vs 🐻 Star", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close >= level1 - alertSensitivity and close <= level1 + alertSensitivity, "SPX Testing 6880 - 🐻 STAR - Major Short Zone", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and high[1] >= level1 and close < level1 - 5, "SPX REJECTION at 6880 - 🐻 STAR HOLDS!", Alert.BAR, Sound.Bell);
+# CRITICAL: 🐻 * Alerts (6880 - MOST CRITICAL)
+Alert(enableAlerts and close crosses above level1, "SPX 🔺 6880 - 🐻 * BROKEN! 🐂 BIAS ON!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level1, "SPX 🔻 6880 - NO 🐂 BIAS! Fade rallies vs 🐻 *", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close >= level1 - alertSensitivity and close <= level1 + alertSensitivity, "SPX Testing 6880 - 🐻 * - Major Short Zone", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and high[1] >= level1 and close < level1 - 5, "SPX ❌ at 6880 - 🐻 * HOLDS!", Alert.BAR, Sound.Bell);
 
-# CRITICAL: 🐂 Star Alerts (6635 - MOST CRITICAL)
-Alert(enableAlerts and close crosses above level7, "SPX ⬆️ 6635 - NO 🐻 BIAS! Buy dips vs 🐂 Star", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level7, "SPX ⬇️ 6635 - 🐂 STAR BROKEN! HIGH 🐻!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close >= level7 - alertSensitivity and close <= level7 + alertSensitivity, "SPX Testing 6635 - 🐂 STAR - Major Long Zone", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and low[1] <= level7 and close > level7 + 5, "SPX BOUNCE from 6635 - 🐂 STAR HOLDS!", Alert.BAR, Sound.Ring);
+# CRITICAL: 🐂 * Alerts (6635 - MOST CRITICAL)
+Alert(enableAlerts and close crosses above level7, "SPX 🔺 6635 - NO 🐻 BIAS! Buy dips vs 🐂 *", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level7, "SPX 🔻 6635 - 🐂 * BROKEN! HIGH 🐻!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close >= level7 - alertSensitivity and close <= level7 + alertSensitivity, "SPX Testing 6635 - 🐂 * - Major Long Zone", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and low[1] <= level7 and close > level7 + 5, "SPX BOUNCE from 6635 - 🐂 * HOLDS!", Alert.BAR, Sound.Ring);
 
 # Intermediate Resistance Alerts
-Alert(enableAlerts and close crosses above level2, "SPX ⬆️ 6825 - Small 🐻 Star broken", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level3, "SPX ⬆️ 6765 - Intermediate Strike", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level4, "SPX ⬆️ 6725 - Greek Chase zone", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level2, "SPX 🔺 6825 - Small 🐻 * broken", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level3, "SPX 🔺 6765 - Intermediate Strike", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level4, "SPX 🔺 6725 - Greek Chase zone", Alert.BAR, Sound.Ring);
 
 # Intermediate Support Alerts
-Alert(enableAlerts and close crosses below level8, "SPX ⬇️ 6620 - LOWER RANGE EDGE! Waterfall Risk!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level6, "SPX ⬇️ 6695 - Dead Volume area", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level5, "SPX ⬇️ 6705 - Gap-Down play zone", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level8, "SPX 🔻 6620 - LOWER RANGE EDGE! Waterfall Risk!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level6, "SPX 🔻 6695 - Dead Volume area", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level5, "SPX 🔻 6705 - Gap-🔻 play zone", Alert.BAR, Sound.Bell);
 
 # Bounce/Rejection Alerts
-Alert(enableAlerts and high[1] >= level2 and close < level2 - 3, "SPX REJECTION at 6825 - Small 🐻 Star holds", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and high[1] >= level2 and close < level2 - 3, "SPX REJECTION at 6825 - Small 🐻 * holds", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and high[1] >= level3 and close < level3 - 3, "SPX REJECTION at 6765 - Intermediate Strike holds", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and low[1] <= level6 and close > level6 + 3, "SPX BOUNCE from 6695 - Dip buy area holds", Alert.BAR, Sound.Ring);
 Alert(enableAlerts and low[1] <= level8 and close > level8 + 3, "SPX BOUNCE from 6620 - Lower range edge holds", Alert.BAR, Sound.Ring);
@@ -145,13 +145,13 @@ Alert(enableAlerts and close >= level7 and close <= level1, "SPX IN W-SHAPE SWIN
 # Status Labels
 AddLabel(showLabels and enableAlerts, "Alerts ON", Color.GREEN);
 AddLabel(showLabels and !enableAlerts, "Alerts OFF", Color.RED);
-AddLabel(showLabels, "🐻 Star: 6880 | 🐂 Star: 6635", Color.WHITE);
+AddLabel(showLabels, "🐻 *: 6880 | 🐂 *: 6635", Color.WHITE);
 AddLabel(showLabels, "Now: " + Round(close, 2), Color.CYAN);
 
 # Trading Bias Labels
-AddLabel(showLabels and close > level1, "⬆️ 6880 - 🐂 BIAS", Color.GREEN);
+AddLabel(showLabels and close > level1, "🔺 6880 - 🐂 BIAS", Color.GREEN);
 AddLabel(showLabels and close >= level7 and close <= level1, "6635-6880 - W-SHAPE SWING ZONE", Color.YELLOW);
-AddLabel(showLabels and close < level7, "⬇️ 6635 - HIGH 🐻", Color.RED);
+AddLabel(showLabels and close < level7, "🔻 6635 - HIGH 🐻", Color.RED);
 
 # Sentiment Labels
 AddLabel(showLabels and close >= level7, "Cautious 🐂 - Dip buys allowed", Color.GREEN);
@@ -160,8 +160,8 @@ AddLabel(showLabels and close >= level2 and close < level1, "🐻 Pressure - Sho
 AddLabel(showLabels and close < level7, "High 🐻 - Swing shorts", Color.RED);
 
 # Action Labels
-AddLabel(showLabels and close >= level1 - 5 and close <= level1 + 5, "NEAR 🐻 STAR 6880 - Major Short Zone!", Color.RED);
-AddLabel(showLabels and close >= level7 - 5 and close <= level7 + 5, "NEAR 🐂 STAR 6635 - Major Long Zone!", Color.GREEN);
+AddLabel(showLabels and close >= level1 - 5 and close <= level1 + 5, "NEAR 🐻 * 6880 - Major Short Zone!", Color.RED);
+AddLabel(showLabels and close >= level7 - 5 and close <= level7 + 5, "NEAR 🐂 * 6635 - Major Long Zone!", Color.GREEN);
 AddLabel(showLabels and close >= level4 and close <= level4 + 10, "Greek Chase Zone - Scalps Only!", Color.LIGHT_GRAY);
-AddLabel(showLabels and close >= level6 and close <= level5, "Dead Volume / Gap-Down Play Zone", Color.CYAN);
-AddLabel(showLabels and close < level8, "WATERFALL RISK - ⬇️ 6620!", Color.MAGENTA);
+AddLabel(showLabels and close >= level6 and close <= level5, "Dead Volume / Gap-🔻 Play Zone", Color.CYAN);
+AddLabel(showLabels and close < level8, " 💣 - 🔻 6620!", Color.MAGENTA);
