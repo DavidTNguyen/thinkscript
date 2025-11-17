@@ -1,29 +1,39 @@
 # === MANCINI ES Levels: Focus on Current Action ===
 # Updated: November 17, 2025
 # 
-# CLOSING UPDATE - HIGH QUALITY ACTION:
-# 5 good trades since 6pm last eve
-# 6740 reclaim -> 6764 target HIT (DONE)
-# Lost Friday's 6670 low
-# Swept 6670, trapped, recovered +20 (DONE)
+# SUMMARY FOR TOMORROW (Nov 18):
+# Big triangle pattern since Oct 17th
+# Support: 6690 (rises daily)
+# Resistance: 6684 down
 # 
-# NOW: *PROTECT GAINS*
-# Targets above: 6701, 6716, 6723
-# Hard sell under today's low
+# TODAY: Failed Breakdown of Friday's 6670 low
+# Correlates with big triangle support - bulls must stick this
+# 
+# BULLISH PATH: Work up triangle to 6701, 6728-32, 6764+
+# BEARISH PATH: Lose today's lows, don't recover quick
+# → Leg down to 6605-10 minimum (take level to level)
 
 # === KEY LEVELS ===
-input level1 = 6723;  # 3rd target above
-input level1_thickness = 3;
-input level2 = 6716;  # 2nd target above
+input level1 = 6764;  # Upper target if triangle holds
+input level1_thickness = 4;
+input level2 = 6732;  # Upper triangle target
 input level2_thickness = 3;
-input level3 = 6701;  # 1st target above
+input level3 = 6728;  # Mid triangle target
 input level3_thickness = 3;
-input level4 = 6670;  # Friday low - swept & trapped
-input level4_thickness = 5;
+input level4 = 6701;  # 1st triangle target
+input level4_thickness = 3;
+input level5 = 6690;  # Big triangle support (rises daily)
+input level5_thickness = 5;
+input level6 = 6684;  # Triangle resistance down
+input level6_thickness = 3;
+input level7 = 6670;  # Friday low - Failed Breakdown today
+input level7_thickness = 5;
 
-# === DANGER ZONE ===
-input level5 = 6670;  # Today's low - HARD SELL below
-input level5_thickness = 4;
+# === DOWNSIDE LEVELS ===
+input level8 = 6610;  # Lower leg target
+input level8_thickness = 2;
+input level9 = 6605;  # Minimum leg target
+input level9_thickness = 2;
 
 # Alert Settings
 input enableAlerts = yes;
@@ -36,22 +46,24 @@ input showLabels = yes;
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
 
 # Position detection
-def above6701 = close > level3;  # Above 1st target
-def at6723 = close >= level1 - 2 and close <= level1 + 2;  # Near 3rd target
-def at6716 = close >= level2 - 2 and close <= level2 + 2;  # Near 2nd target
-def at6701 = close >= level3 - 2 and close <= level3 + 2;  # Near 1st target
-def below6701 = close < level3;  # Below targets
-def at6670 = close >= level4 - 2 and close <= level4 + 2;  # Near Friday low
-def below6670 = close < level5;  # HARD SELL zone
+def above6701 = close > level4;  # In bullish triangle path
+def at6732 = close >= level2 - 2 and close <= level2 + 2;  # Near upper target
+def at6728 = close >= level3 - 2 and close <= level3 + 2;  # Near mid target
+def at6701 = close >= level4 - 2 and close <= level4 + 2;  # Near 1st target
+def above6690 = close >= level5;  # Above triangle support
+def in6684_90 = close >= level6 and close < level5;  # In triangle zone
+def at6670 = close >= level7 - 2 and close <= level7 + 2;  # At Friday low
+def below6670 = close < level7;  # Below Friday low - bearish path
+def below6610 = close < level8;  # Deep leg down
 
 # === LEVEL PLOTS ===
 plot L1 = level1;
-L1.SetDefaultColor(Color.CYAN);
+L1.SetDefaultColor(Color.GREEN);
 L1.SetLineWeight(level1_thickness);
 L1.SetStyle(Curve.FIRM);
 
 plot L2 = level2;
-L2.SetDefaultColor(Color.LIGHT_GREEN);
+L2.SetDefaultColor(Color.CYAN);
 L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
 
@@ -61,49 +73,88 @@ L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
 plot L4 = level4;
-L4.SetDefaultColor(Color.YELLOW);
+L4.SetDefaultColor(Color.LIGHT_GREEN);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
-# === DANGER ZONE ===
 plot L5 = level5;
-L5.SetDefaultColor(Color.RED);
+L5.SetDefaultColor(Color.YELLOW);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
 
+plot L6 = level6;
+L6.SetDefaultColor(Color.ORANGE);
+L6.SetLineWeight(level6_thickness);
+L6.SetStyle(Curve.SHORT_DASH);
+
+plot L7 = level7;
+L7.SetDefaultColor(Color.MAGENTA);
+L7.SetLineWeight(level7_thickness);
+L7.SetStyle(Curve.FIRM);
+
+# === DOWNSIDE LEVELS ===
+plot L8 = level8;
+L8.SetDefaultColor(Color.RED);
+L8.SetLineWeight(level8_thickness);
+L8.SetStyle(Curve.SHORT_DASH);
+
+plot L9 = level9;
+L9.SetDefaultColor(Color.RED);
+L9.SetLineWeight(level9_thickness);
+L9.SetStyle(Curve.SHORT_DASH);
+
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, "6723 - 3rd Target", Color.CYAN, yes);
-AddChartBubble(isLastBar, level2, "6716 - 2nd Target", Color.LIGHT_GREEN, yes);
-AddChartBubble(isLastBar, level3, "6701 - 1st Target", Color.LIGHT_GREEN, yes);
-AddChartBubble(isLastBar, level4, "6670 - Friday Low (Swept & Trapped +20)", Color.YELLOW, yes);
-AddChartBubble(isLastBar, level5, "Today's Low - HARD SELL BELOW", Color.RED, no);
+AddChartBubble(isLastBar, level1, "6764+ - Upper Target (if triangle holds)", Color.GREEN, yes);
+AddChartBubble(isLastBar, level2, "6732 - Upper Triangle Target", Color.CYAN, yes);
+AddChartBubble(isLastBar, level3, "6728 - Mid Triangle Target", Color.LIGHT_GREEN, yes);
+AddChartBubble(isLastBar, level4, "6701 - 1st Triangle Target", Color.LIGHT_GREEN, yes);
+AddChartBubble(isLastBar, level5, "6690 - BIG Triangle Support (rises daily)", Color.YELLOW, yes);
+AddChartBubble(isLastBar, level6, "6684 - Triangle Resistance Down", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level7, "6670 - Friday Low (Failed Breakdown TODAY)", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level8, "6610 - Leg Down Target", Color.RED, no);
+AddChartBubble(isLastBar, level9, "6605 - Minimum Leg Target", Color.RED, no);
 
 # === ALERT SYSTEM ===
 
-# UPSIDE TARGETS
-Alert(enableAlerts and close crosses above level3, "ES ☝️ 6701 - 1st target HIT! Watch 6716!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level2, "ES ☝️ 6716 - 2nd target HIT! Watch 6723!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level1, "ES ☝️ 6723 - 3rd target HIT! PROTECT GAINS!", Alert.BAR, Sound.Ring);
+# Triangle Support - CRITICAL
+Alert(enableAlerts and close crosses above level5, "ES ☝️ 6690 - Triangle support HOLD! Bulls must stick this!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level5, "ES 👇 6690 - Lost triangle support! Bearish path active!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close >= level5 - alertSensitivity and close <= level5 + alertSensitivity, "ES at 6690 Triangle Support - MUST HOLD!", Alert.BAR, Sound.Chimes);
 
-# Approaching Target Alerts
-Alert(enableAlerts and at6701, "ES near 6701 - 1st target approaching!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and at6716, "ES near 6716 - 2nd target approaching!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and at6723, "ES near 6723 - 3rd target approaching! PROTECT GAINS!", Alert.BAR, Sound.Chimes);
+# Triangle Zone
+Alert(enableAlerts and in6684_90, "ES in 6684-90 Triangle Zone - Key area!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses above level6, "ES ☝️ 6684 - Triangle resistance reclaim!", Alert.BAR, Sound.Ring);
 
-# 6670 - Friday Low (Swept & Trapped)
-Alert(enableAlerts and close crosses above level4, "ES ☝️ 6670 - Reclaimed Friday low! Watch 6701!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level4, "ES 👇 6670 - Lost Friday low! Watch today's low!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6670, "ES at 6670 - Friday low test!", Alert.BAR, Sound.Chimes);
+# Bullish Triangle Path
+Alert(enableAlerts and close crosses above level4, "ES ☝️ 6701 - 1st triangle target! Watch 6728!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level3, "ES ☝️ 6728 - Mid triangle target! Watch 6732!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level2, "ES ☝️ 6732 - Upper triangle target! Watch 6764!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level1, "ES ☝️ 6764+ - Upper target HIT!", Alert.BAR, Sound.Ring);
 
-# DANGER ZONE - Today's Low
-Alert(enableAlerts and close crosses below level5, "ES 👇 BELOW TODAY'S LOW - HARD SELL ZONE!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses above level5, "ES ☝️ Reclaimed today's low!", Alert.BAR, Sound.Ring);
+# Approaching Triangle Targets
+Alert(enableAlerts and at6701, "ES near 6701 - 1st triangle target approaching!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and at6728, "ES near 6728 - Mid triangle target approaching!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and at6732, "ES near 6732 - Upper triangle target approaching!", Alert.BAR, Sound.Chimes);
+
+# Friday Low - Failed Breakdown Reference
+Alert(enableAlerts and close crosses above level7, "ES ☝️ 6670 - Reclaimed Friday low! Failed breakdown confirmed!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level7, "ES 👇 6670 - Lost Friday low! Bearish path activated!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6670, "ES at 6670 Friday Low - Failed breakdown test!", Alert.BAR, Sound.Chimes);
+
+# Bearish Leg Down Path
+Alert(enableAlerts and close crosses below level8, "ES 👇 6610 - Leg down target hit! Watch 6605!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level9, "ES 👇 6605 - Minimum leg target HIT!", Alert.BAR, Sound.Bell);
 
 # === STATUS LABELS ===
 AddLabel(showLabels, "Now: " + Round(close, 2), Color.CYAN);
 
 # Position Labels - Only show relevant state
-AddLabel(showLabels and above6701, "🔺 6701! Targets: 6716, 6723 - PROTECT GAINS", Color.GREEN);
-AddLabel(showLabels and !above6701 and close >= level4, " 🔻 6701 - watch 6670 Friday low", Color.YELLOW);
-AddLabel(showLabels and at6670, "AT 6670 FRIDAY LOW - Already swept & trapped", Color.ORANGE);
-AddLabel(showLabels and below6670, "HARD SELL ZONE - Below today's low!", Color.RED);
+AddLabel(showLabels and above6701, "☝️ Triangle breakout! Targets: 6728, 6732, 6764+", Color.GREEN);
+AddLabel(showLabels and above6690 and !above6701, "Above 6690 triangle support - Watch 6701", Color.YELLOW);
+AddLabel(showLabels and in6684_90, "IN 6684-90 TRIANGLE ZONE - Key area!", Color.ORANGE);
+AddLabel(showLabels and at6670, "AT 6670 - Failed breakdown test", Color.MAGENTA);
+AddLabel(showLabels and below6670, "BEARISH PATH - Leg down to 6605-10", Color.RED);
+
+# Trade Summary
+AddLabel(showLabels, "Big Triangle since Oct 17 - Support 6690 (rises daily)", Color.CYAN);
+AddLabel(showLabels, "Bulls must hold 6690 & stick failed breakdown", Color.YELLOW);
