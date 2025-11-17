@@ -1,66 +1,29 @@
-# === MANCINI ES Levels: 🔺 Structure - Support at 6698 ===
-# Updated: November 16, 2025
+# === MANCINI ES Levels: Focus on Current Action ===
+# Updated: November 17, 2025
 # 
-# BIG PICTURE:
-# All action since October 10th formed a MASSIVE 🔺 (yellow)
-# Main structure to watch now
-# Support down at 6496, Resistance up at 6874
-# We held the Friday breakdown support
-#
-# THIS WEEK'S SELL:
-# ES broke support shelf (white line) at 6845-50
-# Key for 🐂 to recover that
-#
-# PLAN NEXT WEEK:
-#
-# 🐂 CASE:
-# 🐂 hold 🔺 support on Friday (rising line, will be 6698 or so Monday)
-# Want to continue holding this week
-# Resistance at 6874 backed by 6820 (big resistance en route)
-# Likely dip there, then need to clear if 🐂 want next leg to 6725-30, 6741, then 7000
-# Short-term supports to engage discussed in newsletter but 6674, 6742-38 key
-#
-# 🐻 CASE:
-# 🔺 breakdown = sell to 6638, 6595, 6551
-#
-# NOTE: Big picture overview for fun to show macro structures
-# Has nothing to do with day trading/execution
-# For detailed daily setups including all intraday levels, full trading plan,
-# entry/exit triggers and comprehensive overview of methodology available at tradecompanion.substack.com
+# CLOSING UPDATE - HIGH QUALITY ACTION:
+# 5 good trades since 6pm last eve
+# 6740 reclaim -> 6764 target HIT (DONE)
+# Lost Friday's 6670 low
+# Swept 6670, trapped, recovered +20 (DONE)
+# 
+# NOW: *PROTECT GAINS*
+# Targets above: 6701, 6716, 6723
+# Hard sell under today's low
 
-# === RESISTANCE ZONE ===
-input level1 = 6874; # R3 - 🔺 resistance (top)
-input level1_thickness = 5;
-input level2 = 6845; # R2 - Broken support shelf (white line) - 🐂 NEED RECLAIM **
-input level2_thickness = 5;
-input level3 = 6820; # R1 - Big resistance en route
-input level3_thickness = 4;
+# === KEY LEVELS ===
+input level1 = 6723;  # 3rd target above
+input level1_thickness = 3;
+input level2 = 6716;  # 2nd target above
+input level2_thickness = 3;
+input level3 = 6701;  # 1st target above
+input level3_thickness = 3;
+input level4 = 6670;  # Friday low - swept & trapped
+input level4_thickness = 5;
 
-# === 🐂 🎯 (if 6874 clears) ===
-input level4 = 7000; # BT3 - Final 🐂 🎯
-input level4_thickness = 4;
-input level5 = 6741; # BT2 - 🐂 🎯
-input level5_thickness = 3;
-input level6 = 6725; # BT1 - 🐂 🎯 (range 6725-30)
-input level6_thickness = 3;
-
-# === 🔺 STRUCTURE ===
-input level7 = 6698; # KEY - 🔺 support (rising line, ~6698 Monday) **
-input level7_thickness = 5;
-input level8 = 6674; # S1 - Short-term support
-input level8_thickness = 3;
-input level9 = 6642; # S2 - Short-term support (range 6642-38)
-input level9_thickness = 3;
-
-# === 🐻 🎯 (if 🔺 breaks) ===
-input level10 = 6638; # BD1 - 🐻 breakdown 🎯
-input level10_thickness = 4;
-input level11 = 6595; # BD2 - 🐻 breakdown 🎯
-input level11_thickness = 4;
-input level12 = 6551; # BD3 - 🐻 breakdown 🎯
-input level12_thickness = 4;
-input level13 = 6496; # BD4 - 🔺 support (bottom)
-input level13_thickness = 5;
+# === DANGER ZONE ===
+input level5 = 6670;  # Today's low - HARD SELL below
+input level5_thickness = 4;
 
 # Alert Settings
 input enableAlerts = yes;
@@ -69,189 +32,78 @@ input alertSensitivity = 0.5;
 # Label Visibility
 input showLabels = yes;
 
-# === ANCHORED VWAP SETTINGS ===
-input anchorDate = 20251010; # Oct 10, 2025 - 🔺 formation start
-input anchorDate2 = 20250803; # Aug 3, 2025 - Additional anchor
-input showVWAP = yes;
-
 # Fixed bubble logic - show only on last bar
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
 
-# Day of week detection
-def dayOfWeek = GetDayOfWeek(GetYYYYMMDD());
-def isMonday = dayOfWeek == 1;
-def isFriday = dayOfWeek == 5;
+# Position detection
+def above6701 = close > level3;  # Above 1st target
+def at6723 = close >= level1 - 2 and close <= level1 + 2;  # Near 3rd target
+def at6716 = close >= level2 - 2 and close <= level2 + 2;  # Near 2nd target
+def at6701 = close >= level3 - 2 and close <= level3 + 2;  # Near 1st target
+def below6701 = close < level3;  # Below targets
+def at6670 = close >= level4 - 2 and close <= level4 + 2;  # Near Friday low
+def below6670 = close < level5;  # HARD SELL zone
 
-# 🔺 position detection
-def inTriangle = close >= level7 and close <= level2; # Between 6698-6845
-def aboveTriangle = close > level2; # Above 6845
-def belowTriangle = close < level7; # Below 6698 (🔺 support)
-def nearResistance = close >= level2 - 20 and close <= level2 + 20; # Near 6845
-
-# === ANCHORED VWAP CALCULATION ===
-def anchorBar = GetYYYYMMDD() == anchorDate;
-def postAnchor = CompoundValue(1, if anchorBar then 1 else if postAnchor[1] then 1 else 0, 0);
-
-def sumTPV = CompoundValue(1, if postAnchor then sumTPV[1] + (high + low + close) / 3 * volume else 0, 0);
-def sumVol = CompoundValue(1, if postAnchor then sumVol[1] + volume else 0, 0);
-def vwapValue = if sumVol > 0 then sumTPV / sumVol else Double.NaN;
-
-# Second VWAP from Aug 3
-def anchorBar2 = GetYYYYMMDD() == anchorDate2;
-def postAnchor2 = CompoundValue(1, if anchorBar2 then 1 else if postAnchor2[1] then 1 else 0, 0);
-
-def sumTPV2 = CompoundValue(1, if postAnchor2 then sumTPV2[1] + (high + low + close) / 3 * volume else 0, 0);
-def sumVol2 = CompoundValue(1, if postAnchor2 then sumVol2[1] + volume else 0, 0);
-def vwapValue2 = if sumVol2 > 0 then sumTPV2 / sumVol2 else Double.NaN;
-
-# === RESISTANCE ZONE ===
+# === LEVEL PLOTS ===
 plot L1 = level1;
-L1.SetDefaultColor(Color.ORANGE);
+L1.SetDefaultColor(Color.CYAN);
 L1.SetLineWeight(level1_thickness);
 L1.SetStyle(Curve.FIRM);
 
 plot L2 = level2;
-L2.SetDefaultColor(Color.YELLOW);
+L2.SetDefaultColor(Color.LIGHT_GREEN);
 L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
 
 plot L3 = level3;
-L3.SetDefaultColor(Color.LIGHT_ORANGE);
+L3.SetDefaultColor(Color.LIGHT_GREEN);
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
-# === 🐂 🎯 ===
 plot L4 = level4;
-L4.SetDefaultColor(Color.GREEN);
+L4.SetDefaultColor(Color.YELLOW);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
+# === DANGER ZONE ===
 plot L5 = level5;
-L5.SetDefaultColor(Color.LIGHT_GREEN);
+L5.SetDefaultColor(Color.RED);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
 
-plot L6 = level6;
-L6.SetDefaultColor(Color.LIGHT_GREEN);
-L6.SetLineWeight(level6_thickness);
-L6.SetStyle(Curve.SHORT_DASH);
-
-# === 🔺 SUPPORT ===
-plot L7 = level7;
-L7.SetDefaultColor(Color.CYAN);
-L7.SetLineWeight(level7_thickness);
-L7.SetStyle(Curve.FIRM);
-
-plot L8 = level8;
-L8.SetDefaultColor(Color.LIGHT_GRAY);
-L8.SetLineWeight(level8_thickness);
-L8.SetStyle(Curve.SHORT_DASH);
-
-plot L9 = level9;
-L9.SetDefaultColor(Color.LIGHT_GRAY);
-L9.SetLineWeight(level9_thickness);
-L9.SetStyle(Curve.SHORT_DASH);
-
-# === 🐻 🎯 ===
-plot L10 = level10;
-L10.SetDefaultColor(Color.MAGENTA);
-L10.SetLineWeight(level10_thickness);
-L10.SetStyle(Curve.FIRM);
-
-plot L11 = level11;
-L11.SetDefaultColor(Color.DARK_RED);
-L11.SetLineWeight(level11_thickness);
-L11.SetStyle(Curve.FIRM);
-
-plot L12 = level12;
-L12.SetDefaultColor(Color.RED);
-L12.SetLineWeight(level12_thickness);
-L12.SetStyle(Curve.FIRM);
-
-plot L13 = level13;
-L13.SetDefaultColor(Color.DARK_ORANGE);
-L13.SetLineWeight(level13_thickness);
-L13.SetStyle(Curve.FIRM);
-
-# === ANCHORED VWAP PLOTS ===
-plot VWAP = if showVWAP and postAnchor then vwapValue else Double.NaN;
-VWAP.SetDefaultColor(Color.WHITE);
-VWAP.SetLineWeight(2);
-VWAP.SetStyle(Curve.FIRM);
-
-plot VWAP2 = if showVWAP and postAnchor2 then vwapValue2 else Double.NaN;
-VWAP2.SetDefaultColor(Color.MAGENTA);
-VWAP2.SetLineWeight(2);
-VWAP2.SetStyle(Curve.FIRM);
-
-# Chart bubbles - show only on last bar
-AddChartBubble(isLastBar, level1, "R3: 6874 - 🔺 Resistance (Top)", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level2, "R2: 6845 - BROKEN SUPPORT SHELF - 🐂 NEED RECLAIM **", Color.YELLOW, yes);
-AddChartBubble(isLastBar, level3, "R1: 6820 - Big Resistance En Route", Color.LIGHT_ORANGE, yes);
-AddChartBubble(isLastBar, level4, "🎯: 7000 - Final 🐂 🎯", Color.GREEN, yes);
-AddChartBubble(isLastBar, level5, "🎯: 6741 - 🐂 🎯", Color.LIGHT_GREEN, yes);
-AddChartBubble(isLastBar, level6, "🎯: 6725-30 - 🐂 🎯", Color.LIGHT_GREEN, yes);
-AddChartBubble(isLastBar, level7, "KEY: 6698 - 🔺 Support (Rising Line ~6698 Mon) **", Color.CYAN, yes);
-AddChartBubble(isLastBar, level8, "S1: 6674 - Short-term Support", Color.LIGHT_GRAY, no);
-AddChartBubble(isLastBar, level9, "S2: 6642-38 - Short-term Support", Color.LIGHT_GRAY, no);
-AddChartBubble(isLastBar, level10, "🎯: 6638 - 🐻 Breakdown 🎯", Color.MAGENTA, no);
-AddChartBubble(isLastBar, level11, "🎯: 6595 - 🐻 Breakdown 🎯", Color.DARK_RED, no);
-AddChartBubble(isLastBar, level12, "🎯: 6551 - 🐻 Breakdown 🎯", Color.RED, no);
-AddChartBubble(isLastBar, level13, "🎯: 6496 - 🔺 Support (Bottom)", Color.DARK_ORANGE, no);
-
-# VWAP bubble
-AddChartBubble(isLastBar and showVWAP, vwapValue, "VWAP (Oct 10 - 🔺 Start)", Color.WHITE, yes);
-AddChartBubble(isLastBar and showVWAP, vwapValue2, "VWAP (Aug 3)", Color.MAGENTA, yes);
+# === CHART BUBBLES ===
+AddChartBubble(isLastBar, level1, "6723 - 3rd Target", Color.CYAN, yes);
+AddChartBubble(isLastBar, level2, "6716 - 2nd Target", Color.LIGHT_GREEN, yes);
+AddChartBubble(isLastBar, level3, "6701 - 1st Target", Color.LIGHT_GREEN, yes);
+AddChartBubble(isLastBar, level4, "6670 - Friday Low (Swept & Trapped +20)", Color.YELLOW, yes);
+AddChartBubble(isLastBar, level5, "Today's Low - HARD SELL BELOW", Color.RED, no);
 
 # === ALERT SYSTEM ===
 
-# CRITICAL: 6845 Broken Support Shelf
-Alert(enableAlerts and close crosses above level2, "ES ↑ 6845 - 🐂 RECLAIM BROKEN SUPPORT SHELF! Test 6874!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level2, "ES ↓ 6845 - Support shelf broken (white line)! Key for 🐂 to recover!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close >= level2 - alertSensitivity and close <= level2 + alertSensitivity, "ES Testing 6845 - BROKEN SUPPORT SHELF - Critical level!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and high[1] >= level2 and close < level2 - 10, "ES REJECTION at 6845 - 🐂 failed to reclaim!", Alert.BAR, Sound.Bell);
+# UPSIDE TARGETS
+Alert(enableAlerts and close crosses above level3, "ES ☝️ 6701 - 1st target HIT! Watch 6716!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level2, "ES ☝️ 6716 - 2nd target HIT! Watch 6723!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level1, "ES ☝️ 6723 - 3rd target HIT! PROTECT GAINS!", Alert.BAR, Sound.Ring);
 
-# 🔺 Resistance
-Alert(enableAlerts and close crosses above level1, "ES ↑ 6874 - 🔺 RESISTANCE BROKEN! 🐂 🎯: 6725-30, 6741, 7000!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level3, "ES ↑ 6820 - Big resistance cleared! Next: 6845, then 6874!", Alert.BAR, Sound.Ring);
+# Approaching Target Alerts
+Alert(enableAlerts and at6701, "ES near 6701 - 1st target approaching!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and at6716, "ES near 6716 - 2nd target approaching!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and at6723, "ES near 6723 - 3rd target approaching! PROTECT GAINS!", Alert.BAR, Sound.Chimes);
 
-# 🐂 🎯
-Alert(enableAlerts and close crosses above level6, "ES ↑ 6725 - First 🐂 🎯 zone hit! Next: 6741!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level5, "ES ↑ 6741 - Second 🐂 🎯 hit! Next: 7000!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level4, "ES ↑ 7000 - FINAL 🐂 🎯 HIT!", Alert.BAR, Sound.Ring);
+# 6670 - Friday Low (Swept & Trapped)
+Alert(enableAlerts and close crosses above level4, "ES ☝️ 6670 - Reclaimed Friday low! Watch 6701!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level4, "ES 👇 6670 - Lost Friday low! Watch today's low!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6670, "ES at 6670 - Friday low test!", Alert.BAR, Sound.Chimes);
 
-# CRITICAL: 🔺 Support (6698)
-Alert(enableAlerts and close crosses below level7, "ES ↓ 6698 - 🔺 SUPPORT BROKEN! 🐻 case active: 6638, 6595, 6551!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close >= level7 - alertSensitivity and close <= level7 + alertSensitivity, "ES Testing 6698 - 🔺 support (rising line ~6698 Monday) - CRITICAL!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and low[1] <= level7 and close > level7 + 5, "ES BOUNCE from 6698 - 🔺 support holds! 🐂 in control!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and isFriday and close >= level7 - 10 and close <= level7 + 10, "FRIDAY: 🔺 support test - Key for 🐂 to hold into weekend!", Alert.BAR, Sound.Chimes);
+# DANGER ZONE - Today's Low
+Alert(enableAlerts and close crosses below level5, "ES 👇 BELOW TODAY'S LOW - HARD SELL ZONE!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses above level5, "ES ☝️ Reclaimed today's low!", Alert.BAR, Sound.Ring);
 
-# Short-term Supports
-Alert(enableAlerts and close crosses below level8, "ES ↓ 6674 - Short-term support broken! Watch 6642-38!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level9, "ES ↓ 6642 - Short-term support broken! 🔺 failure likely!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and low[1] <= level8 and close > level8 + 5, "ES BOUNCE from 6674 - Short-term support holds!", Alert.BAR, Sound.Ring);
-
-# 🐻 Breakdown 🎯
-Alert(enableAlerts and close crosses below level10, "ES ↓ 6638 - FIRST 🐻 🎯 HIT! Next: 6595!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level11, "ES ↓ 6595 - SECOND 🐻 🎯 HIT! Next: 6551!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level12, "ES ↓ 6551 - THIRD 🐻 🎯 HIT! 🔺 fully broken!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level13, "ES ↓ 6496 - 🔺 BOTTOM BROKEN! Major support failure!", Alert.BAR, Sound.Bell);
-
-# VWAP Alerts
-Alert(enableAlerts and showVWAP and close crosses above vwapValue, "ES ↑ Oct 10 VWAP (🔺 Start)!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and showVWAP and close crosses below vwapValue, "ES ↓ Oct 10 VWAP (🔺 Start)!", Alert.BAR, Sound.Bell);
-
-# Aug 3 VWAP Alerts
-Alert(enableAlerts and showVWAP and close crosses above vwapValue2, "ES ↑ Aug 3 VWAP!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and showVWAP and close crosses below vwapValue2, "ES ↓ Aug 3 VWAP!", Alert.BAR, Sound.Bell);
-
-# Status Labels
-AddLabel(showLabels and enableAlerts, "Alerts ON", Color.GREEN);
-AddLabel(showLabels and !enableAlerts, "Alerts OFF", Color.RED);
-AddLabel(showLabels, "🔺: Since Oct 10 - Support 6496-6698, Resistance 6874", Color.WHITE);
+# === STATUS LABELS ===
 AddLabel(showLabels, "Now: " + Round(close, 2), Color.CYAN);
 
-# Week Plan Label
-AddLabel(showLabels, "Last Week: Broke support shelf 6845-50 - 🐂 need to recover", Color.YELLOW);
-AddLabel(showLabels and isMonday, "MONDAY - 🔺 support rising line ~6698", Color.ORANGE);
-AddLabel(showLabels and isFriday, "FRIDAY - Critical to hold 🔺 support into weekend!", Color.MAGENTA);
+# Position Labels - Only show relevant state
+AddLabel(showLabels and above6701, "🔺 6701! Targets: 6716, 6723 - PROTECT GAINS", Color.GREEN);
+AddLabel(showLabels and !above6701 and close >= level4, " 🔻 6701 - watch 6670 Friday low", Color.YELLOW);
+AddLabel(showLabels and at6670, "AT 6670 FRIDAY LOW - Already swept & trapped", Color.ORANGE);
+AddLabel(showLabels and below6670, "HARD SELL ZONE - Below today's low!", Color.RED);
