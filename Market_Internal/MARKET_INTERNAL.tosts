@@ -7,59 +7,46 @@
 
 # === USER INPUTS ===
 input showLabels = yes;
-input showTable = yes;
 input enableAlerts = yes;
 
 # VIX Thresholds
-input vixLow = 15.0;        # Below = Low fear (bullish)
-input vixMedium = 25.0;     # Above = High fear (bearish)
-input vixHigh = 35.0;       # Extreme fear
+input vixLow = 15.0;
+input vixMedium = 25.0;
+input vixHigh = 35.0;
 
 # TICK Thresholds  
-input tickBullish = 500;    # Above = Bullish momentum
-input tickBearish = -500;   # Below = Bearish momentum
+input tickBullish = 500;
+input tickBearish = -500;
 input tickExtremeBull = 1000;
 input tickExtremeBear = -1000;
 
 # Volume Up % Thresholds
-input volUpBullish = 60.0;  # Above = Bullish volume
-input volUpBearish = 40.0;  # Below = Bearish volume
+input volUpBullish = 60.0;
+input volUpBearish = 40.0;
 
 # Breadth (ADD) Thresholds
-input addBullish = 200;     # Above = Advancing issues dominate
-input addBearish = -200;    # Below = Declining issues dominate
+input addBullish = 200;
+input addBearish = -200;
 
 # === MARKET INTERNAL DATA ===
-# Note: These would typically pull from actual market data feeds
-# For ThinkScript implementation, you'd use actual symbols like $TICK, $ADD, $VIX
-
-# VIX - Volatility Index
 def vix = close("VIX");
 def vixPrevious = close("VIX")[1];
 def vixDelta = vix - vixPrevious;
-
-# TICK - NYSE TICK Index
 def tick = close("$TICK");
-
-# ADD - NYSE Advance/Decline Line  
 def add = close("$ADD");
 
 # === DERIVED CALCULATIONS ===
-
-# Volume Up Percentage (approximated from price action)
 def volUp = if close > close[1] then volume else 0;
 def volDown = if close <= close[1] then volume else 0;
 def totalVol = volUp + volDown;
 def volUpPercent = if totalVol > 0 then (volUp / totalVol) * 100 else 50;
 
-# TICK Range Percentage (how far TICK is from neutral in its daily range)
-def tickHigh = Highest(tick, 390); # Daily high
-def tickLow = Lowest(tick, 390);   # Daily low
+def tickHigh = Highest(tick, 390);
+def tickLow = Lowest(tick, 390);
 def tickRange = tickHigh - tickLow;
 def tickRangePercent = if tickRange > 0 then ((tick - tickLow) / tickRange) * 100 else 50;
 
-# Net Bias (combination of breadth and tick)
-def netBias = add + (tick / 10); # Scaled combination
+def netBias = add + (tick / 10);
 
 # === MARKET SCENARIO ASSESSMENT ===
 def bullishFactors = (if volUpPercent > volUpBullish then 1 else 0) +
@@ -75,21 +62,27 @@ def bearishFactors = (if volUpPercent < volUpBearish then 1 else 0) +
                     (if vixDelta > 0 then 1 else 0);
 
 def marketStrength = bullishFactors - bearishFactors;
+def scenario = if marketStrength >= 2 then 3
+              else if marketStrength >= 1 then 2
+              else if marketStrength <= -2 then -3
+              else if marketStrength <= -1 then -2
+              else 0;
 
-# Market Scenario
-def scenario = if marketStrength >= 2 then 3     # Strong Bullish
-              else if marketStrength >= 1 then 2  # Bullish  
-              else if marketStrength <= -2 then -3 # Strong Bearish
-              else if marketStrength <= -1 then -2 # Bearish
-              else 0;                              # Neutral
-
-# Strength Score (0-100)
 def strengthScore = 50 + (marketStrength * 10);
+def posture = if scenario >= 2 then 1
+             else if scenario <= -2 then -1
+             else 0;
 
-# Market Posture
-def posture = if scenario >= 2 then 1      # Bullish
-             else if scenario <= -2 then -1 # Bearish  
-             else 0;                        # Neutral
+# === PREDICTION & CONFIDENCE ===
+def predictionType = if scenario >= 1 and tick > 0 and volUpPercent > 55 then 1
+                    else if scenario <= -1 and tick < 0 and volUpPercent < 45 then -1
+                    else if AbsValue(tick) < 100 and vix < 20 then 0
+                    else 2;
+
+def confidence = if AbsValue(marketStrength) >= 3 then 90
+                else if AbsValue(marketStrength) >= 2 then 70
+                else if AbsValue(marketStrength) >= 1 then 50
+                else 10;
 
 # === COLOR DEFINITIONS ===
 DefineGlobalColor("bullish", Color.GREEN);
@@ -98,13 +91,10 @@ DefineGlobalColor("neutral", Color.YELLOW);
 DefineGlobalColor("strong_bullish", Color.CYAN);
 DefineGlobalColor("strong_bearish", Color.MAGENTA);
 
-# === LABELS ===
-AddLabel(showLabels, "=== MARKET INTERNALS ===", Color.WHITE);
-
-# Scenario
+# === LABELS (Header Row) ===
 AddLabel(showLabels, "Scenario: " + 
          (if scenario == 3 then "STRONG BULLISH"
-          else if scenario == 2 then "BULLISH" 
+          else if scenario == 2 then "BULLISH"
           else if scenario == 1 then "MILD BULLISH"
           else if scenario == -1 then "MILD BEARISH"
           else if scenario == -2 then "BEARISH"
@@ -112,44 +102,42 @@ AddLabel(showLabels, "Scenario: " +
           else "NEUTRAL"),
          if scenario >= 2 then GlobalColor("strong_bullish")
          else if scenario >= 1 then GlobalColor("bullish")
-         else if scenario <= -2 then GlobalColor("strong_bearish") 
+         else if scenario <= -2 then GlobalColor("strong_bearish")
          else if scenario <= -1 then GlobalColor("bearish")
          else GlobalColor("neutral"));
 
-# Strength Score
-AddLabel(showLabels, "Strength: " + Round(strengthScore, 0), 
+AddLabel(showLabels, "Strength: " + Round(strengthScore, 0),
          if strengthScore >= 70 then GlobalColor("strong_bullish")
          else if strengthScore >= 60 then GlobalColor("bullish")
          else if strengthScore <= 30 then GlobalColor("strong_bearish")
          else if strengthScore <= 40 then GlobalColor("bearish")
          else GlobalColor("neutral"));
 
-# Posture  
-AddLabel(showLabels, "Posture: " + 
+AddLabel(showLabels, "Posture: " +
          (if posture == 1 then "BULLISH"
-          else if posture == -1 then "BEARISH" 
+          else if posture == -1 then "BEARISH"
           else "NEUTRAL"),
          if posture == 1 then GlobalColor("bullish")
          else if posture == -1 then GlobalColor("bearish")
          else GlobalColor("neutral"));
 
-# Individual Metrics
-AddLabel(showLabels, "Vol Up: " + Round(volUpPercent, 1) + "%", 
+# === METRIC LABELS ===
+AddLabel(showLabels, "% VOL UP: " + Round(volUpPercent, 1) + "%",
          if volUpPercent >= volUpBullish then GlobalColor("bullish")
-         else if volUpPercent <= volUpBearish then GlobalColor("bearish") 
+         else if volUpPercent <= volUpBearish then GlobalColor("bearish")
          else GlobalColor("neutral"));
 
-AddLabel(showLabels, "ADD: " + Round(add, 0), 
+AddLabel(showLabels, "BREADTH (ADD): " + Round(add, 0),
          if add >= addBullish then GlobalColor("bullish")
          else if add <= addBearish then GlobalColor("bearish")
          else GlobalColor("neutral"));
 
-AddLabel(showLabels, "Net Bias: " + Round(netBias, 0) + "M", 
+AddLabel(showLabels, "NET BIAS: " + Round(netBias, 2) + "M",
          if netBias > 100 then GlobalColor("bullish")
          else if netBias < -100 then GlobalColor("bearish")
          else GlobalColor("neutral"));
 
-AddLabel(showLabels, "Tick Range: " + Round(tickRangePercent, 1) + "%",
+AddLabel(showLabels and tickRange > 0, "% TICK RANGE: " + Round(tickRangePercent, 1) + "%",
          if tickRangePercent >= 80 then GlobalColor("bullish")
          else if tickRangePercent <= 20 then GlobalColor("bearish")
          else GlobalColor("neutral"));
@@ -172,65 +160,31 @@ AddLabel(showLabels, "VIX Δ: " + Round(vixDelta, 2),
          else if vixDelta >= 1 then GlobalColor("bearish")
          else GlobalColor("neutral"));
 
-# === TRADING SIGNALS ===
-def bullishSignal = scenario >= 2 and volUpPercent > volUpBullish and tick > tickBullish;
-def bearishSignal = scenario <= -2 and volUpPercent < volUpBearish and tick < tickBearish;
+AddLabel(showLabels, "PREDICTION: " +
+         (if predictionType == 1 then "BULLISH CONTINUATION"
+          else if predictionType == -1 then "BEARISH CONTINUATION"
+          else if predictionType == 0 then "CHOPPY/BALANCED"
+          else "MIXED SIGNALS"),
+         Color.WHITE);
 
-AddLabel(bullishSignal, "🚀 BULLISH SIGNAL ACTIVE!", GlobalColor("strong_bullish"));
-AddLabel(bearishSignal, "🐻 BEARISH SIGNAL ACTIVE!", GlobalColor("strong_bearish"));
-
-# Market Condition Assessment
-AddLabel(showLabels, "Condition: " + 
-         (if vix > vixHigh then "FEAR EXTREME"
-          else if vix < vixLow and tick > tickBullish then "EUPHORIC" 
-          else if AbsValue(tick) > tickExtremeBull then "VOLATILE"
-          else if volUpPercent > 75 and add > 500 then "STRONG RALLY"
-          else if volUpPercent < 25 and add < -500 then "STRONG DECLINE"
-          else "BALANCED"),
-         if vix > vixHigh or AbsValue(tick) > tickExtremeBull then Color.ORANGE
-         else if bullishSignal then GlobalColor("strong_bullish")
-         else if bearishSignal then GlobalColor("strong_bearish")
-         else Color.GRAY);
-
-# === ALERTS ===
-Alert(enableAlerts and bullishSignal and !bullishSignal[1], "BULLISH Market Internals Signal!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and bearishSignal and !bearishSignal[1], "BEARISH Market Internals Signal!", Alert.BAR, Sound.Bell);
-
-Alert(enableAlerts and scenario crosses above 1, "Market Turning BULLISH", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and scenario crosses below -1, "Market Turning BEARISH", Alert.BAR, Sound.Chimes);
-
-Alert(enableAlerts and tick crosses above tickExtremeBull, "TICK EXTREME BULLISH!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and tick crosses below tickExtremeBear, "TICK EXTREME BEARISH!", Alert.BAR, Sound.Bell);
-
-Alert(enableAlerts and vix crosses above vixHigh, "VIX FEAR SPIKE!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and vix crosses below vixLow, "VIX COMPLACENCY!", Alert.BAR, Sound.Ring);
-
-# === PREDICTION & CONFIDENCE ===
-def prediction = if scenario >= 1 and tick > 0 and volUpPercent > 55 then "BULLISH CONTINUATION"
-                else if scenario <= -1 and tick < 0 and volUpPercent < 45 then "BEARISH CONTINUATION"
-                else if AbsValue(tick) < 100 and vix < 20 then "CHOPPY/BALANCED"
-                else "MIXED SIGNALS";
-
-def confidence = if AbsValue(marketStrength) >= 3 then 90
-                else if AbsValue(marketStrength) >= 2 then 70  
-                else if AbsValue(marketStrength) >= 1 then 50
-                else 10;
-
-AddLabel(showLabels, "Prediction: " + prediction, Color.WHITE);
-AddLabel(showLabels, "Confidence: " + confidence + "%", 
+AddLabel(showLabels, "CONFIDENCE: " + confidence + "%",
          if confidence >= 70 then Color.GREEN
          else if confidence >= 50 then Color.YELLOW
          else Color.ORANGE);
 
-# === BACKGROUND COLOR ===
-def bgColor = if scenario >= 2 then CreateColor(0, 50, 0)      # Dark Green
-             else if scenario >= 1 then CreateColor(0, 25, 0)   # Light Green
-             else if scenario <= -2 then CreateColor(50, 0, 0)  # Dark Red  
-             else if scenario <= -1 then CreateColor(25, 0, 0)  # Light Red
-             else CreateColor(25, 25, 0);                       # Dark Yellow
+# === TRADING SIGNALS ===
+def bullishSignal = scenario >= 2 and volUpPercent > volUpBullish and tick > tickBullish;
+def bearishSignal = scenario <= -2 and volUpPercent < volUpBearish and tick < tickBearish;
 
-AssignPriceColor(if scenario >= 2 then GlobalColor("strong_bullish")
-                else if scenario >= 1 then GlobalColor("bullish") 
-                else if scenario <= -2 then GlobalColor("strong_bearish")
-                else if scenario <= -1 then GlobalColor("bearish")
-                else GlobalColor("neutral"));
+AddLabel(bullishSignal, "🚀 BULLISH SIGNAL!", GlobalColor("strong_bullish"));
+AddLabel(bearishSignal, "🐻 BEARISH SIGNAL!", GlobalColor("strong_bearish"));
+
+# === ALERTS ===
+Alert(enableAlerts and bullishSignal and !bullishSignal[1], "BULLISH Market Internals Signal!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and bearishSignal and !bearishSignal[1], "BEARISH Market Internals Signal!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and scenario crosses above 1, "Market Turning BULLISH", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and scenario crosses below -1, "Market Turning BEARISH", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and tick crosses above tickExtremeBull, "TICK EXTREME BULLISH!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and tick crosses below tickExtremeBear, "TICK EXTREME BEARISH!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and vix crosses above vixHigh, "VIX FEAR SPIKE!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and vix crosses below vixLow, "VIX COMPLACENCY!", Alert.BAR, Sound.Ring);
