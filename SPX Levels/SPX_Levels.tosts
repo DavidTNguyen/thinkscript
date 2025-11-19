@@ -19,19 +19,19 @@
 
 # === KEY LEVELS ===
 input level1 = 6880;  # R5 - Major resistance / Open path target
-input level1_thickness = 5;
+input level1_thickness = 1;
 input level2 = 6770;  # R4 - Squeeze setup zone HIGH
-input level2_thickness = 4;
+input level2_thickness = 1;
 input level3 = 6760;  # R3 - Squeeze setup zone LOW / Major target
-input level3_thickness = 4;
+input level3_thickness = 1;
 input level4 = 6670;  # R2 - Stop zone / Short-cover clusters
-input level4_thickness = 3;
+input level4_thickness = 1;
 input level5 = 6640;  # R1 - FAIL AREA (Needs volume to clear)
-input level5_thickness = 5;
+input level5_thickness = 1;
 input level6 = 6549;  # KEY BULLISH TRIGGER (± 5)
-input level6_thickness = 5;
+input level6_thickness = 1;
 input level7 = 6513;  # S1 - Next support / Oversold reversal zone (± 5)
-input level7_thickness = 4;
+input level7_thickness = 1;
 
 # Alert Settings
 input enableAlerts = yes;
