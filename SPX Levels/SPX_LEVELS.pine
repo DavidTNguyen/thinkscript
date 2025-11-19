@@ -1,64 +1,53 @@
 //@version=5
-indicator("SPX Levels: Trading Bias & Structure", overlay=true, max_lines_count=500, max_labels_count=500)
+indicator("SPX Levels: Trading Playbook", overlay=true, max_lines_count=500, max_labels_count=500)
 
-// === SPX Levels: Trading Bias & Structure ===
-// Updated: November 15, 2025
+// === SPX Trading Playbook - Levels & Scenarios ===
+// Updated: November 20, 2025
 // 
-// TRADING BIAS:
-// Above 6635+ = No 🐻 Bias, buy dips vs. 🐂 Star
-// Below 6880+ = No 🐂 Bias, fade rallies vs. 🐻 Star
-// Trade W-shape swings until either boundary is broken on high volume
+// KEY TRADING SCENARIOS:
 //
-// SENTIMENT METER:
-// 6635+ & above = Cautious 🐂 - Dip buys allowed, scale out at intermediate strikes
-// 6725-6765 = Neutral Chop - Scalps only, Greeks in play, both directions
-// 6825-6880+ = 🐻 Pressure - Short rallies, avoid breakout longs unless volume spike confirms
-// Below 6635- = High 🐻 - Swing shorts toward lower structure
+// 1. BIG GAP DOWN + FAST TOUCH 6549 ± 5
+//    - Look for stop-in bets and oversold bounce
+//    - Entry: Long after reversal confirmation
+//    - Target: First upside level = 6640
 //
-// VISUAL RANGE MAP:
-// Rally Continuation Zone
-// 6880+ = 🐻 Star (Major Short Zone) - MOST CRITICAL
-// 6825 = Small 🐻 Star
-// 6765 = Intermediate Strike
-// 6725 = "Greek Chase" Strike - Scalps only
-// 6705 = Gap-Down Play Zone
-// 6695 = Dead Volume Dip Buy Area
-// 6635 = 🐂 Star (Major Long Zone / Buy Support) - MOST CRITICAL
-// 6620 = Lower Range Edge
-// Breakdown = Waterfall Risk
+// 2. SLOW DRIFT LOWER (No 6549 break)
+//    - Market stays bearish
+//    - Strategy: Short rallies toward fail area (6640)
+//
+// 3. BREAK ABOVE 6640 → 6670 → 6760
+//    - Watch volume: Needs sustained push for short covering
+//    - Entry: Long after 6640 holds as support
+//    - Target: 6760-6770, then 6880
 
 // === INPUTS ===
 // Resistance Levels
-level1 = input.float(6880, "R1 - 🐻 Star (Major Short Zone)", group="🔴 Resistance Levels")
-level1_thickness = input.int(5, "R1 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
-level2 = input.float(6825, "R2 - Small 🐻 Star", group="🔴 Resistance Levels")
-level2_thickness = input.int(3, "R2 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
-level3 = input.float(6765, "R3 - Intermediate Strike", group="🔴 Resistance Levels")
-level3_thickness = input.int(3, "R3 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
-level4 = input.float(6725, "R4 - Greek Chase (Scalps Only)", group="🔴 Resistance Levels")
-level4_thickness = input.int(2, "R4 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
-
-// Neutral Zone
-level5 = input.float(6705, "N1 - Gap-Down Play Zone", group="⚪ Neutral Zone")
-level5_thickness = input.int(2, "N1 Line Thickness", minval=1, maxval=10, group="⚪ Neutral Zone")
-level6 = input.float(6695, "N2 - Dead Volume Dip Buy", group="⚪ Neutral Zone")
-level6_thickness = input.int(2, "N2 Line Thickness", minval=1, maxval=10, group="⚪ Neutral Zone")
+level1 = input.float(6880, "R5 - Major resistance / Open path target", group="🔴 Resistance Levels")
+level1_thickness = input.int(5, "R5 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
+level2 = input.float(6770, "R4 - Squeeze setup zone HIGH", group="🔴 Resistance Levels")
+level2_thickness = input.int(4, "R4 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
+level3 = input.float(6760, "R3 - Squeeze setup zone LOW / Major target", group="🔴 Resistance Levels")
+level3_thickness = input.int(4, "R3 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
+level4 = input.float(6670, "R2 - Stop zone / Short-cover clusters", group="🔴 Resistance Levels")
+level4_thickness = input.int(3, "R2 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
+level5 = input.float(6640, "R1 - FAIL AREA (Needs volume to clear)", group="🔴 Resistance Levels")
+level5_thickness = input.int(5, "R1 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
 
 // Support Levels
-level7 = input.float(6635, "S1 - 🐂 Star (Major Long Zone)", group="🟢 Support Levels")
-level7_thickness = input.int(5, "S1 Line Thickness", minval=1, maxval=10, group="🟢 Support Levels")
-level8 = input.float(6620, "S2 - Lower Range Edge", group="🟢 Support Levels")
-level8_thickness = input.int(3, "S2 Line Thickness", minval=1, maxval=10, group="🟢 Support Levels")
+level6 = input.float(6549, "KEY BULLISH TRIGGER (± 5)", group="🟢 Support Levels")
+level6_thickness = input.int(5, "KEY Line Thickness", minval=1, maxval=10, group="🟢 Support Levels")
+level7 = input.float(6513, "S1 - Next support / Oversold reversal zone (± 5)", group="🟢 Support Levels")
+level7_thickness = input.int(4, "S1 Line Thickness", minval=1, maxval=10, group="🟢 Support Levels")
 
 // Alert Settings
 enableAlerts = input.bool(true, "Enable Alerts", group="🔔 Alert Settings")
-alertSensitivity = input.float(0.5, "Alert Sensitivity", minval=0.1, maxval=5.0, group="🔔 Alert Settings")
+alertSensitivity = input.float(5.0, "Alert Sensitivity", minval=0.1, maxval=10.0, group="🔔 Alert Settings")
 
 // Label Visibility
 showLabels = input.bool(true, "Show Labels", group="📊 Display Settings")
 showLines = input.bool(true, "Show Level Lines", group="📊 Display Settings")
 
-// === RESISTANCE LINES ===
+// === LEVEL LINES ===
 var line l1 = na
 var line l2 = na
 var line l3 = na
@@ -66,139 +55,141 @@ var line l4 = na
 var line l5 = na
 var line l6 = na
 var line l7 = na
-var line l8 = na
 
 if showLines and barstate.islast
-    // R1 - 🐻 Star (Red, Heavy)
-    l1 := line.new(bar_index - 100, level1, bar_index + 20, level1, color=color.red, width=level1_thickness, style=line.style_solid)
+    // R5 - 6880 (Cyan)
+    l1 := line.new(bar_index - 100, level1, bar_index + 20, level1, color=color.aqua, width=level1_thickness, style=line.style_solid)
     
-    // R2 - Small 🐻 Star (Orange)
-    l2 := line.new(bar_index - 100, level2, bar_index + 20, level2, color=color.orange, width=level2_thickness, style=line.style_solid)
+    // R4 - 6770 (Light Green)
+    l2 := line.new(bar_index - 100, level2, bar_index + 20, level2, color=color.lime, width=level2_thickness, style=line.style_solid)
     
-    // R3 - Intermediate Strike (Yellow)
-    l3 := line.new(bar_index - 100, level3, bar_index + 20, level3, color=color.yellow, width=level3_thickness, style=line.style_solid)
+    // R3 - 6760 (Light Green)
+    l3 := line.new(bar_index - 100, level3, bar_index + 20, level3, color=color.lime, width=level3_thickness, style=line.style_solid)
     
-    // R4 - Greek Chase (Gray, Dashed)
-    l4 := line.new(bar_index - 100, level4, bar_index + 20, level4, color=color.gray, width=level4_thickness, style=line.style_dashed)
+    // R2 - 6670 (Orange)
+    l4 := line.new(bar_index - 100, level4, bar_index + 20, level4, color=color.orange, width=level4_thickness, style=line.style_solid)
     
-    // N1 - Gap-Down Play (Cyan, Dashed)
-    l5 := line.new(bar_index - 100, level5, bar_index + 20, level5, color=color.aqua, width=level5_thickness, style=line.style_dashed)
+    // R1 - 6640 FAIL AREA (Red, Heavy)
+    l5 := line.new(bar_index - 100, level5, bar_index + 20, level5, color=color.red, width=level5_thickness, style=line.style_solid)
     
-    // N2 - Dead Volume (Cyan)
-    l6 := line.new(bar_index - 100, level6, bar_index + 20, level6, color=color.aqua, width=level6_thickness, style=line.style_solid)
+    // KEY - 6549 TRIGGER (Green, Heavy)
+    l6 := line.new(bar_index - 100, level6, bar_index + 20, level6, color=color.green, width=level6_thickness, style=line.style_solid)
     
-    // S1 - 🐂 Star (Green, Heavy)
-    l7 := line.new(bar_index - 100, level7, bar_index + 20, level7, color=color.green, width=level7_thickness, style=line.style_solid)
-    
-    // S2 - Lower Range Edge (Magenta)
-    l8 := line.new(bar_index - 100, level8, bar_index + 20, level8, color=color.fuchsia, width=level8_thickness, style=line.style_solid)
+    // S1 - 6513 Oversold (Dark Green)
+    l7 := line.new(bar_index - 100, level7, bar_index + 20, level7, color=color.new(color.green, 30), width=level7_thickness, style=line.style_solid)
 
 // === LABELS ===
 if barstate.islast and showLabels
-    label.new(bar_index, level1, "R1: 6880 - 🐻 STAR (Major Short)", style=label.style_label_left, color=color.red, textcolor=color.white)
-    label.new(bar_index, level2, "R2: 6825 - Small 🐻 Star", style=label.style_label_left, color=color.orange, textcolor=color.white)
-    label.new(bar_index, level3, "R3: 6765 - Intermediate Strike", style=label.style_label_left, color=color.yellow, textcolor=color.black)
-    label.new(bar_index, level4, "R4: 6725 - Greek Chase (Scalps Only)", style=label.style_label_left, color=color.gray, textcolor=color.white)
-    label.new(bar_index, level5, "N1: 6705 - Gap-Down Play", style=label.style_label_left, color=color.aqua, textcolor=color.black)
-    label.new(bar_index, level6, "N2: 6695 - Dead Volume Dip Buy", style=label.style_label_left, color=color.aqua, textcolor=color.black)
-    label.new(bar_index, level7, "S1: 6635 - 🐂 STAR (Major Long)", style=label.style_label_right, color=color.green, textcolor=color.white)
-    label.new(bar_index, level8, "S2: 6620 - Lower Range Edge", style=label.style_label_right, color=color.fuchsia, textcolor=color.white)
+    label.new(bar_index, level1, "R5: 6880 - Open path", style=label.style_label_left, color=color.aqua, textcolor=color.white)
+    label.new(bar_index, level2, "R4: 6770 - Squeeze HIGH", style=label.style_label_left, color=color.lime, textcolor=color.black)
+    label.new(bar_index, level3, "R3: 6760 - Squeeze LOW", style=label.style_label_left, color=color.lime, textcolor=color.black)
+    label.new(bar_index, level4, "R2: 6670 - Stop zone", style=label.style_label_left, color=color.orange, textcolor=color.white)
+    label.new(bar_index, level5, "R1: 6640 - FAIL AREA", style=label.style_label_left, color=color.red, textcolor=color.white)
+    label.new(bar_index, level6, "KEY: 6549 - TRIGGER", style=label.style_label_right, color=color.green, textcolor=color.white)
+    label.new(bar_index, level7, "S1: 6513 - Oversold", style=label.style_label_right, color=color.new(color.green, 30), textcolor=color.white)
+
+// === POSITION DETECTION ===
+above6880 = close > level1
+above6770 = close > level2
+in6760_6770 = close >= level3 and close <= level2
+above6670 = close > level4
+above6640 = close > level5
+at6640 = close >= level5 - 5 and close <= level5 + 5
+below6640 = close < level5
+inNeutral = close >= level7 and close < level5
+at6549 = close >= level6 - alertSensitivity and close <= level6 + alertSensitivity
+below6549 = close < level6
+above6513 = close >= level7
+at6513 = close >= level7 - alertSensitivity and close <= level7 + alertSensitivity
+
+// Volume spike detection
+volSpike = volume > ta.sma(volume, 20) * 1.5
 
 // === ALERT CONDITIONS ===
 
-// CRITICAL: 🐻 Star Alerts (6880 - MOST CRITICAL)
-alertcondition(ta.crossover(close, level1), "🐻 Star Break", "SPX ⬆️ 6880 - 🐻 STAR BROKEN! 🐂 BIAS ON!")
-alertcondition(ta.crossunder(close, level1), "🐻 Star Reject", "SPX ⬇️ 6880 - NO 🐂 BIAS! Fade rallies vs 🐻 Star")
-testingBearStar = close >= (level1 - alertSensitivity) and close <= (level1 + alertSensitivity)
-alertcondition(testingBearStar, "Testing 🐻 Star", "SPX Testing 6880 - 🐻 STAR - Major Short Zone")
-rejectionBearStar = high[1] >= level1 and close < level1 - 5
-alertcondition(rejectionBearStar, "Rejection 🐻 Star", "SPX REJECTION at 6880 - 🐻 STAR HOLDS!")
+// UPSIDE PATH ALERTS
+alertcondition(ta.crossover(close, level5), "6640 FAIL AREA BROKEN", "SPX ☝️ 6640 - FAIL AREA BROKEN! Watch 6670!")
+alertcondition(ta.crossunder(close, level5), "6640 Back in FAIL AREA", "SPX 👇 6640 - Back in FAIL AREA! Short rallies!")
+alertcondition(at6640, "At 6640 FAIL AREA", "SPX at 6640 FAIL AREA - Need volume to clear!")
 
-// CRITICAL: 🐂 Star Alerts (6635 - MOST CRITICAL)
-alertcondition(ta.crossover(close, level7), "🐂 Star Hold", "SPX ⬆️ 6635 - NO 🐻 BIAS! Buy dips vs 🐂 Star")
-alertcondition(ta.crossunder(close, level7), "🐂 Star Break", "SPX ⬇️ 6635 - 🐂 STAR BROKEN! HIGH 🐻!")
-testingBullStar = close >= (level7 - alertSensitivity) and close <= (level7 + alertSensitivity)
-alertcondition(testingBullStar, "Testing 🐂 Star", "SPX Testing 6635 - 🐂 STAR - Major Long Zone")
-bounceBullStar = low[1] <= level7 and close > level7 + 5
-alertcondition(bounceBullStar, "Bounce 🐂 Star", "SPX BOUNCE from 6635 - 🐂 STAR HOLDS!")
+alertcondition(ta.crossover(close, level4), "6670 SHORT-COVER ZONE", "SPX ☝️ 6670 - SHORT-COVER ZONE! Watch 6760-6770!")
+alertcondition(ta.crossover(close, level3), "6760 SQUEEZE SETUP", "SPX ☝️ 6760 - SQUEEZE SETUP! Watch 6770, then 6880!")
+alertcondition(in6760_6770, "In 6760-6770 SQUEEZE", "SPX in 6760-6770 SQUEEZE ZONE!")
 
-// Intermediate Resistance Alerts
-alertcondition(ta.crossover(close, level2), "Small 🐻 Break", "SPX ⬆️ 6825 - Small 🐻 Star broken")
-alertcondition(ta.crossover(close, level3), "Intermediate Break", "SPX ⬆️ 6765 - Intermediate Strike")
-alertcondition(ta.crossover(close, level4), "Greek Chase Break", "SPX ⬆️ 6725 - Greek Chase zone")
+alertcondition(ta.crossover(close, level2), "6770 SQUEEZE", "SPX ☝️ 6770 - SQUEEZE! Open path to 6880!")
+alertcondition(ta.crossover(close, level1), "6880 RESISTANCE CLEARED", "SPX ☝️ 6880 - MAJOR RESISTANCE CLEARED!")
 
-// Intermediate Support Alerts
-alertcondition(ta.crossunder(close, level8), "Lower Range Break", "SPX ⬇️ 6620 - LOWER RANGE EDGE! Waterfall Risk!")
-alertcondition(ta.crossunder(close, level6), "Dead Volume Break", "SPX ⬇️ 6695 - Dead Volume area")
-alertcondition(ta.crossunder(close, level5), "Gap-Down Break", "SPX ⬇️ 6705 - Gap-Down play zone")
+// BULLISH TRIGGER ALERTS (6549)
+alertcondition(ta.crossunder(close, level6), "6549 KEY TRIGGER", "SPX 👇 6549 - KEY TRIGGER! Watch reversal!")
+alertcondition(ta.crossover(close, level6), "6549 Bounce", "SPX ☝️ 6549 - Bounce! Watch 6640!")
+alertcondition(at6549, "At 6549 TRIGGER ZONE", "SPX at 6549 ± 5 - TRIGGER ZONE! Stops/oversold!")
 
-// Bounce/Rejection Alerts
-rejectionSmallBear = high[1] >= level2 and close < level2 - 3
-alertcondition(rejectionSmallBear, "Reject Small 🐻", "SPX REJECTION at 6825 - Small 🐻 Star holds")
-rejectionIntermediate = high[1] >= level3 and close < level3 - 3
-alertcondition(rejectionIntermediate, "Reject Intermediate", "SPX REJECTION at 6765 - Intermediate Strike holds")
-bounceDeadVolume = low[1] <= level6 and close > level6 + 3
-alertcondition(bounceDeadVolume, "Bounce Dead Volume", "SPX BOUNCE from 6695 - Dip buy area holds")
-bounceLowerRange = low[1] <= level8 and close > level8 + 3
-alertcondition(bounceLowerRange, "Bounce Lower Range", "SPX BOUNCE from 6620 - Lower range edge holds")
+// OVERSOLD ZONE ALERTS (6513)
+alertcondition(ta.crossunder(close, level7), "6513 OVERSOLD", "SPX 👇 6513 - OVERSOLD! Reversal zone!")
+alertcondition(ta.crossover(close, level7), "6513 Bounce", "SPX ☝️ 6513 - Bounce! Watch 6549!")
+alertcondition(at6513, "At 6513 OVERSOLD ZONE", "SPX at 6513 ± 5 - OVERSOLD REVERSAL ZONE!")
 
-// W-Shape Swing Alert
-inWShapeZone = close >= level7 and close <= level1
-alertcondition(inWShapeZone, "W-Shape Zone", "SPX IN W-SHAPE SWING ZONE (6635-6880) - Trade boundaries")
+// Volume-based alerts
+alertcondition(ta.crossover(close, level5) and volSpike, "6640 STRONG VOLUME", "SPX ☝️ 6640 STRONG VOLUME - Short covering!")
 
-// === TABLE FOR STATUS ===
-var table statusTable = table.new(position.top_right, 2, 12, border_width=1)
+// === STATUS TABLE ===
+var table statusTable = table.new(position.top_right, 2, 15, border_width=1)
 
 if barstate.islast and showLabels
     // Header
-    table.cell(statusTable, 0, 0, "SPX LEVELS", bgcolor=color.new(color.blue, 70), text_color=color.white)
+    table.cell(statusTable, 0, 0, "SPX PLAYBOOK", bgcolor=color.new(color.blue, 70), text_color=color.white)
     table.cell(statusTable, 1, 0, str.tostring(close, "#.##"), bgcolor=color.new(color.blue, 70), text_color=color.white)
     
     // Alert Status
     table.cell(statusTable, 0, 1, "Alerts", text_color=color.white)
     table.cell(statusTable, 1, 1, enableAlerts ? "ON" : "OFF", bgcolor=enableAlerts ? color.green : color.red, text_color=color.white)
     
-    // Critical Levels
-    table.cell(statusTable, 0, 2, "🐻 Star: 6880 | 🐂 Star: 6635", text_color=color.white)
-    table.cell(statusTable, 1, 2, "CRITICAL", bgcolor=color.new(color.orange, 70), text_color=color.white)
+    // Trading Scenario
+    scenario = volSpike and at6549 ? "🔥 SCENARIO 1: Fast touch!" : below6640 and not at6549 ? "📉 SCENARIO 2: Slow drift" : above6640 ? "📈 SCENARIO 3: Bull path" : "Neutral"
+    scenarioColor = volSpike and at6549 ? color.green : below6640 and not at6549 ? color.red : above6640 ? color.green : color.gray
+    table.cell(statusTable, 0, 2, "Scenario", text_color=color.white)
+    table.cell(statusTable, 1, 2, scenario, bgcolor=color.new(scenarioColor, 70), text_color=color.white)
     
-    // Trading Bias
-    tradingBias = close > level1 ? "⬆️ 6880 - 🐂 BIAS" : close >= level7 and close <= level1 ? "W-SHAPE SWING" : "⬇️ 6635 - HIGH 🐻"
-    biasColor = close > level1 ? color.green : close >= level7 ? color.yellow : color.red
-    table.cell(statusTable, 0, 3, "Trading Bias", text_color=color.white)
-    table.cell(statusTable, 1, 3, tradingBias, bgcolor=color.new(biasColor, 70), text_color=color.white)
+    // Position Status
+    position = above6770 ? "☝️ Open path to 6880!" : in6760_6770 ? "SQUEEZE ZONE 6760-6770" : above6670 and close < level3 ? "Target 6760-6770" : above6640 and close < level4 ? "Watch 6670 stops" : at6640 ? "⚠️ 6640 FAIL" : inNeutral ? "NEUTRAL ZONE" : at6549 ? "🔑 6549 TRIGGER!" : "Below 6549"
+    posColor = above6770 ? color.aqua : in6760_6770 ? color.lime : above6670 ? color.orange : above6640 ? color.yellow : at6640 ? color.red : inNeutral ? color.gray : color.green
+    table.cell(statusTable, 0, 3, "Position", text_color=color.white)
+    table.cell(statusTable, 1, 3, position, bgcolor=color.new(posColor, 70), text_color=color.white)
     
-    // Sentiment
-    sentiment = close >= level7 ? "Cautious 🐂" : close >= level4 and close < level3 ? "Neutral Chop" : close >= level2 and close < level1 ? "🐻 Pressure" : "High 🐻"
-    sentimentColor = close >= level7 ? color.green : close >= level4 and close < level3 ? color.yellow : close >= level2 ? color.orange : color.red
-    table.cell(statusTable, 0, 4, "Sentiment", text_color=color.white)
-    table.cell(statusTable, 1, 4, sentiment, bgcolor=color.new(sentimentColor, 70), text_color=color.white)
+    // Strategy
+    strategy = below6640 and close > level6 ? "Short rallies to 6640" : above6640 and close < level3 ? "Long 6640 support → 6760-6770" : at6549 ? "Gap down + fast touch = Long!" : "Wait for setup"
+    table.cell(statusTable, 0, 4, "Strategy", text_color=color.white)
+    table.cell(statusTable, 1, 4, strategy, bgcolor=color.new(color.blue, 80), text_color=color.white)
     
-    // Action
-    action = close >= level7 ? "Dip buys allowed" : close >= level4 and close < level3 ? "Scalps only" : close >= level2 ? "Short rallies" : "Swing shorts"
-    table.cell(statusTable, 0, 5, "Action", text_color=color.white)
-    table.cell(statusTable, 1, 5, action, bgcolor=color.new(sentimentColor, 70), text_color=color.white)
+    // Key Levels Summary
+    table.cell(statusTable, 0, 5, "FAIL: 6640", text_color=color.white)
+    table.cell(statusTable, 1, 5, "TRIGGER: 6549", bgcolor=color.new(color.gray, 80), text_color=color.white)
     
-    // Distance to 🐻 Star
-    distToBearStar = level1 - close
-    table.cell(statusTable, 0, 6, "-> 🐻 Star", text_color=color.white)
-    table.cell(statusTable, 1, 6, str.tostring(distToBearStar, "#.#"), bgcolor=color.new(color.red, 80), text_color=color.white)
+    table.cell(statusTable, 0, 6, "OVERSOLD: 6513", text_color=color.white)
+    table.cell(statusTable, 1, 6, "TARGET: 6760-6770", bgcolor=color.new(color.gray, 80), text_color=color.white)
     
-    // Distance from 🐂 Star
-    distFromBullStar = close - level7
-    distFromBullStr = distFromBullStar > 0 ? "+" + str.tostring(distFromBullStar, "#.#") : str.tostring(distFromBullStar, "#.#")
-    distFromBullColor = distFromBullStar > 0 ? color.new(color.green, 80) : color.new(color.red, 80)
-    table.cell(statusTable, 0, 7, "From 🐂 Star", text_color=color.white)
-    table.cell(statusTable, 1, 7, distFromBullStr, bgcolor=distFromBullColor, text_color=color.white)
+    // Distance to key levels
+    distTo6640 = level5 - close
+    distTo6640Str = distTo6640 > 0 ? "-" + str.tostring(math.abs(distTo6640), "#.#") : "+" + str.tostring(math.abs(distTo6640), "#.#")
+    table.cell(statusTable, 0, 7, "To 6640 FAIL", text_color=color.white)
+    table.cell(statusTable, 1, 7, distTo6640Str, bgcolor=color.new(color.red, 80), text_color=color.white)
     
-    // Zone Status
-    zoneStatus = close >= level1 - 5 and close <= level1 + 5 ? "NEAR 🐻 STAR!" : close >= level7 - 5 and close <= level7 + 5 ? "NEAR 🐂 STAR!" : close >= level4 and close <= level4 + 10 ? "Greek Chase" : close >= level6 and close <= level5 ? "Dead Volume" : close < level8 ? "WATERFALL RISK!" : "In Range"
-    zoneColor = close >= level1 - 5 and close <= level1 + 5 ? color.red : close >= level7 - 5 and close <= level7 + 5 ? color.green : close >= level4 and close <= level4 + 10 ? color.gray : close >= level6 and close <= level5 ? color.aqua : close < level8 ? color.fuchsia : color.yellow
-    table.cell(statusTable, 0, 8, "Zone", text_color=color.white)
-    table.cell(statusTable, 1, 8, zoneStatus, bgcolor=color.new(zoneColor, 70), text_color=color.white)
+    distTo6549 = level6 - close
+    distTo6549Str = distTo6549 > 0 ? "-" + str.tostring(math.abs(distTo6549), "#.#") : "+" + str.tostring(math.abs(distTo6549), "#.#")
+    table.cell(statusTable, 0, 8, "To 6549 TRIGGER", text_color=color.white)
+    table.cell(statusTable, 1, 8, distTo6549Str, bgcolor=color.new(color.green, 80), text_color=color.white)
+    
+    // Volume Status
+    volStatus = volSpike ? "🔥 SPIKE" : "Normal"
+    volColor = volSpike ? color.orange : color.gray
+    table.cell(statusTable, 0, 9, "Volume", text_color=color.white)
+    table.cell(statusTable, 1, 9, volStatus, bgcolor=color.new(volColor, 70), text_color=color.white)
 
 // === PLOT INVISIBLE LINES FOR ALERT TRIGGERS ===
-plot(level1, "🐻 Star", color=color.new(color.red, 100))
-plot(level7, "🐂 Star", color=color.new(color.green, 100))
-plot(level2, "Small 🐻", color=color.new(color.orange, 100))
-plot(level8, "Lower Range", color=color.new(color.fuchsia, 100))
+plot(level1, "R5: 6880", color=color.new(color.aqua, 100))
+plot(level2, "R4: 6770", color=color.new(color.lime, 100))
+plot(level3, "R3: 6760", color=color.new(color.lime, 100))
+plot(level4, "R2: 6670", color=color.new(color.orange, 100))
+plot(level5, "R1: 6640 FAIL", color=color.new(color.red, 100))
+plot(level6, "KEY: 6549", color=color.new(color.green, 100))
+plot(level7, "S1: 6513", color=color.new(color.green, 100))

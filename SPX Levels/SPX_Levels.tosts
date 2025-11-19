@@ -1,167 +1,136 @@
-# === SPX Levels: Trading Bias & Structure ===
-# Updated: November 15, 2025
+# === SPX Trading Playbook - Levels & Scenarios ===
+# Updated: November 20, 2025
 # 
-# TRADING BIAS:
-# Above 6635+ = No Bear Bias, buy dips vs. Bull Star
-# Below 6880+ = No Bull Bias, fade rallies vs. Bear Star
-# Trade W-shape swings until either boundary is broken on high volume
+# KEY TRADING SCENARIOS:
 #
-# SENTIMENT METER:
-# 6635+ & above = Cautious Bullish - Dip buys allowed, scale out at intermediate strikes
-# 6725-6765 = Neutral Chop - Scalps only, Greeks in play, both directions
-# 6825-6880+ = Bearish Pressure - Short rallies, avoid breakout longs unless volume spike confirms
-# Below 6635- = High Bearish - Swing shorts toward lower structure
+# 1. BIG GAP DOWN + FAST TOUCH 6549 ± 5
+#    - Look for stop-in bets and oversold bounce
+#    - Entry: Long after reversal confirmation
+#    - Target: First upside level = 6640
 #
-# VISUAL RANGE MAP:
-# Rally Continuation Zone
-# 6880+ = Bear Star (Major Short Zone)
-# 6825 = Small Bear Star
-# 6765 = Intermediate Strike
-# 6725 = "Greek Chase" Strike - Scalps only
-# 6705 = Gap-Down Play Zone
-# 6695 = Dead Volume Dip Buy Area
-# 6635 = Bull Star (Major Long Zone / Buy Support)
-# 6620 = Lower Range Edge
-# Breakdown = Waterfall Risk
+# 2. SLOW DRIFT LOWER (No 6549 break)
+#    - Market stays bearish
+#    - Strategy: Short rallies toward fail area (6640)
+#
+# 3. BREAK ABOVE 6640 → 6670 → 6760
+#    - Watch volume: Needs sustained push for short covering
+#    - Entry: Long after 6640 holds as support
+#    - Target: 6760-6770, then 6880
 
-# === RESISTANCE LEVELS ===
-input level1 = 6880; # R1 - 🐻 * (Major Short Zone) - No 🐂 Bias
+# === KEY LEVELS ===
+input level1 = 6880;  # R5 - Major resistance / Open path target
 input level1_thickness = 5;
-input level2 = 6825; # R2 - Small 🐻 *
-input level2_thickness = 3;
-input level3 = 6765; # R3 - Intermediate Strike
-input level3_thickness = 3;
-input level4 = 6725; # R4 - "Greek Chase" Strike - Scalps only
-input level4_thickness = 2;
-
-# === NEUTRAL ZONE ===
-input level5 = 6705; # N1 - Gap-🔻 Play Zone
-input level5_thickness = 2;
-input level6 = 6695; # N2 - Dead Volume Dip Buy Area
-input level6_thickness = 2;
-
-# === SUPPORT LEVELS ===
-input level7 = 6635; # S1 - 🐂 * (Major Long Zone / Buy Support) - No 🐻 Bias
-input level7_thickness = 5;
-input level8 = 6620; # S2 - Lower Range Edge
-input level8_thickness = 3;
+input level2 = 6770;  # R4 - Squeeze setup zone HIGH
+input level2_thickness = 4;
+input level3 = 6760;  # R3 - Squeeze setup zone LOW / Major target
+input level3_thickness = 4;
+input level4 = 6670;  # R2 - Stop zone / Short-cover clusters
+input level4_thickness = 3;
+input level5 = 6640;  # R1 - FAIL AREA (Needs volume to clear)
+input level5_thickness = 5;
+input level6 = 6549;  # KEY BULLISH TRIGGER (± 5)
+input level6_thickness = 5;
+input level7 = 6513;  # S1 - Next support / Oversold reversal zone (± 5)
+input level7_thickness = 4;
 
 # Alert Settings
 input enableAlerts = yes;
-input alertSensitivity = 0.5;
-
-# Label Visibility
+input alertSensitivity = 5;
 input showLabels = yes;
+
+# === LEVEL PLOTS - Force rendering on all bars ===
+plot L1 = if !IsNaN(close) then level1 else Double.NaN;
+L1.SetDefaultColor(Color.CYAN);
+L1.SetLineWeight(level1_thickness);
+L1.SetStyle(Curve.FIRM);
+L1.HideBubble();
+
+plot L2 = if !IsNaN(close) then level2 else Double.NaN;
+L2.SetDefaultColor(Color.LIGHT_GREEN);
+L2.SetLineWeight(level2_thickness);
+L2.SetStyle(Curve.FIRM);
+L2.HideBubble();
+
+plot L3 = if !IsNaN(close) then level3 else Double.NaN;
+L3.SetDefaultColor(Color.LIGHT_GREEN);
+L3.SetLineWeight(level3_thickness);
+L3.SetStyle(Curve.FIRM);
+L3.HideBubble();
+
+plot L4 = if !IsNaN(close) then level4 else Double.NaN;
+L4.SetDefaultColor(Color.ORANGE);
+L4.SetLineWeight(level4_thickness);
+L4.SetStyle(Curve.FIRM);
+L4.HideBubble();
+
+plot L5 = if !IsNaN(close) then level5 else Double.NaN;
+L5.SetDefaultColor(Color.RED);
+L5.SetLineWeight(level5_thickness);
+L5.SetStyle(Curve.FIRM);
+L5.HideBubble();
+
+plot L6 = if !IsNaN(close) then level6 else Double.NaN;
+L6.SetDefaultColor(Color.GREEN);
+L6.SetLineWeight(level6_thickness);
+L6.SetStyle(Curve.FIRM);
+L6.HideBubble();
+
+plot L7 = if !IsNaN(close) then level7 else Double.NaN;
+L7.SetDefaultColor(Color.DARK_GREEN);
+L7.SetLineWeight(level7_thickness);
+L7.SetStyle(Curve.FIRM);
+L7.HideBubble();
 
 # Fixed bubble logic - show only on last bar
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
 
-# === RESISTANCE ===
-plot L1 = level1;
-L1.SetDefaultColor(Color.RED);
-L1.SetLineWeight(level1_thickness);
-L1.SetStyle(Curve.FIRM);
+# Position detection
+def above6880 = close > level1;
+def at6880 = close >= level1 - 5 and close <= level1 + 5;
+def above6770 = close > level2;
+def in6760_6770 = close >= level3 and close <= level2;
+def above6670 = close > level4;
+def above6640 = close > level5;
+def at6640 = close >= level5 - 5 and close <= level5 + 5;
+def below6640 = close < level5;
+def inNeutral = close >= level7 and close < level5;
+def at6549 = close >= level6 - alertSensitivity and close <= level6 + alertSensitivity;
+def below6549 = close < level6;
+def above6513 = close >= level7;
+def at6513 = close >= level7 - alertSensitivity and close <= level7 + alertSensitivity;
 
-plot L2 = level2;
-L2.SetDefaultColor(Color.ORANGE);
-L2.SetLineWeight(level2_thickness);
-L2.SetStyle(Curve.FIRM);
+def volSpike = volume > Average(volume, 20) * 1.5;
 
-plot L3 = level3;
-L3.SetDefaultColor(Color.YELLOW);
-L3.SetLineWeight(level3_thickness);
-L3.SetStyle(Curve.FIRM);
+# === CHART BUBBLES ===
+AddChartBubble(isLastBar, level1, "R5: 6880", Color.CYAN, yes);
+AddChartBubble(isLastBar, level2, "R4: 6770", Color.LIGHT_GREEN, yes);
+AddChartBubble(isLastBar, level3, "R3: 6760", Color.LIGHT_GREEN, yes);
+AddChartBubble(isLastBar, level4, "R2: 6670", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level5, "R1: 6640", Color.RED, yes);
+AddChartBubble(isLastBar, level6, "KEY: 6549", Color.GREEN, no);
+AddChartBubble(isLastBar, level7, "S1: 6513", Color.DARK_GREEN, no);
 
-plot L4 = level4;
-L4.SetDefaultColor(Color.LIGHT_GRAY);
-L4.SetLineWeight(level4_thickness);
-L4.SetStyle(Curve.SHORT_DASH);
+# === ALERTS ===
+Alert(enableAlerts and close crosses above level5, "SPX ☝️ 6640 FAIL AREA BROKEN!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level5, "SPX 👇 6640 Back in FAIL AREA!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses above level4, "SPX ☝️ 6670 SHORT-COVER ZONE!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level3, "SPX ☝️ 6760 SQUEEZE SETUP!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level2, "SPX ☝️ 6770 SQUEEZE!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level1, "SPX ☝️ 6880 RESISTANCE CLEARED!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level6, "SPX 👇 6549 KEY TRIGGER!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses above level6, "SPX ☝️ 6549 Bounce!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level7, "SPX 👇 6513 OVERSOLD!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and volSpike and close crosses above level5, "SPX ☝️ 6640 STRONG VOLUME!", Alert.BAR, Sound.Ring);
 
-# === NEUTRAL ZONE ===
-plot L5 = level5;
-L5.SetDefaultColor(Color.CYAN);
-L5.SetLineWeight(level5_thickness);
-L5.SetStyle(Curve.SHORT_DASH);
-
-plot L6 = level6;
-L6.SetDefaultColor(Color.CYAN);
-L6.SetLineWeight(level6_thickness);
-L6.SetStyle(Curve.FIRM);
-
-# === SUPPORT ===
-plot L7 = level7;
-L7.SetDefaultColor(Color.GREEN);
-L7.SetLineWeight(level7_thickness);
-L7.SetStyle(Curve.FIRM);
-
-plot L8 = level8;
-L8.SetDefaultColor(Color.MAGENTA);
-L8.SetLineWeight(level8_thickness);
-L8.SetStyle(Curve.FIRM);
-
-# Chart bubbles - show only on last bar
-AddChartBubble(isLastBar, level1, "R1: 6880 - 🐻 * (Major Short)", Color.RED, yes);
-AddChartBubble(isLastBar, level2, "R2: 6825 - Small 🐻 *", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level3, "R3: 6765 - Intermediate Strike", Color.YELLOW, yes);
-AddChartBubble(isLastBar, level4, "R4: 6725 - Greek Chase (Scalps Only)", Color.LIGHT_GRAY, yes);
-AddChartBubble(isLastBar, level5, "N1: 6705 - Gap-🔻 Play", Color.CYAN, yes);
-AddChartBubble(isLastBar, level6, "N2: 6695 - Dead Volume Dip Buy", Color.CYAN, yes);
-AddChartBubble(isLastBar, level7, "S1: 6635 - 🐂 * (🔑 Long)", Color.GREEN, no);
-AddChartBubble(isLastBar, level8, "S2: 6620 - Lower Range Edge", Color.MAGENTA, no);
-
-# === ALERT SYSTEM ===
-
-# CRITICAL: 🐻 * Alerts (6880 - MOST CRITICAL)
-Alert(enableAlerts and close crosses above level1, "SPX 🔺 6880 - 🐻 * BROKEN! 🐂 BIAS ON!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level1, "SPX 🔻 6880 - NO 🐂 BIAS! Fade rallies vs 🐻 *", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close >= level1 - alertSensitivity and close <= level1 + alertSensitivity, "SPX Testing 6880 - 🐻 * - Major Short Zone", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and high[1] >= level1 and close < level1 - 5, "SPX ❌ at 6880 - 🐻 * HOLDS!", Alert.BAR, Sound.Bell);
-
-# CRITICAL: 🐂 * Alerts (6635 - MOST CRITICAL)
-Alert(enableAlerts and close crosses above level7, "SPX 🔺 6635 - NO 🐻 BIAS! Buy dips vs 🐂 *", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level7, "SPX 🔻 6635 - 🐂 * BROKEN! HIGH 🐻!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close >= level7 - alertSensitivity and close <= level7 + alertSensitivity, "SPX Testing 6635 - 🐂 * - Major Long Zone", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and low[1] <= level7 and close > level7 + 5, "SPX BOUNCE from 6635 - 🐂 * HOLDS!", Alert.BAR, Sound.Ring);
-
-# Intermediate Resistance Alerts
-Alert(enableAlerts and close crosses above level2, "SPX 🔺 6825 - Small 🐻 * broken", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level3, "SPX 🔺 6765 - Intermediate Strike", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level4, "SPX 🔺 6725 - Greek Chase zone", Alert.BAR, Sound.Ring);
-
-# Intermediate Support Alerts
-Alert(enableAlerts and close crosses below level8, "SPX 🔻 6620 - LOWER RANGE EDGE! Waterfall Risk!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level6, "SPX 🔻 6695 - Dead Volume area", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level5, "SPX 🔻 6705 - Gap-🔻 play zone", Alert.BAR, Sound.Bell);
-
-# Bounce/Rejection Alerts
-Alert(enableAlerts and high[1] >= level2 and close < level2 - 3, "SPX REJECTION at 6825 - Small 🐻 * holds", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and high[1] >= level3 and close < level3 - 3, "SPX REJECTION at 6765 - Intermediate Strike holds", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and low[1] <= level6 and close > level6 + 3, "SPX BOUNCE from 6695 - Dip buy area holds", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and low[1] <= level8 and close > level8 + 3, "SPX BOUNCE from 6620 - Lower range edge holds", Alert.BAR, Sound.Ring);
-
-# W-Shape Swing Alerts
-Alert(enableAlerts and close >= level7 and close <= level1, "SPX IN W-SHAPE SWING ZONE (6635-6880) - Trade boundaries", Alert.BAR, Sound.Chimes);
-
-# Status Labels
-AddLabel(showLabels and enableAlerts, "Alerts ON", Color.GREEN);
-AddLabel(showLabels and !enableAlerts, "Alerts OFF", Color.RED);
-AddLabel(showLabels, "🐻 *: 6880 | 🐂 *: 6635", Color.WHITE);
-AddLabel(showLabels, "Now: " + Round(close, 2), Color.CYAN);
-
-# Trading Bias Labels
-AddLabel(showLabels and close > level1, "🔺 6880 - 🐂 BIAS", Color.GREEN);
-AddLabel(showLabels and close >= level7 and close <= level1, "6635-6880 - W-SHAPE SWING ZONE", Color.YELLOW);
-AddLabel(showLabels and close < level7, "🔻 6635 - HIGH 🐻", Color.RED);
-
-# Sentiment Labels
-AddLabel(showLabels and close >= level7, "Cautious 🐂 - Dip buys allowed", Color.GREEN);
-AddLabel(showLabels and close >= level4 and close < level3, "Neutral Chop - Scalps only", Color.YELLOW);
-AddLabel(showLabels and close >= level2 and close < level1, "🐻 Pressure - Short rallies", Color.ORANGE);
-AddLabel(showLabels and close < level7, "High 🐻 - Swing shorts", Color.RED);
-
-# Action Labels
-AddLabel(showLabels and close >= level1 - 5 and close <= level1 + 5, "NEAR 🐻 * 6880 - Major Short Zone!", Color.RED);
-AddLabel(showLabels and close >= level7 - 5 and close <= level7 + 5, "NEAR 🐂 * 6635 - Major Long Zone!", Color.GREEN);
-AddLabel(showLabels and close >= level4 and close <= level4 + 10, "Greek Chase Zone - Scalps Only!", Color.LIGHT_GRAY);
-AddLabel(showLabels and close >= level6 and close <= level5, "Dead Volume / Gap-🔻 Play Zone", Color.CYAN);
-AddLabel(showLabels and close < level8, " 💣 - 🔻 6620!", Color.MAGENTA);
+# === STATUS LABELS ===
+AddLabel(showLabels, "SPX: " + Round(close, 2), Color.CYAN);
+AddLabel(showLabels and above6770, "☝️ Open path to 6880!", Color.CYAN);
+AddLabel(showLabels and in6760_6770, "SQUEEZE ZONE 6760-6770", Color.LIGHT_GREEN);
+AddLabel(showLabels and above6670 and close < level3, "Target 6760-6770", Color.ORANGE);
+AddLabel(showLabels and above6640 and close < level4, "Watch 6670 stops", Color.YELLOW);
+AddLabel(showLabels and at6640, "⚠️ 6640 FAIL - Need volume!", Color.RED);
+AddLabel(showLabels and inNeutral, "NEUTRAL - Short rallies", Color.GRAY);
+AddLabel(showLabels and at6549, "🔑 6549 TRIGGER!", Color.GREEN);
+AddLabel(showLabels and volSpike and at6549, "🔥 SCENARIO 1: Fast touch!", Color.GREEN);
+AddLabel(showLabels and below6640 and !at6549, "📉 SCENARIO 2: Slow drift", Color.RED);
+AddLabel(showLabels and above6640, "📈 SCENARIO 3: Bull path", Color.GREEN);
