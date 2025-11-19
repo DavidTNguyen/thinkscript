@@ -1,45 +1,41 @@
 # === MANCINI ES Levels: Focus on Current Action ===
 # Updated: November 20, 2025
 # 
-# RARE DAY - SETUP AFTER SETUP DELIVERING:
-# 6605-10 reclaim long → +50 pts ✓
-# 6642 reclaim (posted 17min ago) → +25 pts ✓
-# Hit 6664 target! ✓
+# AFTER 4 RED DAYS - LONG TRIGGER DELIVERED:
+# 6605 reclaim long trigger ✓
+# 6642 2nd trigger (posted yesterday, got again last eve) ✓
+# 6664 target HIT AGAIN! ✓
 # 
-# PROTECT GAINS - LEAVE RUNNER - NO GREED
-# Moves evaporate quick in this volatility
-# 
-# OVERNIGHT SUPPORTS TO KEEP POP GOING:
-# 6638-42 zone (primary)
-# 6616 (secondary)
-# 
-# 6677, 6690, 6701 if ES wants more
+# CURRENT PLAN - PROTECT GAINS:
+# Supports: 6650, 6638-42 zone
+# Upsides: 6677, 6685, 6701
+# Dip watch: Below 6638-42
 
 # === KEY LEVELS ===
-input level1 = 6701;  # R3 - Upper extension if ES wants more
-input level1_thickness = 3;
-input level2 = 6690;  # R2 - Extension target
-input level2_thickness = 3;
-input level3 = 6677;  # R1 - Next extension target
-input level3_thickness = 4;
-input level4 = 6664;  # Target HIT! ✓
-input level4_thickness = 4;
-input level5 = 6642;  # S1 - Reclaim triggered +25pts! / OVN support HIGH
-input level5_thickness = 5;
-input level5a = 6638; # S1a - OVN support LOW
-input level5a_thickness = 5;
+input level1 = 6701;  # R3 - Upper target
+input level1_thickness = 1;
+input level2 = 6685;  # R2 - Next upside
+input level2_thickness = 1;
+input level3 = 6677;  # R1 - Next upside
+input level3_thickness = 1;
+input level4 = 6664;  # Previous target HIT AGAIN! ✓
+input level4_thickness = 1;
+input level5 = 6650;  # S1 - Support
+input level5_thickness = 1;
 
-# === SUPPORT LEVELS ===
-input level6 = 6616;  # S2 - OVN support - Keep pop going
-input level6_thickness = 5;
-input level7 = 6610;  # S3 - Trigger zone - Got 50pt rip!
-input level7_thickness = 3;
-input level8 = 6605;  # S4 - Trigger zone - Got 50pt rip!
-input level8_thickness = 3;
-input level9 = 6594;  # S5 - Support (held earlier)
-input level9_thickness = 2;
-input level10 = 6593; # S6 - Support (posted, held ✓)
-input level10_thickness = 2;
+# === CRITICAL SUPPORT ZONE ===
+input level6 = 6642;  # S2 - Support zone HIGH (2nd trigger level)
+input level6_thickness = 1;
+input level7 = 6638;  # S2a - Support zone LOW
+input level7_thickness = 1;
+
+# === LOWER SUPPORTS ===
+input level8 = 6605;  # S3 - Long trigger level (from yesterday)
+input level8_thickness = 1;
+input level9 = 6594;  # S4 - Lower support
+input level9_thickness = 1;
+input level10 = 6593; # S5 - Lower support
+input level10_thickness = 1;
 
 # Alert Settings
 input enableAlerts = yes;
@@ -52,33 +48,35 @@ input showLabels = yes;
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
 
 # Position detection
-def above6701 = close > level1;  # Max extension
-def at6701 = close >= level1 - 2 and close <= level1 + 2;  # At upper extension
-def above6690 = close > level2;  # Strong extension
-def at6690 = close >= level2 - 2 and close <= level2 + 2;  # At extension
-def above6677 = close > level3;  # First extension
-def at6677 = close >= level3 - 2 and close <= level3 + 2;  # Testing extension
-def above6664 = close >= level4;  # Target hit zone
+def above6701 = close > level1;  # Max upside
+def at6701 = close >= level1 - 2 and close <= level1 + 2;  # At upper target
+def above6685 = close > level2;  # Strong move
+def at6685 = close >= level2 - 2 and close <= level2 + 2;  # At R2
+def above6677 = close >= level3;  # First upside target
+def at6677 = close >= level3 - 2 and close <= level3 + 2;  # Testing R1
+def above6664 = close >= level4;  # Above target
 def at6664 = close >= level4 - 2 and close <= level4 + 2;  # At target
-def above6642 = close >= level5;  # Above OVN support zone
-def in6638_6642 = close >= level5a and close < level5;  # In OVN support zone
-def at6642 = close >= level5 - 2 and close <= level5 + 2;  # Testing OVN high
-def at6638 = close >= level5a - 2 and close <= level5a + 2;  # Testing OVN low
-def below6638 = close < level5a;  # Lost OVN support zone
-def above6616 = close >= level6;  # Above key OVN support
-def at6616 = close >= level6 - 2 and close <= level6 + 2;  # Testing OVN support
-def below6616 = close < level6;  # Lost key OVN support
+def above6650 = close >= level5;  # Above support
+def at6650 = close >= level5 - 2 and close <= level5 + 2;  # Testing support
+def below6650 = close < level5;  # Below support - watch 6638-42
+def in6638_6642 = close >= level7 and close < level6;  # In support zone
+def at6642 = close >= level6 - 2 and close <= level6 + 2;  # Testing zone high
+def at6638 = close >= level7 - 2 and close <= level7 + 2;  # Testing zone low
+def below6638 = close < level7;  # LOST support zone - DIP WATCH
+def above6605 = close >= level8;  # Above long trigger
+def at6605 = close >= level8 - 2 and close <= level8 + 2;  # Testing trigger
+def below6605 = close < level8;  # Below long trigger
 
 # === LEVEL PLOTS ===
 plot L1 = level1;
 L1.SetDefaultColor(Color.CYAN);
 L1.SetLineWeight(level1_thickness);
-L1.SetStyle(Curve.SHORT_DASH);
+L1.SetStyle(Curve.FIRM);
 
 plot L2 = level2;
 L2.SetDefaultColor(Color.LIGHT_GREEN);
 L2.SetLineWeight(level2_thickness);
-L2.SetStyle(Curve.SHORT_DASH);
+L2.SetStyle(Curve.FIRM);
 
 plot L3 = level3;
 L3.SetDefaultColor(Color.LIGHT_GREEN);
@@ -91,85 +89,95 @@ L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
 plot L5 = level5;
-L5.SetDefaultColor(Color.MAGENTA);
+L5.SetDefaultColor(Color.YELLOW);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
 
-plot L5a = level5a;
-L5a.SetDefaultColor(Color.MAGENTA);
-L5a.SetLineWeight(level5a_thickness);
-L5a.SetStyle(Curve.FIRM);
-
-# === CRITICAL OVN SUPPORT ===
+# === CRITICAL SUPPORT ZONE 6638-42 ===
 plot L6 = level6;
-L6.SetDefaultColor(Color.YELLOW);
+L6.SetDefaultColor(Color.MAGENTA);
 L6.SetLineWeight(level6_thickness);
 L6.SetStyle(Curve.FIRM);
 
-# === OTHER SUPPORT LEVELS ===
 plot L7 = level7;
-L7.SetDefaultColor(Color.DARK_ORANGE);
+L7.SetDefaultColor(Color.MAGENTA);
 L7.SetLineWeight(level7_thickness);
-L7.SetStyle(Curve.SHORT_DASH);
+L7.SetStyle(Curve.FIRM);
 
+# === LOWER SUPPORTS ===
 plot L8 = level8;
-L8.SetDefaultColor(Color.DARK_ORANGE);
+L8.SetDefaultColor(Color.ORANGE);
 L8.SetLineWeight(level8_thickness);
-L8.SetStyle(Curve.SHORT_DASH);
+L8.SetStyle(Curve.FIRM);
 
 plot L9 = level9;
-L9.SetDefaultColor(Color.ORANGE);
+L9.SetDefaultColor(Color.DARK_ORANGE);
 L9.SetLineWeight(level9_thickness);
-L9.SetStyle(Curve.SHORT_DASH);
+L9.SetStyle(Curve.FIRM);
 
 plot L10 = level10;
-L10.SetDefaultColor(Color.ORANGE);
+L10.SetDefaultColor(Color.DARK_ORANGE);
 L10.SetLineWeight(level10_thickness);
-L10.SetStyle(Curve.SHORT_DASH);
+L10.SetStyle(Curve.FIRM);
 
 # === CHART BUBBLES ===
 AddChartBubble(isLastBar, level1, "R3: 6701", Color.CYAN, yes);
-AddChartBubble(isLastBar, level2, "R2: 6690", Color.LIGHT_GREEN, yes);
+AddChartBubble(isLastBar, level2, "R2: 6685", Color.LIGHT_GREEN, yes);
 AddChartBubble(isLastBar, level3, "R1: 6677", Color.LIGHT_GREEN, yes);
-// AddChartBubble(isLastBar, level4, "6664 HIT!", Color.GREEN, yes);
-// AddChartBubble(isLastBar, level5, "S1: 6642", Color.MAGENTA, yes);
-// AddChartBubble(isLastBar, level5a, "S1a: 6638", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level6, "S2: 6616", Color.YELLOW, yes);
-AddChartBubble(isLastBar, level7, "S3: 6610", Color.DARK_ORANGE, no);
-AddChartBubble(isLastBar, level8, "S4: 6605", Color.DARK_ORANGE, no);
-AddChartBubble(isLastBar, level9, "S5: 6594", Color.ORANGE, no);
-AddChartBubble(isLastBar, level10, "S6: 6593", Color.ORANGE, no);
+AddChartBubble(isLastBar, level4, "6664 🎯", Color.GREEN, yes);
+AddChartBubble(isLastBar, level5, "S1: 6650", Color.YELLOW, no);
+AddChartBubble(isLastBar, level6, "S2: 6642", Color.MAGENTA, no);
+AddChartBubble(isLastBar, level7, "S2a: 6638", Color.MAGENTA, no);
+AddChartBubble(isLastBar, level8, "S3: 6605", Color.ORANGE, no);
+AddChartBubble(isLastBar, level9, "S4: 6594", Color.DARK_ORANGE, no);
+AddChartBubble(isLastBar, level10, "S5: 6593", Color.DARK_ORANGE, no);
 
 # === ALERT SYSTEM ===
 
-# Extension Targets - If ES Wants More
-Alert(enableAlerts and close crosses above level3, "ES ☝️ R1 6677 - Extension! Watch R2, R3!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level2, "ES ☝️ R2 6690 - Strong extension! Watch R3!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level1, "ES ☝️ R3 6701 - UPPER EXTENSION HIT!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6677, "ES near R1 6677 - Next extension target!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and at6690, "ES near R2 6690 - Extension target!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and at6701, "ES near R3 6701 - Upper extension!", Alert.BAR, Sound.Chimes);
+# Upside Targets
+Alert(enableAlerts and close crosses above level3, "ES ☝️ R1 6677 - Next upside! Watch R2, R3!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level2, "ES ☝️ R2 6685 - Strong move! Watch R3!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level1, "ES ☝️ R3 6701 - UPPER TARGET HIT!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6677, "ES near R1 6677 - Next upside target!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and at6685, "ES near R2 6685 - Next upside!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and at6701, "ES near R3 6701 - Upper target!", Alert.BAR, Sound.Chimes);
 
-# 6664 Target
-Alert(enableAlerts and close crosses above level4, "ES ☝️ 6664 TARGET HIT! PROTECT GAINS!", Alert.BAR, Sound.Ring);
+# 6664 Target Level
+Alert(enableAlerts and close crosses above level4, "ES ☝️ 6664 TARGET HIT AGAIN! PROTECT!", Alert.BAR, Sound.Ring);
 Alert(enableAlerts and close crosses below level4, "ES 👇 6664 - Pullback from target!", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and at6664, "ES at 6664 Target! PROTECT GAINS!", Alert.BAR, Sound.Chimes);
 
-# 6638-42 OVN Support Zone - CRITICAL
-Alert(enableAlerts and close crosses above level5, "ES ☝️ S1 6642 - Above OVN support! Pop continues!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level5a, "ES 👇 S1a 6638 - LOST OVN SUPPORT! Watch S2!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and in6638_6642, "ES in S1 ZONE 6638-42 - HOLD to keep pop!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and at6642, "ES Testing S1 6642 - OVN support high!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and at6638, "ES Testing S1a 6638 - OVN support low! CRITICAL!", Alert.BAR, Sound.Chimes);
+# 6650 Support
+Alert(enableAlerts and close crosses above level5, "ES ☝️ S1 6650 - Support holds!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level5, "ES 👇 S1 6650 - Watch 6638-42 zone!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6650, "ES Testing S1 6650 - Key support!", Alert.BAR, Sound.Chimes);
 
-# 6616 OVN Support - CRITICAL for continuation
-Alert(enableAlerts and close crosses above level6, "ES ☝️ S2 6616 - OVN SUPPORT HOLDS! Pop alive!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level6, "ES 👇 S2 6616 - CRITICAL SUPPORT LOST! Pop in danger!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6616, "ES at S2 6616 - CRITICAL OVN support! Must hold!", Alert.BAR, Sound.Chimes);
+# 6638-42 CRITICAL SUPPORT ZONE
+Alert(enableAlerts and close crosses above level6, "ES ☝️ S2 6642 - Above support zone!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level7, "ES 👇 S2a 6638 - DIP WATCH! Below support zone!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and in6638_6642, "ES in S2 ZONE 6638-42 - CRITICAL!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and at6642, "ES Testing S2 6642 - Zone high!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and at6638, "ES Testing S2a 6638 - Zone low! DIP WATCH!", Alert.BAR, Sound.Chimes);
 
-# Other Support Levels
-Alert(enableAlerts and close crosses below level7, "ES 👇 S3 6610 - Below support! Watch S4!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses above level7, "ES ☝️ S3 6610 - Support HOLD!", Alert.BAR, Sound.Ring);
+# 6605 Long Trigger Level
+Alert(enableAlerts and close crosses above level8, "ES ☝️ S3 6605 - Above long trigger!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level8, "ES 👇 S3 6605 - Below long trigger!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6605, "ES at S3 6605 - Long trigger level!", Alert.BAR, Sound.Chimes);
 
-Alert(enableAlerts and close crosses below level8, "ES 👇 S4 6605 - Support broken! Watch S5, S6!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses above level8, "ES ☝️ S4 6605 - Reclaim! Watch S2, S1!", Alert.BAR, Sound.Ring);
+# Lower Supports
+Alert(enableAlerts and close crosses below level9, "ES 👇 S4 6594 - Lower support broken!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level10, "ES 👇 S5 6593 - Deep support broken!", Alert.BAR, Sound.Bell);
+
+# === STATUS LABELS ===
+AddLabel(showLabels, "ES: " + Round(close, 2), Color.CYAN);
+AddLabel(showLabels and above6677, "☝️ R1+ zone! Watch R2, R3!", Color.CYAN);
+AddLabel(showLabels and above6664 and close < level3, "Above 6664 target! Watch R1!", Color.GREEN);
+AddLabel(showLabels and above6650 and close < level4, "Above 6650! Watch 6664!", Color.YELLOW);
+AddLabel(showLabels and in6638_6642, "⚠️ IN 6638-42 ZONE - CRITICAL!", Color.MAGENTA);
+AddLabel(showLabels and below6638, "🚨 DIP WATCH - Below 6638-42!", Color.RED);
+AddLabel(showLabels and above6605 and close < level7, "Above long trigger 6605", Color.ORANGE);
+
+# Trading Context
+AddLabel(showLabels, "SUPPORTS: 6650, 6638-42", Color.WHITE);
+AddLabel(showLabels, "UPSIDES: 6677, 6685, 6701", Color.CYAN);
+AddLabel(showLabels and below6638, "📉 DIP: Below 6638-42!", Color.RED);
