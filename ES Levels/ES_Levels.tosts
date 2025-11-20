@@ -9,6 +9,8 @@
 # Trading after large overnight move can be difficult
 # Watch for choppy consolidation or larger retracement
 # 
+# ANCHORED VWAP: 7:30a candle (key reference for intraday support/resistance)
+# 
 # Buyers need to clear 6751 and 6765 for next push higher
 # If 6720 fails, can retrace rally towards 6702
 #
@@ -36,6 +38,12 @@ input level6_thickness = 1;
 input level7 = 6726;  # Failed breakdown level
 input level7_thickness = 1;
 
+# === ANCHORED VWAP SETTINGS ===
+input anchorDate = 20251120;  # YYYYMMDD format
+input anchorTime = 830;  # 8:30 AM EST = 7:30 AM CST
+input showVWAP = yes;
+input vwapLineWeight = 2;
+
 # Alert Settings
 input enableAlerts = yes;
 input alertSensitivity = 0.5;
@@ -45,6 +53,15 @@ input showLabels = yes;
 
 # Fixed bubble logic - show only on last bar
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
+
+# === ANCHORED VWAP CALCULATION ===
+def postAnchorDate = if GetYYYYMMDD() >= anchorDate then 1 else 0;
+def postAnchorTime = if SecondsTillTime(anchorTime) == 0 then 1 else if GetYYYYMMDD() < anchorDate then 0 else postAnchorTime[1];
+
+plot anchoredVWAP = if showVWAP then TotalSum(if postAnchorDate and postAnchorTime then ((high + low + close) / 3) * volume else 0) / TotalSum(if postAnchorDate and postAnchorTime then volume else 0) else Double.NaN;
+anchoredVWAP.SetStyle(Curve.FIRM);
+anchoredVWAP.SetLineWeight(vwapLineWeight);
+anchoredVWAP.SetDefaultColor(Color.WHITE);
 
 # Position detection
 def above6796 = close > level1;  # Major extension

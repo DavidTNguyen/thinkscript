@@ -91,93 +91,51 @@ DefineGlobalColor("neutral", Color.YELLOW);
 DefineGlobalColor("strong_bullish", Color.CYAN);
 DefineGlobalColor("strong_bearish", Color.MAGENTA);
 
-# === LABELS (Header Row) ===
-AddLabel(showLabels, "Scenario: " + 
-         (if scenario == 3 then "STRONG BULLISH"
-          else if scenario == 2 then "BULLISH"
-          else if scenario == 1 then "MILD BULLISH"
-          else if scenario == -1 then "MILD BEARISH"
-          else if scenario == -2 then "BEARISH"
-          else if scenario == -3 then "STRONG BEARISH"
-          else "NEUTRAL"),
+# === CONSOLIDATED LABELS (Vertical Stack) ===
+
+# Label 1: OVERVIEW (Scenario, Strength, Posture, Prediction, Confidence)
+AddLabel(showLabels, 
+         "Scenario: " + (if scenario == 3 then "STRONG BULLISH"
+                         else if scenario == 2 then "BULLISH"
+                         else if scenario == 1 then "MILD BULLISH"
+                         else if scenario == -1 then "MILD BEARISH"
+                         else if scenario == -2 then "BEARISH"
+                         else if scenario == -3 then "STRONG BEARISH"
+                         else "NEUTRAL") + "\n\n" +
+         "Strength: " + Round(strengthScore, 0) + "\n\n" +
+         "Posture: " + (if posture == 1 then "BULLISH"
+                        else if posture == -1 then "BEARISH"
+                        else "NEUTRAL") + "\n\n\n" +
+         "PREDICTION: " + (if predictionType == 1 then "BULLISH CONTINUATION"
+                          else if predictionType == -1 then "BEARISH CONTINUATION"
+                          else if predictionType == 0 then "CHOPPY/BALANCED"
+                          else "MIXED SIGNALS") + "\n\n" +
+         "CONFIDENCE: " + confidence + "%",
          if scenario >= 2 then GlobalColor("strong_bullish")
          else if scenario >= 1 then GlobalColor("bullish")
          else if scenario <= -2 then GlobalColor("strong_bearish")
          else if scenario <= -1 then GlobalColor("bearish")
          else GlobalColor("neutral"));
 
-AddLabel(showLabels, "Strength: " + Round(strengthScore, 0),
-         if strengthScore >= 70 then GlobalColor("strong_bullish")
-         else if strengthScore >= 60 then GlobalColor("bullish")
-         else if strengthScore <= 30 then GlobalColor("strong_bearish")
-         else if strengthScore <= 40 then GlobalColor("bearish")
+# Label 2: METRICS (Vol, Breadth, Bias, Tick, VIX)
+AddLabel(showLabels,
+         "% VOL UP: " + Round(volUpPercent, 1) + "%" + "\n\n" +
+         "BREADTH (ADD): " + Round(add, 0) + "\n\n" +
+         "NET BIAS: " + Round(netBias, 2) + "M" + "\n\n\n" +
+         (if tickRange > 0 then "% TICK RANGE: " + Round(tickRangePercent, 1) + "%" + "\n\n" else "") +
+         "TICK: " + Round(tick, 0) + "\n\n\n" +
+         "VIX: " + Round(vix, 2) + "\n\n" +
+         "VIX Δ: " + Round(vixDelta, 2),
+         if volUpPercent >= volUpBullish and add >= addBullish then GlobalColor("bullish")
+         else if volUpPercent <= volUpBearish and add <= addBearish then GlobalColor("bearish")
          else GlobalColor("neutral"));
-
-AddLabel(showLabels, "Posture: " +
-         (if posture == 1 then "BULLISH"
-          else if posture == -1 then "BEARISH"
-          else "NEUTRAL"),
-         if posture == 1 then GlobalColor("bullish")
-         else if posture == -1 then GlobalColor("bearish")
-         else GlobalColor("neutral"));
-
-# === METRIC LABELS ===
-AddLabel(showLabels, "% VOL UP: " + Round(volUpPercent, 1) + "%",
-         if volUpPercent >= volUpBullish then GlobalColor("bullish")
-         else if volUpPercent <= volUpBearish then GlobalColor("bearish")
-         else GlobalColor("neutral"));
-
-AddLabel(showLabels, "BREADTH (ADD): " + Round(add, 0),
-         if add >= addBullish then GlobalColor("bullish")
-         else if add <= addBearish then GlobalColor("bearish")
-         else GlobalColor("neutral"));
-
-AddLabel(showLabels, "NET BIAS: " + Round(netBias, 2) + "M",
-         if netBias > 100 then GlobalColor("bullish")
-         else if netBias < -100 then GlobalColor("bearish")
-         else GlobalColor("neutral"));
-
-AddLabel(showLabels and tickRange > 0, "% TICK RANGE: " + Round(tickRangePercent, 1) + "%",
-         if tickRangePercent >= 80 then GlobalColor("bullish")
-         else if tickRangePercent <= 20 then GlobalColor("bearish")
-         else GlobalColor("neutral"));
-
-AddLabel(showLabels, "TICK: " + Round(tick, 0),
-         if tick >= tickExtremeBull then GlobalColor("strong_bullish")
-         else if tick >= tickBullish then GlobalColor("bullish")
-         else if tick <= tickExtremeBear then GlobalColor("strong_bearish")
-         else if tick <= tickBearish then GlobalColor("bearish")
-         else GlobalColor("neutral"));
-
-AddLabel(showLabels, "VIX: " + Round(vix, 2),
-         if vix >= vixHigh then GlobalColor("strong_bearish")
-         else if vix >= vixMedium then GlobalColor("bearish")
-         else if vix <= vixLow then GlobalColor("bullish")
-         else GlobalColor("neutral"));
-
-AddLabel(showLabels, "VIX Δ: " + Round(vixDelta, 2),
-         if vixDelta <= -1 then GlobalColor("bullish")
-         else if vixDelta >= 1 then GlobalColor("bearish")
-         else GlobalColor("neutral"));
-
-AddLabel(showLabels, "PREDICTION: " +
-         (if predictionType == 1 then "BULLISH CONTINUATION"
-          else if predictionType == -1 then "BEARISH CONTINUATION"
-          else if predictionType == 0 then "CHOPPY/BALANCED"
-          else "MIXED SIGNALS"),
-         Color.WHITE);
-
-AddLabel(showLabels, "CONFIDENCE: " + confidence + "%",
-         if confidence >= 70 then Color.GREEN
-         else if confidence >= 50 then Color.YELLOW
-         else Color.ORANGE);
 
 # === TRADING SIGNALS ===
 def bullishSignal = scenario >= 2 and volUpPercent > volUpBullish and tick > tickBullish;
 def bearishSignal = scenario <= -2 and volUpPercent < volUpBearish and tick < tickBearish;
 
-AddLabel(bullishSignal, "🚀 BULLISH SIGNAL!", GlobalColor("strong_bullish"));
-AddLabel(bearishSignal, "🐻 BEARISH SIGNAL!", GlobalColor("strong_bearish"));
+AddLabel(bullishSignal, "BULLISH SIGNAL!", GlobalColor("strong_bullish"));
+AddLabel(bearishSignal, "BEARISH SIGNAL!", GlobalColor("strong_bearish"));
 
 # === ALERTS ===
 Alert(enableAlerts and bullishSignal and !bullishSignal[1], "BULLISH Market Internals Signal!", Alert.BAR, Sound.Ring);
