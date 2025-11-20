@@ -1,33 +1,40 @@
 # ===  ES Levels: Focus on Current Action ===
-# Updated: November 18, 2025
+# Updated: November 20, 2025
 # 
-# ES TRAPPED PRIOR DAY LOW OVERNIGHT - NOW TRYING TO RECLAIM 6654:
-# Buyers need to clear 6672 for continuation up
-# OVN low fail → another correction leg lower
+# POST-NVDA ER: ES CLEARED 6702 ON SHORT COVERING RALLY
+# Reclaimed high time frame trend - Expected short covering delivered
+# Now basing under 6751
 # 
-# POTENTIAL RANGE BOUND ACTION AHEAD OF NVDA EARNINGS
-# Sellers remain in control intraday under 6702
-# Two-way trading possible inside overnight range
+# NFP DATA AT 8:30 EST - EXPECT VOLATILITY
+# Trading after large overnight move can be difficult
+# Watch for choppy consolidation or larger retracement
 # 
-# STAY SELECTIVE - DON'T OVERTRADE IF MARKET CHOPS BEFORE NVDA
+# Buyers need to clear 6751 and 6765 for next push higher
+# If 6720 fails, can retrace rally towards 6702
 #
 # KEY AREAS:
-# Resistance: 6672, 6702
-# Support: 6654, 6594
+# Resistance: 6751, 6765, 6796
+# Support: 6720, 6702, 6654
 #
 # WATCHLIST:
-# - Failed breakdown OVN low: B
-# - Backtest Short 6702: B
+# - Failed breakdown 6726: B
+# - Backtest Long 6702: B
 
 # === KEY LEVELS ===
-input level1 = 6702;  # KEY RESISTANCE - Sellers in control under here
-input level1_thickness = 5;
-input level2 = 6672;  # Buyers must clear for continuation
-input level2_thickness = 4;
-input level3 = 6654;  # Trying to reclaim NOW - Support
-input level3_thickness = 5;
-input level4 = 6594;  # Correction leg target if OVN low fails
-input level4_thickness = 4;
+input level1 = 6796;  # R3 - Higher resistance
+input level1_thickness = 1;
+input level2 = 6765;  # R2 - Key resistance for next push
+input level2_thickness = 1;
+input level3 = 6751;  # R1 - Basing under here now
+input level3_thickness = 1;
+input level4 = 6720;  # S1 - Key support, fail = retrace
+input level4_thickness = 1;
+input level5 = 6702;  # S2 - Cleared, now support/backtest long
+input level5_thickness = 1;
+input level6 = 6654;  # S3 - Lower support
+input level6_thickness = 1;
+input level7 = 6726;  # Failed breakdown level
+input level7_thickness = 1;
 
 # Alert Settings
 input enableAlerts = yes;
@@ -40,86 +47,113 @@ input showLabels = yes;
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
 
 # Position detection
-def above6702 = close > level1;  # Buyers back in control
-def between6672_6702 = close >= level2 and close < level1;  # Test zone
-def above6654 = close >= level3;  # Reclaimed support
-def at6672 = close >= level2 - 2 and close <= level2 + 2;  # Testing key level
-def at6654 = close >= level3 - 2 and close <= level3 + 2;  # Testing reclaim
-def below6654 = close < level3;  # Failed reclaim - watch OVN low
-def at6594 = close >= level4 - 2 and close <= level4 + 2;  # At correction target
+def above6796 = close > level1;  # Major extension
+def above6765 = close > level2;  # Cleared R2 - next push
+def above6751 = close > level3;  # Cleared basing level
+def at6751 = close >= level3 - 2 and close <= level3 + 2;  # Testing R1
+def below6751 = close < level3;  # Basing zone
+def above6720 = close >= level4;  # Above key support
+def at6720 = close >= level4 - 2 and close <= level4 + 2;  # Testing S1
+def below6720 = close < level4;  # Retrace risk
+def above6702 = close >= level5;  # Above backtest long level
+def at6702 = close >= level5 - 2 and close <= level5 + 2;  # At backtest
+def below6702 = close < level5;  # Retrace deeper
+def at6726 = close >= level7 - 2 and close <= level7 + 2;  # Failed breakdown
 
 # === LEVEL PLOTS ===
 plot L1 = level1;
-L1.SetDefaultColor(Color.RED);
+L1.SetDefaultColor(Color.CYAN);
 L1.SetLineWeight(level1_thickness);
 L1.SetStyle(Curve.FIRM);
 
 plot L2 = level2;
-L2.SetDefaultColor(Color.ORANGE);
+L2.SetDefaultColor(Color.LIGHT_GREEN);
 L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
 
 plot L3 = level3;
-L3.SetDefaultColor(Color.YELLOW);
+L3.SetDefaultColor(Color.MAGENTA);
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
 plot L4 = level4;
-L4.SetDefaultColor(Color.MAGENTA);
+L4.SetDefaultColor(Color.YELLOW);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
+plot L5 = level5;
+L5.SetDefaultColor(Color.ORANGE);
+L5.SetLineWeight(level5_thickness);
+L5.SetStyle(Curve.FIRM);
+
+plot L6 = level6;
+L6.SetDefaultColor(Color.DARK_ORANGE);
+L6.SetLineWeight(level6_thickness);
+L6.SetStyle(Curve.FIRM);
+
+plot L7 = level7;
+L7.SetDefaultColor(Color.PINK);
+L7.SetLineWeight(level7_thickness);
+L7.SetStyle(Curve.SHORT_DASH);
+
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, "RESISTANCE: 6702 (Sellers control under)", Color.RED, yes);
-AddChartBubble(isLastBar, level2, "RESISTANCE: 6672 (Must clear)", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level3, "SUPPORT: 6654 (Trying to reclaim)", Color.YELLOW, yes);
-AddChartBubble(isLastBar, level4, "SUPPORT: 6594 (Correction target)", Color.MAGENTA, no);
+AddChartBubble(isLastBar, level1, "R3: 6796", Color.CYAN, yes);
+AddChartBubble(isLastBar, level2, "R2: 6765", Color.LIGHT_GREEN, yes);
+AddChartBubble(isLastBar, level3, "R1: 6751 BASING", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level4, "S1: 6720", Color.YELLOW, no);
+AddChartBubble(isLastBar, level5, "S2: 6702 BT LONG", Color.ORANGE, no);
+AddChartBubble(isLastBar, level6, "S3: 6654", Color.DARK_ORANGE, no);
+AddChartBubble(isLastBar, level7, "FAIL BD: 6726", Color.PINK, no);
 
 # === ALERT SYSTEM ===
 
-# CRITICAL: 6702 - Sellers in Control Under
-Alert(enableAlerts and close crosses above level1, "ES ☝️ 6702 - BUYERS BACK IN CONTROL!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level1, "ES 👇 6702 - Sellers maintain control!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close >= level1 - alertSensitivity and close <= level1 + alertSensitivity, "ES Testing 6702 - KEY RESISTANCE! Backtest Short: B", Alert.BAR, Sound.Chimes);
+# 6796 - R3
+Alert(enableAlerts and close crosses above level1, "ES UP 6796 - Major extension!", Alert.BAR, Sound.Ring);
 
-# 6672 - Buyers Must Clear
-Alert(enableAlerts and close crosses above level2, "ES ☝️ 6672 - CLEARED! Continuation up possible! Watch 6702!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level2, "ES 👇 6672 - Failed to clear, watch 6654!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6672, "ES Testing 6672 - Buyers MUST clear for continuation!", Alert.BAR, Sound.Chimes);
+# 6765 - R2 Key for next push
+Alert(enableAlerts and close crosses above level2, "ES UP 6765 CLEARED - Next push higher!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level2, "ES DOWN 6765 - Rejected!", Alert.BAR, Sound.Bell);
 
-# 6654 - Trying to Reclaim
-Alert(enableAlerts and close crosses above level3, "ES ☝️ 6654 - RECLAIMED! Watch 6672 next!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level3, "ES 👇 6654 - Failed reclaim! Watch OVN low!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6654, "ES Testing 6654 - Trying to reclaim NOW!", Alert.BAR, Sound.Chimes);
+# 6751 - R1 Basing level
+Alert(enableAlerts and close crosses above level3, "ES UP 6751 - Breaking basing level!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level3, "ES DOWN 6751 - Back to basing!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6751, "ES at 6751 - BASING LEVEL test!", Alert.BAR, Sound.Chimes);
 
-# OVN Low Failed Breakdown Setup
-Alert(enableAlerts and low[1] <= level3 and close > level3 + 5, "ES ☝️ FAILED BREAKDOWN of OVN low! Setup: B", Alert.BAR, Sound.Ring);
+# 6720 - S1 Critical support
+Alert(enableAlerts and close crosses below level4, "ES DOWN 6720 - RETRACE RISK to 6702!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses above level4, "ES UP 6720 - Support holds!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6720, "ES at 6720 - KEY SUPPORT test!", Alert.BAR, Sound.Chimes);
 
-# 6594 - Correction Leg Target
-Alert(enableAlerts and close crosses below level4, "ES 👇 6594 - Correction leg target HIT!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses above level4, "ES ☝️ 6594 - Bounce from correction target!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6594, "ES at 6594 - Correction leg target!", Alert.BAR, Sound.Chimes);
+# 6702 - S2 Backtest Long
+Alert(enableAlerts and close crosses below level5, "ES DOWN 6702 - Deeper retrace!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6702, "ES at 6702 - BACKTEST LONG setup: B", Alert.BAR, Sound.Ring);
+
+# 6726 - Failed Breakdown
+Alert(enableAlerts and at6726, "ES at 6726 - FAILED BREAKDOWN level: B", Alert.BAR, Sound.Chimes);
+
+# 6654 - S3
+Alert(enableAlerts and close crosses below level6, "ES DOWN 6654 - Rally fully retraced!", Alert.BAR, Sound.Bell);
 
 # === STATUS LABELS ===
-AddLabel(showLabels, "Now: " + Round(close, 2), Color.CYAN);
+AddLabel(showLabels, "ES: " + Round(close, 2), Color.CYAN);
 
 # Position Labels - Only show relevant state
-AddLabel(showLabels and above6702, "☝️ BUYERS BACK IN CONTROL - Above 6702!", Color.GREEN);
-AddLabel(showLabels and between6672_6702, "TESTING ZONE - Between 6672-6702", Color.ORANGE);
-AddLabel(showLabels and above6654 and close < level2, "Reclaimed 6654 - Need 6672 for continuation", Color.YELLOW);
-AddLabel(showLabels and at6654, "TRYING TO RECLAIM 6654 NOW!", Color.YELLOW);
-AddLabel(showLabels and below6654, "Failed 6654 reclaim - Watch OVN low!", Color.RED);
+AddLabel(showLabels and above6765, "UP Above 6765 - Next push active!", Color.GREEN);
+AddLabel(showLabels and above6751 and close < level2, "Above 6751 - Need 6765 for continuation", Color.LIGHT_GREEN);
+AddLabel(showLabels and below6751 and above6720, "BASING under 6751", Color.MAGENTA);
+AddLabel(showLabels and below6720 and above6702, "Retrace to 6702 zone", Color.YELLOW);
+AddLabel(showLabels and below6702, "Deep retrace - Rally unwinding", Color.RED);
 
 # Support/Resistance Labels
-AddLabel(showLabels, "RESISTANCE: 6702, 6672", Color.RED);
-AddLabel(showLabels, "SUPPORT: 6654, 6594", Color.GREEN);
+AddLabel(showLabels, "RESISTANCE: 6751, 6765, 6796", Color.LIGHT_GREEN);
+AddLabel(showLabels, "SUPPORT: 6720, 6702, 6654", Color.ORANGE);
 
 # Trade Context
-AddLabel(showLabels, "NVDA EARNINGS AHEAD - Range bound potential", Color.MAGENTA);
-AddLabel(showLabels, "Sellers control <6702 - Two-way trading possible", Color.ORANGE);
-AddLabel(showLabels, "STAY SELECTIVE - Don't overtrade if chop", Color.CYAN);
+AddLabel(showLabels, "POST-NVDA: Short covering delivered", Color.GREEN);
+AddLabel(showLabels, "NFP 8:30 EST - Volatility expected", Color.MAGENTA);
+AddLabel(showLabels, "Post-rally: Watch chop or retrace", Color.YELLOW);
 
 # Watchlist Setups
-AddLabel(showLabels and at6654, "WATCHLIST: Failed BD OVN low - B", Color.GREEN);
-AddLabel(showLabels and close >= level1 - 5 and close <= level1 + 5, "WATCHLIST: Backtest Short 6702 - B", Color.RED);
+AddLabel(showLabels and at6726, "WATCHLIST: Failed BD 6726 - B", Color.PINK);
+AddLabel(showLabels and at6702, "WATCHLIST: Backtest Long 6702 - B", Color.ORANGE);
 
