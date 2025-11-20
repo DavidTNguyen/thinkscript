@@ -16,28 +16,28 @@ def symbolIWM = GetSymbol() == "IWM";
 def symbolES = GetSymbol() == "/ES";
 def symbolNQ = GetSymbol() == "/NQ";
 
-# Daily Expected Move Ranges - Updated 11/19/2025
+# Daily Expected Move Ranges - Updated 11/20/2025
 def defaultDailyHigh =
-    if symbolSPY then 667.71
-    else if symbolSPX then 6680.04
-    else if symbolXSP then 668.00
-    else if symbolQQQ then 605.76
-    else if symbolIWM then 236.47
-    else if symbolES then 6691.88
-    else if symbolNQ then 24831.92
+    if symbolSPY then 671.48
+    else if symbolSPX then 6705.11
+    else if symbolXSP then 670.41
+    else if symbolQQQ then 610.87
+    else if symbolIWM then 237.57
+    else if symbolES then 6812.95
+    else if symbolNQ then 25489.20
     else Double.NaN;
 
 def defaultDailyLow =
-    if symbolSPY then 652.45
-    else if symbolSPX then 6554.60
-    else if symbolXSP then 655.46
-    else if symbolQQQ then 586.86
-    else if symbolIWM then 230.47
-    else if symbolES then 6564.62
-    else if symbolNQ then 24218.08
+    if symbolSPY then 653.78
+    else if symbolSPX then 6579.21
+    else if symbolXSP then 658.03
+    else if symbolQQQ then 588.87
+    else if symbolIWM then 229.29
+    else if symbolES then 6685.05
+    else if symbolNQ then 24870.80
     else Double.NaN;
 
-# Weekly Expected Move Ranges - Updated 11/21/2025
+# Weekly Expected Move Ranges - Updated 11/21/2025 (Friday close)
 def defaultWeeklyHigh =
     if symbolSPY then 686.50
     else if symbolSPX then 6878.92
