@@ -19,67 +19,80 @@
 
 # === KEY LEVELS ===
 input level1 = 6880;  # R5 - Major resistance / Open path target
-input level1_thickness = 1;
 input level2 = 6770;  # R4 - Squeeze setup zone HIGH
-input level2_thickness = 1;
 input level3 = 6760;  # R3 - Squeeze setup zone LOW / Major target
-input level3_thickness = 1;
 input level4 = 6670;  # R2 - Stop zone / Short-cover clusters
-input level4_thickness = 1;
 input level5 = 6640;  # R1 - FAIL AREA (Needs volume to clear)
-input level5_thickness = 1;
 input level6 = 6549;  # KEY BULLISH TRIGGER (± 5)
-input level6_thickness = 1;
 input level7 = 6513;  # S1 - Next support / Oversold reversal zone (± 5)
-input level7_thickness = 1;
 
 # Alert Settings
 input enableAlerts = yes;
-input alertSensitivity = 5;
+input alertSensitivity = 5; # now used strictly as touch tolerance (+/-)
 input showLabels = yes;
+input showClouds = yes;
+input showLines = yes;
 
-# === LEVEL PLOTS - Force rendering on all bars ===
-plot L1 = if !IsNaN(close) then level1 else Double.NaN;
+# === REMOVE old cloud definitions - replace with cleaner approach ===
+
+# === LEVEL PLOTS (Single, clean set) ===
+plot L1 = if showLines then level1 else Double.NaN;
 L1.SetDefaultColor(Color.CYAN);
-L1.SetLineWeight(level1_thickness);
+L1.SetLineWeight(2);
 L1.SetStyle(Curve.FIRM);
 L1.HideBubble();
+L1.HideTitle();
 
-plot L2 = if !IsNaN(close) then level2 else Double.NaN;
+plot L2 = if showLines then level2 else Double.NaN;
 L2.SetDefaultColor(Color.LIGHT_GREEN);
-L2.SetLineWeight(level2_thickness);
+L2.SetLineWeight(2);
 L2.SetStyle(Curve.FIRM);
 L2.HideBubble();
+L2.HideTitle();
 
-plot L3 = if !IsNaN(close) then level3 else Double.NaN;
+plot L3 = if showLines then level3 else Double.NaN;
 L3.SetDefaultColor(Color.LIGHT_GREEN);
-L3.SetLineWeight(level3_thickness);
+L3.SetLineWeight(2);
 L3.SetStyle(Curve.FIRM);
 L3.HideBubble();
+L3.HideTitle();
 
-plot L4 = if !IsNaN(close) then level4 else Double.NaN;
+plot L4 = if showLines then level4 else Double.NaN;
 L4.SetDefaultColor(Color.ORANGE);
-L4.SetLineWeight(level4_thickness);
+L4.SetLineWeight(2);
 L4.SetStyle(Curve.FIRM);
 L4.HideBubble();
+L4.HideTitle();
 
-plot L5 = if !IsNaN(close) then level5 else Double.NaN;
+plot L5 = if showLines then level5 else Double.NaN;
 L5.SetDefaultColor(Color.RED);
-L5.SetLineWeight(level5_thickness);
+L5.SetLineWeight(2);
 L5.SetStyle(Curve.FIRM);
 L5.HideBubble();
+L5.HideTitle();
 
-plot L6 = if !IsNaN(close) then level6 else Double.NaN;
+plot L6 = if showLines then level6 else Double.NaN;
 L6.SetDefaultColor(Color.GREEN);
-L6.SetLineWeight(level6_thickness);
-L6.SetStyle(Curve.FIRM);
+L6.SetLineWeight(2);
+L6.SetStyle(Curve.SHORT_DASH);
 L6.HideBubble();
+L6.HideTitle();
 
-plot L7 = if !IsNaN(close) then level7 else Double.NaN;
+plot L7 = if showLines then level7 else Double.NaN;
 L7.SetDefaultColor(Color.DARK_GREEN);
-L7.SetLineWeight(level7_thickness);
-L7.SetStyle(Curve.FIRM);
+L7.SetLineWeight(2);
+L7.SetStyle(Curve.SHORT_DASH);
 L7.HideBubble();
+L7.HideTitle();
+
+# === OPTIONAL CLOUDS ===
+AddCloud(if showClouds then L1 else Double.NaN, if showClouds then L1 + 2 else Double.NaN, Color.CYAN, Color.CYAN);
+AddCloud(if showClouds then L2 else Double.NaN, if showClouds then L2 + 2 else Double.NaN, Color.GREEN, Color.GREEN);
+AddCloud(if showClouds then L3 else Double.NaN, if showClouds then L3 + 2 else Double.NaN, Color.GREEN, Color.GREEN);
+AddCloud(if showClouds then L4 else Double.NaN, if showClouds then L4 + 2 else Double.NaN, Color.ORANGE, Color.ORANGE);
+AddCloud(if showClouds then L5 else Double.NaN, if showClouds then L5 + 2 else Double.NaN, Color.RED, Color.RED);
+AddCloud(if showClouds then L6 else Double.NaN, if showClouds then L6 + 2 else Double.NaN, Color.GREEN, Color.GREEN);
+AddCloud(if showClouds then L7 else Double.NaN, if showClouds then L7 + 2 else Double.NaN, Color.GREEN, Color.GREEN);
 
 # Fixed bubble logic - show only on last bar
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
@@ -110,17 +123,42 @@ AddChartBubble(isLastBar, level5, "R1: 6640", Color.RED, yes);
 AddChartBubble(isLastBar, level6, "KEY: 6549", Color.GREEN, no);
 AddChartBubble(isLastBar, level7, "S1: 6513", Color.DARK_GREEN, no);
 
-# === ALERTS ===
-Alert(enableAlerts and close crosses above level5, "SPX ☝️ 6640 FAIL AREA BROKEN!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level5, "SPX 👇 6640 Back in FAIL AREA!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses above level4, "SPX ☝️ 6670 SHORT-COVER ZONE!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level3, "SPX ☝️ 6760 SQUEEZE SETUP!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level2, "SPX ☝️ 6770 SQUEEZE!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level1, "SPX ☝️ 6880 RESISTANCE CLEARED!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level6, "SPX 👇 6549 KEY TRIGGER!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses above level6, "SPX ☝️ 6549 Bounce!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level7, "SPX 👇 6513 OVERSOLD!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and volSpike and close crosses above level5, "SPX ☝️ 6640 STRONG VOLUME!", Alert.BAR, Sound.Ring);
+# === TOUCH LOGIC (Central only) ===
+# Remove prior inBand*/enterBand* definitions
+def touch6640 = low <= level5 and high >= level5;
+def firstTouch6640Up = touch6640 and close > level5 and !touch6640[1];
+def firstTouch6640Down = touch6640 and close < level5 and !touch6640[1];
+
+def touch6670 = low <= level4 and high >= level4;
+def firstTouch6670Up = touch6670 and close > level4 and !touch6670[1];
+
+def touch6760 = low <= level3 and high >= level3;
+def firstTouch6760Up = touch6760 and close > level3 and !touch6760[1];
+
+def touch6770 = low <= level2 and high >= level2;
+def firstTouch6770Up = touch6770 and close > level2 and !touch6770[1];
+
+def touch6880 = low <= level1 and high >= level1;
+def firstTouch6880Up = touch6880 and close > level1 and !touch6880[1];
+
+def touch6549 = low <= level6 and high >= level6;
+def firstTouch6549Down = touch6549 and close < level6 and !touch6549[1];
+def firstTouch6549Up = touch6549 and close > level6 and !touch6549[1];
+
+def touch6513 = low <= level7 and high >= level7;
+def firstTouch6513Down = touch6513 and close < level7 and !touch6513[1];
+
+# === ALERTS (Central touch only) ===
+Alert(enableAlerts and firstTouch6640Up, "SPX ☝️ 6640 TOUCH (Fail area break)", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6640Down, "SPX 👇 6640 TOUCH (Back in fail area)", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and firstTouch6670Up, "SPX ☝️ 6670 TOUCH (Short-cover zone)", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6760Up, "SPX ☝️ 6760 TOUCH (Squeeze setup)", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6770Up, "SPX ☝️ 6770 TOUCH (Squeeze high)", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6880Up, "SPX ☝️ 6880 TOUCH (Major resistance)", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6549Down, "SPX 👇 6549 TOUCH (Key bearish trigger)", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and firstTouch6549Up, "SPX ☝️ 6549 TOUCH (Bounce attempt)", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6513Down, "SPX 👇 6513 TOUCH (Oversold zone)", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and volSpike and firstTouch6640Up, "SPX ☝️ 6640 STRONG VOLUME TOUCH", Alert.BAR, Sound.Ring);
 
 # === STATUS LABELS ===
 AddLabel(showLabels, "SPX: " + Round(close, 2), Color.CYAN);
