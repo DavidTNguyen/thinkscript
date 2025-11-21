@@ -1,27 +1,28 @@
-# === MANCINI ES Levels: Today's Plan ===
-# Updated: November 21, 2025
+# === MANCINI ES Levels: Current Action ===
+# Updated: November 21, 2025 - Intraday Update
 # 
-# 6573 1st support given 8am held *exact*
-# ES ultimately still held up by the overnight Failed Breakdown of the 6:10PM ~6540 low & 6553 reclaim
-# (given to newsletter readers)
+# 6573 support given 8am, held exact for 26 points, put in multiple good traps
+# 6542 next down, just hit
+# Bulls must reclaim 6564 to pop
 # 
-# TODAY'S PLAN:
-# Supports (sell below): 6573, 6552, 6542
-# Next targets: 6605, 6622+
+# CURRENT LEVELS:
+# Reclaim needed: 6564 (bulls must reclaim to pop)
+# Support just hit: 6542
+# Below: 6530, 6519
 
 # === RESISTANCE LEVELS ===
-input level1 = 6622;  # R2 - Next upside target
-input level1_thickness = 3;
-input level2 = 6605;  # R1 - Next upside
-input level2_thickness = 3;
+input level1 = 6605;  # R2 - Target if reclaim works
+input level1_thickness = 2;
+input level2 = 6564;  # R1 - BULLS MUST RECLAIM TO POP
+input level2_thickness = 4;
 
-# === SUPPORT LEVELS (TRAP LEVELS) ===
-input level3 = 6573;  # S1 - Support for trap
+# === SUPPORT LEVELS ===
+input level3 = 6542;  # S1 - Just hit
 input level3_thickness = 3;
-input level4 = 6552;  # S2 - Support for trap (yesterday's reclaim trigger)
+input level4 = 6530;  # S2 - Below level
 input level4_thickness = 3;
-input level5 = 6542;  # S3 - Support for trap / SELL below this
-input level5_thickness = 4;
+input level5 = 6519;  # S3 - Lower support
+input level5_thickness = 3;
 
 # === ANCHORED VWAP SETTINGS ===
 input anchorDate = 20251121;  # YYYYMMDD format
@@ -51,21 +52,21 @@ anchoredVWAP.SetDefaultColor(Color.WHITE);
 AddChartBubble(isLastBar and showVWAP, anchoredVWAP, "NVDA VWAP 10:30", Color.WHITE, yes);
 
 # Position detection
-def above6622 = close > level1;  # Above R2
-def at6622 = close >= level1 - 2 and close <= level1 + 2;  # At R2
-def below6622 = close < level1;  # Below R2
-def above6605 = close > level2;  # Above R1
-def at6605 = close >= level2 - 2 and close <= level2 + 2;  # At R1
-def below6605 = close < level2;  # Below R1
-def above6573 = close > level3;  # Above S1
-def at6573 = close >= level3 - 2 and close <= level3 + 2;  # At S1 trap
-def below6573 = close < level3;  # Below S1
-def above6552 = close > level4;  # Above S2
-def at6552 = close >= level4 - 2 and close <= level4 + 2;  # At S2 trap
-def below6552 = close < level4;  # Below S2
-def above6542 = close > level5;  # Above S3
-def at6542 = close >= level5 - 2 and close <= level5 + 2;  # At S3 - critical
-def below6542 = close < level5;  # SELL ZONE - below 6542
+def above6605 = close > level1;  # Above R2
+def at6605 = close >= level1 - 2 and close <= level1 + 2;  # At R2
+def below6605 = close < level1;  # Below R2
+def above6564 = close > level2;  # RECLAIMED - pop possible
+def at6564 = close >= level2 - 2 and close <= level2 + 2;  # At reclaim level
+def below6564 = close < level2;  # Below reclaim - no pop
+def above6542 = close > level3;  # Above S1 (just hit)
+def at6542 = close >= level3 - 2 and close <= level3 + 2;  # At S1
+def below6542 = close < level3;  # Below S1
+def above6530 = close > level4;  # Above S2
+def at6530 = close >= level4 - 2 and close <= level4 + 2;  # At S2
+def below6530 = close < level4;  # Below S2
+def above6519 = close > level5;  # Above S3
+def at6519 = close >= level5 - 2 and close <= level5 + 2;  # At S3
+def below6519 = close < level5;  # Below S3
 
 # === LEVEL PLOTS ===
 plot L1 = level1;
@@ -74,17 +75,17 @@ L1.SetLineWeight(level1_thickness);
 L1.SetStyle(Curve.FIRM);
 
 plot L2 = level2;
-L2.SetDefaultColor(Color.MAGENTA);
+L2.SetDefaultColor(Color.YELLOW);
 L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
 
 plot L3 = level3;
-L3.SetDefaultColor(Color.GREEN);
+L3.SetDefaultColor(Color.ORANGE);
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
 plot L4 = level4;
-L4.SetDefaultColor(Color.YELLOW);
+L4.SetDefaultColor(Color.RED);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
@@ -94,70 +95,71 @@ L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
 
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, "R2: 6622+ Target", Color.CYAN, yes);
-AddChartBubble(isLastBar, level2, "R1: 6605 Next", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level3, "S1: 6573 (8am call - held exact!)", Color.GREEN, no);
-AddChartBubble(isLastBar, level4, "S2: 6552 Support", Color.YELLOW, no);
-AddChartBubble(isLastBar, level5, "S3: 6542 SELL Below", Color.RED, no);
+AddChartBubble(isLastBar, level1, "R2: 6605 Target", Color.CYAN, yes);
+AddChartBubble(isLastBar, level2, "R1: 6564 BULLS MUST RECLAIM", Color.YELLOW, yes);
+AddChartBubble(isLastBar, level3, "S1: 6542 (Just Hit)", Color.ORANGE, no);
+AddChartBubble(isLastBar, level4, "S2: 6530 Below", Color.RED, no);
+AddChartBubble(isLastBar, level5, "S3: 6519 Lower Support", Color.RED, no);
 
 # === TOUCH LOGIC ===
-def touch6622 = low <= level1 and high >= level1;
-def firstTouch6622 = touch6622 and !touch6622[1];
+def touch6605 = low <= level1 and high >= level1;
+def firstTouch6605 = touch6605 and !touch6605[1];
 
-def touch6605 = low <= level2 and high >= level2;
-def firstTouch6605Up = touch6605 and close > level2 and !touch6605[1];
-def firstTouch6605Down = touch6605 and close < level2 and !touch6605[1];
+def touch6564 = low <= level2 and high >= level2;
+def firstTouch6564Up = touch6564 and close > level2 and !touch6564[1];
+def firstTouch6564Down = touch6564 and close < level2 and !touch6564[1];
 
-def touch6573 = low <= level3 and high >= level3;
-def firstTouch6573 = touch6573 and !touch6573[1];
-
-def touch6552 = low <= level4 and high >= level4;
-def firstTouch6552 = touch6552 and !touch6552[1];
-
-def touch6542 = low <= level5 and high >= level5;
+def touch6542 = low <= level3 and high >= level3;
 def firstTouch6542 = touch6542 and !touch6542[1];
+
+def touch6530 = low <= level4 and high >= level4;
+def firstTouch6530 = touch6530 and !touch6530[1];
+
+def touch6519 = low <= level5 and high >= level5;
+def firstTouch6519 = touch6519 and !touch6519[1];
 
 # === ALERT SYSTEM ===
 
-# Resistance Levels - Upside Targets
-Alert(enableAlerts and firstTouch6622, "ES >> 6622 - Next upside target!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses above level1, "ES UP 6622+ Upside target hit!", Alert.BAR, Sound.Ring);
+# Resistance Levels
+Alert(enableAlerts and firstTouch6605, "ES >> 6605 - Target level!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level1, "ES UP 6605 - Target hit!", Alert.BAR, Sound.Ring);
 
-Alert(enableAlerts and firstTouch6605Up, "ES UP 6605 - Next upside!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6605Down, "ES DOWN 6605 - Rejection!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6605, "ES at 6605 - Next upside level!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and firstTouch6564Up, "ES UP 6564 RECLAIM! Bulls can pop!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6564Down, "ES DOWN 6564 - Failed reclaim!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6564, "ES at 6564 - BULLS MUST RECLAIM TO POP!", Alert.BAR, Sound.Chimes);
 
-# Support Levels - Support Levels (Sell Below)
-Alert(enableAlerts and firstTouch6573, "ES >> 6573 - 8am support level (held exact)!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close crosses below level3, "ES DOWN 6573 - Watch 6552!", Alert.BAR, Sound.Bell);
+# Support Levels
+Alert(enableAlerts and firstTouch6542, "ES >> 6542 - Just hit this level!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses below level3, "ES DOWN 6542 - Watch 6530!", Alert.BAR, Sound.Bell);
 
-Alert(enableAlerts and firstTouch6552, "ES >> 6552 - Support level!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close crosses below level4, "ES DOWN 6552 - Watch 6542 CRITICAL!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and firstTouch6530, "ES >> 6530 - Below level!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level4, "ES DOWN 6530 - Watch 6519!", Alert.BAR, Sound.Bell);
 
-Alert(enableAlerts and firstTouch6542, "ES >> 6542 - CRITICAL SUPPORT!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses below level5, "ES SELL! Below 6542!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and firstTouch6519, "ES >> 6519 - Lower support!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level5, "ES DOWN 6519 - Major breakdown!", Alert.BAR, Sound.Bell);
 
 # === STATUS LABELS ===
 AddLabel(showLabels, "ES: " + Round(close, 2), Color.CYAN);
-AddLabel(showLabels and above6605, "UP Above 6605! Next 6622+", Color.GREEN);
-AddLabel(showLabels and at6605, "AT 6605 - Next target!", Color.MAGENTA);
-AddLabel(showLabels and above6573 and below6605, "Above 6573 (8am call held exact) - Watch 6605", Color.YELLOW);
-AddLabel(showLabels and at6573, "AT 6573 - 8am support level", Color.YELLOW);
-AddLabel(showLabels and above6552 and below6573, "Below 6573 - Watch 6552", Color.ORANGE);
-AddLabel(showLabels and at6552, "AT 6552 - Support level", Color.ORANGE);
-AddLabel(showLabels and above6542 and below6552, "Below 6552 - CRITICAL 6542", Color.ORANGE);
-AddLabel(showLabels and at6542, "AT 6542 - SELL below this!", Color.RED);
-AddLabel(showLabels and below6542, "SELL ZONE - Below 6542!", Color.RED);
+AddLabel(showLabels and above6564, "UP Above 6564! Bulls reclaimed - can pop to 6605", Color.GREEN);
+AddLabel(showLabels and at6564, "AT 6564 - BULLS MUST RECLAIM TO POP!", Color.YELLOW);
+AddLabel(showLabels and above6542 and below6564, "Above 6542 - Must reclaim 6564", Color.ORANGE);
+AddLabel(showLabels and at6542, "AT 6542 - Just hit this level", Color.ORANGE);
+AddLabel(showLabels and above6530 and below6542, "Below 6542 - Watch 6530", Color.ORANGE);
+AddLabel(showLabels and at6530, "AT 6530 - Below level", Color.RED);
+AddLabel(showLabels and above6519 and below6530, "Below 6530 - Watch 6519", Color.RED);
+AddLabel(showLabels and at6519, "AT 6519 - Lower support", Color.RED);
+AddLabel(showLabels and below6519, "Below 6519 - Major breakdown", Color.RED);
 
 # Support/Resistance Labels
-AddLabel(showLabels, "TARGETS: 6605, 6622+", Color.CYAN);
-AddLabel(showLabels, "SUPPORTS: 6573, 6552, 6542 (Sell below)", Color.GREEN);
+AddLabel(showLabels, "RECLAIM: 6564 (bulls must reclaim to pop)", Color.YELLOW);
+AddLabel(showLabels, "TARGET: 6605", Color.CYAN);
+AddLabel(showLabels, "SUPPORTS: 6542 (just hit), 6530, 6519", Color.ORANGE);
 
 # Trading Context
-AddLabel(showLabels, "6573 (8am call) held EXACT!", Color.GREEN);
-AddLabel(showLabels, "Overnight: 6540 low & 6553 reclaim (newsletter)", Color.GRAY);
-AddLabel(showLabels and below6542, "CRITICAL: Below 6542 - Sell signal!", Color.RED);
-AddLabel(showLabels and above6605, "Target mode - Next 6622+", Color.GREEN);
+AddLabel(showLabels, "6573 (8am call) held exact for 26 pts, multiple good traps", Color.GREEN);
+AddLabel(showLabels, "6542 just hit - bulls must reclaim 6564", Color.ORANGE);
+AddLabel(showLabels and above6564, "Reclaimed 6564 - Pop mode to 6605!", Color.GREEN);
+AddLabel(showLabels and below6564, "Need 6564 reclaim for pop", Color.ORANGE);
 AddLabel(showLabels and below6542, "CRITICAL: Below 6542 - Sell signal!", Color.RED);
 AddLabel(showLabels and above6542 and below6573, "Watch traps: 6573, 6552, 6542", Color.YELLOW);
 AddLabel(showLabels and above6605, "Upside mode - Next 6622+", Color.GREEN);
