@@ -1,37 +1,30 @@
-# === MANCINI ES Levels: Focus on Current Action ===
-# Updated: November 20, 2025
+# === MANCINI ES Levels: Today's Plan ===
+# Updated: November 21, 2025
 # 
-# 6701 WAS BULL/BEAR LINE - NEVER LOOKED BACK ONCE LOST
+# YESTERDAY: Tests of ~6542 then reclaims of 6553 were long triggers
 # 
-# 6588 RECLAIMS TO RALLY
-# 
-# BELOW TODAY'S LOW:
-# - 6552
-# - 6542
-# - 6512
-# 
-# KEY LEVELS:
-# Reclaim needed: 6588
-# Below today's low: 6552, 6542, 6512
-# Bull/bear lost: 6701 (this morning's call)
+# TODAY'S PLAN:
+# Supports for traps: 6573, 6552, 6542
+# Next upsides: 6605, 6622+
+# Sell: <6542
 
 # === RESISTANCE LEVELS ===
-input level1 = 6701;  # R2 - Bull/Bear line (lost this morning)
-input level1_thickness = 2;
-input level2 = 6588;  # R1 - RECLAIM TO RALLY
+input level1 = 6622;  # R2 - Next upside target
+input level1_thickness = 3;
+input level2 = 6605;  # R1 - Next upside
 input level2_thickness = 3;
 
-# === SUPPORT LEVELS (BELOW TODAY'S LOW) ===
-input level3 = 6552;  # S1 - Below today's low
-input level3_thickness = 2;
-input level4 = 6542;  # S2 - Below today's low
-input level4_thickness = 1;
-input level5 = 6512;  # S3 - Below today's low
-input level5_thickness = 1;
+# === SUPPORT LEVELS (TRAP LEVELS) ===
+input level3 = 6573;  # S1 - Support for trap
+input level3_thickness = 3;
+input level4 = 6552;  # S2 - Support for trap (yesterday's reclaim trigger)
+input level4_thickness = 3;
+input level5 = 6542;  # S3 - Support for trap / SELL below this
+input level5_thickness = 4;
 
 # === ANCHORED VWAP SETTINGS ===
-input anchorDate = 20251120;  # YYYYMMDD format
-input anchorTime = 830;  # 8:30 AM EST = 7:30 AM CST
+input anchorDate = 20251121;  # YYYYMMDD format
+input anchorTime = 1030;  # 10:30 AM CST (NVDA)
 input showVWAP = yes;
 input vwapLineWeight = 2;
 
@@ -54,26 +47,28 @@ anchoredVWAP.SetStyle(Curve.FIRM);
 anchoredVWAP.SetLineWeight(vwapLineWeight);
 anchoredVWAP.SetDefaultColor(Color.WHITE);
 
+AddChartBubble(isLastBar and showVWAP, anchoredVWAP, "NVDA VWAP 10:30", Color.WHITE, yes);
+
 # Position detection
-def above6701 = close > level1;  # Above bull/bear (lost)
-def at6701 = close >= level1 - 2 and close <= level1 + 2;  # At bull/bear
-def below6701 = close < level1;  # Below bull/bear
-def above6588 = close > level2;  # RECLAIMED - rally possible
-def at6588 = close >= level2 - 2 and close <= level2 + 2;  # Testing reclaim
-def below6588 = close < level2;  # Below reclaim - no rally
-def above6552 = close > level3;  # Above S1
-def at6552 = close >= level3 - 2 and close <= level3 + 2;  # At S1
-def below6552 = close < level3;  # Below S1
-def above6542 = close > level4;  # Above S2
-def at6542 = close >= level4 - 2 and close <= level4 + 2;  # At S2
-def below6542 = close < level4;  # Below S2
-def above6512 = close > level5;  # Above S3
-def at6512 = close >= level5 - 2 and close <= level5 + 2;  # At S3
-def below6512 = close < level5;  # Below S3
+def above6622 = close > level1;  # Above R2
+def at6622 = close >= level1 - 2 and close <= level1 + 2;  # At R2
+def below6622 = close < level1;  # Below R2
+def above6605 = close > level2;  # Above R1
+def at6605 = close >= level2 - 2 and close <= level2 + 2;  # At R1
+def below6605 = close < level2;  # Below R1
+def above6573 = close > level3;  # Above S1
+def at6573 = close >= level3 - 2 and close <= level3 + 2;  # At S1 trap
+def below6573 = close < level3;  # Below S1
+def above6552 = close > level4;  # Above S2
+def at6552 = close >= level4 - 2 and close <= level4 + 2;  # At S2 trap
+def below6552 = close < level4;  # Below S2
+def above6542 = close > level5;  # Above S3
+def at6542 = close >= level5 - 2 and close <= level5 + 2;  # At S3 - critical
+def below6542 = close < level5;  # SELL ZONE - below 6542
 
 # === LEVEL PLOTS ===
 plot L1 = level1;
-L1.SetDefaultColor(Color.ORANGE);
+L1.SetDefaultColor(Color.CYAN);
 L1.SetLineWeight(level1_thickness);
 L1.SetStyle(Curve.FIRM);
 
@@ -83,82 +78,83 @@ L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
 
 plot L3 = level3;
-L3.SetDefaultColor(Color.YELLOW);
+L3.SetDefaultColor(Color.GREEN);
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
 plot L4 = level4;
-L4.SetDefaultColor(Color.LIGHT_GREEN);
+L4.SetDefaultColor(Color.YELLOW);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
 plot L5 = level5;
-L5.SetDefaultColor(Color.LIGHT_GREEN);
+L5.SetDefaultColor(Color.RED);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
 
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, "R2: 6701 BULL/BEAR LOST", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level2, "R1: 6588 RECLAIM", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level3, "S1: 6552", Color.YELLOW, no);
-AddChartBubble(isLastBar, level4, "S2: 6542", Color.LIGHT_GREEN, no);
-AddChartBubble(isLastBar, level5, "S3: 6512", Color.LIGHT_GREEN, no);
+AddChartBubble(isLastBar, level1, "R2: 6622+ Upside", Color.CYAN, yes);
+AddChartBubble(isLastBar, level2, "R1: 6605 Next", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level3, "S1: 6573 Trap", Color.GREEN, no);
+AddChartBubble(isLastBar, level4, "S2: 6552 Trap (Yest Long Trigger)", Color.YELLOW, no);
+AddChartBubble(isLastBar, level5, "S3: 6542 CRITICAL - Sell Below", Color.RED, no);
 
 # === TOUCH LOGIC ===
-def touch6701 = low <= level1 and high >= level1;
-def firstTouch6701 = touch6701 and !touch6701[1];
+def touch6622 = low <= level1 and high >= level1;
+def firstTouch6622 = touch6622 and !touch6622[1];
 
-def touch6588 = low <= level2 and high >= level2;
-def firstTouch6588Up = touch6588 and close > level2 and !touch6588[1];
-def firstTouch6588Down = touch6588 and close < level2 and !touch6588[1];
+def touch6605 = low <= level2 and high >= level2;
+def firstTouch6605Up = touch6605 and close > level2 and !touch6605[1];
+def firstTouch6605Down = touch6605 and close < level2 and !touch6605[1];
 
-def touch6552 = low <= level3 and high >= level3;
+def touch6573 = low <= level3 and high >= level3;
+def firstTouch6573 = touch6573 and !touch6573[1];
+
+def touch6552 = low <= level4 and high >= level4;
 def firstTouch6552 = touch6552 and !touch6552[1];
 
-def touch6542 = low <= level4 and high >= level4;
+def touch6542 = low <= level5 and high >= level5;
 def firstTouch6542 = touch6542 and !touch6542[1];
-
-def touch6512 = low <= level5 and high >= level5;
-def firstTouch6512 = touch6512 and !touch6512[1];
 
 # === ALERT SYSTEM ===
 
-# Resistance Levels
-Alert(enableAlerts and firstTouch6701, "ES >> 6701 - Bull/Bear line (lost this morning)!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close crosses above level1, "ES UP 6701 - Reclaiming bull/bear!", Alert.BAR, Sound.Ring);
+# Resistance Levels - Upside Targets
+Alert(enableAlerts and firstTouch6622, "ES >> 6622 - Next upside target!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level1, "ES UP 6622+ Upside target hit!", Alert.BAR, Sound.Ring);
 
-# 6588 - RECLAIM TO RALLY
-Alert(enableAlerts and firstTouch6588Up, "ES UP 6588 RECLAIM! Rally starting!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6588Down, "ES DOWN 6588 - Failed reclaim!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6588, "ES at 6588 - RECLAIM TO RALLY!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and firstTouch6605Up, "ES UP 6605 - Next upside!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6605Down, "ES DOWN 6605 - Rejection!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6605, "ES at 6605 - Next upside level!", Alert.BAR, Sound.Chimes);
 
-# Support Levels - Below today's low
-Alert(enableAlerts and firstTouch6552, "ES >> 6552 - Below today's low!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close crosses below level3, "ES DOWN 6552 - Watch 6542!", Alert.BAR, Sound.Bell);
+# Support Levels - Trap Levels
+Alert(enableAlerts and firstTouch6573, "ES >> 6573 - Support trap level!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses below level3, "ES DOWN 6573 - Watch 6552!", Alert.BAR, Sound.Bell);
 
-Alert(enableAlerts and firstTouch6542, "ES >> 6542 - Deeper breakdown!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close crosses below level4, "ES DOWN 6542 - Watch 6512!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and firstTouch6552, "ES >> 6552 - Trap support (yesterday's long trigger)!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses below level4, "ES DOWN 6552 - Watch 6542 CRITICAL!", Alert.BAR, Sound.Bell);
 
-Alert(enableAlerts and firstTouch6512, "ES >> 6512 - Major breakdown!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close crosses below level5, "ES DOWN 6512 - Extreme breakdown!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and firstTouch6542, "ES >> 6542 - CRITICAL SUPPORT!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level5, "ES SELL! Below 6542!", Alert.BAR, Sound.Bell);
 
 # === STATUS LABELS ===
 AddLabel(showLabels, "ES: " + Round(close, 2), Color.CYAN);
-AddLabel(showLabels, "6701 BULL/BEAR LOST - NEVER LOOKED BACK", Color.ORANGE);
-AddLabel(showLabels and above6588, "UP Above 6588! Rally reclaimed!", Color.GREEN);
-AddLabel(showLabels and at6588, "AT 6588 - RECLAIM TO RALLY!", Color.MAGENTA);
-AddLabel(showLabels and below6588 and above6552, "Below 6588 - No rally yet", Color.YELLOW);
-AddLabel(showLabels and at6552, "AT 6552 - Below today's low", Color.YELLOW);
-AddLabel(showLabels and below6552 and above6542, "Below 6552 - Watch 6542", Color.ORANGE);
-AddLabel(showLabels and at6542, "AT 6542 - Deeper breakdown", Color.ORANGE);
-AddLabel(showLabels and below6542, "Below 6542 - Watch 6512", Color.RED);
+AddLabel(showLabels and above6605, "UP Above 6605! Next 6622+", Color.GREEN);
+AddLabel(showLabels and at6605, "AT 6605 - Next upside!", Color.MAGENTA);
+AddLabel(showLabels and above6573 and below6605, "Above 6573 - Watch 6605", Color.YELLOW);
+AddLabel(showLabels and at6573, "AT 6573 - Trap support", Color.YELLOW);
+AddLabel(showLabels and above6552 and below6573, "Below 6573 - Watch 6552 trap", Color.ORANGE);
+AddLabel(showLabels and at6552, "AT 6552 - Trap (yesterday's long trigger)", Color.ORANGE);
+AddLabel(showLabels and above6542 and below6552, "Below 6552 - CRITICAL 6542", Color.ORANGE);
+AddLabel(showLabels and at6542, "AT 6542 - CRITICAL! Sell below", Color.RED);
+AddLabel(showLabels and below6542, "SELL ZONE - Below 6542!", Color.RED);
 
 # Support/Resistance Labels
-AddLabel(showLabels, "BULL/BEAR: 6701 (lost)", Color.ORANGE);
-AddLabel(showLabels, "RECLAIM: 6588 for rally", Color.MAGENTA);
-AddLabel(showLabels, "BELOW LOW: 6552, 6542, 6512", Color.YELLOW);
+AddLabel(showLabels, "UPSIDE: 6605, 6622+", Color.CYAN);
+AddLabel(showLabels, "TRAP SUPPORTS: 6573, 6552, 6542", Color.GREEN);
+AddLabel(showLabels, "SELL: <6542", Color.RED);
 
 # Trading Context
-AddLabel(showLabels and below6701, "6701 lost this morning - never looked back", Color.RED);
-AddLabel(showLabels and above6588, "6588 reclaimed - rally mode", Color.GREEN);
-AddLabel(showLabels and below6588, "Must reclaim 6588 for rally", Color.ORANGE);
+AddLabel(showLabels, "Yesterday: 6542 test → 6553 reclaim = Long trigger", Color.GRAY);
+AddLabel(showLabels and below6542, "CRITICAL: Below 6542 - Sell signal!", Color.RED);
+AddLabel(showLabels and above6542 and below6573, "Watch traps: 6573, 6552, 6542", Color.YELLOW);
+AddLabel(showLabels and above6605, "Upside mode - Next 6622+", Color.GREEN);
