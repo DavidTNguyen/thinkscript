@@ -1,12 +1,13 @@
 # === MANCINI ES Levels: Today's Plan ===
 # Updated: November 21, 2025
 # 
-# YESTERDAY: Tests of ~6542 then reclaims of 6553 were long triggers
+# 6573 1st support given 8am held *exact*
+# ES ultimately still held up by the overnight Failed Breakdown of the 6:10PM ~6540 low & 6553 reclaim
+# (given to newsletter readers)
 # 
 # TODAY'S PLAN:
-# Supports for traps: 6573, 6552, 6542
-# Next upsides: 6605, 6622+
-# Sell: <6542
+# Supports (sell below): 6573, 6552, 6542
+# Next targets: 6605, 6622+
 
 # === RESISTANCE LEVELS ===
 input level1 = 6622;  # R2 - Next upside target
@@ -93,11 +94,11 @@ L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
 
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, "R2: 6622+ Upside", Color.CYAN, yes);
+AddChartBubble(isLastBar, level1, "R2: 6622+ Target", Color.CYAN, yes);
 AddChartBubble(isLastBar, level2, "R1: 6605 Next", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level3, "S1: 6573 Trap", Color.GREEN, no);
-AddChartBubble(isLastBar, level4, "S2: 6552 Trap (Yest Long Trigger)", Color.YELLOW, no);
-AddChartBubble(isLastBar, level5, "S3: 6542 CRITICAL - Sell Below", Color.RED, no);
+AddChartBubble(isLastBar, level3, "S1: 6573 (8am call - held exact!)", Color.GREEN, no);
+AddChartBubble(isLastBar, level4, "S2: 6552 Support", Color.YELLOW, no);
+AddChartBubble(isLastBar, level5, "S3: 6542 SELL Below", Color.RED, no);
 
 # === TOUCH LOGIC ===
 def touch6622 = low <= level1 and high >= level1;
@@ -126,11 +127,11 @@ Alert(enableAlerts and firstTouch6605Up, "ES UP 6605 - Next upside!", Alert.BAR,
 Alert(enableAlerts and firstTouch6605Down, "ES DOWN 6605 - Rejection!", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and at6605, "ES at 6605 - Next upside level!", Alert.BAR, Sound.Chimes);
 
-# Support Levels - Trap Levels
-Alert(enableAlerts and firstTouch6573, "ES >> 6573 - Support trap level!", Alert.BAR, Sound.Chimes);
+# Support Levels - Support Levels (Sell Below)
+Alert(enableAlerts and firstTouch6573, "ES >> 6573 - 8am support level (held exact)!", Alert.BAR, Sound.Chimes);
 Alert(enableAlerts and close crosses below level3, "ES DOWN 6573 - Watch 6552!", Alert.BAR, Sound.Bell);
 
-Alert(enableAlerts and firstTouch6552, "ES >> 6552 - Trap support (yesterday's long trigger)!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and firstTouch6552, "ES >> 6552 - Support level!", Alert.BAR, Sound.Chimes);
 Alert(enableAlerts and close crosses below level4, "ES DOWN 6552 - Watch 6542 CRITICAL!", Alert.BAR, Sound.Bell);
 
 Alert(enableAlerts and firstTouch6542, "ES >> 6542 - CRITICAL SUPPORT!", Alert.BAR, Sound.Bell);
@@ -139,22 +140,24 @@ Alert(enableAlerts and close crosses below level5, "ES SELL! Below 6542!", Alert
 # === STATUS LABELS ===
 AddLabel(showLabels, "ES: " + Round(close, 2), Color.CYAN);
 AddLabel(showLabels and above6605, "UP Above 6605! Next 6622+", Color.GREEN);
-AddLabel(showLabels and at6605, "AT 6605 - Next upside!", Color.MAGENTA);
-AddLabel(showLabels and above6573 and below6605, "Above 6573 - Watch 6605", Color.YELLOW);
-AddLabel(showLabels and at6573, "AT 6573 - Trap support", Color.YELLOW);
-AddLabel(showLabels and above6552 and below6573, "Below 6573 - Watch 6552 trap", Color.ORANGE);
-AddLabel(showLabels and at6552, "AT 6552 - Trap (yesterday's long trigger)", Color.ORANGE);
+AddLabel(showLabels and at6605, "AT 6605 - Next target!", Color.MAGENTA);
+AddLabel(showLabels and above6573 and below6605, "Above 6573 (8am call held exact) - Watch 6605", Color.YELLOW);
+AddLabel(showLabels and at6573, "AT 6573 - 8am support level", Color.YELLOW);
+AddLabel(showLabels and above6552 and below6573, "Below 6573 - Watch 6552", Color.ORANGE);
+AddLabel(showLabels and at6552, "AT 6552 - Support level", Color.ORANGE);
 AddLabel(showLabels and above6542 and below6552, "Below 6552 - CRITICAL 6542", Color.ORANGE);
-AddLabel(showLabels and at6542, "AT 6542 - CRITICAL! Sell below", Color.RED);
+AddLabel(showLabels and at6542, "AT 6542 - SELL below this!", Color.RED);
 AddLabel(showLabels and below6542, "SELL ZONE - Below 6542!", Color.RED);
 
 # Support/Resistance Labels
-AddLabel(showLabels, "UPSIDE: 6605, 6622+", Color.CYAN);
-AddLabel(showLabels, "TRAP SUPPORTS: 6573, 6552, 6542", Color.GREEN);
-AddLabel(showLabels, "SELL: <6542", Color.RED);
+AddLabel(showLabels, "TARGETS: 6605, 6622+", Color.CYAN);
+AddLabel(showLabels, "SUPPORTS: 6573, 6552, 6542 (Sell below)", Color.GREEN);
 
 # Trading Context
-AddLabel(showLabels, "Yesterday: 6542 test → 6553 reclaim = Long trigger", Color.GRAY);
+AddLabel(showLabels, "6573 (8am call) held EXACT!", Color.GREEN);
+AddLabel(showLabels, "Overnight: 6540 low & 6553 reclaim (newsletter)", Color.GRAY);
+AddLabel(showLabels and below6542, "CRITICAL: Below 6542 - Sell signal!", Color.RED);
+AddLabel(showLabels and above6605, "Target mode - Next 6622+", Color.GREEN);
 AddLabel(showLabels and below6542, "CRITICAL: Below 6542 - Sell signal!", Color.RED);
 AddLabel(showLabels and above6542 and below6573, "Watch traps: 6573, 6552, 6542", Color.YELLOW);
 AddLabel(showLabels and above6605, "Upside mode - Next 6622+", Color.GREEN);
