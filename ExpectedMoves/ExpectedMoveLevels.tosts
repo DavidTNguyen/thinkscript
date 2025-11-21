@@ -16,46 +16,46 @@ def symbolIWM = GetSymbol() == "IWM";
 def symbolES = GetSymbol() == "/ES";
 def symbolNQ = GetSymbol() == "/NQ";
 
-# Daily Expected Move Ranges - Updated 11/20/2025
+# Daily Expected Move Ranges - Updated 11/21/2025 OPEX Week
 def defaultDailyHigh =
-    if symbolSPY then 671.48
-    else if symbolSPX then 6705.11
-    else if symbolXSP then 670.41
-    else if symbolQQQ then 610.87
-    else if symbolIWM then 237.57
-    else if symbolES then 6812.95
-    else if symbolNQ then 25489.20
+    if symbolSPY then 661.94
+    else if symbolSPX then 6630.06
+    else if symbolXSP then 662.60
+    else if symbolQQQ then 597.38
+    else if symbolIWM then 233.00
+    else if symbolES then 6658.66
+    else if symbolNQ then 24578.41
     else Double.NaN;
 
 def defaultDailyLow =
-    if symbolSPY then 653.78
-    else if symbolSPX then 6579.21
-    else if symbolXSP then 658.03
-    else if symbolQQQ then 588.87
-    else if symbolIWM then 229.29
-    else if symbolES then 6685.05
-    else if symbolNQ then 24870.80
+    if symbolSPY then 643.12
+    else if symbolSPX then 6447.46
+    else if symbolXSP then 645.16
+    else if symbolQQQ then 573.96
+    else if symbolIWM then 225.22
+    else if symbolES then 6497.34
+    else if symbolNQ then 23800.59
     else Double.NaN;
 
-# Weekly Expected Move Ranges - Updated 11/21/2025 (Friday close)
+# Weekly Expected Move Ranges - Updated 11/21/2025 (11/17-11/21 week)
 def defaultWeeklyHigh =
     if symbolSPY then 686.50
-    else if symbolSPX then 6878.92
+    else if symbolSPX then 6878.96
     else if symbolXSP then 687.90
-    else if symbolQQQ then 627.27
-    else if symbolIWM then 244.45
-    else if symbolES then 6902.85
-    else if symbolNQ then 25833.28
+    else if symbolQQQ then 627.28
+    else if symbolIWM then 244.46
+    else if symbolES then 6913.00
+    else if symbolNQ then 25884.03
     else Double.NaN;
 
 def defaultWeeklyLow =
     if symbolSPY then 657.36
-    else if symbolSPX then 6589.30
+    else if symbolSPX then 6589.26
     else if symbolXSP then 658.92
-    else if symbolQQQ then 590.45
-    else if symbolIWM then 230.51
-    else if symbolES then 6627.65
-    else if symbolNQ then 24461.72
+    else if symbolQQQ then 590.44
+    else if symbolIWM then 230.50
+    else if symbolES then 6617.50
+    else if symbolNQ then 24410.97
     else Double.NaN;
 
 def activeDailyHigh = if dailyHigh != 0 then dailyHigh else defaultDailyHigh;
