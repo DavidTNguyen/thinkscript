@@ -1,43 +1,43 @@
 //@version=5
-indicator("SPX Levels: Trading Playbook", overlay=true, max_lines_count=500, max_labels_count=500)
+indicator("SPX Levels: SpotGamma Strategy", overlay=true, max_lines_count=500, max_labels_count=500)
 
-// === SPX Trading Playbook - Levels & Scenarios ===
-// Updated: November 20, 2025
+// === SPX SpotGamma Strategy - Updated 11/24/2025 ===
 // 
-// KEY TRADING SCENARIOS:
+// CURRENT STRATEGY (11/24):
+// Lean LONG with SPX >6,600
+// - Put option decay into holiday week = tailwind for stocks
+// - Upside target: 6,700-6,750 into Wednesday night
+// - Break <6,600: Close swing longs, watch 6,500 test
+// - Longer term "wash out" level: 6,350
+// - Core position: Dec 1x2 call spread (from 11/21)
 //
-// 1. BIG GAP DOWN + FAST TOUCH 6549 ± 5
-//    - Look for stop-in bets and oversold bounce
-//    - Entry: Long after reversal confirmation
-//    - Target: First upside level = 6640
+// CONTEXT (11/21):
+// - 6,700 break opened downside plunge into OPEX + weekend
+// - Puts expensive → equity bounce potential without catalyst
+// - Playing SPY/QQQ 1x2 call flies for early Dec (right tail)
+// - 6,700 is new Risk Pivot level
 //
-// 2. SLOW DRIFT LOWER (No 6549 break)
-//    - Market stays bearish
-//    - Strategy: Short rallies toward fail area (6640)
-//
-// 3. BREAK ABOVE 6640 → 6670 → 6760
-//    - Watch volume: Needs sustained push for short covering
-//    - Entry: Long after 6640 holds as support
-//    - Target: 6760-6770, then 6880
+// KEY SG LEVELS:
+// Resistance: 6,700, 6,750
+// Pivot: 6,600 (bearish <, bullish >) **NEW KEY LEVEL**
+// Support: 6,500 (initial), 6,350 (wash out / large put strike zone)
 
 // === INPUTS ===
 // Resistance Levels
-level1 = input.float(6880, "R5 - Major resistance / Open path target", group="🔴 Resistance Levels")
-level1_thickness = input.int(5, "R5 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
-level2 = input.float(6770, "R4 - Squeeze setup zone HIGH", group="🔴 Resistance Levels")
-level2_thickness = input.int(4, "R4 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
-level3 = input.float(6760, "R3 - Squeeze setup zone LOW / Major target", group="🔴 Resistance Levels")
-level3_thickness = input.int(4, "R3 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
-level4 = input.float(6670, "R2 - Stop zone / Short-cover clusters", group="🔴 Resistance Levels")
-level4_thickness = input.int(3, "R2 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
-level5 = input.float(6640, "R1 - FAIL AREA (Needs volume to clear)", group="🔴 Resistance Levels")
-level5_thickness = input.int(5, "R1 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
+level1 = input.float(6750, "R2 - Upside target HIGH (into Wed night)", group="🔴 Resistance Levels")
+level1_thickness = input.int(4, "R2 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
+level2 = input.float(6700, "R1 - Upside target LOW / Risk Pivot / Resistance", group="🔴 Resistance Levels")
+level2_thickness = input.int(5, "R1 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
+
+// Pivot Level
+level3 = input.float(6600, "PIVOT - Bearish <, Bullish > (KEY LEVEL)", group="⚡ Pivot")
+level3_thickness = input.int(5, "PIVOT Line Thickness", minval=1, maxval=10, group="⚡ Pivot")
 
 // Support Levels
-level6 = input.float(6549, "KEY BULLISH TRIGGER (± 5)", group="🟢 Support Levels")
-level6_thickness = input.int(5, "KEY Line Thickness", minval=1, maxval=10, group="🟢 Support Levels")
-level7 = input.float(6513, "S1 - Next support / Oversold reversal zone (± 5)", group="🟢 Support Levels")
-level7_thickness = input.int(4, "S1 Line Thickness", minval=1, maxval=10, group="🟢 Support Levels")
+level4 = input.float(6500, "S1 - Initial support / Test level if <6600", group="🟢 Support Levels")
+level4_thickness = input.int(4, "S1 Line Thickness", minval=1, maxval=10, group="🟢 Support Levels")
+level5 = input.float(6350, "S2 - Wash out level / Large put strike zone", group="🟢 Support Levels")
+level5_thickness = input.int(5, "S2 Line Thickness", minval=1, maxval=10, group="🟢 Support Levels")
 
 // Alert Settings
 enableAlerts = input.bool(true, "Enable Alerts", group="🔔 Alert Settings")
@@ -53,143 +53,136 @@ var line l2 = na
 var line l3 = na
 var line l4 = na
 var line l5 = na
-var line l6 = na
-var line l7 = na
 
 if showLines and barstate.islast
-    // R5 - 6880 (Cyan)
+    // R2 - 6750 (Cyan)
     l1 := line.new(bar_index - 100, level1, bar_index + 20, level1, color=color.aqua, width=level1_thickness, style=line.style_solid)
     
-    // R4 - 6770 (Light Green)
-    l2 := line.new(bar_index - 100, level2, bar_index + 20, level2, color=color.lime, width=level2_thickness, style=line.style_solid)
+    // R1 - 6700 (Orange - Risk Pivot/Resistance)
+    l2 := line.new(bar_index - 100, level2, bar_index + 20, level2, color=color.orange, width=level2_thickness, style=line.style_solid)
     
-    // R3 - 6760 (Light Green)
-    l3 := line.new(bar_index - 100, level3, bar_index + 20, level3, color=color.lime, width=level3_thickness, style=line.style_solid)
+    // PIVOT - 6600 (Yellow - KEY LEVEL)
+    l3 := line.new(bar_index - 100, level3, bar_index + 20, level3, color=color.yellow, width=level3_thickness, style=line.style_solid)
     
-    // R2 - 6670 (Orange)
-    l4 := line.new(bar_index - 100, level4, bar_index + 20, level4, color=color.orange, width=level4_thickness, style=line.style_solid)
+    // S1 - 6500 (Green - Initial support)
+    l4 := line.new(bar_index - 100, level4, bar_index + 20, level4, color=color.lime, width=level4_thickness, style=line.style_solid)
     
-    // R1 - 6640 FAIL AREA (Red, Heavy)
+    // S2 - 6350 (Red - Wash out level)
     l5 := line.new(bar_index - 100, level5, bar_index + 20, level5, color=color.red, width=level5_thickness, style=line.style_solid)
-    
-    // KEY - 6549 TRIGGER (Green, Heavy)
-    l6 := line.new(bar_index - 100, level6, bar_index + 20, level6, color=color.green, width=level6_thickness, style=line.style_solid)
-    
-    // S1 - 6513 Oversold (Dark Green)
-    l7 := line.new(bar_index - 100, level7, bar_index + 20, level7, color=color.new(color.green, 30), width=level7_thickness, style=line.style_solid)
 
 // === LABELS ===
 if barstate.islast and showLabels
-    label.new(bar_index, level1, "R5: 6880 - Open path", style=label.style_label_left, color=color.aqua, textcolor=color.white)
-    label.new(bar_index, level2, "R4: 6770 - Squeeze HIGH", style=label.style_label_left, color=color.lime, textcolor=color.black)
-    label.new(bar_index, level3, "R3: 6760 - Squeeze LOW", style=label.style_label_left, color=color.lime, textcolor=color.black)
-    label.new(bar_index, level4, "R2: 6670 - Stop zone", style=label.style_label_left, color=color.orange, textcolor=color.white)
-    label.new(bar_index, level5, "R1: 6640 - FAIL AREA", style=label.style_label_left, color=color.red, textcolor=color.white)
-    label.new(bar_index, level6, "KEY: 6549 - TRIGGER", style=label.style_label_right, color=color.green, textcolor=color.white)
-    label.new(bar_index, level7, "S1: 6513 - Oversold", style=label.style_label_right, color=color.new(color.green, 30), textcolor=color.white)
+    label.new(bar_index, level1, "R2: 6750 - Target Wed", style=label.style_label_left, color=color.aqua, textcolor=color.white)
+    label.new(bar_index, level2, "R1: 6700 - Risk Pivot/Resistance", style=label.style_label_left, color=color.orange, textcolor=color.white)
+    label.new(bar_index, level3, "PIVOT: 6600 - KEY (Bearish<, >Bullish)", style=label.style_label_center, color=color.yellow, textcolor=color.black, size=size.large)
+    label.new(bar_index, level4, "S1: 6500 - Initial Support", style=label.style_label_right, color=color.lime, textcolor=color.black)
+    label.new(bar_index, level5, "S2: 6350 - Wash Out / Put Zone", style=label.style_label_right, color=color.red, textcolor=color.white)
 
 // === POSITION DETECTION ===
-above6880 = close > level1
-above6770 = close > level2
-in6760_6770 = close >= level3 and close <= level2
-above6670 = close > level4
-above6640 = close > level5
-at6640 = close >= level5 - 5 and close <= level5 + 5
-below6640 = close < level5
-inNeutral = close >= level7 and close < level5
-at6549 = close >= level6 - alertSensitivity and close <= level6 + alertSensitivity
-below6549 = close < level6
-above6513 = close >= level7
-at6513 = close >= level7 - alertSensitivity and close <= level7 + alertSensitivity
+above6750 = close > level1
+at6750 = close >= level1 - 5 and close <= level1 + 5
+above6700 = close > level2
+at6700 = close >= level2 - 5 and close <= level2 + 5
+in6700_6750 = close >= level2 and close <= level1
+above6600 = close > level3  // BULLISH
+at6600 = close >= level3 - 5 and close <= level3 + 5  // PIVOT
+below6600 = close < level3  // BEARISH
+in6500_6600 = close >= level4 and close < level3
+at6500 = close >= level4 - 5 and close <= level4 + 5
+below6500 = close < level4
+at6350 = close >= level5 - 10 and close <= level5 + 10
+below6350 = close < level5
 
 // Volume spike detection
 volSpike = volume > ta.sma(volume, 20) * 1.5
 
 // === ALERT CONDITIONS ===
 
-// UPSIDE PATH ALERTS
-alertcondition(ta.crossover(close, level5), "6640 FAIL AREA BROKEN", "SPX ☝️ 6640 - FAIL AREA BROKEN! Watch 6670!")
-alertcondition(ta.crossunder(close, level5), "6640 Back in FAIL AREA", "SPX 👇 6640 - Back in FAIL AREA! Short rallies!")
-alertcondition(at6640, "At 6640 FAIL AREA", "SPX at 6640 FAIL AREA - Need volume to clear!")
+// PIVOT LEVEL 6600 - KEY ALERTS
+alertcondition(ta.crossover(close, level3), "6600 PIVOT BROKEN UP", "SPX ☝️ 6600 - BULLISH! Lean long, put decay tailwind! Target 6700-6750!")
+alertcondition(ta.crossunder(close, level3), "6600 PIVOT BROKEN DOWN", "SPX 👇 6600 - BEARISH! Close swing longs, watch 6500!")
+alertcondition(at6600, "At 6600 PIVOT", "SPX at 6600 PIVOT - KEY LEVEL! Bearish <, Bullish >")
 
-alertcondition(ta.crossover(close, level4), "6670 SHORT-COVER ZONE", "SPX ☝️ 6670 - SHORT-COVER ZONE! Watch 6760-6770!")
-alertcondition(ta.crossover(close, level3), "6760 SQUEEZE SETUP", "SPX ☝️ 6760 - SQUEEZE SETUP! Watch 6770, then 6880!")
-alertcondition(in6760_6770, "In 6760-6770 SQUEEZE", "SPX in 6760-6770 SQUEEZE ZONE!")
+// RESISTANCE ALERTS
+alertcondition(ta.crossover(close, level2), "6700 RESISTANCE", "SPX ☝️ 6700 - Risk Pivot! Watch for resistance, target 6750!")
+alertcondition(at6700, "At 6700 Risk Pivot", "SPX at 6700 - Risk Pivot level! Resistance zone!")
+alertcondition(ta.crossover(close, level1), "6750 TARGET HIT", "SPX ☝️ 6750 - Upside target hit (Wed)! Extension zone!")
+alertcondition(in6700_6750, "In 6700-6750 Target", "SPX in 6700-6750 UPSIDE TARGET ZONE!")
 
-alertcondition(ta.crossover(close, level2), "6770 SQUEEZE", "SPX ☝️ 6770 - SQUEEZE! Open path to 6880!")
-alertcondition(ta.crossover(close, level1), "6880 RESISTANCE CLEARED", "SPX ☝️ 6880 - MAJOR RESISTANCE CLEARED!")
+// SUPPORT ALERTS
+alertcondition(ta.crossunder(close, level4), "6500 SUPPORT TEST", "SPX 👇 6500 - Initial support test! Watch 6350 wash out!")
+alertcondition(at6500, "At 6500 Support", "SPX at 6500 - Initial support level!")
+alertcondition(ta.crossunder(close, level5), "6350 WASH OUT", "SPX 👇 6350 - WASH OUT LEVEL! Large put strike zone!")
+alertcondition(at6350, "At 6350 Wash Out", "SPX at 6350 - Wash out level! Large put zone!")
 
-// BULLISH TRIGGER ALERTS (6549)
-alertcondition(ta.crossunder(close, level6), "6549 KEY TRIGGER", "SPX 👇 6549 - KEY TRIGGER! Watch reversal!")
-alertcondition(ta.crossover(close, level6), "6549 Bounce", "SPX ☝️ 6549 - Bounce! Watch 6640!")
-alertcondition(at6549, "At 6549 TRIGGER ZONE", "SPX at 6549 ± 5 - TRIGGER ZONE! Stops/oversold!")
-
-// OVERSOLD ZONE ALERTS (6513)
-alertcondition(ta.crossunder(close, level7), "6513 OVERSOLD", "SPX 👇 6513 - OVERSOLD! Reversal zone!")
-alertcondition(ta.crossover(close, level7), "6513 Bounce", "SPX ☝️ 6513 - Bounce! Watch 6549!")
-alertcondition(at6513, "At 6513 OVERSOLD ZONE", "SPX at 6513 ± 5 - OVERSOLD REVERSAL ZONE!")
-
-// Volume-based alerts
-alertcondition(ta.crossover(close, level5) and volSpike, "6640 STRONG VOLUME", "SPX ☝️ 6640 STRONG VOLUME - Short covering!")
+// STRATEGY ALERTS
+alertcondition(above6600 and volSpike, "BULLISH SETUP", "SPX >6600 + Volume! Holiday put decay = Long bias!")
+alertcondition(below6600 and ta.crossunder(close, level3), "CLOSE LONGS", "SPX <6600 - Close swing longs per SG strategy!")
 
 // === STATUS TABLE ===
 var table statusTable = table.new(position.top_right, 2, 15, border_width=1)
 
 if barstate.islast and showLabels
     // Header
-    table.cell(statusTable, 0, 0, "SPX PLAYBOOK", bgcolor=color.new(color.blue, 70), text_color=color.white)
+    table.cell(statusTable, 0, 0, "SPX SPOTGAMMA", bgcolor=color.new(color.blue, 70), text_color=color.white)
     table.cell(statusTable, 1, 0, str.tostring(close, "#.##"), bgcolor=color.new(color.blue, 70), text_color=color.white)
     
     // Alert Status
     table.cell(statusTable, 0, 1, "Alerts", text_color=color.white)
     table.cell(statusTable, 1, 1, enableAlerts ? "ON" : "OFF", bgcolor=enableAlerts ? color.green : color.red, text_color=color.white)
     
-    // Trading Scenario
-    scenario = volSpike and at6549 ? "🔥 SCENARIO 1: Fast touch!" : below6640 and not at6549 ? "📉 SCENARIO 2: Slow drift" : above6640 ? "📈 SCENARIO 3: Bull path" : "Neutral"
-    scenarioColor = volSpike and at6549 ? color.green : below6640 and not at6549 ? color.red : above6640 ? color.green : color.gray
-    table.cell(statusTable, 0, 2, "Scenario", text_color=color.white)
-    table.cell(statusTable, 1, 2, scenario, bgcolor=color.new(scenarioColor, 70), text_color=color.white)
+    // Bias based on 6600 pivot
+    bias = above6600 ? "📈 BULLISH" : below6600 ? "📉 BEARISH" : "⚡ PIVOT"
+    biasColor = above6600 ? color.green : below6600 ? color.red : color.yellow
+    table.cell(statusTable, 0, 2, "Bias (6600)", text_color=color.white)
+    table.cell(statusTable, 1, 2, bias, bgcolor=color.new(biasColor, 70), text_color=color.white)
     
     // Position Status
-    position = above6770 ? "☝️ Open path to 6880!" : in6760_6770 ? "SQUEEZE ZONE 6760-6770" : above6670 and close < level3 ? "Target 6760-6770" : above6640 and close < level4 ? "Watch 6670 stops" : at6640 ? "⚠️ 6640 FAIL" : inNeutral ? "NEUTRAL ZONE" : at6549 ? "🔑 6549 TRIGGER!" : "Below 6549"
-    posColor = above6770 ? color.aqua : in6760_6770 ? color.lime : above6670 ? color.orange : above6640 ? color.yellow : at6640 ? color.red : inNeutral ? color.gray : color.green
+    position = above6750 ? "☝️ Above 6750!" : in6700_6750 ? "Target Zone 6700-6750" : above6700 ? "Above 6700 Pivot" : above6600 ? "Bullish >6600" : in6500_6600 ? "6500-6600 Range" : at6500 ? "⚠️ 6500 Support" : "Below 6500"
+    posColor = above6750 ? color.aqua : in6700_6750 ? color.lime : above6700 ? color.orange : above6600 ? color.green : in6500_6600 ? color.yellow : color.red
     table.cell(statusTable, 0, 3, "Position", text_color=color.white)
     table.cell(statusTable, 1, 3, position, bgcolor=color.new(posColor, 70), text_color=color.white)
     
     // Strategy
-    strategy = below6640 and close > level6 ? "Short rallies to 6640" : above6640 and close < level3 ? "Long 6640 support → 6760-6770" : at6549 ? "Gap down + fast touch = Long!" : "Wait for setup"
+    strategy = above6600 ? "Lean LONG - Put decay tailwind" : below6600 ? "Close swing longs, watch 6500" : "At PIVOT - Wait for break"
     table.cell(statusTable, 0, 4, "Strategy", text_color=color.white)
     table.cell(statusTable, 1, 4, strategy, bgcolor=color.new(color.blue, 80), text_color=color.white)
     
     // Key Levels Summary
-    table.cell(statusTable, 0, 5, "FAIL: 6640", text_color=color.white)
-    table.cell(statusTable, 1, 5, "TRIGGER: 6549", bgcolor=color.new(color.gray, 80), text_color=color.white)
+    table.cell(statusTable, 0, 5, "PIVOT: 6600", text_color=color.white)
+    table.cell(statusTable, 1, 5, "TARGET: 6700-6750", bgcolor=color.new(color.gray, 80), text_color=color.white)
     
-    table.cell(statusTable, 0, 6, "OVERSOLD: 6513", text_color=color.white)
-    table.cell(statusTable, 1, 6, "TARGET: 6760-6770", bgcolor=color.new(color.gray, 80), text_color=color.white)
+    table.cell(statusTable, 0, 6, "SUPPORT: 6500", text_color=color.white)
+    table.cell(statusTable, 1, 6, "WASH OUT: 6350", bgcolor=color.new(color.gray, 80), text_color=color.white)
     
-    // Distance to key levels
-    distTo6640 = level5 - close
-    distTo6640Str = distTo6640 > 0 ? "-" + str.tostring(math.abs(distTo6640), "#.#") : "+" + str.tostring(math.abs(distTo6640), "#.#")
-    table.cell(statusTable, 0, 7, "To 6640 FAIL", text_color=color.white)
-    table.cell(statusTable, 1, 7, distTo6640Str, bgcolor=color.new(color.red, 80), text_color=color.white)
+    // Distance to 6600 pivot
+    distTo6600 = level3 - close
+    distTo6600Str = distTo6600 > 0 ? "-" + str.tostring(math.abs(distTo6600), "#.#") : "+" + str.tostring(math.abs(distTo6600), "#.#")
+    table.cell(statusTable, 0, 7, "To 6600 PIVOT", text_color=color.white)
+    table.cell(statusTable, 1, 7, distTo6600Str, bgcolor=color.new(color.yellow, 80), text_color=color.black)
     
-    distTo6549 = level6 - close
-    distTo6549Str = distTo6549 > 0 ? "-" + str.tostring(math.abs(distTo6549), "#.#") : "+" + str.tostring(math.abs(distTo6549), "#.#")
-    table.cell(statusTable, 0, 8, "To 6549 TRIGGER", text_color=color.white)
-    table.cell(statusTable, 1, 8, distTo6549Str, bgcolor=color.new(color.green, 80), text_color=color.white)
+    // Distance to target
+    distTo6700 = level2 - close
+    distTo6700Str = distTo6700 > 0 ? "-" + str.tostring(math.abs(distTo6700), "#.#") : "+" + str.tostring(math.abs(distTo6700), "#.#")
+    table.cell(statusTable, 0, 8, "To 6700 Target", text_color=color.white)
+    table.cell(statusTable, 1, 8, distTo6700Str, bgcolor=color.new(color.orange, 80), text_color=color.white)
     
     // Volume Status
     volStatus = volSpike ? "🔥 SPIKE" : "Normal"
     volColor = volSpike ? color.orange : color.gray
     table.cell(statusTable, 0, 9, "Volume", text_color=color.white)
     table.cell(statusTable, 1, 9, volStatus, bgcolor=color.new(volColor, 70), text_color=color.white)
+    
+    // Holiday Context
+    table.cell(statusTable, 0, 10, "Context", text_color=color.white)
+    table.cell(statusTable, 1, 10, "Holiday Week", bgcolor=color.new(color.gray, 80), text_color=color.white)
+    
+    table.cell(statusTable, 0, 11, "Catalyst", text_color=color.white)
+    table.cell(statusTable, 1, 11, "Put Option Decay", bgcolor=color.new(color.gray, 80), text_color=color.white)
 
 // === PLOT INVISIBLE LINES FOR ALERT TRIGGERS ===
-plot(level1, "R5: 6880", color=color.new(color.aqua, 100))
-plot(level2, "R4: 6770", color=color.new(color.lime, 100))
-plot(level3, "R3: 6760", color=color.new(color.lime, 100))
-plot(level4, "R2: 6670", color=color.new(color.orange, 100))
-plot(level5, "R1: 6640 FAIL", color=color.new(color.red, 100))
-plot(level6, "KEY: 6549", color=color.new(color.green, 100))
-plot(level7, "S1: 6513", color=color.new(color.green, 100))
+plot(level1, "R2: 6750", color=color.new(color.aqua, 100))
+plot(level2, "R1: 6700", color=color.new(color.orange, 100))
+plot(level3, "PIVOT: 6600", color=color.new(color.yellow, 100))
+plot(level4, "S1: 6500", color=color.new(color.lime, 100))
+plot(level5, "S2: 6350", color=color.new(color.red, 100))

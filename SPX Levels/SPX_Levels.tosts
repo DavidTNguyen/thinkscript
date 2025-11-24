@@ -1,30 +1,30 @@
-# === SPX Trading Playbook - Levels & Scenarios ===
-# Updated: November 20, 2025
+# === SPX SpotGamma Strategy - Updated 11/24/2025 ===
 # 
-# KEY TRADING SCENARIOS:
+# CURRENT STRATEGY (11/24):
+# Lean LONG with SPX >6,600
+# - Put option decay into holiday week = tailwind for stocks
+# - Upside target: 6,700-6,750 into Wednesday night
+# - Break <6,600: Close swing longs, watch 6,500 test
+# - Longer term "wash out" level: 6,350
+# - Core position: Dec 1x2 call spread (from 11/21)
 #
-# 1. BIG GAP DOWN + FAST TOUCH 6549 ± 5
-#    - Look for stop-in bets and oversold bounce
-#    - Entry: Long after reversal confirmation
-#    - Target: First upside level = 6640
+# CONTEXT (11/21):
+# - 6,700 break opened downside plunge into OPEX + weekend
+# - Puts expensive → equity bounce potential without catalyst
+# - Playing SPY/QQQ 1x2 call flies for early Dec (right tail)
+# - 6,700 is new Risk Pivot level
 #
-# 2. SLOW DRIFT LOWER (No 6549 break)
-#    - Market stays bearish
-#    - Strategy: Short rallies toward fail area (6640)
-#
-# 3. BREAK ABOVE 6640 → 6670 → 6760
-#    - Watch volume: Needs sustained push for short covering
-#    - Entry: Long after 6640 holds as support
-#    - Target: 6760-6770, then 6880
+# KEY SG LEVELS:
+# Resistance: 6,700, 6,750
+# Pivot: 6,600 (bearish <, bullish >) **NEW KEY LEVEL**
+# Support: 6,500 (initial), 6,350 (wash out / large put strike zone)
 
 # === KEY LEVELS ===
-input level1 = 6880;  # R5 - Major resistance / Open path target
-input level2 = 6770;  # R4 - Squeeze setup zone HIGH
-input level3 = 6760;  # R3 - Squeeze setup zone LOW / Major target
-input level4 = 6670;  # R2 - Stop zone / Short-cover clusters
-input level5 = 6640;  # R1 - FAIL AREA (Needs volume to clear)
-input level6 = 6549;  # KEY BULLISH TRIGGER (± 5)
-input level7 = 6513;  # S1 - Next support / Oversold reversal zone (± 5)
+input level1 = 6750;  # R2 - Upside target HIGH (into Wed night)
+input level2 = 6700;  # R1 - Upside target LOW / Risk Pivot / Resistance
+input level3 = 6600;  # PIVOT - Bearish <, Bullish > (KEY LEVEL)
+input level4 = 6500;  # S1 - Initial support / Test level if <6600
+input level5 = 6350;  # S2 - Wash out level / Large put strike zone
 
 # Alert Settings
 input enableAlerts = yes;
@@ -35,140 +35,125 @@ input showLines = yes;
 
 # === REMOVE old cloud definitions - replace with cleaner approach ===
 
-# === LEVEL PLOTS (Single, clean set) ===
+# === LEVEL PLOTS ===
 plot L1 = if showLines then level1 else Double.NaN;
 L1.SetDefaultColor(Color.CYAN);
-L1.SetLineWeight(2);
+L1.SetLineWeight(3);
 L1.SetStyle(Curve.FIRM);
 L1.HideBubble();
 L1.HideTitle();
 
 plot L2 = if showLines then level2 else Double.NaN;
-L2.SetDefaultColor(Color.LIGHT_GREEN);
-L2.SetLineWeight(2);
+L2.SetDefaultColor(Color.ORANGE);
+L2.SetLineWeight(4);
 L2.SetStyle(Curve.FIRM);
 L2.HideBubble();
 L2.HideTitle();
 
 plot L3 = if showLines then level3 else Double.NaN;
-L3.SetDefaultColor(Color.LIGHT_GREEN);
-L3.SetLineWeight(2);
+L3.SetDefaultColor(Color.YELLOW);
+L3.SetLineWeight(5);
 L3.SetStyle(Curve.FIRM);
 L3.HideBubble();
 L3.HideTitle();
 
 plot L4 = if showLines then level4 else Double.NaN;
-L4.SetDefaultColor(Color.ORANGE);
-L4.SetLineWeight(2);
+L4.SetDefaultColor(Color.LIGHT_GREEN);
+L4.SetLineWeight(3);
 L4.SetStyle(Curve.FIRM);
 L4.HideBubble();
 L4.HideTitle();
 
 plot L5 = if showLines then level5 else Double.NaN;
 L5.SetDefaultColor(Color.RED);
-L5.SetLineWeight(2);
+L5.SetLineWeight(4);
 L5.SetStyle(Curve.FIRM);
 L5.HideBubble();
 L5.HideTitle();
 
-plot L6 = if showLines then level6 else Double.NaN;
-L6.SetDefaultColor(Color.GREEN);
-L6.SetLineWeight(2);
-L6.SetStyle(Curve.SHORT_DASH);
-L6.HideBubble();
-L6.HideTitle();
-
-plot L7 = if showLines then level7 else Double.NaN;
-L7.SetDefaultColor(Color.DARK_GREEN);
-L7.SetLineWeight(2);
-L7.SetStyle(Curve.SHORT_DASH);
-L7.HideBubble();
-L7.HideTitle();
-
 # === OPTIONAL CLOUDS ===
 AddCloud(if showClouds then L1 else Double.NaN, if showClouds then L1 + 2 else Double.NaN, Color.CYAN, Color.CYAN);
-AddCloud(if showClouds then L2 else Double.NaN, if showClouds then L2 + 2 else Double.NaN, Color.GREEN, Color.GREEN);
-AddCloud(if showClouds then L3 else Double.NaN, if showClouds then L3 + 2 else Double.NaN, Color.GREEN, Color.GREEN);
-AddCloud(if showClouds then L4 else Double.NaN, if showClouds then L4 + 2 else Double.NaN, Color.ORANGE, Color.ORANGE);
+AddCloud(if showClouds then L2 else Double.NaN, if showClouds then L2 + 2 else Double.NaN, Color.ORANGE, Color.ORANGE);
+AddCloud(if showClouds then L3 else Double.NaN, if showClouds then L3 + 2 else Double.NaN, Color.YELLOW, Color.YELLOW);
+AddCloud(if showClouds then L4 else Double.NaN, if showClouds then L4 + 2 else Double.NaN, Color.GREEN, Color.GREEN);
 AddCloud(if showClouds then L5 else Double.NaN, if showClouds then L5 + 2 else Double.NaN, Color.RED, Color.RED);
-AddCloud(if showClouds then L6 else Double.NaN, if showClouds then L6 + 2 else Double.NaN, Color.GREEN, Color.GREEN);
-AddCloud(if showClouds then L7 else Double.NaN, if showClouds then L7 + 2 else Double.NaN, Color.GREEN, Color.GREEN);
 
 # Fixed bubble logic - show only on last bar
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
 
 # Position detection
-def above6880 = close > level1;
-def at6880 = close >= level1 - 5 and close <= level1 + 5;
-def above6770 = close > level2;
-def in6760_6770 = close >= level3 and close <= level2;
-def above6670 = close > level4;
-def above6640 = close > level5;
-def at6640 = close >= level5 - 5 and close <= level5 + 5;
-def below6640 = close < level5;
-def inNeutral = close >= level7 and close < level5;
-def at6549 = close >= level6 - alertSensitivity and close <= level6 + alertSensitivity;
-def below6549 = close < level6;
-def above6513 = close >= level7;
-def at6513 = close >= level7 - alertSensitivity and close <= level7 + alertSensitivity;
+def above6750 = close > level1;
+def at6750 = close >= level1 - 5 and close <= level1 + 5;
+def above6700 = close > level2;
+def at6700 = close >= level2 - 5 and close <= level2 + 5;
+def in6700_6750 = close >= level2 and close <= level1;
+def above6600 = close > level3;  # BULLISH
+def at6600 = close >= level3 - 5 and close <= level3 + 5;  # PIVOT
+def below6600 = close < level3;  # BEARISH
+def in6500_6600 = close >= level4 and close < level3;
+def at6500 = close >= level4 - 5 and close <= level4 + 5;
+def below6500 = close < level4;
+def at6350 = close >= level5 - 10 and close <= level5 + 10;
+def below6350 = close < level5;
 
 def volSpike = volume > Average(volume, 20) * 1.5;
 
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, "R5: 6880", Color.CYAN, yes);
-AddChartBubble(isLastBar, level2, "R4: 6770", Color.LIGHT_GREEN, yes);
-AddChartBubble(isLastBar, level3, "R3: 6760", Color.LIGHT_GREEN, yes);
-AddChartBubble(isLastBar, level4, "R2: 6670", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level5, "R1: 6640", Color.RED, yes);
-AddChartBubble(isLastBar, level6, "KEY: 6549", Color.GREEN, no);
-AddChartBubble(isLastBar, level7, "S1: 6513", Color.DARK_GREEN, no);
+AddChartBubble(isLastBar, level1, "R2: 6750 Target Wed", Color.CYAN, yes);
+AddChartBubble(isLastBar, level2, "R1: 6700 Risk Pivot", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level3, "PIVOT: 6600 KEY (Bearish<, >Bullish)", Color.YELLOW, yes);
+AddChartBubble(isLastBar, level4, "S1: 6500 Initial Support", Color.LIGHT_GREEN, no);
+AddChartBubble(isLastBar, level5, "S2: 6350 Wash Out", Color.RED, no);
 
-# === TOUCH LOGIC (Central only) ===
-# Remove prior inBand*/enterBand* definitions
-def touch6640 = low <= level5 and high >= level5;
-def firstTouch6640Up = touch6640 and close > level5 and !touch6640[1];
-def firstTouch6640Down = touch6640 and close < level5 and !touch6640[1];
+# === TOUCH LOGIC ===
+def touch6750 = low <= level1 and high >= level1;
+def firstTouch6750Up = touch6750 and close > level1 and !touch6750[1];
 
-def touch6670 = low <= level4 and high >= level4;
-def firstTouch6670Up = touch6670 and close > level4 and !touch6670[1];
+def touch6700 = low <= level2 and high >= level2;
+def firstTouch6700Up = touch6700 and close > level2 and !touch6700[1];
+def firstTouch6700Down = touch6700 and close < level2 and !touch6700[1];
 
-def touch6760 = low <= level3 and high >= level3;
-def firstTouch6760Up = touch6760 and close > level3 and !touch6760[1];
+def touch6600 = low <= level3 and high >= level3;
+def firstTouch6600Up = touch6600 and close > level3 and !touch6600[1];
+def firstTouch6600Down = touch6600 and close < level3 and !touch6600[1];
 
-def touch6770 = low <= level2 and high >= level2;
-def firstTouch6770Up = touch6770 and close > level2 and !touch6770[1];
+def touch6500 = low <= level4 and high >= level4;
+def firstTouch6500Down = touch6500 and close < level4 and !touch6500[1];
 
-def touch6880 = low <= level1 and high >= level1;
-def firstTouch6880Up = touch6880 and close > level1 and !touch6880[1];
+def touch6350 = low <= level5 and high >= level5;
+def firstTouch6350Down = touch6350 and close < level5 and !touch6350[1];
 
-def touch6549 = low <= level6 and high >= level6;
-def firstTouch6549Down = touch6549 and close < level6 and !touch6549[1];
-def firstTouch6549Up = touch6549 and close > level6 and !touch6549[1];
+# === ALERTS ===
+# PIVOT LEVEL 6600 - KEY ALERTS
+Alert(enableAlerts and firstTouch6600Up, "SPX ☝️ 6600 PIVOT UP - BULLISH! Lean long!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6600Down, "SPX 👇 6600 PIVOT DOWN - BEARISH! Close longs!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6600, "SPX at 6600 PIVOT - KEY LEVEL!", Alert.BAR, Sound.Chimes);
 
-def touch6513 = low <= level7 and high >= level7;
-def firstTouch6513Down = touch6513 and close < level7 and !touch6513[1];
+# RESISTANCE ALERTS
+Alert(enableAlerts and firstTouch6700Up, "SPX ☝️ 6700 Risk Pivot - Watch resistance!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6700Down, "SPX 👇 6700 Break - Risk off!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and firstTouch6750Up, "SPX ☝️ 6750 TARGET HIT (Wed)!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and in6700_6750, "SPX in 6700-6750 TARGET ZONE!", Alert.BAR, Sound.Chimes);
 
-# === ALERTS (Central touch only) ===
-Alert(enableAlerts and firstTouch6640Up, "SPX ☝️ 6640 TOUCH (Fail area break)", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6640Down, "SPX 👇 6640 TOUCH (Back in fail area)", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and firstTouch6670Up, "SPX ☝️ 6670 TOUCH (Short-cover zone)", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6760Up, "SPX ☝️ 6760 TOUCH (Squeeze setup)", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6770Up, "SPX ☝️ 6770 TOUCH (Squeeze high)", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6880Up, "SPX ☝️ 6880 TOUCH (Major resistance)", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6549Down, "SPX 👇 6549 TOUCH (Key bearish trigger)", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and firstTouch6549Up, "SPX ☝️ 6549 TOUCH (Bounce attempt)", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6513Down, "SPX 👇 6513 TOUCH (Oversold zone)", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and volSpike and firstTouch6640Up, "SPX ☝️ 6640 STRONG VOLUME TOUCH", Alert.BAR, Sound.Ring);
+# SUPPORT ALERTS
+Alert(enableAlerts and firstTouch6500Down, "SPX 👇 6500 SUPPORT TEST!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6500, "SPX at 6500 - Initial support!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and firstTouch6350Down, "SPX 👇 6350 WASH OUT LEVEL!", Alert.BAR, Sound.Bell);
+
+# STRATEGY ALERTS
+Alert(enableAlerts and above6600 and volSpike, "SPX >6600 + VOLUME - Holiday put decay!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and below6600 and firstTouch6600Down, "SPX <6600 - CLOSE SWING LONGS!", Alert.BAR, Sound.Bell);
 
 # === STATUS LABELS ===
 AddLabel(showLabels, "SPX: " + Round(close, 2), Color.CYAN);
-AddLabel(showLabels and above6770, "☝️ Open path to 6880!", Color.CYAN);
-AddLabel(showLabels and in6760_6770, "SQUEEZE ZONE 6760-6770", Color.LIGHT_GREEN);
-AddLabel(showLabels and above6670 and close < level3, "Target 6760-6770", Color.ORANGE);
-AddLabel(showLabels and above6640 and close < level4, "Watch 6670 stops", Color.YELLOW);
-AddLabel(showLabels and at6640, "⚠️ 6640 FAIL - Need volume!", Color.RED);
-AddLabel(showLabels and inNeutral, "NEUTRAL - Short rallies", Color.GRAY);
-AddLabel(showLabels and at6549, "🔑 6549 TRIGGER!", Color.GREEN);
-AddLabel(showLabels and volSpike and at6549, "🔥 SCENARIO 1: Fast touch!", Color.GREEN);
-AddLabel(showLabels and below6640 and !at6549, "📉 SCENARIO 2: Slow drift", Color.RED);
-AddLabel(showLabels and above6640, "📈 SCENARIO 3: Bull path", Color.GREEN);
+AddLabel(showLabels and above6750, "☝️ Above 6750 target!", Color.CYAN);
+AddLabel(showLabels and in6700_6750, "TARGET ZONE 6700-6750", Color.LIGHT_GREEN);
+AddLabel(showLabels and above6700, "Above 6700 Risk Pivot", Color.ORANGE);
+AddLabel(showLabels and above6600 and close < level2, "📈 BULLISH >6600 - Lean long!", Color.GREEN);
+AddLabel(showLabels and at6600, "⚡ 6600 PIVOT - KEY LEVEL!", Color.YELLOW);
+AddLabel(showLabels and below6600, "📉 BEARISH <6600 - Close longs!", Color.RED);
+AddLabel(showLabels and in6500_6600, "6500-6600 Range", Color.GRAY);
+AddLabel(showLabels and at6500, "⚠️ 6500 Support test", Color.ORANGE);
+AddLabel(showLabels and below6500, "⚠️ Watch 6350 wash out", Color.RED);
+AddLabel(showLabels and above6600, "Strategy: Holiday put decay = Long bias", Color.GREEN);
+AddLabel(showLabels and below6600, "Strategy: Close swing longs per SG", Color.RED);
