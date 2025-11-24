@@ -42,78 +42,74 @@ input showLabels = yes;
 input showClouds = yes;
 input showLines = yes;
 
+# === ANCHORED VWAP SETTINGS ===
+input anchorDate = 20251123;  # YYYYMMDD format (Sunday night)
+input anchorTime = 1700;  # 5:00 PM CST (Sunday night open)
+input showVWAP = yes;
+input vwapLineWeight = 2;
+
 # === REMOVE old cloud definitions - replace with cleaner approach ===
 
 # === LEVEL PLOTS ===
-plot L1 = if showLines then level1 else Double.NaN;
+plot L1 = level1;
 L1.SetDefaultColor(Color.CYAN);
-L1.SetLineWeight(2);
+L1.SetLineWeight(3);
 L1.SetStyle(Curve.SHORT_DASH);
-L1.HideBubble();
-L1.HideTitle();
+L1.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
-plot L2 = if showLines then level2 else Double.NaN;
+plot L2 = level2;
 L2.SetDefaultColor(Color.MAGENTA);
 L2.SetLineWeight(3);
 L2.SetStyle(Curve.FIRM);
-L2.HideBubble();
-L2.HideTitle();
+L2.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
-plot L3 = if showLines then level3 else Double.NaN;
+plot L3 = level3;
 L3.SetDefaultColor(Color.PLUM);
 L3.SetLineWeight(3);
 L3.SetStyle(Curve.FIRM);
-L3.HideBubble();
-L3.HideTitle();
+L3.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
-plot L4 = if showLines then level4 else Double.NaN;
+plot L4 = level4;
 L4.SetDefaultColor(Color.DARK_ORANGE);
 L4.SetLineWeight(4);
 L4.SetStyle(Curve.FIRM);
-L4.HideBubble();
-L4.HideTitle();
+L4.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
-plot L5 = if showLines then level5 else Double.NaN;
+plot L5 = level5;
 L5.SetDefaultColor(Color.ORANGE);
 L5.SetLineWeight(3);
 L5.SetStyle(Curve.FIRM);
-L5.HideBubble();
-L5.HideTitle();
+L5.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
-plot L6 = if showLines then level6 else Double.NaN;
+plot L6 = level6;
 L6.SetDefaultColor(Color.YELLOW);
 L6.SetLineWeight(3);
 L6.SetStyle(Curve.FIRM);
-L6.HideBubble();
-L6.HideTitle();
+L6.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
-plot L7 = if showLines then level7 else Double.NaN;
+plot L7 = level7;
 L7.SetDefaultColor(Color.GREEN);
 L7.SetLineWeight(5);
 L7.SetStyle(Curve.FIRM);
-L7.HideBubble();
-L7.HideTitle();
+L7.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
-plot L8 = if showLines then level8 else Double.NaN;
+plot L8 = level8;
 L8.SetDefaultColor(Color.RED);
 L8.SetLineWeight(5);
 L8.SetStyle(Curve.FIRM);
-L8.HideBubble();
-L8.HideTitle();
+L8.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
-plot L9 = if showLines then level9 else Double.NaN;
+plot L9 = level9;
 L9.SetDefaultColor(Color.DARK_RED);
-L9.SetLineWeight(2);
+L9.SetLineWeight(3);
 L9.SetStyle(Curve.SHORT_DASH);
-L9.HideBubble();
-L9.HideTitle();
+L9.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
-plot L10 = if showLines then level10 else Double.NaN;
+plot L10 = level10;
 L10.SetDefaultColor(Color.DARK_RED);
-L10.SetLineWeight(2);
+L10.SetLineWeight(3);
 L10.SetStyle(Curve.SHORT_DASH);
-L10.HideBubble();
-L10.HideTitle();
+L10.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 
 # === OPTIONAL CLOUDS ===
 AddCloud(if showClouds then L1 else Double.NaN, if showClouds then L1 + 2 else Double.NaN, Color.CYAN, Color.CYAN);
@@ -129,6 +125,17 @@ AddCloud(if showClouds then L10 else Double.NaN, if showClouds then L10 + 2 else
 
 # Fixed bubble logic - show only on last bar
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
+
+# === ANCHORED VWAP CALCULATION ===
+def postAnchorDate = if GetYYYYMMDD() >= anchorDate then 1 else 0;
+def postAnchorTime = if SecondsTillTime(anchorTime) == 0 then 1 else if GetYYYYMMDD() < anchorDate then 0 else postAnchorTime[1];
+
+plot anchoredVWAP = if showVWAP then TotalSum(if postAnchorDate and postAnchorTime then ((high + low + close) / 3) * volume else 0) / TotalSum(if postAnchorDate and postAnchorTime then volume else 0) else Double.NaN;
+anchoredVWAP.SetStyle(Curve.FIRM);
+anchoredVWAP.SetLineWeight(vwapLineWeight);
+anchoredVWAP.SetDefaultColor(Color.WHITE);
+
+AddChartBubble(isLastBar and showVWAP, anchoredVWAP, "Sunday 5pm VWAP", Color.WHITE, yes);
 
 # Position detection
 def above6920 = close > level1;
@@ -155,16 +162,16 @@ def below6060 = close < level10;
 def volSpike = volume > Average(volume, 20) * 1.5;
 
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, "Bull Max: 6920 (Low prob)", Color.CYAN, yes);
-AddChartBubble(isLastBar, level2, "HF Bear Shorts: 6880 (Sticky EoY)", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level3, "2nd Bear Star: 6825 (O+P)", Color.PLUM, yes);
-AddChartBubble(isLastBar, level4, "Major Bear: 6765 (BD->6520)", Color.DARK_ORANGE, yes);
-AddChartBubble(isLastBar, level5, "Late Hedge: 6720 (Cover if breach)", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level6, "Hedge Unwind: 6670", Color.YELLOW, yes);
-AddChartBubble(isLastBar, level7, "Bull Entry: 6600 (Xmas Rally)", Color.GREEN, no);
-AddChartBubble(isLastBar, level8, "STOP CLUSTER: 6520 *** CRITICAL ***", Color.RED, no);
-AddChartBubble(isLastBar, level9, "Bear Target: 6300 (Flush)", Color.DARK_RED, no);
-AddChartBubble(isLastBar, level10, "Bear Target: 6060 (Flush)", Color.DARK_RED, no);
+AddChartBubble(isLastBar, level1, "6920", Color.CYAN, yes);
+AddChartBubble(isLastBar, level2, "6880", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level3, "6825", Color.PLUM, yes);
+AddChartBubble(isLastBar, level4, "6765", Color.DARK_ORANGE, yes);
+AddChartBubble(isLastBar, level5, "6720", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level6, "6670", Color.YELLOW, yes);
+AddChartBubble(isLastBar, level7, "6600", Color.GREEN, no);
+AddChartBubble(isLastBar, level8, "6520", Color.RED, no);
+AddChartBubble(isLastBar, level9, "6300", Color.DARK_RED, no);
+AddChartBubble(isLastBar, level10, "6060", Color.DARK_RED, no);
 
 # === TOUCH LOGIC ===
 def touch6920 = low <= level1 and high >= level1;
@@ -241,21 +248,3 @@ Alert(enableAlerts and at6520, "SPX at 6520 - *** STOP LOSS CLUSTER *** CRITICAL
 # VOLUME + POSITION ALERTS
 Alert(enableAlerts and above6600 and volSpike, "SPX >6600 + VOLUME - Christmas rally active!", Alert.BAR, Sound.Ring);
 Alert(enableAlerts and below6520, "SPX <6520 - FLUSH TO 6300-6060 ZONE!", Alert.BAR, Sound.Bell);
-
-# === STATUS LABELS ===
-AddLabel(showLabels, "SPX: " + Round(close, 2), Color.CYAN);
-AddLabel(showLabels and above6920, "↑ Above 6920 BULL MAX!", Color.CYAN);
-AddLabel(showLabels and above6880 and close < level1, "Above 6880 HF Bear Shorts", Color.MAGENTA);
-AddLabel(showLabels and above6825 and close < level2, "Above 6825 - 2nd Bear Star", Color.PLUM);
-AddLabel(showLabels and above6765 and close < level3, "Above 6765 - Major Bear Star", Color.DARK_ORANGE);
-AddLabel(showLabels and above6720 and close < level4, "Above 6720 - Late Hedgers covering", Color.ORANGE);
-AddLabel(showLabels and above6670 and close < level5, "Hedge Unwind Zone 6670-6720", Color.YELLOW);
-AddLabel(showLabels and above6600 and close < level6, "Christmas Rally Zone >6600", Color.GREEN);
-AddLabel(showLabels and at6600, "⚡ 6600 BULL ENTRY - PIVOT!", Color.GREEN);
-AddLabel(showLabels and below6600 and above6520, "Below Bull Entry - Watch 6520!", Color.ORANGE);
-AddLabel(showLabels and at6520, "⚠️ 6520 STOP CLUSTER - CRITICAL!", Color.RED);
-AddLabel(showLabels and below6520, "⚠️ FLUSH MODE - Target 6300-6060!", Color.RED);
-AddLabel(showLabels and in6300_6060, "In Flush Zone 6300-6060", Color.DARK_RED);
-AddLabel(showLabels and above6600, "Strike Structure: Christmas rally hopefuls", Color.GREEN);
-AddLabel(showLabels and above6765, "Bear shorts defending (targeting 6520 break)", Color.DARK_ORANGE);
-AddLabel(showLabels and below6600, "Below bull entry - 6520 stop cluster key", Color.RED);

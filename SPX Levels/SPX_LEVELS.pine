@@ -4,37 +4,37 @@ indicator("SPX Levels: Strike-Based Positioning", overlay=true, max_lines_count=
 // === SPX Strike-Based Positioning - Updated 11/24/2025 ===
 // 
 // MARKET STRUCTURE (Strike-Based Positioning):
-// Bull Max Target: 6920 (Low probability - needs all bear strikes cleared + dovish Fed)
-// Hedge Fund Bear Shorts: 6880 (Sticky until EoY)
-// 2nd Largest Bear Star: 6825 (Offense + Protection)
-// Major Bear Star: 6765 (Breakdown players targeting 6520 fail)
+// 🐂 Max Target: 6920 (Low probability - needs all 🐻 strikes cleared + dovish Fed)
+// Hedge Fund 🐻 Shorts: 6880 (Sticky until EoY)
+// 2nd Largest 🐻 Star: 6825 (Offense + Protection)
+// Major 🐻 Star: 6765 (Breakdown players targeting 6520 fail)
 // Late Hedgers: 6720 (will cover if breached)
 // First Hedge Unwind: 6670
-// Bull Entry Zone: 6600 (Current Christmas rally hopefuls)
+// 🐂 Entry Zone: 6600 (Current 🎄 rally hopefuls)
 // STOP LOSS CLUSTER: 6520 *** BREAK UNLEASHES FAST DROP ***
-// Bear Targets if 6520 breaks: 6300-6060 (Flush zone)
+// 🐻 Targets if 6520 breaks: 6300-6060 (Flush zone)
 //
 // CURRENT CONTEXT:
 // Market structure defined by strike positioning
 // 6520 = Critical stop loss cluster
-// Above 6600 = Christmas rally hopefuls in control
+// Above 6600 = 🎄 rally hopefuls in control
 // 6670-6720 = Hedge unwind zone
-// 6765+ = Bear shorts defending (targeting 6520 break)
+// 6765+ = 🐻 shorts defending (targeting 6520 break)
 //
 // KEY STRIKE LEVELS:
 // Resistance: 6670, 6720, 6765, 6825, 6880, 6920
-// Support: 6600 (bull entry), 6520 (STOP CLUSTER)
+// Support: 6600 (🐂 entry), 6520 (STOP CLUSTER)
 // Flush Zone: 6300-6060 (if 6520 breaks)
 
 // === INPUTS ===
 // Resistance Levels
-level1 = input.float(6920, "R6 - Bull Max Target (Low probability)", group="🔴 Resistance Levels")
+level1 = input.float(6920, "R6 - 🐂 Max Target (Low probability)", group="🔴 Resistance Levels")
 level1_thickness = input.int(2, "R6 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
-level2 = input.float(6880, "R5 - Hedge Fund Bear Shorts (Sticky EoY)", group="🔴 Resistance Levels")
+level2 = input.float(6880, "R5 - Hedge Fund 🐻 Shorts (Sticky EoY)", group="🔴 Resistance Levels")
 level2_thickness = input.int(3, "R5 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
-level3 = input.float(6825, "R4 - 2nd Largest Bear Star (Offense + Protection)", group="🔴 Resistance Levels")
+level3 = input.float(6825, "R4 - 2nd Largest 🐻 Star (Offense + Protection)", group="🔴 Resistance Levels")
 level3_thickness = input.int(3, "R4 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
-level4 = input.float(6765, "R3 - Major Bear Star (Breakdown players)", group="🔴 Resistance Levels")
+level4 = input.float(6765, "R3 - Major 🐻 Star (Breakdown players)", group="🔴 Resistance Levels")
 level4_thickness = input.int(4, "R3 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
 level5 = input.float(6720, "R2 - Late Hedgers (will cover if breached)", group="🔴 Resistance Levels")
 level5_thickness = input.int(3, "R2 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
@@ -42,15 +42,15 @@ level6 = input.float(6670, "R1 - First Hedge Unwind Trigger", group="🔴 Resist
 level6_thickness = input.int(3, "R1 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
 
 // Pivot Level
-level7 = input.float(6600, "PIVOT - Bull Entry Zone (Christmas rally)", group="⚡ Pivot")
+level7 = input.float(6600, "PIVOT - 🐂 Entry Zone (🎄 rally)", group="⚡ Pivot")
 level7_thickness = input.int(5, "PIVOT Line Thickness", minval=1, maxval=10, group="⚡ Pivot")
 
 // Support Levels
 level8 = input.float(6520, "S1 - STOP LOSS CLUSTER *** CRITICAL ***", group="🟢 Support Levels")
 level8_thickness = input.int(5, "S1 Line Thickness", minval=1, maxval=10, group="🟢 Support Levels")
-level9 = input.float(6300, "S2 - Bear Target HIGH (flush zone)", group="🟢 Support Levels")
+level9 = input.float(6300, "S2 - 🐻 Target HIGH (flush zone)", group="🟢 Support Levels")
 level9_thickness = input.int(2, "S2 Line Thickness", minval=1, maxval=10, group="🟢 Support Levels")
-level10 = input.float(6060, "S3 - Bear Target LOW (flush zone)", group="🟢 Support Levels")
+level10 = input.float(6060, "S3 - 🐻 Target LOW (flush zone)", group="🟢 Support Levels")
 level10_thickness = input.int(2, "S3 Line Thickness", minval=1, maxval=10, group="🟢 Support Levels")
 
 // Alert Settings
@@ -74,16 +74,16 @@ var line l9 = na
 var line l10 = na
 
 if showLines and barstate.islast
-    // R6 - 6920 (Bull Max - Cyan, dashed)
+    // R6 - 6920 (🐂 Max - Cyan, dashed)
     l1 := line.new(bar_index - 100, level1, bar_index + 20, level1, color=color.aqua, width=level1_thickness, style=line.style_dashed)
     
-    // R5 - 6880 (HF Bear Shorts - Magenta)
+    // R5 - 6880 (HF 🐻 Shorts - Magenta)
     l2 := line.new(bar_index - 100, level2, bar_index + 20, level2, color=color.fuchsia, width=level2_thickness, style=line.style_solid)
     
-    // R4 - 6825 (2nd Bear Star - Plum)
+    // R4 - 6825 (2nd 🐻 Star - Plum)
     l3 := line.new(bar_index - 100, level3, bar_index + 20, level3, color=color.purple, width=level3_thickness, style=line.style_solid)
     
-    // R3 - 6765 (Major Bear Star - Dark Orange)
+    // R3 - 6765 (Major 🐻 Star - Dark Orange)
     l4 := line.new(bar_index - 100, level4, bar_index + 20, level4, color=color.new(color.orange, 0), width=level4_thickness, style=line.style_solid)
     
     // R2 - 6720 (Late Hedgers - Orange)
@@ -92,30 +92,30 @@ if showLines and barstate.islast
     // R1 - 6670 (Hedge Unwind - Yellow)
     l6 := line.new(bar_index - 100, level6, bar_index + 20, level6, color=color.yellow, width=level6_thickness, style=line.style_solid)
     
-    // PIVOT - 6600 (Bull Entry - Green)
+    // PIVOT - 6600 (🐂 Entry - Green)
     l7 := line.new(bar_index - 100, level7, bar_index + 20, level7, color=color.lime, width=level7_thickness, style=line.style_solid)
     
     // S1 - 6520 (STOP CLUSTER - Red, thick)
     l8 := line.new(bar_index - 100, level8, bar_index + 20, level8, color=color.red, width=level8_thickness, style=line.style_solid)
     
-    // S2 - 6300 (Bear Target - Dark Red, dashed)
+    // S2 - 6300 (🐻 Target - Dark Red, dashed)
     l9 := line.new(bar_index - 100, level9, bar_index + 20, level9, color=color.maroon, width=level9_thickness, style=line.style_dashed)
     
-    // S3 - 6060 (Bear Target - Dark Red, dashed)
+    // S3 - 6060 (🐻 Target - Dark Red, dashed)
     l10 := line.new(bar_index - 100, level10, bar_index + 20, level10, color=color.maroon, width=level10_thickness, style=line.style_dashed)
 
 // === LABELS ===
 if barstate.islast and showLabels
-    label.new(bar_index, level1, "Bull Max: 6920 (Low prob)", style=label.style_label_left, color=color.aqua, textcolor=color.white)
-    label.new(bar_index, level2, "HF Bear Shorts: 6880 (Sticky EoY)", style=label.style_label_left, color=color.fuchsia, textcolor=color.white)
-    label.new(bar_index, level3, "2nd Bear Star: 6825 (O+P)", style=label.style_label_left, color=color.purple, textcolor=color.white)
-    label.new(bar_index, level4, "Major Bear: 6765 (BD->6520)", style=label.style_label_left, color=color.new(color.orange, 0), textcolor=color.white)
+    label.new(bar_index, level1, "🐂 Max: 6920 (Low prob)", style=label.style_label_left, color=color.aqua, textcolor=color.white)
+    label.new(bar_index, level2, "HF 🐻 Shorts: 6880 (Sticky EoY)", style=label.style_label_left, color=color.fuchsia, textcolor=color.white)
+    label.new(bar_index, level3, "2nd 🐻 Star: 6825 (O+P)", style=label.style_label_left, color=color.purple, textcolor=color.white)
+    label.new(bar_index, level4, "Major 🐻: 6765 (BD->6520)", style=label.style_label_left, color=color.new(color.orange, 0), textcolor=color.white)
     label.new(bar_index, level5, "Late Hedge: 6720 (Cover)", style=label.style_label_left, color=color.orange, textcolor=color.white)
     label.new(bar_index, level6, "Hedge Unwind: 6670", style=label.style_label_left, color=color.yellow, textcolor=color.black)
-    label.new(bar_index, level7, "Bull Entry: 6600 (Xmas Rally)", style=label.style_label_center, color=color.lime, textcolor=color.black, size=size.large)
+    label.new(bar_index, level7, "🐂 Entry: 6600 (🎄 Rally)", style=label.style_label_center, color=color.lime, textcolor=color.black, size=size.large)
     label.new(bar_index, level8, "STOP CLUSTER: 6520 *** CRITICAL ***", style=label.style_label_right, color=color.red, textcolor=color.white, size=size.large)
-    label.new(bar_index, level9, "Bear Target: 6300 (Flush)", style=label.style_label_right, color=color.maroon, textcolor=color.white)
-    label.new(bar_index, level10, "Bear Target: 6060 (Flush)", style=label.style_label_right, color=color.maroon, textcolor=color.white)
+    label.new(bar_index, level9, "🐻 Target: 6300 (Flush)", style=label.style_label_right, color=color.maroon, textcolor=color.white)
+    label.new(bar_index, level10, "🐻 Target: 6060 (Flush)", style=label.style_label_right, color=color.maroon, textcolor=color.white)
 
 // === POSITION DETECTION ===
 above6920 = close > level1
@@ -130,9 +130,9 @@ above6720 = close > level5
 at6720 = close >= level5 - 5 and close <= level5 + 5
 above6670 = close > level6
 at6670 = close >= level6 - 5 and close <= level6 + 5
-above6600 = close > level7  // BULLISH - Christmas rally zone
+above6600 = close > level7  // BULLISH - 🎄 rally zone
 at6600 = close >= level7 - 5 and close <= level7 + 5  // PIVOT
-below6600 = close < level7  // BEARISH - Below bull entry
+below6600 = close < level7  // BEARISH - Below 🐂 entry
 above6520 = close > level8  // Above stop cluster
 at6520 = close >= level8 - 10 and close <= level8 + 10  // STOP CLUSTER
 below6520 = close < level8  // FAST DROP UNLEASHED
@@ -144,24 +144,24 @@ volSpike = volume > ta.sma(volume, 20) * 1.5
 
 // === ALERT CONDITIONS ===
 
-// BULL MAX TARGET
-alertcondition(ta.crossover(close, level1), "6920 BULL MAX", "SPX UP 6920 - Bull Max Target hit! Low probability!")
-alertcondition(at6920, "At 6920", "SPX at 6920 - Bull max target!")
+// 🐂 MAX TARGET
+alertcondition(ta.crossover(close, level1), "6920 🐂 MAX", "SPX UP 6920 - 🐂 Max Target hit! Low probability!")
+alertcondition(at6920, "At 6920", "SPX at 6920 - 🐂 max target!")
 
-// HEDGE FUND BEAR SHORTS
-alertcondition(ta.crossover(close, level2), "6880 HF SHORTS BREACH", "SPX UP 6880 - HF Bear Shorts breached!")
-alertcondition(ta.crossunder(close, level2), "6880 HF SHORTS DEFEND", "SPX DOWN 6880 - HF Bear Shorts defending!")
-alertcondition(at6880, "At 6880", "SPX at 6880 - HF Bear Shorts (Sticky EoY)")
+// HEDGE FUND 🐻 SHORTS
+alertcondition(ta.crossover(close, level2), "6880 HF SHORTS BREACH", "SPX UP 6880 - HF 🐻 Shorts breached!")
+alertcondition(ta.crossunder(close, level2), "6880 HF SHORTS DEFEND", "SPX DOWN 6880 - HF 🐻 Shorts defending!")
+alertcondition(at6880, "At 6880", "SPX at 6880 - HF 🐻 Shorts (Sticky EoY)")
 
-// 2ND LARGEST BEAR STAR
-alertcondition(ta.crossover(close, level3), "6825 2ND BEAR BREACH", "SPX UP 6825 - 2nd Bear Star breached!")
-alertcondition(ta.crossunder(close, level3), "6825 2ND BEAR DEFEND", "SPX DOWN 6825 - 2nd Bear Star defending!")
-alertcondition(at6825, "At 6825", "SPX at 6825 - 2nd Largest Bear Star!")
+// 2ND LARGEST 🐻 STAR
+alertcondition(ta.crossover(close, level3), "6825 2ND 🐻 BREACH", "SPX UP 6825 - 2nd 🐻 Star breached!")
+alertcondition(ta.crossunder(close, level3), "6825 2ND 🐻 DEFEND", "SPX DOWN 6825 - 2nd 🐻 Star defending!")
+alertcondition(at6825, "At 6825", "SPX at 6825 - 2nd Largest 🐻 Star!")
 
-// MAJOR BEAR STAR - BREAKDOWN PLAYERS
-alertcondition(ta.crossover(close, level4), "6765 MAJOR BEAR BREACH", "SPX UP 6765 - Major Bear Star breached!")
+// MAJOR 🐻 STAR - BREAKDOWN PLAYERS
+alertcondition(ta.crossover(close, level4), "6765 MAJOR 🐻 BREACH", "SPX UP 6765 - Major 🐻 Star breached!")
 alertcondition(ta.crossunder(close, level4), "6765 BREAKDOWN DEFEND", "SPX DOWN 6765 - Breakdown players defending!")
-alertcondition(at6765, "At 6765", "SPX at 6765 - Major Bear Star (targeting 6520)!")
+alertcondition(at6765, "At 6765", "SPX at 6765 - Major 🐻 Star (targeting 6520)!")
 
 // LATE HEDGERS
 alertcondition(ta.crossover(close, level5), "6720 HEDGERS COVER", "SPX UP 6720 - Late Hedgers covering!")
@@ -173,10 +173,10 @@ alertcondition(ta.crossover(close, level6), "6670 HEDGE UNWIND", "SPX UP 6670 - 
 alertcondition(ta.crossunder(close, level6), "6670 UNWIND REJECT", "SPX DOWN 6670 - Hedge Unwind rejected!")
 alertcondition(at6670, "At 6670", "SPX at 6670 - First Hedge Unwind!")
 
-// BULL ENTRY ZONE - PIVOT
-alertcondition(ta.crossover(close, level7), "6600 CHRISTMAS RALLY", "SPX UP 6600 - Christmas rally zone! Bull entry!")
-alertcondition(ta.crossunder(close, level7), "6600 BULL FAIL", "SPX DOWN 6600 - Bull entry failed!")
-alertcondition(at6600, "At 6600 PIVOT", "SPX at 6600 - BULL ENTRY ZONE!")
+// 🐂 ENTRY ZONE - PIVOT
+alertcondition(ta.crossover(close, level7), "6600 🎄 RALLY", "SPX UP 6600 - 🎄 rally zone! 🐂 entry!")
+alertcondition(ta.crossunder(close, level7), "6600 🐂 FAIL", "SPX DOWN 6600 - 🐂 entry failed!")
+alertcondition(at6600, "At 6600 PIVOT", "SPX at 6600 - 🐂 ENTRY ZONE!")
 
 // STOP LOSS CLUSTER - CRITICAL
 alertcondition(ta.crossunder(close, level8), "6520 STOP CLUSTER BREACH", "SPX DOWN 6520 - STOP CLUSTER BREACH! FAST DROP UNLEASHED!")
@@ -188,7 +188,7 @@ alertcondition(ta.crossunder(close, level9), "6300 FLUSH ZONE", "SPX DOWN 6300 -
 alertcondition(in6300_6060, "In Flush Zone", "SPX in 6300-6060 FLUSH ZONE!")
 
 // STRATEGY ALERTS
-alertcondition(above6600 and volSpike, "CHRISTMAS RALLY ACTIVE", "SPX >6600 + Volume! Christmas rally active!")
+alertcondition(above6600 and volSpike, "🎄 RALLY ACTIVE", "SPX >6600 + Volume! 🎄 rally active!")
 alertcondition(below6520, "FLUSH MODE", "SPX <6520 - FLUSH TO 6300-6060 ZONE!")
 
 // === STATUS TABLE ===
@@ -210,24 +210,24 @@ if barstate.islast and showLabels
     table.cell(statusTable, 1, 2, bias, bgcolor=color.new(biasColor, 70), text_color=color.white)
     
     // Position Status
-    position = above6920 ? "↑ Bull Max!" : above6880 ? "HF Bear Shorts" : above6825 ? "2nd Bear Star" : above6765 ? "Major Bear Star" : above6720 ? "Late Hedgers" : above6670 ? "Hedge Unwind" : above6600 ? "Christmas Rally" : above6520 ? "Below Bull Entry" : below6520 ? "⚠️ FLUSH MODE" : "At Stop Cluster"
+    position = above6920 ? "↑ 🐂 Max!" : above6880 ? "HF 🐻 Shorts" : above6825 ? "2nd 🐻 Star" : above6765 ? "Major 🐻 Star" : above6720 ? "Late Hedgers" : above6670 ? "Hedge Unwind" : above6600 ? "🎄 Rally" : above6520 ? "Below 🐂 Entry" : below6520 ? "⚠️ FLUSH MODE" : "At Stop Cluster"
     posColor = above6920 ? color.aqua : above6880 ? color.fuchsia : above6825 ? color.purple : above6765 ? color.new(color.orange, 0) : above6720 ? color.orange : above6670 ? color.yellow : above6600 ? color.lime : above6520 ? color.orange : color.red
     table.cell(statusTable, 0, 3, "Position", text_color=color.white)
     table.cell(statusTable, 1, 3, position, bgcolor=color.new(posColor, 70), text_color=color.white)
     
     // Strategy
-    strategy = above6600 ? "Christmas rally hopefuls" : below6520 ? "FLUSH to 6300-6060!" : "Watch 6520 stop cluster"
+    strategy = above6600 ? "🎄 rally hopefuls" : below6520 ? "FLUSH to 6300-6060!" : "Watch 6520 stop cluster"
     table.cell(statusTable, 0, 4, "Strategy", text_color=color.white)
     table.cell(statusTable, 1, 4, strategy, bgcolor=color.new(color.blue, 80), text_color=color.white)
     
     // Key Levels Summary
-    table.cell(statusTable, 0, 5, "Bull Entry: 6600", text_color=color.white)
+    table.cell(statusTable, 0, 5, "🐂 Entry: 6600", text_color=color.white)
     table.cell(statusTable, 1, 5, "Hedge Unwind: 6670", bgcolor=color.new(color.gray, 80), text_color=color.white)
     
     table.cell(statusTable, 0, 6, "Late Hedge: 6720", text_color=color.white)
-    table.cell(statusTable, 1, 6, "Major Bear: 6765", bgcolor=color.new(color.gray, 80), text_color=color.white)
+    table.cell(statusTable, 1, 6, "Major 🐻: 6765", bgcolor=color.new(color.gray, 80), text_color=color.white)
     
-    table.cell(statusTable, 0, 7, "2nd Bear: 6825", text_color=color.white)
+    table.cell(statusTable, 0, 7, "2nd 🐻: 6825", text_color=color.white)
     table.cell(statusTable, 1, 7, "HF Shorts: 6880", bgcolor=color.new(color.gray, 80), text_color=color.white)
     
     table.cell(statusTable, 0, 8, "STOP: 6520", text_color=color.white)
@@ -236,7 +236,7 @@ if barstate.islast and showLabels
     // Distance to 6600 pivot
     distTo6600 = level7 - close
     distTo6600Str = distTo6600 > 0 ? "-" + str.tostring(math.abs(distTo6600), "#.#") : "+" + str.tostring(math.abs(distTo6600), "#.#")
-    table.cell(statusTable, 0, 9, "To 6600 PIVOT", text_color=color.white)
+    table.cell(statusTable, 0, 9, "To 6600 PIV", text_color=color.white)
     table.cell(statusTable, 1, 9, distTo6600Str, bgcolor=color.new(color.lime, 80), text_color=color.black)
     
     // Distance to 6520 stop cluster
@@ -261,12 +261,12 @@ if barstate.islast and showLabels
     table.cell(statusTable, 0, 13, "Context", text_color=color.white)
     table.cell(statusTable, 1, 13, "Strike Positioning", bgcolor=color.new(color.gray, 80), text_color=color.white)
     
-    table.cell(statusTable, 0, 14, "Bear Target", text_color=color.white)
+    table.cell(statusTable, 0, 14, "🐻 Target", text_color=color.white)
     table.cell(statusTable, 1, 14, "6520 break->6300", bgcolor=color.new(color.gray, 80), text_color=color.white)
     
     // Strike Structure
     table.cell(statusTable, 0, 15, "Structure", text_color=color.white)
-    table.cell(statusTable, 1, 15, above6765 ? "Bear shorts defend" : "Xmas rally zone", bgcolor=color.new(color.gray, 80), text_color=color.white)
+    table.cell(statusTable, 1, 15, above6765 ? "🐻 shorts defend" : "🎄 rally zone", bgcolor=color.new(color.gray, 80), text_color=color.white)
 
 // === PLOT INVISIBLE LINES FOR ALERT TRIGGERS ===
 plot(level1, "R6: 6920", color=color.new(color.aqua, 100))
