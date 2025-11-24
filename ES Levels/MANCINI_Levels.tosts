@@ -1,23 +1,24 @@
 # === MANCINI ES Levels: Current Action ===
-# Updated: November 24, 2025 - Thanksgiving Rally Day 1 ENDING
+# Updated: November 24, 2025 - Thanksgiving Rally Day 1 DONE
 # 
-# THANKSGIVING RALLY DAY 1: MICRODIP AS DAY NEARS END
-# 6638-42 reclaim was long trigger
-# Target given at 8am: 6701 - HIT, CLEARED, BACK-TESTED
-# Bonus slate: 6716, 6723, 6733, 6755
+# DAY 1 RECAP:
+# +90 points from 6638-42 reclaim long
+# +170 points from Friday's 6652 reclaim long
+# Day 1 done, 4 days left (likely more muted)
 # 
-# 6755 = MAGNET (downtrend channel resistance from Nov 13)
-# 6701 = WEAKER NOW (back-tested, losing strength)
+# NEXT TARGETS:
+# 6733
+# 6750-55 (Magnet/Channel Resistance)
 # 
 # CURRENT PLAN:
-# HOLD RUNNER FOR REST
-# Watch 6701 - showing weakness after back-test
-# Target: 6755 (magnet/channel resistance)
+# HOLD RUNNER
+# We covered good ground today.
+# Watch 6733 and 6750-55 next.
 
 # === RESISTANCE LEVELS ===
-input level1 = 6755;  # R7 - MAGNET (downtrend channel res from Nov 13)
+input level1 = 6755;  # R7 - MAGNET 6750-55 (downtrend channel res)
 input level1_thickness = 5;
-input level2 = 6733;  # R6 - Bonus target 3
+input level2 = 6733;  # R6 - NEXT TARGET
 input level2_thickness = 3;
 input level3 = 6723;  # R5 - Bonus target 2
 input level3_thickness = 3;
@@ -37,31 +38,35 @@ input level9 = 6638;  # S5 - Reclaim trigger (long entry)
 input level9_thickness = 2;
 
 # === ANCHORED VWAP SETTINGS ===
-input anchorDate = 20251123;  # YYYYMMDD format (Sunday night)
-input anchorTime = 1700;  # 5:00 PM CST (Sunday night New York session open)
-input showVWAP = yes;
 input vwapLineWeight = 2;
+
+# ATH VWAP
+input anchorDate2 = 20251029;
+input anchorTime2 = 2245;
+input showVWAP2 = yes;
 
 # Alert Settings
 input enableAlerts = yes;
 input alertSensitivity = 0.5;
 
-# Label Visibility
-input showLabels = yes;
-
 # Fixed bubble logic - show only on last bar
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
 
-# === ANCHORED VWAP CALCULATION ===
-def postAnchorDate = if GetYYYYMMDD() >= anchorDate then 1 else 0;
-def postAnchorTime = if SecondsTillTime(anchorTime) == 0 then 1 else if GetYYYYMMDD() < anchorDate then 0 else postAnchorTime[1];
+# === ATH VWAP CALCULATION ===
+def isAfterStartDate = GetYYYYMMDD() > anchorDate2;
+def isOnStartDate = GetYYYYMMDD() == anchorDate2;
+def isAfterStartTime = SecondsFromTime(anchorTime2) >= 0;
+def active = isAfterStartDate or (isOnStartDate and isAfterStartTime);
 
-plot anchoredVWAP = if showVWAP then TotalSum(if postAnchorDate and postAnchorTime then ((high + low + close) / 3) * volume else 0) / TotalSum(if postAnchorDate and postAnchorTime then volume else 0) else Double.NaN;
-anchoredVWAP.SetStyle(Curve.FIRM);
-anchoredVWAP.SetLineWeight(vwapLineWeight);
-anchoredVWAP.SetDefaultColor(Color.WHITE);
+def cumVolume = TotalSum(if active then volume else 0);
+def cumPV = TotalSum(if active then ((high + low + close) / 3) * volume else 0);
 
-AddChartBubble(isLastBar and showVWAP, anchoredVWAP, "Sunday 5pm VWAP", Color.WHITE, yes);
+plot anchoredVWAP2 = if showVWAP2 and cumVolume > 0 then cumPV / cumVolume else Double.NaN;
+anchoredVWAP2.SetStyle(Curve.FIRM);
+anchoredVWAP2.SetLineWeight(vwapLineWeight);
+anchoredVWAP2.SetDefaultColor(Color.MAGENTA);
+
+AddChartBubble(isLastBar and showVWAP2 and !IsNaN(anchoredVWAP2), anchoredVWAP2, "ATH VWAP", Color.MAGENTA, yes);
 
 # Position detection
 def above6755 = close > level1;  # Above R7
@@ -134,8 +139,8 @@ L9.SetLineWeight(level9_thickness);
 L9.SetStyle(Curve.SHORT_DASH);
 
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, "R7: 6755 MAGNET (Nov 13 channel)", Color.CYAN, yes);
-AddChartBubble(isLastBar, level2, "R6: 6733 Bonus 3", Color.LIGHT_GREEN, yes);
+AddChartBubble(isLastBar, level1, "R7: 6750-55 MAGNET", Color.CYAN, yes);
+AddChartBubble(isLastBar, level2, "R6: 6733 NEXT TARGET", Color.LIGHT_GREEN, yes);
 AddChartBubble(isLastBar, level3, "R5: 6723 Bonus 2", Color.LIGHT_GREEN, yes);
 AddChartBubble(isLastBar, level4, "R4: 6716 Bonus 1", Color.GREEN, yes);
 AddChartBubble(isLastBar, level5, "S1: 6701 WEAKER (back-tested)", Color.YELLOW, no);
@@ -198,27 +203,4 @@ Alert(enableAlerts and firstTouch6674, "ES >> 6674 - Day 1 level!", Alert.BAR, S
 Alert(enableAlerts and firstTouch6667, "ES >> 6667 - Day 1 level!", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and firstTouch6638, "ES >> 6638-42 - Long trigger zone!", Alert.BAR, Sound.Bell);
 
-# === STATUS LABELS ===
-AddLabel(showLabels, "ES: " + Round(close, 2), Color.CYAN);
-AddLabel(showLabels and above6733, "STRONG - Above 6733! Target 6755 MAGNET", Color.CYAN);
-AddLabel(showLabels and above6723 and close <= level2, "Above 6723 - Target 6733", Color.LIGHT_GREEN);
-AddLabel(showLabels and above6716 and close <= level3, "Above 6716 - Target 6723", Color.GREEN);
-AddLabel(showLabels and above6701 and close <= level4, "Above 6701 (weaker) - Target 6716+", Color.GREEN);
-AddLabel(showLabels and at6701, "AT 6701 - WEAKER (back-tested)", Color.YELLOW);
-AddLabel(showLabels and above6685 and below6701, "Below 6701 - Microdip mode!", Color.ORANGE);
-AddLabel(showLabels and below6685, "Below 6685 - Rally pullback", Color.ORANGE);
-AddLabel(showLabels and below6667, "Below 6667 - Watch lower supports", Color.RED);
 
-# Support/Resistance Labels
-AddLabel(showLabels, "SUPPORT: 6701 (WEAKER - back-tested)", Color.YELLOW);
-AddLabel(showLabels, "TARGET: 6755 MAGNET (Nov 13 channel res)", Color.CYAN);
-AddLabel(showLabels, "Bonus targets: 6716, 6723, 6733, 6755", Color.CYAN);
-
-# Trading Context
-AddLabel(showLabels, "Day 1 Rally: MICRODIP as day ends", Color.ORANGE);
-AddLabel(showLabels, "8am target 6701: HIT, CLEARED, BACK-TESTED", Color.GREEN);
-AddLabel(showLabels, "6701 showing weakness after back-test", Color.YELLOW);
-AddLabel(showLabels, "HOLD RUNNER FOR REST - 6755 magnet", Color.YELLOW);
-AddLabel(showLabels and above6701, "Rally active - 6701 weaker!", Color.GREEN);
-AddLabel(showLabels and below6701, "6701 losing strength - microdip!", Color.ORANGE);
-AddLabel(showLabels and above6716, "6755=magnet (Nov 13 channel)", Color.CYAN);
