@@ -3,12 +3,51 @@
 # Clean visualization for intraday trading
 
 # === User Settings ===
+# FX Session Ranges
+input showLondonRange = yes;
+input showNewYorkRange = yes;
+input showAsiaRange = yes;
+
+# Session lines (legacy names kept for compatibility)
 input showAsiaSession = yes;
 input showLondonSession = yes;
 input showNYSession = yes;
 input showSessionLabels = yes;
+input showAsiaBubbles = yes;
+input showLondonBubbles = yes;
+input showNYBubbles = yes;
 input showCurrentDayOnly = yes; # Only show today's levels
 input extendLinesHours = 4; # Hours to extend lines after session end
+
+# === Additional Timeframe Settings ===
+input show4H = yes;
+input show4H_Open = yes;
+input show4H_PrevHL = yes;
+input show4H_PrevMid = yes;
+input show4HBubbles = yes;
+
+input showDaily = yes;
+input showDaily_Open = yes;
+input showDaily_PrevHL = yes;
+input showDaily_PrevMid = yes;
+input showDailyBubbles = yes;
+
+input showMonday = yes;
+input showMonday_Range = yes;
+input showMonday_Mid = yes;
+input showMondayBubbles = yes;
+
+input showWeekly = yes;
+input showWeekly_Open = yes;
+input showWeekly_PrevHL = yes;
+input showWeekly_PrevMid = yes;
+input showWeeklyBubbles = yes;
+
+input showMonthly = yes;
+input showMonthly_Open = yes;
+input showMonthly_PrevHL = yes;
+input showMonthly_PrevMid = yes;
+input showMonthlyBubbles = yes;
 
 # === Session Times (CST) ===
 def AsiaStart = 1900;   # 7:00 PM
@@ -115,9 +154,9 @@ def nyLowVal = if nyJustEnded then NYLow[1]
     else Double.NaN;
 
 # === Plot levels only during extension period ===
-def showAsiaLevels = asiaBarsSinceEnd >= 0 and asiaBarsSinceEnd < maxBarsToExtend and isToday;
-def showLondonLevels = londonBarsSinceEnd >= 0 and londonBarsSinceEnd < maxBarsToExtend and isToday;
-def showNYLevels = nyBarsSinceEnd >= 0 and nyBarsSinceEnd < maxBarsToExtend and isToday;
+def showAsiaLevels = asiaBarsSinceEnd >= 0 and asiaBarsSinceEnd < maxBarsToExtend and isToday and showAsiaRange;
+def showLondonLevels = londonBarsSinceEnd >= 0 and londonBarsSinceEnd < maxBarsToExtend and isToday and showLondonRange;
+def showNYLevels = nyBarsSinceEnd >= 0 and nyBarsSinceEnd < maxBarsToExtend and isToday and showNewYorkRange;
 
 # Asia Session Levels
 plot AsiaHi = if showAsiaLevels then asiaHighVal else Double.NaN;
@@ -156,10 +195,9 @@ NYLo.SetLineWeight(2);
 NYLo.SetStyle(Curve.FIRM);
 
 # === Bubbles - Only at session end, only on last occurrence ===
-def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
-def showAsiaBubble = asiaJustEnded and showSessionLabels;
-def showLondonBubble = londonJustEnded and showSessionLabels;
-def showNYBubble = nyJustEnded and showSessionLabels;
+def showAsiaBubble = asiaJustEnded and showSessionLabels and showAsiaBubbles;
+def showLondonBubble = londonJustEnded and showSessionLabels and showLondonBubbles;
+def showNYBubble = nyJustEnded and showSessionLabels and showNYBubbles;
 
 AddChartBubble(showAsiaBubble, asiaHighVal, "A: " + AsPrice(asiaHighVal), Color.CYAN, yes);
 AddChartBubble(showAsiaBubble, asiaLowVal, "A: " + AsPrice(asiaLowVal), Color.CYAN, no);
@@ -170,8 +208,159 @@ AddChartBubble(showLondonBubble, londonLowVal, "L: " + AsPrice(londonLowVal), Co
 AddChartBubble(showNYBubble, nyHighVal, "NY: " + AsPrice(nyHighVal), Color.GREEN, yes);
 AddChartBubble(showNYBubble, nyLowVal, "NY: " + AsPrice(nyLowVal), Color.GREEN, no);
 
-# === Status Labels ===
-AddLabel(yes, "Session Ranges", Color.GRAY);
-AddLabel(showAsiaSession, "Asia: " + AsPrice(asiaHighVal) + " / " + AsPrice(asiaLowVal), Color.CYAN);
-AddLabel(showLondonSession, "London: " + AsPrice(londonHighVal) + " / " + AsPrice(londonLowVal), Color.YELLOW);
-AddLabel(showNYSession, "NY: " + AsPrice(nyHighVal) + " / " + AsPrice(nyLowVal), Color.GREEN);
+# === Fixed bubble logic ===
+def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
+
+# === 4H Levels ===
+def fourH_Open = open(period = "4 HOURS");
+def fourH_PrevHigh = high(period = "4 HOURS")[1];
+def fourH_PrevLow = low(period = "4 HOURS")[1];
+def fourH_PrevMid = (fourH_PrevHigh + fourH_PrevLow) / 2;
+
+plot FourH_O = if show4H and show4H_Open then fourH_Open else Double.NaN;
+plot FourH_PH = if show4H and show4H_PrevHL then fourH_PrevHigh else Double.NaN;
+plot FourH_PL = if show4H and show4H_PrevHL then fourH_PrevLow else Double.NaN;
+plot FourH_PM = if show4H and show4H_PrevMid then fourH_PrevMid else Double.NaN;
+
+FourH_O.SetDefaultColor(CreateColor(255, 165, 0)); # Orange
+FourH_O.SetLineWeight(1);
+FourH_O.SetStyle(Curve.SHORT_DASH);
+
+FourH_PH.SetDefaultColor(CreateColor(255, 165, 0));
+FourH_PH.SetLineWeight(1);
+FourH_PH.SetStyle(Curve.FIRM);
+
+FourH_PL.SetDefaultColor(CreateColor(255, 165, 0));
+FourH_PL.SetLineWeight(1);
+FourH_PL.SetStyle(Curve.FIRM);
+
+FourH_PM.SetDefaultColor(CreateColor(255, 165, 0));
+FourH_PM.SetLineWeight(1);
+FourH_PM.SetStyle(Curve.SHORT_DASH);
+
+AddChartBubble(isLastBar and show4H and show4H_Open and show4HBubbles, fourH_Open, "4H O: " + AsPrice(fourH_Open), CreateColor(255, 165, 0), yes);
+AddChartBubble(isLastBar and show4H and show4H_PrevHL and show4HBubbles, fourH_PrevHigh, "4H PH: " + AsPrice(fourH_PrevHigh), CreateColor(255, 165, 0), yes);
+AddChartBubble(isLastBar and show4H and show4H_PrevHL and show4HBubbles, fourH_PrevLow, "4H PL: " + AsPrice(fourH_PrevLow), CreateColor(255, 165, 0), no);
+AddChartBubble(isLastBar and show4H and show4H_PrevMid and show4HBubbles, fourH_PrevMid, "4H PM: " + AsPrice(fourH_PrevMid), CreateColor(255, 165, 0), yes);
+
+# === Daily Levels ===
+def daily_Open = open(period = "DAY");
+def daily_PrevHigh = high(period = "DAY")[1];
+def daily_PrevLow = low(period = "DAY")[1];
+def daily_PrevMid = (daily_PrevHigh + daily_PrevLow) / 2;
+
+plot Daily_O = if showDaily and showDaily_Open then daily_Open else Double.NaN;
+plot Daily_PH = if showDaily and showDaily_PrevHL then daily_PrevHigh else Double.NaN;
+plot Daily_PL = if showDaily and showDaily_PrevHL then daily_PrevLow else Double.NaN;
+plot Daily_PM = if showDaily and showDaily_PrevMid then daily_PrevMid else Double.NaN;
+
+Daily_O.SetDefaultColor(Color.CYAN);
+Daily_O.SetLineWeight(1);
+Daily_O.SetStyle(Curve.SHORT_DASH);
+
+Daily_PH.SetDefaultColor(Color.CYAN);
+Daily_PH.SetLineWeight(1);
+Daily_PH.SetStyle(Curve.FIRM);
+
+Daily_PL.SetDefaultColor(Color.CYAN);
+Daily_PL.SetLineWeight(1);
+Daily_PL.SetStyle(Curve.FIRM);
+
+Daily_PM.SetDefaultColor(Color.CYAN);
+Daily_PM.SetLineWeight(1);
+Daily_PM.SetStyle(Curve.SHORT_DASH);
+
+AddChartBubble(isLastBar and showDaily and showDaily_Open and showDailyBubbles, daily_Open, "D O: " + AsPrice(daily_Open), Color.CYAN, yes);
+AddChartBubble(isLastBar and showDaily and showDaily_PrevHL and showDailyBubbles, daily_PrevHigh, "D PH: " + AsPrice(daily_PrevHigh), Color.CYAN, yes);
+AddChartBubble(isLastBar and showDaily and showDaily_PrevHL and showDailyBubbles, daily_PrevLow, "D PL: " + AsPrice(daily_PrevLow), Color.CYAN, no);
+AddChartBubble(isLastBar and showDaily and showDaily_PrevMid and showDailyBubbles, daily_PrevMid, "D PM: " + AsPrice(daily_PrevMid), Color.CYAN, yes);
+
+# === Monday Range Levels ===
+def isMon = GetDayOfWeek(GetYYYYMMDD()) == 1;
+def mondayHigh = if isMon then if isMon[1] then Max(high, mondayHigh[1]) else high else mondayHigh[1];
+def mondayLow = if isMon then if isMon[1] then Min(low, mondayLow[1]) else low else mondayLow[1];
+def mondayMid = (mondayHigh + mondayLow) / 2;
+
+plot Monday_H = if showMonday and showMonday_Range and !isMon then mondayHigh else Double.NaN;
+plot Monday_L = if showMonday and showMonday_Range and !isMon then mondayLow else Double.NaN;
+plot Monday_M = if showMonday and showMonday_Mid and !isMon then mondayMid else Double.NaN;
+
+Monday_H.SetDefaultColor(Color.WHITE);
+Monday_H.SetLineWeight(1);
+Monday_H.SetStyle(Curve.FIRM);
+
+Monday_L.SetDefaultColor(Color.WHITE);
+Monday_L.SetLineWeight(1);
+Monday_L.SetStyle(Curve.FIRM);
+
+Monday_M.SetDefaultColor(Color.WHITE);
+Monday_M.SetLineWeight(1);
+Monday_M.SetStyle(Curve.SHORT_DASH);
+
+AddChartBubble(isLastBar and showMonday and showMonday_Range and showMondayBubbles and !isMon, mondayHigh, "Mon H: " + AsPrice(mondayHigh), Color.WHITE, yes);
+AddChartBubble(isLastBar and showMonday and showMonday_Range and showMondayBubbles and !isMon, mondayLow, "Mon L: " + AsPrice(mondayLow), Color.WHITE, no);
+AddChartBubble(isLastBar and showMonday and showMonday_Mid and showMondayBubbles and !isMon, mondayMid, "Mon M: " + AsPrice(mondayMid), Color.WHITE, yes);
+
+# === Weekly Levels ===
+def weekly_Open = open(period = "WEEK");
+def weekly_PrevHigh = high(period = "WEEK")[1];
+def weekly_PrevLow = low(period = "WEEK")[1];
+def weekly_PrevMid = (weekly_PrevHigh + weekly_PrevLow) / 2;
+
+plot Weekly_O = if showWeekly and showWeekly_Open then weekly_Open else Double.NaN;
+plot Weekly_PH = if showWeekly and showWeekly_PrevHL then weekly_PrevHigh else Double.NaN;
+plot Weekly_PL = if showWeekly and showWeekly_PrevHL then weekly_PrevLow else Double.NaN;
+plot Weekly_PM = if showWeekly and showWeekly_PrevMid then weekly_PrevMid else Double.NaN;
+
+Weekly_O.SetDefaultColor(CreateColor(255, 255, 153)); # Light Yellow
+Weekly_O.SetLineWeight(1);
+Weekly_O.SetStyle(Curve.SHORT_DASH);
+
+Weekly_PH.SetDefaultColor(CreateColor(255, 255, 153));
+Weekly_PH.SetLineWeight(1);
+Weekly_PH.SetStyle(Curve.FIRM);
+
+Weekly_PL.SetDefaultColor(CreateColor(255, 255, 153));
+Weekly_PL.SetLineWeight(1);
+Weekly_PL.SetStyle(Curve.FIRM);
+
+Weekly_PM.SetDefaultColor(CreateColor(255, 255, 153));
+Weekly_PM.SetLineWeight(1);
+Weekly_PM.SetStyle(Curve.SHORT_DASH);
+
+AddChartBubble(isLastBar and showWeekly and showWeekly_Open and showWeeklyBubbles, weekly_Open, "W O: " + AsPrice(weekly_Open), CreateColor(255, 255, 153), yes);
+AddChartBubble(isLastBar and showWeekly and showWeekly_PrevHL and showWeeklyBubbles, weekly_PrevHigh, "W PH: " + AsPrice(weekly_PrevHigh), CreateColor(255, 255, 153), yes);
+AddChartBubble(isLastBar and showWeekly and showWeekly_PrevHL and showWeeklyBubbles, weekly_PrevLow, "W PL: " + AsPrice(weekly_PrevLow), CreateColor(255, 255, 153), no);
+AddChartBubble(isLastBar and showWeekly and showWeekly_PrevMid and showWeeklyBubbles, weekly_PrevMid, "W PM: " + AsPrice(weekly_PrevMid), CreateColor(255, 255, 153), yes);
+
+# === Monthly Levels ===
+def monthly_Open = open(period = "MONTH");
+def monthly_PrevHigh = high(period = "MONTH")[1];
+def monthly_PrevLow = low(period = "MONTH")[1];
+def monthly_PrevMid = (monthly_PrevHigh + monthly_PrevLow) / 2;
+
+plot Monthly_O = if showMonthly and showMonthly_Open then monthly_Open else Double.NaN;
+plot Monthly_PH = if showMonthly and showMonthly_PrevHL then monthly_PrevHigh else Double.NaN;
+plot Monthly_PL = if showMonthly and showMonthly_PrevHL then monthly_PrevLow else Double.NaN;
+plot Monthly_PM = if showMonthly and showMonthly_PrevMid then monthly_PrevMid else Double.NaN;
+
+Monthly_O.SetDefaultColor(CreateColor(102, 255, 178)); # Light Green
+Monthly_O.SetLineWeight(1);
+Monthly_O.SetStyle(Curve.SHORT_DASH);
+
+Monthly_PH.SetDefaultColor(CreateColor(102, 255, 178));
+Monthly_PH.SetLineWeight(1);
+Monthly_PH.SetStyle(Curve.FIRM);
+
+Monthly_PL.SetDefaultColor(CreateColor(102, 255, 178));
+Monthly_PL.SetLineWeight(1);
+Monthly_PL.SetStyle(Curve.FIRM);
+
+Monthly_PM.SetDefaultColor(CreateColor(102, 255, 178));
+Monthly_PM.SetLineWeight(1);
+Monthly_PM.SetStyle(Curve.SHORT_DASH);
+
+AddChartBubble(isLastBar and showMonthly and showMonthly_Open and showMonthlyBubbles, monthly_Open, "M O: " + AsPrice(monthly_Open), CreateColor(102, 255, 178), yes);
+AddChartBubble(isLastBar and showMonthly and showMonthly_PrevHL and showMonthlyBubbles, monthly_PrevHigh, "M PH: " + AsPrice(monthly_PrevHigh), CreateColor(102, 255, 178), yes);
+AddChartBubble(isLastBar and showMonthly and showMonthly_PrevHL and showMonthlyBubbles, monthly_PrevLow, "M PL: " + AsPrice(monthly_PrevLow), CreateColor(102, 255, 178), no);
+AddChartBubble(isLastBar and showMonthly and showMonthly_PrevMid and showMonthlyBubbles, monthly_PrevMid, "M PM: " + AsPrice(monthly_PrevMid), CreateColor(102, 255, 178), yes);
