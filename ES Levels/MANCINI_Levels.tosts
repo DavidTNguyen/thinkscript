@@ -49,6 +49,7 @@ input showVWAP2 = yes;
 # Alert Settings
 input enableAlerts = yes;
 input alertSensitivity = 0.5;
+input showLabels = no;
 
 # Fixed bubble logic - show only on last bar
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
@@ -67,7 +68,7 @@ anchoredVWAP2.SetStyle(Curve.FIRM);
 anchoredVWAP2.SetLineWeight(vwapLineWeight);
 anchoredVWAP2.SetDefaultColor(Color.MAGENTA);
 
-AddChartBubble(isLastBar and showVWAP2 and !IsNaN(anchoredVWAP2), anchoredVWAP2, "ATH VWAP", Color.MAGENTA, yes);
+AddChartBubble(isLastBar and showVWAP2 and !IsNaN(anchoredVWAP2) and showLabels, anchoredVWAP2, "ATH VWAP", Color.MAGENTA, yes);
 
 # Position detection
 def above6764 = close > level1;
@@ -147,16 +148,16 @@ L10.SetLineWeight(level10_thickness);
 L10.SetStyle(Curve.SHORT_DASH);
 
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, "R3: 6764 Next", Color.CYAN, yes);
-AddChartBubble(isLastBar, level2, "R2: 6755 Next", Color.CYAN, yes);
-AddChartBubble(isLastBar, level3, "R1: 6742 Next", Color.CYAN, yes);
-AddChartBubble(isLastBar, level4, "6733 TARGET HIT!", Color.GRAY, yes);
-AddChartBubble(isLastBar, level5, "6745 Extension", Color.LIGHT_GRAY, yes);
-AddChartBubble(isLastBar, level6, "S1: 6716 (Target hit!)", Color.GREEN, no);
-AddChartBubble(isLastBar, level7, "S2: 6701 (Reclaimed 9:49AM)", Color.YELLOW, no);
-AddChartBubble(isLastBar, level8, "S3: 6685 Dip", Color.ORANGE, no);
-AddChartBubble(isLastBar, level9, "S4: 6668-70 Dip", Color.RED, no);
-AddChartBubble(isLastBar, level10, "S5: 6638", Color.GRAY, no);
+AddChartBubble(isLastBar and showLabels, level1, "R3: 6764 Next", Color.CYAN, yes);
+AddChartBubble(isLastBar and showLabels, level2, "R2: 6755 Next", Color.CYAN, yes);
+AddChartBubble(isLastBar and showLabels, level3, "R1: 6742 Next", Color.CYAN, yes);
+AddChartBubble(isLastBar and showLabels, level4, "6733 TARGET HIT!", Color.GRAY, yes);
+AddChartBubble(isLastBar and showLabels, level5, "6745 Extension", Color.LIGHT_GRAY, yes);
+AddChartBubble(isLastBar and showLabels, level6, "S1: 6716 (Target hit!)", Color.GREEN, no);
+AddChartBubble(isLastBar and showLabels, level7, "S2: 6701 (Reclaimed 9:49AM)", Color.YELLOW, no);
+AddChartBubble(isLastBar and showLabels, level8, "S3: 6685 Dip", Color.ORANGE, no);
+AddChartBubble(isLastBar and showLabels, level9, "S4: 6668-70 Dip", Color.RED, no);
+AddChartBubble(isLastBar and showLabels, level10, "S5: 6638", Color.GRAY, no);
 
 # === TOUCH LOGIC ===
 def touch6764 = low <= level1 and high >= level1;

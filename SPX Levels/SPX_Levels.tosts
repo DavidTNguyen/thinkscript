@@ -149,16 +149,16 @@ def below6060 = close < level10;
 
 
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, "6920", Color.CYAN, yes);
-AddChartBubble(isLastBar, level2, "🐻6880", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level3, "🐻6825", Color.PLUM, yes);
-AddChartBubble(isLastBar, level4, "🐻 6765", Color.DARK_ORANGE, yes);
-AddChartBubble(isLastBar, level5, "🐻 6720", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level6, "6670", Color.YELLOW, yes);
-AddChartBubble(isLastBar, level7, "🌲 6600", Color.GREEN, no);
-AddChartBubble(isLastBar, level8, "6520", Color.RED, no);
-AddChartBubble(isLastBar, level9, "6300", Color.DARK_RED, no);
-AddChartBubble(isLastBar, level10, "6060", Color.DARK_RED, no);
+AddChartBubble(isLastBar and showLabels, level1, "6920", Color.CYAN, yes);
+AddChartBubble(isLastBar and showLabels, level2, "🐻6880", Color.MAGENTA, yes);
+AddChartBubble(isLastBar and showLabels, level3, "🐻6825", Color.PLUM, yes);
+AddChartBubble(isLastBar and showLabels, level4, "🐻 6765", Color.DARK_ORANGE, yes);
+AddChartBubble(isLastBar and showLabels, level5, "🐻 6720", Color.ORANGE, yes);
+AddChartBubble(isLastBar and showLabels, level6, "6670", Color.YELLOW, yes);
+AddChartBubble(isLastBar and showLabels, level7, "🌲 6600", Color.GREEN, no);
+AddChartBubble(isLastBar and showLabels, level8, "6520", Color.RED, no);
+AddChartBubble(isLastBar and showLabels, level9, "6300", Color.DARK_RED, no);
+AddChartBubble(isLastBar and showLabels, level10, "6060", Color.DARK_RED, no);
 
 # === TOUCH LOGIC ===
 def touch6920 = low <= level1 and high >= level1;
