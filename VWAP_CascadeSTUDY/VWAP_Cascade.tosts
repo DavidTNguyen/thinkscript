@@ -1,0 +1,226 @@
+# === VWAP Cascade - Multi-Scale Market Structure ===
+# Plots 5 continuous VWAPs anchored to the last 5 periods (Days/Weeks/Months/Quarters)
+# Creates layered cloud zones with momentum-based coloring for trend analysis
+
+# === User Settings ===
+input anchorScale = {default "Day", "Week", "Month", "Quarter"};
+input showVWAP1 = yes;
+input showVWAP2 = yes;
+input showVWAP3 = yes;
+input showVWAP4 = yes;
+input showVWAP5 = yes;
+input showClouds = yes;
+input showLabels = yes;
+
+# === Momentum Settings ===
+input momentumLength = 3; # Bars to calculate VWAP slope
+input lineWeight = 1;
+
+# === Helper Function: Get Period Start ===
+def GetPeriodStart(def periodsAgo) {
+    def period;
+    switch (anchorScale) {
+        case "Day":
+            period = GetDay();
+        case "Week":
+            period = Floor(GetYYYYMMDD() / 100) * 100 + 
+                     Min(GetDayOfWeek(GetYYYYMMDD()), 5);
+        case "Month":
+            period = Floor(GetYYYYMMDD() / 100);
+        case "Quarter":
+            period = Floor(GetYear() * 4 + (GetMonth() - 1) / 3);
+    }
+    
+    def currentPeriod = period;
+    def targetPeriod = currentPeriod - periodsAgo;
+    def isTargetPeriod = period == targetPeriod;
+    def isAfterTarget = period > targetPeriod;
+    
+    isAfterTarget
+}
+
+# === VWAP Calculation Function ===
+script CalculateVWAP {
+    input periodsAgo = 0;
+    input scale = "Day";
+    
+    def period;
+    switch (scale) {
+        case "Day":
+            period = GetDay();
+        case "Week":
+            period = Floor(GetYYYYMMDD() / 100) * 100 + 
+                     Min(GetDayOfWeek(GetYYYYMMDD()), 5);
+        case "Month":
+            period = Floor(GetYYYYMMDD() / 100);
+        case "Quarter":
+            period = Floor(GetYear() * 4 + (GetMonth() - 1) / 3);
+    }
+    
+    def currentPeriod = HighestAll(period);
+    def targetPeriod = currentPeriod - periodsAgo;
+    def isActive = period >= targetPeriod;
+    
+    def typicalPrice = (high + low + close) / 3;
+    def volumePrice = if isActive then typicalPrice * volume else 0;
+    def volumeSum = if isActive then volume else 0;
+    
+    def cumVolPrice = TotalSum(volumePrice);
+    def cumVol = TotalSum(volumeSum);
+    
+    def vwap = if cumVol > 0 then cumVolPrice / cumVol else Double.NaN;
+    
+    plot result = vwap;
+}
+
+# === Calculate 5 VWAPs ===
+def VWAP_1 = CalculateVWAP(0, anchorScale);
+def VWAP_2 = CalculateVWAP(1, anchorScale);
+def VWAP_3 = CalculateVWAP(2, anchorScale);
+def VWAP_4 = CalculateVWAP(3, anchorScale);
+def VWAP_5 = CalculateVWAP(4, anchorScale);
+
+# === Calculate Momentum (Slope) ===
+def slope1 = VWAP_1 - VWAP_1[momentumLength];
+def slope2 = VWAP_2 - VWAP_2[momentumLength];
+def slope3 = VWAP_3 - VWAP_3[momentumLength];
+def slope4 = VWAP_4 - VWAP_4[momentumLength];
+def slope5 = VWAP_5 - VWAP_5[momentumLength];
+
+def bullish1 = slope1 > 0;
+def bullish2 = slope2 > 0;
+def bullish3 = slope3 > 0;
+def bullish4 = slope4 > 0;
+def bullish5 = slope5 > 0;
+
+# === Color Definitions ===
+# Strong momentum colors
+def strongBullColor = CreateColor(0, 200, 100);    # Bright Green
+def mediumBullColor = CreateColor(0, 150, 80);     # Medium Green
+def weakBullColor = CreateColor(0, 100, 60);       # Weak Green
+
+def strongBearColor = CreateColor(200, 0, 50);     # Bright Red
+def mediumBearColor = CreateColor(150, 0, 40);     # Medium Red
+def weakBearColor = CreateColor(100, 0, 30);       # Weak Red
+
+# === Plot VWAPs ===
+plot VWAP1_Plot = if showVWAP1 then VWAP_1 else Double.NaN;
+plot VWAP2_Plot = if showVWAP2 then VWAP_2 else Double.NaN;
+plot VWAP3_Plot = if showVWAP3 then VWAP_3 else Double.NaN;
+plot VWAP4_Plot = if showVWAP4 then VWAP_4 else Double.NaN;
+plot VWAP5_Plot = if showVWAP5 then VWAP_5 else Double.NaN;
+
+VWAP1_Plot.SetDefaultColor(Color.CYAN);
+VWAP1_Plot.SetLineWeight(lineWeight + 1);
+VWAP1_Plot.SetStyle(Curve.FIRM);
+
+VWAP2_Plot.SetDefaultColor(Color.YELLOW);
+VWAP2_Plot.SetLineWeight(lineWeight);
+VWAP2_Plot.SetStyle(Curve.FIRM);
+
+VWAP3_Plot.SetDefaultColor(Color.MAGENTA);
+VWAP3_Plot.SetLineWeight(lineWeight);
+VWAP3_Plot.SetStyle(Curve.FIRM);
+
+VWAP4_Plot.SetDefaultColor(Color.ORANGE);
+VWAP4_Plot.SetLineWeight(lineWeight);
+VWAP4_Plot.SetStyle(Curve.FIRM);
+
+VWAP5_Plot.SetDefaultColor(Color.GRAY);
+VWAP5_Plot.SetLineWeight(lineWeight);
+VWAP5_Plot.SetStyle(Curve.FIRM);
+
+# === Cloud Layers ===
+# Layer 1: Between VWAP 1 and VWAP 2 (Most recent)
+AddCloud(if showClouds and showVWAP1 and showVWAP2 then VWAP_1 else Double.NaN, 
+         VWAP_2,
+         if bullish1 then strongBullColor else strongBearColor,
+         if bullish1 then strongBearColor else strongBullColor);
+
+# Layer 2: Between VWAP 2 and VWAP 3
+AddCloud(if showClouds and showVWAP2 and showVWAP3 then VWAP_2 else Double.NaN, 
+         VWAP_3,
+         if bullish2 then mediumBullColor else mediumBearColor,
+         if bullish2 then mediumBearColor else mediumBullColor);
+
+# Layer 3: Between VWAP 3 and VWAP 4
+AddCloud(if showClouds and showVWAP3 and showVWAP4 then VWAP_3 else Double.NaN, 
+         VWAP_4,
+         if bullish3 then weakBullColor else weakBearColor,
+         if bullish3 then weakBearColor else weakBullColor);
+
+# Layer 4: Between VWAP 4 and VWAP 5 (Oldest)
+AddCloud(if showClouds and showVWAP4 and showVWAP5 then VWAP_4 else Double.NaN, 
+         VWAP_5,
+         if bullish4 then CreateColor(0, 80, 50) else CreateColor(80, 0, 25),
+         if bullish4 then CreateColor(80, 0, 25) else CreateColor(0, 80, 50));
+
+# === Trend Uniformity Detection ===
+def allBullish = bullish1 and bullish2 and bullish3 and bullish4 and bullish5;
+def allBearish = !bullish1 and !bullish2 and !bullish3 and !bullish4 and !bullish5;
+def trendUniform = allBullish or allBearish;
+
+def momentumShift = bullish1 != bullish2;
+def consolidation = (bullish1 and !bullish3) or (!bullish1 and bullish3);
+
+# === Chart Bubbles ===
+def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
+
+AddChartBubble(isLastBar and showVWAP1, VWAP_1, 
+               "VWAP1: " + AsPrice(VWAP_1), 
+               if bullish1 then Color.GREEN else Color.RED, yes);
+
+AddChartBubble(isLastBar and showVWAP5, VWAP_5, 
+               "VWAP5: " + AsPrice(VWAP_5), 
+               if bullish5 then Color.DARK_GREEN else Color.DARK_RED, no);
+
+# === Status Labels ===
+def scaleText;
+switch (anchorScale) {
+    case "Day":
+        scaleText = 1;
+    case "Week":
+        scaleText = 2;
+    case "Month":
+        scaleText = 3;
+    case "Quarter":
+        scaleText = 4;
+}
+
+AddLabel(showLabels, 
+         if anchorScale == anchorScale."Day" then "Scale: Daily" 
+         else if anchorScale == anchorScale."Week" then "Scale: Weekly"
+         else if anchorScale == anchorScale."Month" then "Scale: Monthly"
+         else "Scale: Quarterly", 
+         Color.GRAY);
+
+AddLabel(showLabels and allBullish, "UNIFORM BULLISH TREND", Color.GREEN);
+AddLabel(showLabels and allBearish, "UNIFORM BEARISH TREND", Color.RED);
+AddLabel(showLabels and momentumShift and !trendUniform, "MOMENTUM SHIFT", Color.YELLOW);
+AddLabel(showLabels and consolidation and !trendUniform, "CONSOLIDATION", Color.ORANGE);
+
+# Price position relative to cascade
+def aboveAll = close > VWAP_1 and close > VWAP_2 and close > VWAP_3 and close > VWAP_4 and close > VWAP_5;
+def belowAll = close < VWAP_1 and close < VWAP_2 and close < VWAP_3 and close < VWAP_4 and close < VWAP_5;
+def withinCloud = !aboveAll and !belowAll;
+
+AddLabel(showLabels and aboveAll, "Above All VWAPs", Color.CYAN);
+AddLabel(showLabels and belowAll, "Below All VWAPs", Color.MAGENTA);
+AddLabel(showLabels and withinCloud, "Within Cloud", Color.YELLOW);
+
+# Layer momentum indicators
+AddLabel(showLabels, 
+         "L1:" + if bullish1 then "↑" else "↓", 
+         if bullish1 then strongBullColor else strongBearColor);
+AddLabel(showLabels, 
+         "L2:" + if bullish2 then "↑" else "↓", 
+         if bullish2 then mediumBullColor else mediumBearColor);
+AddLabel(showLabels, 
+         "L3:" + if bullish3 then "↑" else "↓", 
+         if bullish3 then weakBullColor else weakBearColor);
+AddLabel(showLabels, 
+         "L4:" + if bullish4 then "↑" else "↓", 
+         if bullish4 then CreateColor(0, 80, 50) else CreateColor(80, 0, 25));
+AddLabel(showLabels, 
+         "L5:" + if bullish5 then "↑" else "↓", 
+         if bullish5 then CreateColor(0, 60, 40) else CreateColor(60, 0, 20));
