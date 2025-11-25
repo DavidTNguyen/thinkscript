@@ -83,17 +83,39 @@ Midline.SetStyle(Curve.LONG_DASH);
 # === Cloud Fill ===
 AddCloud(UpperBB, LowerBB, Color.DARK_RED, Color.DARK_GREEN);
 
-# === Breach Signals ===
+# === Entry Point Detection ===
+# Long Entry: RSI crosses below lower band (oversold) - potential reversal up
+# Short Entry: RSI crosses above upper band (overbought) - potential reversal down
+def LongEntry = RSI_CrossBelowLower;
+def ShortEntry = RSI_CrossAboveUpper;
+
+# Additional confirmation: RSI returning from extreme levels
+def LongConfirmation = RSI_CrossBackIntoLower and RSI[1] < rsiOversold;
+def ShortConfirmation = RSI_CrossBackIntoUpper and RSI[1] > rsiOverbought;
+
+# === Entry Signals on Chart ===
+plot LongSignal = if showBreachSignals and (LongEntry or LongConfirmation) then LowerBand - 5 else Double.NaN;
+plot ShortSignal = if showBreachSignals and (ShortEntry or ShortConfirmation) then UpperBand + 5 else Double.NaN;
+
+LongSignal.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+LongSignal.SetLineWeight(3);
+LongSignal.SetDefaultColor(Color.GREEN);
+
+ShortSignal.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+ShortSignal.SetLineWeight(3);
+ShortSignal.SetDefaultColor(Color.RED);
+
+# === Breach Signals (Points) ===
 plot BreachUpperSignal = if showBreachSignals and RSI_CrossAboveUpper then RSI else Double.NaN;
 plot BreachLowerSignal = if showBreachSignals and RSI_CrossBelowLower then RSI else Double.NaN;
 
 BreachUpperSignal.SetPaintingStrategy(PaintingStrategy.POINTS);
 BreachUpperSignal.SetLineWeight(4);
-BreachUpperSignal.SetDefaultColor(Color.RED);
+BreachUpperSignal.SetDefaultColor(Color.MAGENTA);
 
 BreachLowerSignal.SetPaintingStrategy(PaintingStrategy.POINTS);
 BreachLowerSignal.SetLineWeight(4);
-BreachLowerSignal.SetDefaultColor(Color.GREEN);
+BreachLowerSignal.SetDefaultColor(Color.CYAN);
 
 # === Background Color for Extreme Conditions ===
 def OverboughtExtreme = RSI_AboveUpper and RSI > rsiOverbought;
@@ -130,10 +152,10 @@ AddLabel(NarrowBands, "Low Volatility - Breakout Watch", Color.YELLOW);
 AddLabel(WideBands, "High Volatility", Color.MAGENTA);
 
 # === Alert System ===
-Alert(enableAlerts and RSI_CrossAboveUpper, "RSI Breached Upper Band - OVERBOUGHT!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and RSI_CrossBelowLower, "RSI Breached Lower Band - OVERSOLD!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and RSI_CrossBackIntoUpper and RSI_AboveUpper[1], "RSI Back Below Upper Band", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and RSI_CrossBackIntoLower and RSI_BelowLower[1], "RSI Back Above Lower Band", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and RSI_CrossAboveUpper, "SHORT ENTRY - RSI Breached Upper Band!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and RSI_CrossBelowLower, "LONG ENTRY - RSI Breached Lower Band!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and ShortConfirmation, "SHORT CONFIRMATION - RSI Returning from Overbought", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and LongConfirmation, "LONG CONFIRMATION - RSI Returning from Oversold", Alert.BAR, Sound.Chimes);
 Alert(enableAlerts and NarrowBands and !NarrowBands[1], "Bollinger Bands Narrowing - Consolidation", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and WideBands and !WideBands[1], "Bollinger Bands Widening - High Volatility", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and OverboughtExtreme and !OverboughtExtreme[1], "EXTREME OVERBOUGHT - RSI > " + rsiOverbought + " & Above Upper Band!", Alert.BAR, Sound.Ding);
