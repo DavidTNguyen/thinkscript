@@ -1,39 +1,41 @@
 # === MANCINI ES Levels: Current Action ===
-# Updated: November 25, 2025 - Intraday Update
+# Updated: November 25, 2025 - Intraday Update 2
 # 
+# TIMELINE:
+# 8:00 AM - Range posted: 6733 to 6701
+# 9:40 AM - Flushed range, trapping bears
+# 9:49 AM - Posted: 6701 reclaim triggers up
 # 6716 TARGET HIT!
-# Range: 6701-6733 with 6716 mid-pivot
-# Flushed 6701, then reclaimed -> rallied
-# *PROTECT GAINS*
+# 6733 TARGET HIT!
 # 
-# TARGETS:
-# 6733, 6745+ if ES wants more
+# NEXT TARGETS:
+# 6742, 6755, 6764
 # 
 # SUPPORTS:
-# Same supports (6701, 6685, 6668-70)
+# 6716, 6701, 6685, 6668-70
 
 # === RESISTANCE LEVELS ===
-input level1 = 6764;  # R5 - Extension
-input level1_thickness = 2;
-input level2 = 6755;  # R4 - Extension
-input level2_thickness = 2;
-input level3 = 6745;  # R3 - If ES wants more
-input level3_thickness = 3;
-input level4 = 6733;  # R2 - Target (range high)
-input level4_thickness = 4;
-input level5 = 6742;  # R1 - Next target
-input level5_thickness = 2;
+input level1 = 6764;  # R3 - Next Target
+input level1_thickness = 1;
+input level2 = 6755;  # R2 - Next Target
+input level2_thickness = 1;
+input level3 = 6742;  # R1 - Next Target
+input level3_thickness = 1;
+input level4 = 6733;  # COMPLETED - Target hit!
+input level4_thickness = 1;
+input level5 = 6745;  # Extension level
+input level5_thickness = 1;
 
 # === SUPPORT LEVELS ===
-input level6 = 6716;  # MID-PIVOT - 6716 target hit!
-input level6_thickness = 5;
-input level7 = 6701;  # S1 - Range low, must reclaim to rally (RECLAIMED!)
-input level7_thickness = 4;
-input level8 = 6685;  # S2 - Dip Target
-input level8_thickness = 3;
-input level9 = 6668;  # S3 - Dip Target (6668-70)
-input level9_thickness = 2;
-input level10 = 6638; # S4 - Deep Support
+input level6 = 6716;  # S1 - Target hit! Now support
+input level6_thickness = 1;
+input level7 = 6701;  # S2 - Range low, reclaimed at 9:49AM
+input level7_thickness = 1;
+input level8 = 6685;  # S3 - Dip Target
+input level8_thickness = 1;
+input level9 = 6668;  # S4 - Dip Target (6668-70)
+input level9_thickness = 1;
+input level10 = 6638; # S5 - Deep Support
 input level10_thickness = 1;
 
 # === ANCHORED VWAP SETTINGS ===
@@ -72,16 +74,16 @@ def above6764 = close > level1;
 def at6764 = close >= level1 - 2 and close <= level1 + 2;
 def above6755 = close > level2;
 def at6755 = close >= level2 - 2 and close <= level2 + 2;
-def above6745 = close > level3;
-def at6745 = close >= level3 - 2 and close <= level3 + 2;
+def above6742 = close > level3;
+def at6742 = close >= level3 - 2 and close <= level3 + 2;
 def above6733 = close > level4;
 def at6733 = close >= level4 - 2 and close <= level4 + 2;
-def above6742 = close > level5;
-def at6742 = close >= level5 - 2 and close <= level5 + 2;
-def above6716 = close > level6;  # MID-PIVOT
+def above6745 = close > level5;
+def at6745 = close >= level5 - 2 and close <= level5 + 2;
+def above6716 = close > level6;
 def at6716 = close >= level6 - 2 and close <= level6 + 2;
 def below6716 = close < level6;
-def above6701 = close > level7;  # Range low
+def above6701 = close > level7;
 def at6701 = close >= level7 - 2 and close <= level7 + 2;
 def below6701 = close < level7;
 def above6685 = close > level8;
@@ -105,27 +107,27 @@ L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
 
 plot L3 = level3;
-L3.SetDefaultColor(Color.LIGHT_GREEN);
+L3.SetDefaultColor(Color.CYAN);
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
 plot L4 = level4;
-L4.SetDefaultColor(Color.GREEN);
+L4.SetDefaultColor(Color.GRAY);
 L4.SetLineWeight(level4_thickness);
-L4.SetStyle(Curve.FIRM);
+L4.SetStyle(Curve.SHORT_DASH);
 
 plot L5 = level5;
-L5.SetDefaultColor(Color.LIGHT_GREEN);
+L5.SetDefaultColor(Color.LIGHT_GRAY);
 L5.SetLineWeight(level5_thickness);
-L5.SetStyle(Curve.FIRM);
+L5.SetStyle(Curve.SHORT_DASH);
 
 plot L6 = level6;
-L6.SetDefaultColor(Color.YELLOW);
+L6.SetDefaultColor(Color.GREEN);
 L6.SetLineWeight(level6_thickness);
 L6.SetStyle(Curve.FIRM);
 
 plot L7 = level7;
-L7.SetDefaultColor(Color.ORANGE);
+L7.SetDefaultColor(Color.YELLOW);
 L7.SetLineWeight(level7_thickness);
 L7.SetStyle(Curve.FIRM);
 
@@ -145,16 +147,16 @@ L10.SetLineWeight(level10_thickness);
 L10.SetStyle(Curve.SHORT_DASH);
 
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, "R5: 6764 Extension", Color.CYAN, yes);
-AddChartBubble(isLastBar, level2, "R4: 6755 Extension", Color.CYAN, yes);
-AddChartBubble(isLastBar, level3, "R3: 6745+ If ES wants more", Color.LIGHT_GREEN, yes);
-AddChartBubble(isLastBar, level4, "R2: 6733 Range High", Color.GREEN, yes);
-AddChartBubble(isLastBar, level5, "R1: 6742", Color.LIGHT_GREEN, yes);
-AddChartBubble(isLastBar, level6, "MID: 6716 TARGET HIT!", Color.YELLOW, no);
-AddChartBubble(isLastBar, level7, "S1: 6701 Range Low (Reclaimed!)", Color.ORANGE, no);
-AddChartBubble(isLastBar, level8, "S2: 6685 Dip", Color.ORANGE, no);
-AddChartBubble(isLastBar, level9, "S3: 6668-70 Dip", Color.RED, no);
-AddChartBubble(isLastBar, level10, "S4: 6638", Color.GRAY, no);
+AddChartBubble(isLastBar, level1, "R3: 6764 Next", Color.CYAN, yes);
+AddChartBubble(isLastBar, level2, "R2: 6755 Next", Color.CYAN, yes);
+AddChartBubble(isLastBar, level3, "R1: 6742 Next", Color.CYAN, yes);
+AddChartBubble(isLastBar, level4, "6733 TARGET HIT!", Color.GRAY, yes);
+AddChartBubble(isLastBar, level5, "6745 Extension", Color.LIGHT_GRAY, yes);
+AddChartBubble(isLastBar, level6, "S1: 6716 (Target hit!)", Color.GREEN, no);
+AddChartBubble(isLastBar, level7, "S2: 6701 (Reclaimed 9:49AM)", Color.YELLOW, no);
+AddChartBubble(isLastBar, level8, "S3: 6685 Dip", Color.ORANGE, no);
+AddChartBubble(isLastBar, level9, "S4: 6668-70 Dip", Color.RED, no);
+AddChartBubble(isLastBar, level10, "S5: 6638", Color.GRAY, no);
 
 # === TOUCH LOGIC ===
 def touch6764 = low <= level1 and high >= level1;
@@ -163,14 +165,14 @@ def firstTouch6764 = touch6764 and !touch6764[1];
 def touch6755 = low <= level2 and high >= level2;
 def firstTouch6755 = touch6755 and !touch6755[1];
 
-def touch6745 = low <= level3 and high >= level3;
-def firstTouch6745 = touch6745 and !touch6745[1];
+def touch6742 = low <= level3 and high >= level3;
+def firstTouch6742 = touch6742 and !touch6742[1];
 
 def touch6733 = low <= level4 and high >= level4;
 def firstTouch6733 = touch6733 and !touch6733[1];
 
-def touch6742 = low <= level5 and high >= level5;
-def firstTouch6742 = touch6742 and !touch6742[1];
+def touch6745 = low <= level5 and high >= level5;
+def firstTouch6745 = touch6745 and !touch6745[1];
 
 def touch6716 = low <= level6 and high >= level6;
 def firstTouch6716 = touch6716 and !touch6716[1];
@@ -189,27 +191,30 @@ def touch6638 = low <= level10 and high >= level10;
 def firstTouch6638 = touch6638 and !touch6638[1];
 
 # === ALERT SYSTEM ===
-# Resistance Targets
-Alert(enableAlerts and firstTouch6764, "ES >> 6764 Extension!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6755, "ES >> 6755 Extension!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6745, "ES >> 6745+ If ES wants more!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6733, "ES >> 6733 Range High!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6742, "ES >> 6742!", Alert.BAR, Sound.Ring);
+# Next Targets
+Alert(enableAlerts and firstTouch6764, "ES >> 6764 NEXT TARGET!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6755, "ES >> 6755 NEXT TARGET!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6742, "ES >> 6742 NEXT TARGET!", Alert.BAR, Sound.Ring);
 
-# Mid-Pivot
-Alert(enableAlerts and firstTouch6716, "ES >> 6716 MID-PIVOT (Target hit!)", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and at6716, "ES at 6716 MID-PIVOT!", Alert.BAR, Sound.Chimes);
+# Completed Targets
+Alert(enableAlerts and firstTouch6733, "ES >> 6733 (Target completed!)", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and firstTouch6745, "ES >> 6745 Extension", Alert.BAR, Sound.Ring);
 
-# Range Low - 6701 Critical
-Alert(enableAlerts and firstTouch6701Up, "ES UP 6701 RECLAIM - Rally mode!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6701Down, "ES DOWN 6701 - Must reclaim to rally!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6701, "ES at 6701 - Range low, must reclaim!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and below6701, "ES < 6701 - Dip to 6685/6668 active!", Alert.BAR, Sound.Bell);
+# Support Levels
+Alert(enableAlerts and firstTouch6716, "ES >> 6716 Support (Target hit!)", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and at6716, "ES at 6716 Support!", Alert.BAR, Sound.Chimes);
+
+# 6701 Critical Level
+Alert(enableAlerts and firstTouch6701Up, "ES UP 6701 RECLAIM - Rally continues!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6701Down, "ES DOWN 6701 - Bear trap flush!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6701, "ES at 6701 - Reclaimed 9:49AM!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and below6701, "ES < 6701 - Watch dip targets!", Alert.BAR, Sound.Bell);
 
 # Dip Targets
 Alert(enableAlerts and firstTouch6685, "ES >> 6685 Dip target!", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and firstTouch6668, "ES >> 6668-70 Dip target!", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and firstTouch6638, "ES >> 6638 Deep support!", Alert.BAR, Sound.Bell);
 
-# Strategy Alert
-Alert(enableAlerts and above6733, "ES > 6733 - PROTECT GAINS!", Alert.BAR, Sound.Ring);
+# Progress Alerts
+Alert(enableAlerts and above6742, "ES > 6742 - Next: 6755, 6764!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and above6733, "ES > 6733 - 2/2 targets hit! Next: 6742!", Alert.BAR, Sound.Ring);
