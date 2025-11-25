@@ -11,74 +11,18 @@ input showVWAP4 = yes;
 input showVWAP5 = yes;
 input showClouds = yes;
 input showLabels = yes;
+input showSignals = yes;
 
 # === Momentum Settings ===
 input momentumLength = 3; # Bars to calculate VWAP slope
 input lineWeight = 1;
 
-# === Helper Function: Get Period Start ===
-def GetPeriodStart(def periodsAgo) {
-    def period;
-    switch (anchorScale) {
-        case "Day":
-            period = GetDay();
-        case "Week":
-            period = Floor(GetYYYYMMDD() / 100) * 100 + 
-                     Min(GetDayOfWeek(GetYYYYMMDD()), 5);
-        case "Month":
-            period = Floor(GetYYYYMMDD() / 100);
-        case "Quarter":
-            period = Floor(GetYear() * 4 + (GetMonth() - 1) / 3);
-    }
-    
-    def currentPeriod = period;
-    def targetPeriod = currentPeriod - periodsAgo;
-    def isTargetPeriod = period == targetPeriod;
-    def isAfterTarget = period > targetPeriod;
-    
-    isAfterTarget
-}
-
-# === VWAP Calculation Function ===
-script CalculateVWAP {
-    input periodsAgo = 0;
-    input scale = "Day";
-    
-    def period;
-    switch (scale) {
-        case "Day":
-            period = GetDay();
-        case "Week":
-            period = Floor(GetYYYYMMDD() / 100) * 100 + 
-                     Min(GetDayOfWeek(GetYYYYMMDD()), 5);
-        case "Month":
-            period = Floor(GetYYYYMMDD() / 100);
-        case "Quarter":
-            period = Floor(GetYear() * 4 + (GetMonth() - 1) / 3);
-    }
-    
-    def currentPeriod = HighestAll(period);
-    def targetPeriod = currentPeriod - periodsAgo;
-    def isActive = period >= targetPeriod;
-    
-    def typicalPrice = (high + low + close) / 3;
-    def volumePrice = if isActive then typicalPrice * volume else 0;
-    def volumeSum = if isActive then volume else 0;
-    
-    def cumVolPrice = TotalSum(volumePrice);
-    def cumVol = TotalSum(volumeSum);
-    
-    def vwap = if cumVol > 0 then cumVolPrice / cumVol else Double.NaN;
-    
-    plot result = vwap;
-}
-
-# === Calculate 5 VWAPs ===
-def VWAP_1 = CalculateVWAP(0, anchorScale);
-def VWAP_2 = CalculateVWAP(1, anchorScale);
-def VWAP_3 = CalculateVWAP(2, anchorScale);
-def VWAP_4 = CalculateVWAP(3, anchorScale);
-def VWAP_5 = CalculateVWAP(4, anchorScale);
+# === Calculate 5 Moving Averages to create cascade ===
+def VWAP_1 = Average(close, 10);
+def VWAP_2 = Average(close, 20);
+def VWAP_3 = Average(close, 30);
+def VWAP_4 = Average(close, 50);
+def VWAP_5 = Average(close, 100);
 
 # === Calculate Momentum (Slope) ===
 def slope1 = VWAP_1 - VWAP_1[momentumLength];
@@ -93,15 +37,15 @@ def bullish3 = slope3 > 0;
 def bullish4 = slope4 > 0;
 def bullish5 = slope5 > 0;
 
-# === Color Definitions ===
-# Strong momentum colors
-def strongBullColor = CreateColor(0, 200, 100);    # Bright Green
-def mediumBullColor = CreateColor(0, 150, 80);     # Medium Green
-def weakBullColor = CreateColor(0, 100, 60);       # Weak Green
+# === SMA Crossover Strategy ===
+# Fast MA crosses above Slow MA = Long Entry
+# Fast MA crosses below Slow MA = Short Entry
+def longEntry = VWAP_1 crosses above VWAP_4;
+def shortEntry = VWAP_1 crosses below VWAP_4;
 
-def strongBearColor = CreateColor(200, 0, 50);     # Bright Red
-def mediumBearColor = CreateColor(150, 0, 40);     # Medium Red
-def weakBearColor = CreateColor(100, 0, 30);       # Weak Red
+# Confirmation: Price above/below cascade
+def longConfirm = longEntry and close > VWAP_2;
+def shortConfirm = shortEntry and close < VWAP_2;
 
 # === Plot VWAPs ===
 plot VWAP1_Plot = if showVWAP1 then VWAP_1 else Double.NaN;
@@ -133,27 +77,23 @@ VWAP5_Plot.SetStyle(Curve.FIRM);
 # === Cloud Layers ===
 # Layer 1: Between VWAP 1 and VWAP 2 (Most recent)
 AddCloud(if showClouds and showVWAP1 and showVWAP2 then VWAP_1 else Double.NaN, 
-         VWAP_2,
-         if bullish1 then strongBullColor else strongBearColor,
-         if bullish1 then strongBearColor else strongBullColor);
+         if showClouds and showVWAP1 and showVWAP2 then VWAP_2 else Double.NaN,
+         CreateColor(0, 100, 80), CreateColor(100, 0, 40));
 
 # Layer 2: Between VWAP 2 and VWAP 3
 AddCloud(if showClouds and showVWAP2 and showVWAP3 then VWAP_2 else Double.NaN, 
-         VWAP_3,
-         if bullish2 then mediumBullColor else mediumBearColor,
-         if bullish2 then mediumBearColor else mediumBullColor);
+         if showClouds and showVWAP2 and showVWAP3 then VWAP_3 else Double.NaN,
+         CreateColor(0, 90, 70), CreateColor(90, 0, 35));
 
 # Layer 3: Between VWAP 3 and VWAP 4
 AddCloud(if showClouds and showVWAP3 and showVWAP4 then VWAP_3 else Double.NaN, 
-         VWAP_4,
-         if bullish3 then weakBullColor else weakBearColor,
-         if bullish3 then weakBearColor else weakBullColor);
+         if showClouds and showVWAP3 and showVWAP4 then VWAP_4 else Double.NaN,
+         CreateColor(0, 80, 60), CreateColor(80, 0, 30));
 
 # Layer 4: Between VWAP 4 and VWAP 5 (Oldest)
 AddCloud(if showClouds and showVWAP4 and showVWAP5 then VWAP_4 else Double.NaN, 
-         VWAP_5,
-         if bullish4 then CreateColor(0, 80, 50) else CreateColor(80, 0, 25),
-         if bullish4 then CreateColor(80, 0, 25) else CreateColor(0, 80, 50));
+         if showClouds and showVWAP4 and showVWAP5 then VWAP_5 else Double.NaN,
+         CreateColor(0, 70, 50), CreateColor(70, 0, 25));
 
 # === Trend Uniformity Detection ===
 def allBullish = bullish1 and bullish2 and bullish3 and bullish4 and bullish5;
@@ -167,32 +107,42 @@ def consolidation = (bullish1 and !bullish3) or (!bullish1 and bullish3);
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
 
 AddChartBubble(isLastBar and showVWAP1, VWAP_1, 
-               "VWAP1: " + AsPrice(VWAP_1), 
+               "Fast (10)", 
                if bullish1 then Color.GREEN else Color.RED, yes);
 
+AddChartBubble(isLastBar and showVWAP2, VWAP_2, 
+               "20", 
+               if bullish2 then Color.GREEN else Color.RED, yes);
+
+AddChartBubble(isLastBar and showVWAP3, VWAP_3, 
+               "30", 
+               if bullish3 then Color.GREEN else Color.RED, yes);
+
+AddChartBubble(isLastBar and showVWAP4, VWAP_4, 
+               "50", 
+               if bullish4 then Color.GREEN else Color.RED, yes);
+
 AddChartBubble(isLastBar and showVWAP5, VWAP_5, 
-               "VWAP5: " + AsPrice(VWAP_5), 
+               "Slow (100)", 
                if bullish5 then Color.DARK_GREEN else Color.DARK_RED, no);
 
-# === Status Labels ===
-def scaleText;
-switch (anchorScale) {
-    case "Day":
-        scaleText = 1;
-    case "Week":
-        scaleText = 2;
-    case "Month":
-        scaleText = 3;
-    case "Quarter":
-        scaleText = 4;
-}
+# === Entry Signal Arrows ===
+plot LongSignal = if showSignals and longConfirm then low - (high - low) * 0.1 else Double.NaN;
+plot ShortSignal = if showSignals and shortConfirm then high + (high - low) * 0.1 else Double.NaN;
 
-AddLabel(showLabels, 
-         if anchorScale == anchorScale."Day" then "Scale: Daily" 
-         else if anchorScale == anchorScale."Week" then "Scale: Weekly"
-         else if anchorScale == anchorScale."Month" then "Scale: Monthly"
-         else "Scale: Quarterly", 
-         Color.GRAY);
+LongSignal.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
+LongSignal.SetLineWeight(3);
+LongSignal.SetDefaultColor(Color.GREEN);
+
+ShortSignal.SetPaintingStrategy(PaintingStrategy.ARROW_DOWN);
+ShortSignal.SetLineWeight(3);
+ShortSignal.SetDefaultColor(Color.RED);
+
+# === Status Labels ===
+AddLabel(showLabels, "MA Cascade", Color.GRAY);
+
+AddLabel(showSignals and longConfirm, "🐂 ENTRY", Color.GREEN);
+AddLabel(showSignals and shortConfirm, "🐻 ENTRY", Color.RED);
 
 AddLabel(showLabels and allBullish, "UNIFORM BULLISH TREND", Color.GREEN);
 AddLabel(showLabels and allBearish, "UNIFORM BEARISH TREND", Color.RED);
@@ -210,17 +160,21 @@ AddLabel(showLabels and withinCloud, "Within Cloud", Color.YELLOW);
 
 # Layer momentum indicators
 AddLabel(showLabels, 
-         "L1:" + if bullish1 then "↑" else "↓", 
-         if bullish1 then strongBullColor else strongBearColor);
+         "10MA:" + if bullish1 then "UP" else "DN", 
+         if bullish1 then CreateColor(0, 200, 100) else CreateColor(200, 0, 50));
 AddLabel(showLabels, 
-         "L2:" + if bullish2 then "↑" else "↓", 
-         if bullish2 then mediumBullColor else mediumBearColor);
+         "20MA:" + if bullish2 then "UP" else "DN", 
+         if bullish2 then CreateColor(0, 150, 80) else CreateColor(150, 0, 40));
 AddLabel(showLabels, 
-         "L3:" + if bullish3 then "↑" else "↓", 
-         if bullish3 then weakBullColor else weakBearColor);
+         "30MA:" + if bullish3 then "UP" else "DN", 
+         if bullish3 then CreateColor(0, 100, 60) else CreateColor(100, 0, 30));
 AddLabel(showLabels, 
-         "L4:" + if bullish4 then "↑" else "↓", 
+         "50MA:" + if bullish4 then "UP" else "DN", 
          if bullish4 then CreateColor(0, 80, 50) else CreateColor(80, 0, 25));
 AddLabel(showLabels, 
-         "L5:" + if bullish5 then "↑" else "↓", 
+         "100MA:" + if bullish5 then "UP" else "DN", 
          if bullish5 then CreateColor(0, 60, 40) else CreateColor(60, 0, 20));
+
+# === Alert System ===
+Alert(showSignals and longConfirm, "🐂 ENTRY SIGNAL - 10 MA crossed above 50 MA!", Alert.BAR, Sound.Ring);
+Alert(showSignals and shortConfirm, "🐻 ENTRY SIGNAL - 10 MA crossed below 50 MA!", Alert.BAR, Sound.Ring);
