@@ -67,7 +67,7 @@ L3.SetHiding(!showLines);
 
 plot L4 = level4;
 L4.SetDefaultColor(Color.DARK_ORANGE);
-L4.SetLineWeight(2);
+L4.SetLineWeight(1);
 L4.SetStyle(Curve.FIRM);
 L4.SetHiding(!showLines);
 
@@ -85,13 +85,13 @@ L6.SetHiding(!showLines);
 
 plot L7 = level7;
 L7.SetDefaultColor(Color.GREEN);
-L7.SetLineWeight(2);
+L7.SetLineWeight(1);
 L7.SetStyle(Curve.FIRM);
 L7.SetHiding(!showLines);
 
 plot L8 = level8;
 L8.SetDefaultColor(Color.RED);
-L8.SetLineWeight(2);
+L8.SetLineWeight(1);
 L8.SetStyle(Curve.FIRM);
 L8.SetHiding(!showLines);
 
@@ -108,16 +108,16 @@ L10.SetStyle(Curve.SHORT_DASH);
 L10.SetHiding(!showLines);
 
 # === OPTIONAL CLOUDS ===
-AddCloud(if showClouds then L1 else Double.NaN, if showClouds then L1 + 2 else Double.NaN, Color.CYAN, Color.CYAN);
-AddCloud(if showClouds then L2 else Double.NaN, if showClouds then L2 + 2 else Double.NaN, Color.MAGENTA, Color.MAGENTA);
-AddCloud(if showClouds then L3 else Double.NaN, if showClouds then L3 + 2 else Double.NaN, Color.PLUM, Color.PLUM);
-AddCloud(if showClouds then L4 else Double.NaN, if showClouds then L4 + 2 else Double.NaN, Color.DARK_ORANGE, Color.DARK_ORANGE);
-AddCloud(if showClouds then L5 else Double.NaN, if showClouds then L5 + 2 else Double.NaN, Color.ORANGE, Color.ORANGE);
-AddCloud(if showClouds then L6 else Double.NaN, if showClouds then L6 + 2 else Double.NaN, Color.YELLOW, Color.YELLOW);
-AddCloud(if showClouds then L7 else Double.NaN, if showClouds then L7 + 2 else Double.NaN, Color.GREEN, Color.GREEN);
-AddCloud(if showClouds then L8 else Double.NaN, if showClouds then L8 + 2 else Double.NaN, Color.RED, Color.RED);
-AddCloud(if showClouds then L9 else Double.NaN, if showClouds then L9 + 2 else Double.NaN, Color.DARK_RED, Color.DARK_RED);
-AddCloud(if showClouds then L10 else Double.NaN, if showClouds then L10 + 2 else Double.NaN, Color.DARK_RED, Color.DARK_RED);
+AddCloud(if showClouds then L1 else Double.NaN, if showClouds then L1 + 0.5 else Double.NaN, Color.CYAN, Color.CYAN);
+AddCloud(if showClouds then L2 else Double.NaN, if showClouds then L2 + 0.5 else Double.NaN, Color.MAGENTA, Color.MAGENTA);
+AddCloud(if showClouds then L3 else Double.NaN, if showClouds then L3 + 0.5 else Double.NaN, Color.PLUM, Color.PLUM);
+AddCloud(if showClouds then L4 else Double.NaN, if showClouds then L4 + 0.5 else Double.NaN, Color.DARK_ORANGE, Color.DARK_ORANGE);
+AddCloud(if showClouds then L5 else Double.NaN, if showClouds then L5 + 0.5 else Double.NaN, Color.ORANGE, Color.ORANGE);
+AddCloud(if showClouds then L6 else Double.NaN, if showClouds then L6 + 0.5 else Double.NaN, Color.YELLOW, Color.YELLOW);
+AddCloud(if showClouds then L7 else Double.NaN, if showClouds then L7 + 0.5 else Double.NaN, Color.GREEN, Color.GREEN);
+AddCloud(if showClouds then L8 else Double.NaN, if showClouds then L8 + 0.5 else Double.NaN, Color.RED, Color.RED);
+AddCloud(if showClouds then L9 else Double.NaN, if showClouds then L9 + 0.5 else Double.NaN, Color.DARK_RED, Color.DARK_RED);
+AddCloud(if showClouds then L10 else Double.NaN, if showClouds then L10 + 0.5 else Double.NaN, Color.DARK_RED, Color.DARK_RED);
 
 # Fixed bubble logic - show only on last bar
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
@@ -194,23 +194,23 @@ def firstTouch6520Up = touch6520 and close > level8 and !touch6520[1];
 
 # === ALERTS ===
 # BULL MAX TARGET
-Alert(enableAlerts and firstTouch6920Up, "SPX UP 6920 BULL MAX - Low probability hit!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6920, "SPX at 6920 - Bull max target!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and firstTouch6920Up, "SPX UP 6920 🐂 MAX - Low probability hit!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6920, "SPX at 6920 - 🐂 max 🎯!", Alert.BAR, Sound.Chimes);
 
 # HEDGE FUND BEAR SHORTS
-Alert(enableAlerts and firstTouch6880Up, "SPX UP 6880 - HF Bear Shorts breach!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6880Down, "SPX DOWN 6880 - HF Bear Shorts defend!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6880, "SPX at 6880 - HF Bear Shorts (Sticky EoY)!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and firstTouch6880Up, "SPX UP 6880 - HF 🐻 Shorts breach!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6880Down, "SPX DOWN 6880 - HF 🐻 Shorts defend!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6880, "SPX at 6880 - HF 🐻 Shorts (Sticky EoY)!", Alert.BAR, Sound.Chimes);
 
 # 2ND LARGEST BEAR STAR
-Alert(enableAlerts and firstTouch6825Up, "SPX UP 6825 - 2nd Bear Star breach!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6825Down, "SPX DOWN 6825 - 2nd Bear Star defend!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6825, "SPX at 6825 - 2nd Largest Bear Star!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and firstTouch6825Up, "SPX UP 6825 - 2nd 🐻 Star breach!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6825Down, "SPX DOWN 6825 - 2nd 🐻 Star defend!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6825, "SPX at 6825 - 2nd Largest 🐻 Star!", Alert.BAR, Sound.Chimes);
 
 # MAJOR BEAR STAR - BREAKDOWN PLAYERS
-Alert(enableAlerts and firstTouch6765Up, "SPX UP 6765 - Major Bear Star breach!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6765Up, "SPX UP 6765 - Major 🐻 Star breach!", Alert.BAR, Sound.Ring);
 Alert(enableAlerts and firstTouch6765Down, "SPX DOWN 6765 - Breakdown players defend!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6765, "SPX at 6765 - Major Bear Star (targeting 6520)!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and at6765, "SPX at 6765 - Major 🐻 Star (targeting 6520)!", Alert.BAR, Sound.Chimes);
 
 # LATE HEDGERS
 Alert(enableAlerts and firstTouch6720Up, "SPX UP 6720 - Late Hedgers covering!", Alert.BAR, Sound.Ring);
@@ -224,8 +224,8 @@ Alert(enableAlerts and at6670, "SPX at 6670 - First Hedge Unwind!", Alert.BAR, S
 
 # BULL ENTRY ZONE - PIVOT
 Alert(enableAlerts and firstTouch6600Up, "SPX UP 6600 - Christmas rally zone!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6600Down, "SPX DOWN 6600 - Bull entry fail!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6600, "SPX at 6600 - BULL ENTRY ZONE!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and firstTouch6600Down, "SPX DOWN 6600 - 🐂 entry fail!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6600, "SPX at 6600 - 🐂 ENTRY ZONE!", Alert.BAR, Sound.Chimes);
 
 # STOP LOSS CLUSTER - CRITICAL
 Alert(enableAlerts and firstTouch6520Down, "SPX DOWN 6520 STOP CLUSTER BREACH - FAST DROP UNLEASHED!", Alert.BAR, Sound.Bell);
