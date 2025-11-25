@@ -80,9 +80,6 @@ Midline.SetDefaultColor(Color.DARK_GRAY);
 Midline.SetLineWeight(1);
 Midline.SetStyle(Curve.LONG_DASH);
 
-# === Cloud Fill ===
-AddCloud(UpperBB, LowerBB, Color.DARK_RED, Color.DARK_GREEN);
-
 # === Entry Point Detection ===
 # Long Entry: RSI crosses below lower band (oversold) - potential reversal up
 # Short Entry: RSI crosses above upper band (overbought) - potential reversal down
@@ -93,37 +90,15 @@ def ShortEntry = RSI_CrossAboveUpper;
 def LongConfirmation = RSI_CrossBackIntoLower and RSI[1] < rsiOversold;
 def ShortConfirmation = RSI_CrossBackIntoUpper and RSI[1] > rsiOverbought;
 
-# === Entry Signals on Chart ===
-plot LongSignal = if showBreachSignals and (LongEntry or LongConfirmation) then LowerBand - 5 else Double.NaN;
-plot ShortSignal = if showBreachSignals and (ShortEntry or ShortConfirmation) then UpperBand + 5 else Double.NaN;
-
-LongSignal.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
-LongSignal.SetLineWeight(3);
-LongSignal.SetDefaultColor(Color.GREEN);
-
-ShortSignal.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
-ShortSignal.SetLineWeight(3);
-ShortSignal.SetDefaultColor(Color.RED);
-
-# === Breach Signals (Points) ===
-plot BreachUpperSignal = if showBreachSignals and RSI_CrossAboveUpper then RSI else Double.NaN;
-plot BreachLowerSignal = if showBreachSignals and RSI_CrossBelowLower then RSI else Double.NaN;
-
-BreachUpperSignal.SetPaintingStrategy(PaintingStrategy.POINTS);
-BreachUpperSignal.SetLineWeight(4);
-BreachUpperSignal.SetDefaultColor(Color.MAGENTA);
-
-BreachLowerSignal.SetPaintingStrategy(PaintingStrategy.POINTS);
-BreachLowerSignal.SetLineWeight(4);
-BreachLowerSignal.SetDefaultColor(Color.CYAN);
+# === Cloud Fill - Shaded Zones ===
+# Green when RSI below lower band (Long Zone)
+# Red when RSI above upper band (Short Zone)
+AddCloud(if RSI_BelowLower then 100 else Double.NaN, 0, Color.DARK_GREEN, Color.DARK_GREEN);
+AddCloud(if RSI_AboveUpper then 100 else Double.NaN, 0, Color.DARK_RED, Color.DARK_RED);
 
 # === Background Color for Extreme Conditions ===
 def OverboughtExtreme = RSI_AboveUpper and RSI > rsiOverbought;
 def OversoldExtreme = RSI_BelowLower and RSI < rsiOversold;
-
-AssignPriceColor(if OverboughtExtreme then Color.DARK_RED 
-                 else if OversoldExtreme then Color.DARK_GREEN 
-                 else Color.CURRENT);
 
 # === Chart Bubbles ===
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
