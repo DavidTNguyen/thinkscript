@@ -1,0 +1,137 @@
+# Auto Fibonacci Retracement/Extension Levels
+# Automatically calculates and plots Fibonacci levels based on recent price range
+# Lookback: 50 periods | Offset: 25 periods back for predictive relevance
+
+# === User Settings ===
+input lookbackPeriod = 50; # Lookback over 50 periods for medium-term range
+input offsetPeriod = 25;   # Offset 25 periods back for predictive relevance
+input showNegativeLevels = yes; # Show negative extension levels (-100% to -23.6%)
+input showPositiveLevels = yes; # Show positive retracement levels (0% to 100%)
+input showExtensions = yes;     # Show extension levels (138.2% to 423.6%)
+input showLabels = yes;         # Show bubble labels at last bar
+
+# === Calculate Range ===
+# Find highest high and lowest low over the lookback period, offset back in time
+def highestHigh = Highest(high[offsetPeriod], lookbackPeriod);
+def lowestLow = Lowest(low[offsetPeriod], lookbackPeriod);
+def priceRange = highestHigh - lowestLow;
+
+# === Fibonacci Level Calculations ===
+# Negative Extensions (below 0%)
+def fib_neg100 = lowestLow + priceRange * -1.0;
+def fib_neg786 = lowestLow + priceRange * -0.786;
+def fib_neg618 = lowestLow + priceRange * -0.618;
+def fib_neg500 = lowestLow + priceRange * -0.5;
+def fib_neg382 = lowestLow + priceRange * -0.382;
+def fib_neg236 = lowestLow + priceRange * -0.236;
+
+# Standard Retracement Levels (0% to 100%)
+def fib_000 = lowestLow;
+def fib_236 = lowestLow + priceRange * 0.236;
+def fib_382 = lowestLow + priceRange * 0.382;
+def fib_500 = lowestLow + priceRange * 0.5;
+def fib_618 = lowestLow + priceRange * 0.618;
+def fib_786 = lowestLow + priceRange * 0.786;
+def fib_100 = highestHigh;
+
+# Positive Extensions (above 100%)
+def fib_1382 = lowestLow + priceRange * 1.382;
+def fib_1618 = lowestLow + priceRange * 1.618;
+def fib_2000 = lowestLow + priceRange * 2.0;
+def fib_2618 = lowestLow + priceRange * 2.618;
+def fib_4236 = lowestLow + priceRange * 4.236;
+
+# === Plot Negative Extension Levels ===
+plot FibNeg100 = if showNegativeLevels then fib_neg100 else Double.NaN;
+plot FibNeg786 = if showNegativeLevels then fib_neg786 else Double.NaN;
+plot FibNeg618 = if showNegativeLevels then fib_neg618 else Double.NaN;
+plot FibNeg500 = if showNegativeLevels then fib_neg500 else Double.NaN;
+plot FibNeg382 = if showNegativeLevels then fib_neg382 else Double.NaN;
+plot FibNeg236 = if showNegativeLevels then fib_neg236 else Double.NaN;
+
+FibNeg100.SetDefaultColor(CreateColor(74, 0, 224));    # Deep blue
+FibNeg786.SetDefaultColor(CreateColor(123, 104, 238)); # Medium slate blue
+FibNeg618.SetDefaultColor(CreateColor(147, 112, 219)); # Medium purple
+FibNeg500.SetDefaultColor(CreateColor(186, 85, 211));  # Medium orchid
+FibNeg382.SetDefaultColor(CreateColor(218, 112, 214)); # Orchid
+FibNeg236.SetDefaultColor(CreateColor(238, 130, 238)); # Violet
+
+FibNeg100.SetStyle(Curve.FIRM);
+FibNeg786.SetStyle(Curve.FIRM);
+FibNeg618.SetStyle(Curve.FIRM);
+FibNeg500.SetStyle(Curve.FIRM);
+FibNeg382.SetStyle(Curve.FIRM);
+FibNeg236.SetStyle(Curve.FIRM);
+
+# === Plot Standard Retracement Levels ===
+plot Fib000 = if showPositiveLevels then fib_000 else Double.NaN;
+plot Fib236 = if showPositiveLevels then fib_236 else Double.NaN;
+plot Fib382 = if showPositiveLevels then fib_382 else Double.NaN;
+plot Fib500 = if showPositiveLevels then fib_500 else Double.NaN;
+plot Fib618 = if showPositiveLevels then fib_618 else Double.NaN;
+plot Fib786 = if showPositiveLevels then fib_786 else Double.NaN;
+plot Fib100 = if showPositiveLevels then fib_100 else Double.NaN;
+
+Fib000.SetDefaultColor(Color.WHITE);
+Fib000.SetLineWeight(3);
+Fib236.SetDefaultColor(CreateColor(255, 215, 0));      # Gold
+Fib382.SetDefaultColor(CreateColor(255, 165, 0));      # Orange
+Fib500.SetDefaultColor(CreateColor(255, 140, 0));      # Dark orange
+Fib618.SetDefaultColor(CreateColor(255, 69, 0));       # Orange red
+Fib786.SetDefaultColor(CreateColor(255, 99, 71));      # Tomato
+Fib100.SetDefaultColor(Color.WHITE);
+Fib100.SetLineWeight(3);
+
+Fib000.SetStyle(Curve.FIRM);
+Fib236.SetStyle(Curve.FIRM);
+Fib382.SetStyle(Curve.FIRM);
+Fib500.SetStyle(Curve.FIRM);
+Fib618.SetStyle(Curve.FIRM);
+Fib786.SetStyle(Curve.FIRM);
+Fib100.SetStyle(Curve.FIRM);
+
+# === Plot Extension Levels ===
+plot Fib1382 = if showExtensions then fib_1382 else Double.NaN;
+plot Fib1618 = if showExtensions then fib_1618 else Double.NaN;
+plot Fib2000 = if showExtensions then fib_2000 else Double.NaN;
+plot Fib2618 = if showExtensions then fib_2618 else Double.NaN;
+plot Fib4236 = if showExtensions then fib_4236 else Double.NaN;
+
+Fib1382.SetDefaultColor(CreateColor(255, 105, 180));   # Hot pink
+Fib1618.SetDefaultColor(CreateColor(255, 20, 147));    # Deep pink
+Fib2000.SetDefaultColor(CreateColor(220, 20, 60));     # Crimson
+Fib2618.SetDefaultColor(CreateColor(178, 34, 34));     # Firebrick
+Fib4236.SetDefaultColor(CreateColor(139, 0, 0));       # Dark red
+
+Fib1382.SetStyle(Curve.FIRM);
+Fib1618.SetStyle(Curve.FIRM);
+Fib2000.SetStyle(Curve.FIRM);
+Fib2618.SetStyle(Curve.FIRM);
+Fib4236.SetStyle(Curve.FIRM);
+
+# === Labels ===
+def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
+
+AddChartBubble(showLabels and isLastBar and showNegativeLevels, fib_neg100, "-100%", CreateColor(74, 0, 224), no);
+AddChartBubble(showLabels and isLastBar and showNegativeLevels, fib_neg786, "-78.6%", CreateColor(123, 104, 238), no);
+AddChartBubble(showLabels and isLastBar and showNegativeLevels, fib_neg618, "-61.8%", CreateColor(147, 112, 219), no);
+AddChartBubble(showLabels and isLastBar and showNegativeLevels, fib_neg500, "-50%", CreateColor(186, 85, 211), no);
+AddChartBubble(showLabels and isLastBar and showNegativeLevels, fib_neg382, "-38.2%", CreateColor(218, 112, 214), no);
+AddChartBubble(showLabels and isLastBar and showNegativeLevels, fib_neg236, "-23.6%", CreateColor(238, 130, 238), no);
+
+AddChartBubble(showLabels and isLastBar and showPositiveLevels, fib_000, "0%", Color.WHITE, no);
+AddChartBubble(showLabels and isLastBar and showPositiveLevels, fib_236, "23.6%", CreateColor(255, 215, 0), no);
+AddChartBubble(showLabels and isLastBar and showPositiveLevels, fib_382, "38.2%", CreateColor(255, 165, 0), no);
+AddChartBubble(showLabels and isLastBar and showPositiveLevels, fib_500, "50%", CreateColor(255, 140, 0), no);
+AddChartBubble(showLabels and isLastBar and showPositiveLevels, fib_618, "61.8%", CreateColor(255, 69, 0), no);
+AddChartBubble(showLabels and isLastBar and showPositiveLevels, fib_786, "78.6%", CreateColor(255, 99, 71), no);
+AddChartBubble(showLabels and isLastBar and showPositiveLevels, fib_100, "100%", Color.WHITE, no);
+
+AddChartBubble(showLabels and isLastBar and showExtensions, fib_1382, "138.2%", CreateColor(255, 105, 180), yes);
+AddChartBubble(showLabels and isLastBar and showExtensions, fib_1618, "161.8%", CreateColor(255, 20, 147), yes);
+AddChartBubble(showLabels and isLastBar and showExtensions, fib_2000, "200%", CreateColor(220, 20, 60), yes);
+AddChartBubble(showLabels and isLastBar and showExtensions, fib_2618, "261.8%", CreateColor(178, 34, 34), yes);
+AddChartBubble(showLabels and isLastBar and showExtensions, fib_4236, "423.6%", CreateColor(139, 0, 0), yes);
+
+# === Info Label ===
+AddLabel(yes, "Auto Fib | Range: " + Round(priceRange, 2) + " | HH: " + Round(highestHigh, 2) + " | LL: " + Round(lowestLow, 2), Color.GRAY);
