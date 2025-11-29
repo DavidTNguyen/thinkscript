@@ -176,18 +176,18 @@ def inGammaZone = close >= level9 and close <= level5;  # 6815-6880 short-gamma 
 
 
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar and showLabels, level1, "7000 Short", Color.MAGENTA, yes);
+AddChartBubble(isLastBar and showLabels, level1, "7000 🐻", Color.MAGENTA, yes);
 AddChartBubble(isLastBar and showLabels, level2, "6950 Magnet", Color.MAGENTA, yes);
-AddChartBubble(isLastBar and showLabels, level3, "6930 TP", Color.ORANGE, yes);
+AddChartBubble(isLastBar and showLabels, level3, "6930 🎯", Color.ORANGE, yes);
 AddChartBubble(isLastBar and showLabels, level4, "6885 BO", Color.YELLOW, yes);
 AddChartBubble(isLastBar and showLabels, level5, "6880", Color.PLUM, yes);
 AddChartBubble(isLastBar and showLabels, level6, "6870 Heavy", Color.PLUM, yes);
 AddChartBubble(isLastBar and showLabels, level7, "6850", Color.PLUM, yes);
-AddChartBubble(isLastBar and showLabels, level8, "6820 PIN", Color.CYAN, no);
+AddChartBubble(isLastBar and showLabels, level8, "6820 📍", Color.CYAN, no);
 AddChartBubble(isLastBar and showLabels, level9, "6815 BD", Color.YELLOW, no);
-AddChartBubble(isLastBar and showLabels, level10, "6785 Sup", Color.CYAN, no);
-AddChartBubble(isLastBar and showLabels, level11, "6750 Sup", Color.CYAN, no);
-AddChartBubble(isLastBar and showLabels, level12, "6720 Shelf", Color.CYAN, no);
+AddChartBubble(isLastBar and showLabels, level10, "6785 S1", Color.CYAN, no);
+AddChartBubble(isLastBar and showLabels, level11, "6750 S2", Color.CYAN, no);
+AddChartBubble(isLastBar and showLabels, level12, "6720 S3", Color.CYAN, no);
 
 # === TOUCH LOGIC ===
 def touch7000 = low <= level1 and high >= level1;

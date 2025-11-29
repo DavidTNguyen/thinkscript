@@ -1,57 +1,63 @@
 //@version=5
-indicator("SPX Levels: Strike-Based Positioning", overlay=true, max_lines_count=500, max_labels_count=500)
+indicator("SPX DEC 1 HEATMAP", overlay=true, max_lines_count=500, max_labels_count=500)
 
-// === SPX Strike-Based Positioning - Updated 11/24/2025 ===
+// === SPX DEC 1 HEATMAP - Updated 11/28/2025 ===
 // 
-// MARKET STRUCTURE (Strike-Based Positioning):
-// 🐂 Max Target: 6920 (Low probability - needs all 🐻 strikes cleared + dovish Fed)
-// Hedge Fund 🐻 Shorts: 6880 (Sticky until EoY)
-// 2nd Largest 🐻 Star: 6825 (Offense + Protection)
-// Major 🐻 Star: 6765 (Breakdown players targeting 6520 fail)
-// Late Hedgers: 6720 (will cover if breached)
-// First Hedge Unwind: 6670
-// 🐂 Entry Zone: 6600 (Current 🎄 rally hopefuls)
-// STOP LOSS CLUSTER: 6520 *** BREAK UNLEASHES FAST DROP ***
-// 🐻 Targets if 6520 breaks: 6300-6060 (Flush zone)
+// MARKET STRUCTURE (Gamma Positioning):
+// HIGH RESISTANCE / SHORT ZONE:
+// 7000 - Short scalp 🔥
+// 6950 - Major magnet 🔥 (big customer long)
+// 6930 - Reaction short / take profit zone 🔥
+// 6885 - Breakout trigger ▲
+//
+// SHORT-GAMMA ZONE (6815-6880):
+// 6880 - Cluster positioning
+// 6870 - Heavy positioning cluster 🏋️
+// 6850 - Cluster
+// 6820 - LARGEST POSITION (PIN) 🎯
+// 6815 - Breakdown trigger ▼
+//
+// SUPPORT ZONE:
+// 6785 - Support 1 🧊 (reaction long)
+// 6750 - Strong support 🧊 (dealer long gamma)
+// 6720 - Final shelf 🧊
 //
 // CURRENT CONTEXT:
-// Market structure defined by strike positioning
-// 6520 = Critical stop loss cluster
-// Above 6600 = 🎄 rally hopefuls in control
-// 6670-6720 = Hedge unwind zone
-// 6765+ = 🐻 shorts defending (targeting 6520 break)
-//
-// KEY STRIKE LEVELS:
-// Resistance: 6670, 6720, 6765, 6825, 6880, 6920
-// Support: 6600 (🐂 entry), 6520 (STOP CLUSTER)
-// Flush Zone: 6300-6060 (if 6520 breaks)
+// Market pinned to 6820 (largest position)
+// Short-gamma zone 6815-6880 = consolidation/chop
+// Breakout above 6885 targets 6930-6950-7000
+// Breakdown below 6815 targets 6785-6750-6720
 
 // === INPUTS ===
-// Resistance Levels
-level1 = input.float(6920, "R6 - 🐂 Max Target (Low probability)", group="🔴 Resistance Levels")
-level1_thickness = input.int(2, "R6 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
-level2 = input.float(6880, "R5 - Hedge Fund 🐻 Shorts (Sticky EoY)", group="🔴 Resistance Levels")
-level2_thickness = input.int(3, "R5 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
-level3 = input.float(6825, "R4 - 2nd Largest 🐻 Star (Offense + Protection)", group="🔴 Resistance Levels")
-level3_thickness = input.int(3, "R4 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
-level4 = input.float(6765, "R3 - Major 🐻 Star (Breakdown players)", group="🔴 Resistance Levels")
-level4_thickness = input.int(4, "R3 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
-level5 = input.float(6720, "R2 - Late Hedgers (will cover if breached)", group="🔴 Resistance Levels")
-level5_thickness = input.int(3, "R2 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
-level6 = input.float(6670, "R1 - First Hedge Unwind Trigger", group="🔴 Resistance Levels")
-level6_thickness = input.int(3, "R1 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Levels")
+// High Resistance / Short Zone
+level1 = input.float(7000, "R7 - Short scalp 🔥", group="🔴 High Resistance Zone")
+level1_thickness = input.int(2, "R7 Line Thickness", minval=1, maxval=10, group="🔴 High Resistance Zone")
+level2 = input.float(6950, "R6 - Major magnet 🔥 (big customer long)", group="🔴 High Resistance Zone")
+level2_thickness = input.int(3, "R6 Line Thickness", minval=1, maxval=10, group="🔴 High Resistance Zone")
+level3 = input.float(6930, "R5 - Reaction short / TP 🔥", group="🔴 High Resistance Zone")
+level3_thickness = input.int(2, "R5 Line Thickness", minval=1, maxval=10, group="🔴 High Resistance Zone")
+level4 = input.float(6885, "R4 - Breakout trigger ▲", group="🔴 High Resistance Zone")
+level4_thickness = input.int(3, "R4 Line Thickness", minval=1, maxval=10, group="🔴 High Resistance Zone")
 
-// Pivot Level
-level7 = input.float(6600, "PIVOT - 🐂 Entry Zone (🎄 rally)", group="⚡ Pivot")
-level7_thickness = input.int(5, "PIVOT Line Thickness", minval=1, maxval=10, group="⚡ Pivot")
+// Short-Gamma Zone
+level5 = input.float(6880, "Gamma Top - 6880", group="⚡ Short-Gamma Zone (6815-6880)")
+level5_thickness = input.int(2, "6880 Line Thickness", minval=1, maxval=10, group="⚡ Short-Gamma Zone (6815-6880)")
+level6 = input.float(6870, "Heavy Cluster - 6870 🏋️", group="⚡ Short-Gamma Zone (6815-6880)")
+level6_thickness = input.int(2, "6870 Line Thickness", minval=1, maxval=10, group="⚡ Short-Gamma Zone (6815-6880)")
+level7 = input.float(6850, "Gamma Mid - 6850", group="⚡ Short-Gamma Zone (6815-6880)")
+level7_thickness = input.int(2, "6850 Line Thickness", minval=1, maxval=10, group="⚡ Short-Gamma Zone (6815-6880)")
+level8 = input.float(6820, "LARGEST POSITION (PIN) 🎯", group="⚡ Short-Gamma Zone (6815-6880)")
+level8_thickness = input.int(4, "6820 PIN Line Thickness", minval=1, maxval=10, group="⚡ Short-Gamma Zone (6815-6880)")
+level9 = input.float(6815, "Breakdown trigger ▼", group="⚡ Short-Gamma Zone (6815-6880)")
+level9_thickness = input.int(3, "6815 Line Thickness", minval=1, maxval=10, group="⚡ Short-Gamma Zone (6815-6880)")
 
-// Support Levels
-level8 = input.float(6520, "S1 - STOP LOSS CLUSTER *** CRITICAL ***", group="🟢 Support Levels")
-level8_thickness = input.int(5, "S1 Line Thickness", minval=1, maxval=10, group="🟢 Support Levels")
-level9 = input.float(6300, "S2 - 🐻 Target HIGH (flush zone)", group="🟢 Support Levels")
-level9_thickness = input.int(2, "S2 Line Thickness", minval=1, maxval=10, group="🟢 Support Levels")
-level10 = input.float(6060, "S3 - 🐻 Target LOW (flush zone)", group="🟢 Support Levels")
-level10_thickness = input.int(2, "S3 Line Thickness", minval=1, maxval=10, group="🟢 Support Levels")
+// Support Zone
+level10 = input.float(6785, "S1 - Support 1 🧊 (reaction long)", group="🟢 Support Zone")
+level10_thickness = input.int(2, "S1 Line Thickness", minval=1, maxval=10, group="🟢 Support Zone")
+level11 = input.float(6750, "S2 - Strong support 🧊 (dealer long gamma)", group="🟢 Support Zone")
+level11_thickness = input.int(3, "S2 Line Thickness", minval=1, maxval=10, group="🟢 Support Zone")
+level12 = input.float(6720, "S3 - Final shelf 🧊", group="🟢 Support Zone")
+level12_thickness = input.int(2, "S3 Line Thickness", minval=1, maxval=10, group="🟢 Support Zone")
 
 // Alert Settings
 enableAlerts = input.bool(true, "Enable Alerts", group="🔔 Alert Settings")
@@ -72,184 +78,178 @@ var line l7 = na
 var line l8 = na
 var line l9 = na
 var line l10 = na
+var line l11 = na
+var line l12 = na
 
 if showLines and barstate.islast
-    // R6 - 6920 (🐂 Max - Cyan, dashed)
-    l1 := line.new(bar_index - 100, level1, bar_index + 20, level1, color=color.aqua, width=level1_thickness, style=line.style_dashed)
+    // R7 - 7000 (Short scalp - Magenta, dashed)
+    l1 := line.new(bar_index - 100, level1, bar_index + 20, level1, color=color.fuchsia, width=level1_thickness, style=line.style_dashed)
     
-    // R5 - 6880 (HF 🐻 Shorts - Magenta)
+    // R6 - 6950 (Major magnet - Magenta)
     l2 := line.new(bar_index - 100, level2, bar_index + 20, level2, color=color.fuchsia, width=level2_thickness, style=line.style_solid)
     
-    // R4 - 6825 (2nd 🐻 Star - Plum)
-    l3 := line.new(bar_index - 100, level3, bar_index + 20, level3, color=color.purple, width=level3_thickness, style=line.style_solid)
+    // R5 - 6930 (Reaction short/TP - Orange)
+    l3 := line.new(bar_index - 100, level3, bar_index + 20, level3, color=color.orange, width=level3_thickness, style=line.style_solid)
     
-    // R3 - 6765 (Major 🐻 Star - Dark Orange)
-    l4 := line.new(bar_index - 100, level4, bar_index + 20, level4, color=color.new(color.orange, 0), width=level4_thickness, style=line.style_solid)
+    // R4 - 6885 (Breakout trigger - Yellow)
+    l4 := line.new(bar_index - 100, level4, bar_index + 20, level4, color=color.yellow, width=level4_thickness, style=line.style_solid)
     
-    // R2 - 6720 (Late Hedgers - Orange)
-    l5 := line.new(bar_index - 100, level5, bar_index + 20, level5, color=color.orange, width=level5_thickness, style=line.style_solid)
+    // Short-Gamma Zone (Purple)
+    l5 := line.new(bar_index - 100, level5, bar_index + 20, level5, color=color.purple, width=level5_thickness, style=line.style_solid)
+    l6 := line.new(bar_index - 100, level6, bar_index + 20, level6, color=color.purple, width=level6_thickness, style=line.style_solid)
+    l7 := line.new(bar_index - 100, level7, bar_index + 20, level7, color=color.purple, width=level7_thickness, style=line.style_solid)
     
-    // R1 - 6670 (Hedge Unwind - Yellow)
-    l6 := line.new(bar_index - 100, level6, bar_index + 20, level6, color=color.yellow, width=level6_thickness, style=line.style_solid)
+    // 6820 PIN - Cyan, thick
+    l8 := line.new(bar_index - 100, level8, bar_index + 20, level8, color=color.aqua, width=level8_thickness, style=line.style_solid)
     
-    // PIVOT - 6600 (🐂 Entry - Green)
-    l7 := line.new(bar_index - 100, level7, bar_index + 20, level7, color=color.lime, width=level7_thickness, style=line.style_solid)
+    // 6815 Breakdown - Yellow
+    l9 := line.new(bar_index - 100, level9, bar_index + 20, level9, color=color.yellow, width=level9_thickness, style=line.style_solid)
     
-    // S1 - 6520 (STOP CLUSTER - Red, thick)
-    l8 := line.new(bar_index - 100, level8, bar_index + 20, level8, color=color.red, width=level8_thickness, style=line.style_solid)
-    
-    // S2 - 6300 (🐻 Target - Dark Red, dashed)
-    l9 := line.new(bar_index - 100, level9, bar_index + 20, level9, color=color.maroon, width=level9_thickness, style=line.style_dashed)
-    
-    // S3 - 6060 (🐻 Target - Dark Red, dashed)
-    l10 := line.new(bar_index - 100, level10, bar_index + 20, level10, color=color.maroon, width=level10_thickness, style=line.style_dashed)
+    // Support Zone - Cyan
+    l10 := line.new(bar_index - 100, level10, bar_index + 20, level10, color=color.aqua, width=level10_thickness, style=line.style_solid)
+    l11 := line.new(bar_index - 100, level11, bar_index + 20, level11, color=color.aqua, width=level11_thickness, style=line.style_solid)
+    l12 := line.new(bar_index - 100, level12, bar_index + 20, level12, color=color.aqua, width=level12_thickness, style=line.style_solid)
 
 // === LABELS ===
 if barstate.islast and showLabels
-    label.new(bar_index, level1, "🐂 Max: 6920 (Low prob)", style=label.style_label_left, color=color.aqua, textcolor=color.white)
-    label.new(bar_index, level2, "HF 🐻 Shorts: 6880 (Sticky EoY)", style=label.style_label_left, color=color.fuchsia, textcolor=color.white)
-    label.new(bar_index, level3, "2nd 🐻 Star: 6825 (O+P)", style=label.style_label_left, color=color.purple, textcolor=color.white)
-    label.new(bar_index, level4, "Major 🐻: 6765 (BD->6520)", style=label.style_label_left, color=color.new(color.orange, 0), textcolor=color.white)
-    label.new(bar_index, level5, "Late Hedge: 6720 (Cover)", style=label.style_label_left, color=color.orange, textcolor=color.white)
-    label.new(bar_index, level6, "Hedge Unwind: 6670", style=label.style_label_left, color=color.yellow, textcolor=color.black)
-    label.new(bar_index, level7, "🐂 Entry: 6600 (🎄 Rally)", style=label.style_label_center, color=color.lime, textcolor=color.black, size=size.large)
-    label.new(bar_index, level8, "STOP CLUSTER: 6520 *** CRITICAL ***", style=label.style_label_right, color=color.red, textcolor=color.white, size=size.large)
-    label.new(bar_index, level9, "🐻 Target: 6300 (Flush)", style=label.style_label_right, color=color.maroon, textcolor=color.white)
-    label.new(bar_index, level10, "🐻 Target: 6060 (Flush)", style=label.style_label_right, color=color.maroon, textcolor=color.white)
+    label.new(bar_index, level1, "7000 Short 🔥", style=label.style_label_left, color=color.fuchsia, textcolor=color.white)
+    label.new(bar_index, level2, "6950 Magnet 🔥", style=label.style_label_left, color=color.fuchsia, textcolor=color.white)
+    label.new(bar_index, level3, "6930 TP 🔥", style=label.style_label_left, color=color.orange, textcolor=color.white)
+    label.new(bar_index, level4, "6885 BO ▲", style=label.style_label_left, color=color.yellow, textcolor=color.black)
+    label.new(bar_index, level5, "6880 Gamma Top", style=label.style_label_left, color=color.purple, textcolor=color.white)
+    label.new(bar_index, level6, "6870 Heavy 🏋️", style=label.style_label_left, color=color.purple, textcolor=color.white)
+    label.new(bar_index, level7, "6850", style=label.style_label_left, color=color.purple, textcolor=color.white)
+    label.new(bar_index, level8, "6820 PIN 🎯", style=label.style_label_center, color=color.aqua, textcolor=color.black, size=size.large)
+    label.new(bar_index, level9, "6815 BD ▼", style=label.style_label_left, color=color.yellow, textcolor=color.black)
+    label.new(bar_index, level10, "6785 Sup 🧊", style=label.style_label_right, color=color.aqua, textcolor=color.black)
+    label.new(bar_index, level11, "6750 Sup 🧊", style=label.style_label_right, color=color.aqua, textcolor=color.black)
+    label.new(bar_index, level12, "6720 Shelf 🧊", style=label.style_label_right, color=color.aqua, textcolor=color.black)
 
 // === POSITION DETECTION ===
-above6920 = close > level1
-at6920 = close >= level1 - 5 and close <= level1 + 5
-above6880 = close > level2
-at6880 = close >= level2 - 5 and close <= level2 + 5
-above6825 = close > level3
-at6825 = close >= level3 - 5 and close <= level3 + 5
-above6765 = close > level4
-at6765 = close >= level4 - 5 and close <= level4 + 5
-above6720 = close > level5
-at6720 = close >= level5 - 5 and close <= level5 + 5
-above6670 = close > level6
-at6670 = close >= level6 - 5 and close <= level6 + 5
-above6600 = close > level7  // BULLISH - 🎄 rally zone
-at6600 = close >= level7 - 5 and close <= level7 + 5  // PIVOT
-below6600 = close < level7  // BEARISH - Below 🐂 entry
-above6520 = close > level8  // Above stop cluster
-at6520 = close >= level8 - 10 and close <= level8 + 10  // STOP CLUSTER
-below6520 = close < level8  // FAST DROP UNLEASHED
-in6300_6060 = close >= level10 and close <= level9  // Flush zone
-below6060 = close < level10
+above7000 = close > level1
+at7000 = close >= level1 - 5 and close <= level1 + 5
+above6950 = close > level2
+at6950 = close >= level2 - 5 and close <= level2 + 5
+above6930 = close > level3
+at6930 = close >= level3 - 5 and close <= level3 + 5
+above6885 = close > level4  // BREAKOUT TRIGGER
+at6885 = close >= level4 - 5 and close <= level4 + 5
+above6880 = close > level5
+at6880 = close >= level5 - 5 and close <= level5 + 5
+above6870 = close > level6
+at6870 = close >= level6 - 5 and close <= level6 + 5
+above6850 = close > level7
+at6850 = close >= level7 - 5 and close <= level7 + 5
+above6820 = close > level8  // PIVOT - PIN
+at6820 = close >= level8 - 5 and close <= level8 + 5
+below6820 = close < level8
+above6815 = close > level9
+at6815 = close >= level9 - 5 and close <= level9 + 5
+below6815 = close < level9  // BREAKDOWN TRIGGER
+above6785 = close > level10
+at6785 = close >= level10 - 5 and close <= level10 + 5
+above6750 = close > level11
+at6750 = close >= level11 - 5 and close <= level11 + 5
+above6720 = close > level12
+at6720 = close >= level12 - 5 and close <= level12 + 5
+below6720 = close < level12
+inGammaZone = close >= level9 and close <= level5  // 6815-6880 short-gamma zone
 
 // Volume spike detection
 volSpike = volume > ta.sma(volume, 20) * 1.5
 
 // === ALERT CONDITIONS ===
 
-// 🐂 MAX TARGET
-alertcondition(ta.crossover(close, level1), "6920 🐂 MAX", "SPX UP 6920 - 🐂 Max Target hit! Low probability!")
-alertcondition(at6920, "At 6920", "SPX at 6920 - 🐂 max target!")
+// HIGH RESISTANCE / SHORT ZONE
+alertcondition(ta.crossover(close, level1), "7000 SHORT ZONE", "SPX >> 7000 🔥 Short scalp zone!")
+alertcondition(ta.crossover(close, level2), "6950 MAGNET", "SPX >> 6950 🔥 Major magnet (big customer long)!")
+alertcondition(ta.crossover(close, level3), "6930 TP ZONE", "SPX >> 6930 🔥 Reaction short / TP zone!")
 
-// HEDGE FUND 🐻 SHORTS
-alertcondition(ta.crossover(close, level2), "6880 HF SHORTS BREACH", "SPX UP 6880 - HF 🐻 Shorts breached!")
-alertcondition(ta.crossunder(close, level2), "6880 HF SHORTS DEFEND", "SPX DOWN 6880 - HF 🐻 Shorts defending!")
-alertcondition(at6880, "At 6880", "SPX at 6880 - HF 🐻 Shorts (Sticky EoY)")
+// BREAKOUT TRIGGER
+alertcondition(ta.crossover(close, level4), "6885 BREAKOUT", "SPX UP 6885 ▲ BREAKOUT TRIGGER - Watch 6930-6950!")
+alertcondition(ta.crossunder(close, level4), "6885 REJECT", "SPX DOWN 6885 - Breakout rejected!")
+alertcondition(at6885, "At 6885", "SPX at 6885 - Breakout trigger!")
 
-// 2ND LARGEST 🐻 STAR
-alertcondition(ta.crossover(close, level3), "6825 2ND 🐻 BREACH", "SPX UP 6825 - 2nd 🐻 Star breached!")
-alertcondition(ta.crossunder(close, level3), "6825 2ND 🐻 DEFEND", "SPX DOWN 6825 - 2nd 🐻 Star defending!")
-alertcondition(at6825, "At 6825", "SPX at 6825 - 2nd Largest 🐻 Star!")
+// SHORT-GAMMA ZONE
+alertcondition(inGammaZone, "In Gamma Zone", "SPX in short-gamma zone (6815-6880) - Expect chop!")
+alertcondition(ta.crossover(close, level5), "6880 GAMMA TOP", "SPX >> 6880 - Gamma zone top!")
+alertcondition(ta.crossover(close, level6), "6870 HEAVY CLUSTER", "SPX >> 6870 🏋️ Heavy positioning cluster!")
+alertcondition(ta.crossover(close, level7), "6850 GAMMA MID", "SPX >> 6850 - Gamma zone mid!")
 
-// MAJOR 🐻 STAR - BREAKDOWN PLAYERS
-alertcondition(ta.crossover(close, level4), "6765 MAJOR 🐻 BREACH", "SPX UP 6765 - Major 🐻 Star breached!")
-alertcondition(ta.crossunder(close, level4), "6765 BREAKDOWN DEFEND", "SPX DOWN 6765 - Breakdown players defending!")
-alertcondition(at6765, "At 6765", "SPX at 6765 - Major 🐻 Star (targeting 6520)!")
+// LARGEST POSITION (PIN)
+alertcondition(at6820, "At 6820 PIN", "SPX >> 6820 🎯 LARGEST POSITION (PIN)!")
+alertcondition(ta.cross(close, level8), "6820 PIN TOUCH", "SPX at 6820 - Pin level!")
 
-// LATE HEDGERS
-alertcondition(ta.crossover(close, level5), "6720 HEDGERS COVER", "SPX UP 6720 - Late Hedgers covering!")
-alertcondition(ta.crossunder(close, level5), "6720 HEDGERS DEFEND", "SPX DOWN 6720 - Late Hedgers defending!")
-alertcondition(at6720, "At 6720", "SPX at 6720 - Late Hedgers zone!")
+// BREAKDOWN TRIGGER
+alertcondition(ta.crossunder(close, level9), "6815 BREAKDOWN", "SPX DOWN 6815 ▼ BREAKDOWN - Watch 6785!")
+alertcondition(ta.crossover(close, level9), "6815 HOLD", "SPX UP 6815 - Holding breakdown trigger!")
+alertcondition(below6815, "Below 6815", "SPX < 6815 - Breakdown triggered!")
 
-// FIRST HEDGE UNWIND
-alertcondition(ta.crossover(close, level6), "6670 HEDGE UNWIND", "SPX UP 6670 - Hedge Unwind triggered!")
-alertcondition(ta.crossunder(close, level6), "6670 UNWIND REJECT", "SPX DOWN 6670 - Hedge Unwind rejected!")
-alertcondition(at6670, "At 6670", "SPX at 6670 - First Hedge Unwind!")
-
-// 🐂 ENTRY ZONE - PIVOT
-alertcondition(ta.crossover(close, level7), "6600 🎄 RALLY", "SPX UP 6600 - 🎄 rally zone! 🐂 entry!")
-alertcondition(ta.crossunder(close, level7), "6600 🐂 FAIL", "SPX DOWN 6600 - 🐂 entry failed!")
-alertcondition(at6600, "At 6600 PIVOT", "SPX at 6600 - 🐂 ENTRY ZONE!")
-
-// STOP LOSS CLUSTER - CRITICAL
-alertcondition(ta.crossunder(close, level8), "6520 STOP CLUSTER BREACH", "SPX DOWN 6520 - STOP CLUSTER BREACH! FAST DROP UNLEASHED!")
-alertcondition(ta.crossover(close, level8), "6520 STOP HOLD", "SPX UP 6520 - Stop cluster holding!")
-alertcondition(at6520, "At 6520 STOP", "SPX at 6520 - *** STOP LOSS CLUSTER *** CRITICAL!")
-
-// FLUSH ZONE
-alertcondition(ta.crossunder(close, level9), "6300 FLUSH ZONE", "SPX DOWN 6300 - Entering flush zone!")
-alertcondition(in6300_6060, "In Flush Zone", "SPX in 6300-6060 FLUSH ZONE!")
-
-// STRATEGY ALERTS
-alertcondition(above6600 and volSpike, "🎄 RALLY ACTIVE", "SPX >6600 + Volume! 🎄 rally active!")
-alertcondition(below6520, "FLUSH MODE", "SPX <6520 - FLUSH TO 6300-6060 ZONE!")
+// SUPPORT ZONE
+alertcondition(ta.crossunder(close, level10), "6785 SUPPORT 1", "SPX >> 6785 🧊 Support 1 (reaction long)!")
+alertcondition(ta.crossunder(close, level11), "6750 STRONG SUPPORT", "SPX >> 6750 🧊 Strong support (dealer long gamma)!")
+alertcondition(ta.crossunder(close, level12), "6720 FINAL SHELF", "SPX >> 6720 🧊 Final shelf!")
+alertcondition(below6720, "Below 6720", "SPX < 6720 - Final shelf broken!")
 
 // === STATUS TABLE ===
 var table statusTable = table.new(position.top_right, 2, 20, border_width=1)
 
 if barstate.islast and showLabels
     // Header
-    table.cell(statusTable, 0, 0, "SPX STRIKES", bgcolor=color.new(color.blue, 70), text_color=color.white)
+    table.cell(statusTable, 0, 0, "SPX DEC 1", bgcolor=color.new(color.blue, 70), text_color=color.white)
     table.cell(statusTable, 1, 0, str.tostring(close, "#.##"), bgcolor=color.new(color.blue, 70), text_color=color.white)
     
     // Alert Status
     table.cell(statusTable, 0, 1, "Alerts", text_color=color.white)
     table.cell(statusTable, 1, 1, enableAlerts ? "ON" : "OFF", bgcolor=enableAlerts ? color.green : color.red, text_color=color.white)
     
-    // Bias based on 6600 pivot
-    bias = above6600 ? "📈 BULLISH" : below6600 ? "📉 BEARISH" : "⚡ PIVOT"
-    biasColor = above6600 ? color.green : below6600 ? color.red : color.lime
-    table.cell(statusTable, 0, 2, "Bias (6600)", text_color=color.white)
+    // Bias based on 6820 PIN
+    bias = above6885 ? "📈 BREAKOUT" : inGammaZone ? "⚡ GAMMA ZONE" : below6815 ? "📉 BREAKDOWN" : "🎯 AT PIN"
+    biasColor = above6885 ? color.green : inGammaZone ? color.purple : below6815 ? color.red : color.aqua
+    table.cell(statusTable, 0, 2, "Bias (6820)", text_color=color.white)
     table.cell(statusTable, 1, 2, bias, bgcolor=color.new(biasColor, 70), text_color=color.white)
     
     // Position Status
-    position = above6920 ? "↑ 🐂 Max!" : above6880 ? "HF 🐻 Shorts" : above6825 ? "2nd 🐻 Star" : above6765 ? "Major 🐻 Star" : above6720 ? "Late Hedgers" : above6670 ? "Hedge Unwind" : above6600 ? "🎄 Rally" : above6520 ? "Below 🐂 Entry" : below6520 ? "⚠️ FLUSH MODE" : "At Stop Cluster"
-    posColor = above6920 ? color.aqua : above6880 ? color.fuchsia : above6825 ? color.purple : above6765 ? color.new(color.orange, 0) : above6720 ? color.orange : above6670 ? color.yellow : above6600 ? color.lime : above6520 ? color.orange : color.red
+    position = above7000 ? "↑ 7000!" : above6950 ? "6950 Magnet" : above6930 ? "6930 TP" : above6885 ? "Above BO" : above6880 ? "Gamma Top" : above6870 ? "Heavy Cluster" : above6850 ? "Gamma Mid" : above6820 ? "Above PIN" : above6815 ? "At PIN" : above6785 ? "Support 1" : above6750 ? "Strong Sup" : above6720 ? "Final Shelf" : "Below Shelf"
+    posColor = above7000 ? color.fuchsia : above6950 ? color.fuchsia : above6930 ? color.orange : above6885 ? color.yellow : above6815 ? color.purple : above6785 ? color.aqua : above6750 ? color.aqua : color.red
     table.cell(statusTable, 0, 3, "Position", text_color=color.white)
     table.cell(statusTable, 1, 3, position, bgcolor=color.new(posColor, 70), text_color=color.white)
     
     // Strategy
-    strategy = above6600 ? "🎄 rally hopefuls" : below6520 ? "FLUSH to 6300-6060!" : "Watch 6520 stop cluster"
+    strategy = above6885 ? "Watch 6930-6950-7000" : inGammaZone ? "Chop/Pin to 6820" : below6815 ? "Watch 6785-6750-6720" : "At PIN level"
     table.cell(statusTable, 0, 4, "Strategy", text_color=color.white)
     table.cell(statusTable, 1, 4, strategy, bgcolor=color.new(color.blue, 80), text_color=color.white)
     
     // Key Levels Summary
-    table.cell(statusTable, 0, 5, "🐂 Entry: 6600", text_color=color.white)
-    table.cell(statusTable, 1, 5, "Hedge Unwind: 6670", bgcolor=color.new(color.gray, 80), text_color=color.white)
+    table.cell(statusTable, 0, 5, "6820 PIN 🎯", text_color=color.white)
+    table.cell(statusTable, 1, 5, "Largest Position", bgcolor=color.new(color.aqua, 80), text_color=color.black)
     
-    table.cell(statusTable, 0, 6, "Late Hedge: 6720", text_color=color.white)
-    table.cell(statusTable, 1, 6, "Major 🐻: 6765", bgcolor=color.new(color.gray, 80), text_color=color.white)
+    table.cell(statusTable, 0, 6, "Gamma Zone", text_color=color.white)
+    table.cell(statusTable, 1, 6, "6815-6880", bgcolor=color.new(color.purple, 80), text_color=color.white)
     
-    table.cell(statusTable, 0, 7, "2nd 🐻: 6825", text_color=color.white)
-    table.cell(statusTable, 1, 7, "HF Shorts: 6880", bgcolor=color.new(color.gray, 80), text_color=color.white)
+    table.cell(statusTable, 0, 7, "Breakout", text_color=color.white)
+    table.cell(statusTable, 1, 7, "6885 ▲", bgcolor=color.new(color.yellow, 80), text_color=color.black)
     
-    table.cell(statusTable, 0, 8, "STOP: 6520", text_color=color.white)
-    table.cell(statusTable, 1, 8, "*** CRITICAL ***", bgcolor=color.new(color.red, 70), text_color=color.white)
+    table.cell(statusTable, 0, 8, "Breakdown", text_color=color.white)
+    table.cell(statusTable, 1, 8, "6815 ▼", bgcolor=color.new(color.yellow, 80), text_color=color.black)
     
-    // Distance to 6600 pivot
-    distTo6600 = level7 - close
-    distTo6600Str = distTo6600 > 0 ? "-" + str.tostring(math.abs(distTo6600), "#.#") : "+" + str.tostring(math.abs(distTo6600), "#.#")
-    table.cell(statusTable, 0, 9, "To 6600 PIV", text_color=color.white)
-    table.cell(statusTable, 1, 9, distTo6600Str, bgcolor=color.new(color.lime, 80), text_color=color.black)
+    // Distance to 6820 PIN
+    distTo6820 = level8 - close
+    distTo6820Str = distTo6820 > 0 ? "-" + str.tostring(math.abs(distTo6820), "#.#") : "+" + str.tostring(math.abs(distTo6820), "#.#")
+    table.cell(statusTable, 0, 9, "To 6820 PIN", text_color=color.white)
+    table.cell(statusTable, 1, 9, distTo6820Str, bgcolor=color.new(color.aqua, 80), text_color=color.black)
     
-    // Distance to 6520 stop cluster
-    distTo6520 = level8 - close
-    distTo6520Str = distTo6520 > 0 ? "-" + str.tostring(math.abs(distTo6520), "#.#") : "+" + str.tostring(math.abs(distTo6520), "#.#")
-    table.cell(statusTable, 0, 10, "To 6520 STOP", text_color=color.white)
-    table.cell(statusTable, 1, 10, distTo6520Str, bgcolor=color.new(color.red, 80), text_color=color.white)
+    // Distance to 6885 breakout
+    distTo6885 = level4 - close
+    distTo6885Str = distTo6885 > 0 ? "-" + str.tostring(math.abs(distTo6885), "#.#") : "+" + str.tostring(math.abs(distTo6885), "#.#")
+    table.cell(statusTable, 0, 10, "To 6885 BO", text_color=color.white)
+    table.cell(statusTable, 1, 10, distTo6885Str, bgcolor=color.new(color.yellow, 80), text_color=color.black)
     
-    // Distance to hedge unwind
-    distTo6670 = level6 - close
-    distTo6670Str = distTo6670 > 0 ? "-" + str.tostring(math.abs(distTo6670), "#.#") : "+" + str.tostring(math.abs(distTo6670), "#.#")
-    table.cell(statusTable, 0, 11, "To 6670 Unwind", text_color=color.white)
-    table.cell(statusTable, 1, 11, distTo6670Str, bgcolor=color.new(color.yellow, 80), text_color=color.black)
+    // Distance to 6815 breakdown
+    distTo6815 = level9 - close
+    distTo6815Str = distTo6815 > 0 ? "-" + str.tostring(math.abs(distTo6815), "#.#") : "+" + str.tostring(math.abs(distTo6815), "#.#")
+    table.cell(statusTable, 0, 11, "To 6815 BD", text_color=color.white)
+    table.cell(statusTable, 1, 11, distTo6815Str, bgcolor=color.new(color.yellow, 80), text_color=color.black)
     
     // Volume Status
     volStatus = volSpike ? "🔥 SPIKE" : "Normal"
@@ -259,23 +259,24 @@ if barstate.islast and showLabels
     
     // Market Context
     table.cell(statusTable, 0, 13, "Context", text_color=color.white)
-    table.cell(statusTable, 1, 13, "Strike Positioning", bgcolor=color.new(color.gray, 80), text_color=color.white)
+    table.cell(statusTable, 1, 13, "Gamma Positioning", bgcolor=color.new(color.gray, 80), text_color=color.white)
     
-    table.cell(statusTable, 0, 14, "🐻 Target", text_color=color.white)
-    table.cell(statusTable, 1, 14, "6520 break->6300", bgcolor=color.new(color.gray, 80), text_color=color.white)
+    table.cell(statusTable, 0, 14, "Upside", text_color=color.white)
+    table.cell(statusTable, 1, 14, "6885->6930->6950->7K", bgcolor=color.new(color.gray, 80), text_color=color.white)
     
-    // Strike Structure
-    table.cell(statusTable, 0, 15, "Structure", text_color=color.white)
-    table.cell(statusTable, 1, 15, above6765 ? "🐻 shorts defend" : "🎄 rally zone", bgcolor=color.new(color.gray, 80), text_color=color.white)
+    table.cell(statusTable, 0, 15, "Downside", text_color=color.white)
+    table.cell(statusTable, 1, 15, "6815->6785->6750->6720", bgcolor=color.new(color.gray, 80), text_color=color.white)
 
 // === PLOT INVISIBLE LINES FOR ALERT TRIGGERS ===
-plot(level1, "R6: 6920", color=color.new(color.aqua, 100))
-plot(level2, "R5: 6880", color=color.new(color.fuchsia, 100))
-plot(level3, "R4: 6825", color=color.new(color.purple, 100))
-plot(level4, "R3: 6765", color=color.new(color.orange, 100))
-plot(level5, "R2: 6720", color=color.new(color.orange, 100))
-plot(level6, "R1: 6670", color=color.new(color.yellow, 100))
-plot(level7, "PIVOT: 6600", color=color.new(color.lime, 100))
-plot(level8, "S1: 6520 STOP", color=color.new(color.red, 100))
-plot(level9, "S2: 6300", color=color.new(color.maroon, 100))
-plot(level10, "S3: 6060", color=color.new(color.maroon, 100))
+plot(level1, "R7: 7000", color=color.new(color.fuchsia, 100))
+plot(level2, "R6: 6950", color=color.new(color.fuchsia, 100))
+plot(level3, "R5: 6930", color=color.new(color.orange, 100))
+plot(level4, "R4: 6885 BO", color=color.new(color.yellow, 100))
+plot(level5, "Gamma: 6880", color=color.new(color.purple, 100))
+plot(level6, "Gamma: 6870", color=color.new(color.purple, 100))
+plot(level7, "Gamma: 6850", color=color.new(color.purple, 100))
+plot(level8, "PIN: 6820", color=color.new(color.aqua, 100))
+plot(level9, "BD: 6815", color=color.new(color.yellow, 100))
+plot(level10, "S1: 6785", color=color.new(color.aqua, 100))
+plot(level11, "S2: 6750", color=color.new(color.aqua, 100))
+plot(level12, "S3: 6720", color=color.new(color.aqua, 100))
