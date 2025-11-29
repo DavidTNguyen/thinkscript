@@ -1,39 +1,43 @@
-# === SPX Strike-Based Positioning - Updated 11/24/2025 ===
+# === SPX DEC 1 HEATMAP - Updated 11/28/2025 ===
 # 
-# MARKET STRUCTURE (Strike-Based Positioning):
-# Bull Max Target: 6920 (Low probability - needs all bear strikes cleared + dovish Fed)
-# Hedge Fund Bear Shorts: 6880 (Sticky until EoY)
-# 2nd Largest Bear Star: 6825 (Offense + Protection)
-# Major Bear Star: 6765 (Breakdown players targeting 6520 fail)
-# Late Hedgers: 6720 (will cover if breached)
-# First Hedge Unwind: 6670
-# Bull Entry Zone: 6600 (Current Christmas rally hopefuls)
-# STOP LOSS CLUSTER: 6520 *** BREAK UNLEASHES FAST DROP ***
-# Bear Targets if 6520 breaks: 6300-6060 (Flush zone)
+# MARKET STRUCTURE (Gamma Positioning):
+# HIGH RESISTANCE / SHORT ZONE:
+# 7000 - Short scalp 🔥
+# 6950 - Major magnet 🔥 (big customer long)
+# 6930 - Reaction short / take profit zone 🔥
+# 6885 - Breakout trigger ▲
+#
+# SHORT-GAMMA ZONE (6815-6880):
+# 6880 - Cluster positioning
+# 6870 - Heavy positioning cluster 🏋️
+# 6850 - Cluster
+# 6820 - LARGEST POSITION (PIN) 🎯
+# 6815 - Breakdown trigger ▼
+#
+# SUPPORT ZONE:
+# 6785 - Support 1 🧊 (reaction long)
+# 6750 - Strong support 🧊 (dealer long gamma)
+# 6720 - Final shelf 🧊
 #
 # CURRENT CONTEXT:
-# Market structure defined by strike positioning
-# 6520 = Critical stop loss cluster
-# Above 6600 = Christmas rally hopefuls in control
-# 6670-6720 = Hedge unwind zone
-# 6765+ = Bear shorts defending (targeting 6520 break)
-#
-# KEY STRIKE LEVELS:
-# Resistance: 6670, 6720, 6765, 6825, 6880, 6920
-# Support: 6600 (bull entry), 6520 (STOP CLUSTER)
-# Flush Zone: 6300-6060 (if 6520 breaks)
+# Market pinned to 6820 (largest position)
+# Short-gamma zone 6815-6880 = consolidation/chop
+# Breakout above 6885 targets 6930-6950-7000
+# Breakdown below 6815 targets 6785-6750-6720
 
 # === KEY LEVELS ===
-input level1 = 6920;  # R6 - Bull Max Target (Low probability)
-input level2 = 6880;  # R5 - Hedge Fund Bear Shorts (Sticky EoY)
-input level3 = 6825;  # R4 - 2nd Largest Bear Star (Offense + Protection)
-input level4 = 6765;  # R3 - Major Bear Star (Breakdown players)
-input level5 = 6720;  # R2 - Late Hedgers (will cover if breached)
-input level6 = 6670;  # R1 - First Hedge Unwind Trigger
-input level7 = 6600;  # PIVOT - Bull Entry Zone (Christmas rally)
-input level8 = 6520;  # S1 - STOP LOSS CLUSTER *** CRITICAL ***
-input level9 = 6300;  # S2 - Bear Target HIGH (flush zone)
-input level10 = 6060; # S3 - Bear Target LOW (flush zone)
+input level1 = 7000;  # R7 - Short scalp zone
+input level2 = 6950;  # R6 - Major magnet (big customer long)
+input level3 = 6930;  # R5 - Reaction short / take profit
+input level4 = 6885;  # R4 - Breakout trigger
+input level5 = 6880;  # R3 - Short-gamma zone top
+input level6 = 6870;  # R2 - Heavy positioning cluster
+input level7 = 6850;  # R1 - Cluster
+input level8 = 6820;  # PIVOT - LARGEST POSITION (PIN)
+input level9 = 6815;  # S1 - Breakdown trigger
+input level10 = 6785; # S2 - Support 1 (reaction long)
+input level11 = 6750; # S3 - Strong support (dealer long gamma)
+input level12 = 6720; # S4 - Final shelf
 
 # Alert Settings
 input enableAlerts = yes;
@@ -48,7 +52,7 @@ input showLines = yes;
 
 # === LEVEL PLOTS ===
 plot L1 = level1;
-L1.SetDefaultColor(Color.CYAN);
+L1.SetDefaultColor(Color.MAGENTA);
 L1.SetLineWeight(1);
 L1.SetStyle(Curve.SHORT_DASH);
 L1.SetHiding(!showLines);
@@ -60,64 +64,77 @@ L2.SetStyle(Curve.FIRM);
 L2.SetHiding(!showLines);
 
 plot L3 = level3;
-L3.SetDefaultColor(Color.PLUM);
+L3.SetDefaultColor(Color.ORANGE);
 L3.SetLineWeight(1);
 L3.SetStyle(Curve.FIRM);
 L3.SetHiding(!showLines);
 
 plot L4 = level4;
-L4.SetDefaultColor(Color.DARK_ORANGE);
+L4.SetDefaultColor(Color.YELLOW);
 L4.SetLineWeight(1);
 L4.SetStyle(Curve.FIRM);
 L4.SetHiding(!showLines);
 
 plot L5 = level5;
-L5.SetDefaultColor(Color.ORANGE);
+L5.SetDefaultColor(Color.PLUM);
 L5.SetLineWeight(1);
 L5.SetStyle(Curve.FIRM);
 L5.SetHiding(!showLines);
 
 plot L6 = level6;
-L6.SetDefaultColor(Color.YELLOW);
+L6.SetDefaultColor(Color.PLUM);
 L6.SetLineWeight(1);
 L6.SetStyle(Curve.FIRM);
 L6.SetHiding(!showLines);
 
 plot L7 = level7;
-L7.SetDefaultColor(Color.GREEN);
+L7.SetDefaultColor(Color.PLUM);
 L7.SetLineWeight(1);
 L7.SetStyle(Curve.FIRM);
 L7.SetHiding(!showLines);
 
 plot L8 = level8;
-L8.SetDefaultColor(Color.RED);
-L8.SetLineWeight(1);
+L8.SetDefaultColor(Color.CYAN);
+L8.SetLineWeight(2);
 L8.SetStyle(Curve.FIRM);
 L8.SetHiding(!showLines);
 
 plot L9 = level9;
-L9.SetDefaultColor(Color.DARK_RED);
+L9.SetDefaultColor(Color.YELLOW);
 L9.SetLineWeight(1);
-L9.SetStyle(Curve.SHORT_DASH);
+L9.SetStyle(Curve.FIRM);
 L9.SetHiding(!showLines);
 
 plot L10 = level10;
-L10.SetDefaultColor(Color.DARK_RED);
+L10.SetDefaultColor(Color.CYAN);
 L10.SetLineWeight(1);
-L10.SetStyle(Curve.SHORT_DASH);
+L10.SetStyle(Curve.FIRM);
 L10.SetHiding(!showLines);
 
+plot L11 = level11;
+L11.SetDefaultColor(Color.CYAN);
+L11.SetLineWeight(1);
+L11.SetStyle(Curve.FIRM);
+L11.SetHiding(!showLines);
+
+plot L12 = level12;
+L12.SetDefaultColor(Color.CYAN);
+L12.SetLineWeight(1);
+L12.SetStyle(Curve.FIRM);
+L12.SetHiding(!showLines);
+
 # === OPTIONAL CLOUDS ===
-AddCloud(if showClouds then L1 else Double.NaN, if showClouds then L1 + 0.5 else Double.NaN, Color.CYAN, Color.CYAN);
+# Short-gamma zone cloud (6815-6880)
+AddCloud(if showClouds then L5 else Double.NaN, if showClouds then L9 else Double.NaN, CreateColor(150, 100, 150), CreateColor(150, 100, 150));
+
+AddCloud(if showClouds then L1 else Double.NaN, if showClouds then L1 + 0.5 else Double.NaN, Color.MAGENTA, Color.MAGENTA);
 AddCloud(if showClouds then L2 else Double.NaN, if showClouds then L2 + 0.5 else Double.NaN, Color.MAGENTA, Color.MAGENTA);
-AddCloud(if showClouds then L3 else Double.NaN, if showClouds then L3 + 0.5 else Double.NaN, Color.PLUM, Color.PLUM);
-AddCloud(if showClouds then L4 else Double.NaN, if showClouds then L4 + 0.5 else Double.NaN, Color.DARK_ORANGE, Color.DARK_ORANGE);
-AddCloud(if showClouds then L5 else Double.NaN, if showClouds then L5 + 0.5 else Double.NaN, Color.ORANGE, Color.ORANGE);
-AddCloud(if showClouds then L6 else Double.NaN, if showClouds then L6 + 0.5 else Double.NaN, Color.YELLOW, Color.YELLOW);
-AddCloud(if showClouds then L7 else Double.NaN, if showClouds then L7 + 0.5 else Double.NaN, Color.GREEN, Color.GREEN);
-AddCloud(if showClouds then L8 else Double.NaN, if showClouds then L8 + 0.5 else Double.NaN, Color.RED, Color.RED);
-AddCloud(if showClouds then L9 else Double.NaN, if showClouds then L9 + 0.5 else Double.NaN, Color.DARK_RED, Color.DARK_RED);
-AddCloud(if showClouds then L10 else Double.NaN, if showClouds then L10 + 0.5 else Double.NaN, Color.DARK_RED, Color.DARK_RED);
+AddCloud(if showClouds then L3 else Double.NaN, if showClouds then L3 + 0.5 else Double.NaN, Color.ORANGE, Color.ORANGE);
+AddCloud(if showClouds then L4 else Double.NaN, if showClouds then L4 + 0.5 else Double.NaN, Color.YELLOW, Color.YELLOW);
+AddCloud(if showClouds then L8 else Double.NaN, if showClouds then L8 + 0.5 else Double.NaN, Color.CYAN, Color.CYAN);
+AddCloud(if showClouds then L10 else Double.NaN, if showClouds then L10 + 0.5 else Double.NaN, Color.CYAN, Color.CYAN);
+AddCloud(if showClouds then L11 else Double.NaN, if showClouds then L11 + 0.5 else Double.NaN, Color.CYAN, Color.CYAN);
+AddCloud(if showClouds then L12 else Double.NaN, if showClouds then L12 + 0.5 else Double.NaN, Color.CYAN, Color.CYAN);
 
 # Fixed bubble logic - show only on last bar
 def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
@@ -125,112 +142,118 @@ def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
 
 
 # Position detection
-def above6920 = close > level1;
-def at6920 = close >= level1 - 5 and close <= level1 + 5;
-def above6880 = close > level2;
-def at6880 = close >= level2 - 5 and close <= level2 + 5;
-def above6825 = close > level3;
-def at6825 = close >= level3 - 5 and close <= level3 + 5;
-def above6765 = close > level4;
-def at6765 = close >= level4 - 5 and close <= level4 + 5;
-def above6720 = close > level5;
-def at6720 = close >= level5 - 5 and close <= level5 + 5;
-def above6670 = close > level6;
-def at6670 = close >= level6 - 5 and close <= level6 + 5;
-def above6600 = close > level7;  # BULLISH - Christmas rally zone
-def at6600 = close >= level7 - 5 and close <= level7 + 5;  # PIVOT
-def below6600 = close < level7;  # BEARISH - Below bull entry
-def above6520 = close > level8;  # Above stop cluster
-def at6520 = close >= level8 - 10 and close <= level8 + 10;  # STOP CLUSTER
-def below6520 = close < level8;  # FAST DROP UNLEASHED
-def in6300_6060 = close >= level10 and close <= level9;  # Flush zone
-def below6060 = close < level10;
+def above7000 = close > level1;
+def at7000 = close >= level1 - 5 and close <= level1 + 5;
+def above6950 = close > level2;
+def at6950 = close >= level2 - 5 and close <= level2 + 5;
+def above6930 = close > level3;
+def at6930 = close >= level3 - 5 and close <= level3 + 5;
+def above6885 = close > level4;  # BREAKOUT TRIGGER
+def at6885 = close >= level4 - 5 and close <= level4 + 5;
+def above6880 = close > level5;
+def at6880 = close >= level5 - 5 and close <= level5 + 5;
+def above6870 = close > level6;
+def at6870 = close >= level6 - 5 and close <= level6 + 5;
+def above6850 = close > level7;
+def at6850 = close >= level7 - 5 and close <= level7 + 5;
+def above6820 = close > level8;  # PIVOT - LARGEST POSITION
+def at6820 = close >= level8 - 5 and close <= level8 + 5;
+def below6820 = close < level8;
+def above6815 = close > level9;
+def at6815 = close >= level9 - 5 and close <= level9 + 5;
+def below6815 = close < level9;  # BREAKDOWN TRIGGER
+def above6785 = close > level10;
+def at6785 = close >= level10 - 5 and close <= level10 + 5;
+def above6750 = close > level11;
+def at6750 = close >= level11 - 5 and close <= level11 + 5;
+def above6720 = close > level12;
+def at6720 = close >= level12 - 5 and close <= level12 + 5;
+def below6720 = close < level12;
+def inGammaZone = close >= level9 and close <= level5;  # 6815-6880 short-gamma zone
 
 
 
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar and showLabels, level1, "6920", Color.CYAN, yes);
-AddChartBubble(isLastBar and showLabels, level2, "🐻6880", Color.MAGENTA, yes);
-AddChartBubble(isLastBar and showLabels, level3, "🐻6825", Color.PLUM, yes);
-AddChartBubble(isLastBar and showLabels, level4, "🐻 6765", Color.DARK_ORANGE, yes);
-AddChartBubble(isLastBar and showLabels, level5, "🐻 6720", Color.ORANGE, yes);
-AddChartBubble(isLastBar and showLabels, level6, "6670", Color.YELLOW, yes);
-AddChartBubble(isLastBar and showLabels, level7, "🌲 6600", Color.GREEN, no);
-AddChartBubble(isLastBar and showLabels, level8, "6520", Color.RED, no);
-AddChartBubble(isLastBar and showLabels, level9, "6300", Color.DARK_RED, no);
-AddChartBubble(isLastBar and showLabels, level10, "6060", Color.DARK_RED, no);
+AddChartBubble(isLastBar and showLabels, level1, "7000 Short", Color.MAGENTA, yes);
+AddChartBubble(isLastBar and showLabels, level2, "6950 Magnet", Color.MAGENTA, yes);
+AddChartBubble(isLastBar and showLabels, level3, "6930 TP", Color.ORANGE, yes);
+AddChartBubble(isLastBar and showLabels, level4, "6885 BO", Color.YELLOW, yes);
+AddChartBubble(isLastBar and showLabels, level5, "6880", Color.PLUM, yes);
+AddChartBubble(isLastBar and showLabels, level6, "6870 Heavy", Color.PLUM, yes);
+AddChartBubble(isLastBar and showLabels, level7, "6850", Color.PLUM, yes);
+AddChartBubble(isLastBar and showLabels, level8, "6820 PIN", Color.CYAN, no);
+AddChartBubble(isLastBar and showLabels, level9, "6815 BD", Color.YELLOW, no);
+AddChartBubble(isLastBar and showLabels, level10, "6785 Sup", Color.CYAN, no);
+AddChartBubble(isLastBar and showLabels, level11, "6750 Sup", Color.CYAN, no);
+AddChartBubble(isLastBar and showLabels, level12, "6720 Shelf", Color.CYAN, no);
 
 # === TOUCH LOGIC ===
-def touch6920 = low <= level1 and high >= level1;
-def firstTouch6920Up = touch6920 and close > level1 and !touch6920[1];
+def touch7000 = low <= level1 and high >= level1;
+def firstTouch7000 = touch7000 and !touch7000[1];
 
-def touch6880 = low <= level2 and high >= level2;
-def firstTouch6880Up = touch6880 and close > level2 and !touch6880[1];
-def firstTouch6880Down = touch6880 and close < level2 and !touch6880[1];
+def touch6950 = low <= level2 and high >= level2;
+def firstTouch6950 = touch6950 and !touch6950[1];
 
-def touch6825 = low <= level3 and high >= level3;
-def firstTouch6825Up = touch6825 and close > level3 and !touch6825[1];
-def firstTouch6825Down = touch6825 and close < level3 and !touch6825[1];
+def touch6930 = low <= level3 and high >= level3;
+def firstTouch6930 = touch6930 and !touch6930[1];
 
-def touch6765 = low <= level4 and high >= level4;
-def firstTouch6765Up = touch6765 and close > level4 and !touch6765[1];
-def firstTouch6765Down = touch6765 and close < level4 and !touch6765[1];
+def touch6885 = low <= level4 and high >= level4;
+def firstTouch6885Up = touch6885 and close > level4 and !touch6885[1];
+def firstTouch6885Down = touch6885 and close < level4 and !touch6885[1];
 
-def touch6720 = low <= level5 and high >= level5;
-def firstTouch6720Up = touch6720 and close > level5 and !touch6720[1];
-def firstTouch6720Down = touch6720 and close < level5 and !touch6720[1];
+def touch6880 = low <= level5 and high >= level5;
+def firstTouch6880 = touch6880 and !touch6880[1];
 
-def touch6670 = low <= level6 and high >= level6;
-def firstTouch6670Up = touch6670 and close > level6 and !touch6670[1];
-def firstTouch6670Down = touch6670 and close < level6 and !touch6670[1];
+def touch6870 = low <= level6 and high >= level6;
+def firstTouch6870 = touch6870 and !touch6870[1];
 
-def touch6600 = low <= level7 and high >= level7;
-def firstTouch6600Up = touch6600 and close > level7 and !touch6600[1];
-def firstTouch6600Down = touch6600 and close < level7 and !touch6600[1];
+def touch6850 = low <= level7 and high >= level7;
+def firstTouch6850 = touch6850 and !touch6850[1];
 
-def touch6520 = low <= level8 and high >= level8;
-def firstTouch6520Down = touch6520 and close < level8 and !touch6520[1];
-def firstTouch6520Up = touch6520 and close > level8 and !touch6520[1];
+def touch6820 = low <= level8 and high >= level8;
+def firstTouch6820 = touch6820 and !touch6820[1];
+
+def touch6815 = low <= level9 and high >= level9;
+def firstTouch6815Up = touch6815 and close > level9 and !touch6815[1];
+def firstTouch6815Down = touch6815 and close < level9 and !touch6815[1];
+
+def touch6785 = low <= level10 and high >= level10;
+def firstTouch6785 = touch6785 and !touch6785[1];
+
+def touch6750 = low <= level11 and high >= level11;
+def firstTouch6750 = touch6750 and !touch6750[1];
+
+def touch6720 = low <= level12 and high >= level12;
+def firstTouch6720 = touch6720 and !touch6720[1];
 
 # === ALERTS ===
-# BULL MAX TARGET
-Alert(enableAlerts and firstTouch6920Up, "SPX UP 6920 🐂 MAX - Low probability hit!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6920, "SPX at 6920 - 🐂 max 🎯!", Alert.BAR, Sound.Chimes);
+# HIGH RESISTANCE / SHORT ZONE
+Alert(enableAlerts and firstTouch7000, "SPX >> 7000 🔥 Short scalp zone!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6950, "SPX >> 6950 🔥 Major magnet (big customer long)!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6930, "SPX >> 6930 🔥 Reaction short / TP zone!", Alert.BAR, Sound.Ring);
 
-# HEDGE FUND BEAR SHORTS
-Alert(enableAlerts and firstTouch6880Up, "SPX UP 6880 - HF 🐻 Shorts breach!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6880Down, "SPX DOWN 6880 - HF 🐻 Shorts defend!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6880, "SPX at 6880 - HF 🐻 Shorts (Sticky EoY)!", Alert.BAR, Sound.Chimes);
+# BREAKOUT TRIGGER
+Alert(enableAlerts and firstTouch6885Up, "SPX UP 6885 ▲ BREAKOUT TRIGGER - Watch 6930-6950!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6885Down, "SPX DOWN 6885 - Breakout rejected!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6885, "SPX at 6885 - Breakout trigger!", Alert.BAR, Sound.Chimes);
 
-# 2ND LARGEST BEAR STAR
-Alert(enableAlerts and firstTouch6825Up, "SPX UP 6825 - 2nd 🐻 Star breach!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6825Down, "SPX DOWN 6825 - 2nd 🐻 Star defend!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6825, "SPX at 6825 - 2nd Largest 🐻 Star!", Alert.BAR, Sound.Chimes);
+# SHORT-GAMMA ZONE (6815-6880)
+Alert(enableAlerts and inGammaZone, "SPX in short-gamma zone (6815-6880) - Expect chop!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and firstTouch6880, "SPX >> 6880 - Gamma zone top!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and firstTouch6870, "SPX >> 6870 🏋️ Heavy positioning cluster!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and firstTouch6850, "SPX >> 6850 - Gamma zone mid!", Alert.BAR, Sound.Bell);
 
-# MAJOR BEAR STAR - BREAKDOWN PLAYERS
-Alert(enableAlerts and firstTouch6765Up, "SPX UP 6765 - Major 🐻 Star breach!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6765Down, "SPX DOWN 6765 - Breakdown players defend!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6765, "SPX at 6765 - Major 🐻 Star (targeting 6520)!", Alert.BAR, Sound.Chimes);
+# LARGEST POSITION (PIN)
+Alert(enableAlerts and firstTouch6820, "SPX >> 6820 🎯 LARGEST POSITION (PIN)!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and at6820, "SPX at 6820 - Pin level!", Alert.BAR, Sound.Chimes);
 
-# LATE HEDGERS
-Alert(enableAlerts and firstTouch6720Up, "SPX UP 6720 - Late Hedgers covering!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6720Down, "SPX DOWN 6720 - Late Hedgers defend!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6720, "SPX at 6720 - Late Hedgers (cover if breach)!", Alert.BAR, Sound.Chimes);
+# BREAKDOWN TRIGGER
+Alert(enableAlerts and firstTouch6815Up, "SPX UP 6815 - Holding breakdown trigger!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6815Down, "SPX DOWN 6815 ▼ BREAKDOWN - Watch 6785!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and below6815, "SPX < 6815 - Breakdown triggered!", Alert.BAR, Sound.Bell);
 
-# FIRST HEDGE UNWIND
-Alert(enableAlerts and firstTouch6670Up, "SPX UP 6670 - Hedge Unwind triggered!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6670Down, "SPX DOWN 6670 - Hedge Unwind reject!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6670, "SPX at 6670 - First Hedge Unwind!", Alert.BAR, Sound.Chimes);
-
-# BULL ENTRY ZONE - PIVOT
-Alert(enableAlerts and firstTouch6600Up, "SPX UP 6600 - Christmas rally zone!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6600Down, "SPX DOWN 6600 - 🐂 entry fail!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6600, "SPX at 6600 - 🐂 ENTRY ZONE!", Alert.BAR, Sound.Chimes);
-
-# STOP LOSS CLUSTER - CRITICAL
-Alert(enableAlerts and firstTouch6520Down, "SPX DOWN 6520 STOP CLUSTER BREACH - FAST DROP UNLEASHED!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and firstTouch6520Up, "SPX UP 6520 - Stop cluster holding!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6520, "SPX at 6520 - *** STOP LOSS CLUSTER *** CRITICAL!", Alert.BAR, Sound.Bell);
-
-
-Alert(enableAlerts and below6520, "SPX <6520 - FLUSH TO 6300-6060 ZONE!", Alert.BAR, Sound.Bell);
+# SUPPORT ZONE
+Alert(enableAlerts and firstTouch6785, "SPX >> 6785 🧊 Support 1 (reaction long)!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6750, "SPX >> 6750 🧊 Strong support (dealer long gamma)!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6720, "SPX >> 6720 🧊 Final shelf!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and below6720, "SPX < 6720 - Final shelf broken!", Alert.BAR, Sound.Bell);
