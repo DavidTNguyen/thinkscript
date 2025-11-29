@@ -55,7 +55,10 @@ input alertSensitivity = 0.5;
 input showLabels = yes;
 
 # Fixed bubble logic - show only on last bar
-def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
+input bubblesBeforeLast = -3;  # number of candles AFTER the last one
+def isLastBar1 = IsNaN(close[-1]) and !IsNaN(close);
+def isLastBar = isLastBar1[-bubblesBeforeLast];
+
 
 # === ANCHORED VWAP CALCULATION ===
 def postAnchorDate = if GetYYYYMMDD() >= anchorDate then 1 else 0;
