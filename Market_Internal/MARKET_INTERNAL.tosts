@@ -1,18 +1,22 @@
-# === MARKET INTERNALS DASHBOARD ===
-# Based on key market internal metrics for intraday trading
-# Updated: November 18, 2025
+# === MARKET INTERNALS DASHBOARD v3.0 ===
+# Comprehensive market-wide internals with divergence detection & smart scoring
+# Updated: November 30, 2025
 # 
-# Tracks: % Vol Up, Breadth (ADD), Net Bias, % Tick Range, TICK, VIX, VIX Delta
+# Tracks: UVOL/DVOL, ADD, TICK, TRIN, NH/NL, VIX, VOLD
+# Features: Dynamic VIX-based thresholds, Divergence detection, Normalized scoring
 # Provides overall market scenario assessment and trading signals
 
 # === USER INPUTS ===
 input showLabels = yes;
 input enableAlerts = yes;
+input lookbackPeriod = 10;  # For trend detection
+input useDynamicThresholds = yes;  # Adjusts thresholds based on VIX regime
+input showDivergenceAlerts = yes;
 
-# VIX Thresholds
-input vixLow = 15.0;
-input vixMedium = 25.0;
-input vixHigh = 35.0;
+# VIX Regime Thresholds
+input vixCalm = 18.0;
+input vixNormal = 25.0;
+input vixElevated = 35.0;
 
 # TICK Thresholds  
 input tickBullish = 500;
@@ -20,69 +24,150 @@ input tickBearish = -500;
 input tickExtremeBull = 1000;
 input tickExtremeBear = -1000;
 
-# Volume Up % Thresholds
-input volUpBullish = 60.0;
-input volUpBearish = 40.0;
-
 # Breadth (ADD) Thresholds
-input addBullish = 200;
-input addBearish = -200;
+input addBullish = 500;
+input addBearish = -500;
+input addExtremeBull = 1500;
+input addExtremeBear = -1500;
 
-# === MARKET INTERNAL DATA ===
-def vix = close("VIX");
-def vixPrevious = close("VIX")[1];
+# === MARKET INTERNAL DATA (True Market-Wide) ===
+def vix = close("$VIX");
+def vixPrevious = close("$VIX")[1];
 def vixDelta = vix - vixPrevious;
+def vixMA = Average(vix, 20);
 def tick = close("$TICK");
 def add = close("$ADD");
+def vold = close("$VOLD");
+def trin = close("$TRIN");
+def uvol = close("$UVOL");
+def dvol = close("$DVOL");
+def nh = close("$NAUH");
+def nl = close("$NADL");
+
+# === DYNAMIC VIX REGIME MULTIPLIER ===
+def vixRegime = if vix < vixCalm then 0.8
+                else if vix < vixNormal then 1.0
+                else if vix < vixElevated then 1.3
+                else 1.6;
+
+# Dynamic thresholds (higher VIX = looser thresholds)
+def dynTickBull = if useDynamicThresholds then tickBullish * vixRegime else tickBullish;
+def dynTickBear = if useDynamicThresholds then tickBearish * vixRegime else tickBearish;
+def dynAddBull = if useDynamicThresholds then addBullish * vixRegime else addBullish;
+def dynAddBear = if useDynamicThresholds then addBearish * vixRegime else addBearish;
 
 # === DERIVED CALCULATIONS ===
-def volUp = if close > close[1] then volume else 0;
-def volDown = if close <= close[1] then volume else 0;
-def totalVol = volUp + volDown;
-def volUpPercent = if totalVol > 0 then (volUp / totalVol) * 100 else 50;
+# True UVOL/DVOL percentage
+def totalVol = uvol + dvol;
+def volUpPercent = if totalVol > 0 then (uvol / totalVol) * 100 else 50;
+def dynVolBull = if useDynamicThresholds then 62 - (vixRegime * 5) else 60;
+def dynVolBear = if useDynamicThresholds then 38 + (vixRegime * 5) else 40;
+
+# NH/NL Ratio
+def nhnlRatio = if nl != 0 then nh / nl else if nh > 0 then 100 else 0.01;
 
 def tickHigh = Highest(tick, 390);
 def tickLow = Lowest(tick, 390);
 def tickRange = tickHigh - tickLow;
 def tickRangePercent = if tickRange > 0 then ((tick - tickLow) / tickRange) * 100 else 50;
 
-def netBias = add + (tick / 10);
+# Cumulative TICK (running sum of TICK readings)
+def cumTick = TotalSum(tick);
+def cumTickMA = Average(cumTick, lookbackPeriod);
+def cumTickTrend = if cumTick > cumTickMA then 1 else if cumTick < cumTickMA then -1 else 0;
+
+# Net Bias (weighted)
+def netBias = add + (tick / 5) + (vold / 1000000);
+
+# === NORMALIZED SCORES (-1 to +1 per metric) ===
+def scoreVol = if volUpPercent >= dynVolBull then 1
+               else if volUpPercent >= 55 then 0.5
+               else if volUpPercent <= dynVolBear then -1
+               else if volUpPercent <= 45 then -0.5
+               else 0;
+
+def scoreADD = if add >= dynAddBull then 1
+               else if add >= 100 then 0.5
+               else if add <= dynAddBear then -1
+               else if add <= -100 then -0.5
+               else 0;
+
+def scoreTICK = if tick >= dynTickBull then 1
+                else if tick >= 300 then 0.5
+                else if tick <= dynTickBear then -1
+                else if tick <= -300 then -0.5
+                else 0;
+
+def scoreTRIN = if trin < 0.7 then 1
+                else if trin < 0.9 then 0.5
+                else if trin > 1.3 then -1
+                else if trin > 1.1 then -0.5
+                else 0;
+
+def scoreNHNL = if nhnlRatio > 10 then 1
+                else if nhnlRatio > 3 then 0.5
+                else if nhnlRatio < 0.3 then -1
+                else if nhnlRatio < 0.5 then -0.5
+                else 0;
+
+def scoreVIX = if vix < vixCalm and vixDelta < 0 then 1
+               else if vix < vixNormal then 0.5
+               else if vix > vixElevated then -1
+               else if vixDelta > 1 then -0.5
+               else 0;
+
+def scoreCumTick = if cumTickTrend > 0 then 0.5 else if cumTickTrend < 0 then -0.5 else 0;
+
+# === COMPOSITE SCORE ===
+def totalScore = scoreVol + scoreADD + scoreTICK + scoreTRIN + scoreNHNL + scoreVIX + scoreCumTick;
+
+# === TREND DETECTION ===
+def addTrend = if add > Average(add, lookbackPeriod) then 1 else if add < Average(add, lookbackPeriod) then -1 else 0;
+def tickTrend = if tick > Average(tick, lookbackPeriod) then 1 else if tick < Average(tick, lookbackPeriod) then -1 else 0;
+def vixTrend = if vix < Average(vix, lookbackPeriod) then 1 else if vix > Average(vix, lookbackPeriod) then -1 else 0;
+def trinTrend = if trin < Average(trin, lookbackPeriod) then 1 else if trin > Average(trin, lookbackPeriod) then -1 else 0;
+def overallTrend = addTrend + tickTrend + vixTrend + cumTickTrend + trinTrend;
+
+# === EXTREME DETECTION ===
+def tickExtreme = if tick >= tickExtremeBull then 2 else if tick <= tickExtremeBear then -2 else 0;
+def addExtreme = if add >= addExtremeBull then 2 else if add <= addExtremeBear then -2 else 0;
+def vixExtreme = if vix >= vixElevated then -2 else if vix <= vixCalm then 1 else 0;
+def trinExtreme = if trin < 0.5 then 2 else if trin > 2.0 then -2 else 0;
 
 # === MARKET SCENARIO ASSESSMENT ===
-def bullishFactors = (if volUpPercent > volUpBullish then 1 else 0) +
-                    (if add > addBullish then 1 else 0) +
-                    (if tick > tickBullish then 1 else 0) +
-                    (if vix < vixLow then 1 else 0) +
-                    (if vixDelta < 0 then 1 else 0);
-
-def bearishFactors = (if volUpPercent < volUpBearish then 1 else 0) +
-                    (if add < addBearish then 1 else 0) +
-                    (if tick < tickBearish then 1 else 0) +
-                    (if vix > vixMedium then 1 else 0) +
-                    (if vixDelta > 0 then 1 else 0);
-
-def marketStrength = bullishFactors - bearishFactors;
-def scenario = if marketStrength >= 2 then 3
-              else if marketStrength >= 1 then 2
-              else if marketStrength <= -2 then -3
-              else if marketStrength <= -1 then -2
+def scenario = if totalScore >= 3 then 3
+              else if totalScore >= 1.5 then 2
+              else if totalScore >= 0.5 then 1
+              else if totalScore <= -3 then -3
+              else if totalScore <= -1.5 then -2
+              else if totalScore <= -0.5 then -1
               else 0;
 
-def strengthScore = 50 + (marketStrength * 10);
+def strengthScore = Round(50 + (totalScore * 7), 0);
 def posture = if scenario >= 2 then 1
              else if scenario <= -2 then -1
              else 0;
 
+# === DIVERGENCE DETECTION (SPY as proxy) ===
+def spy = close("SPY");
+def spyUp = spy > spy[1];
+def internalsBullish = totalScore >= 1.5;
+def internalsBearish = totalScore <= -1.5;
+
+def bullishDivergence = !spyUp and internalsBullish and internalsBullish[1];
+def bearishDivergence = spyUp and internalsBearish and internalsBearish[1];
+
 # === PREDICTION & CONFIDENCE ===
-def predictionType = if scenario >= 1 and tick > 0 and volUpPercent > 55 then 1
-                    else if scenario <= -1 and tick < 0 and volUpPercent < 45 then -1
-                    else if AbsValue(tick) < 100 and vix < 20 then 0
+def predictionType = if scenario >= 2 and tick > 0 and volUpPercent > 55 and overallTrend > 0 then 1
+                    else if scenario <= -2 and tick < 0 and volUpPercent < 45 and overallTrend < 0 then -1
+                    else if AbsValue(tick) < 200 and vix < 20 and AbsValue(add) < 300 then 0
                     else 2;
 
-def confidence = if AbsValue(marketStrength) >= 3 then 90
-                else if AbsValue(marketStrength) >= 2 then 70
-                else if AbsValue(marketStrength) >= 1 then 50
-                else 10;
+def confidence = if AbsValue(totalScore) >= 4 then 95
+                else if AbsValue(totalScore) >= 3 then 85
+                else if AbsValue(totalScore) >= 2 then 70
+                else if AbsValue(totalScore) >= 1 then 55
+                else 30;
 
 # === COLOR DEFINITIONS ===
 DefineGlobalColor("bullish", Color.GREEN);
@@ -90,59 +175,106 @@ DefineGlobalColor("bearish", Color.RED);
 DefineGlobalColor("neutral", Color.YELLOW);
 DefineGlobalColor("strong_bullish", Color.CYAN);
 DefineGlobalColor("strong_bearish", Color.MAGENTA);
+DefineGlobalColor("extreme", Color.WHITE);
+DefineGlobalColor("divergence", Color.ORANGE);
+DefineGlobalColor("weak_bull", Color.LIGHT_GREEN);
+DefineGlobalColor("weak_bear", Color.PINK);
 
 # === CONSOLIDATED LABELS (Vertical Stack) ===
 
 # Label 1: OVERVIEW (Scenario, Strength, Posture, Prediction, Confidence)
 AddLabel(showLabels, 
-         "Scenario: " + (if scenario == 3 then "STRONG BULLISH"
+         "INTERNALS | " + (if scenario == 3 then "STRONG BULLISH"
                          else if scenario == 2 then "BULLISH"
-                         else if scenario == 1 then "MILD BULLISH"
-                         else if scenario == -1 then "MILD BEARISH"
+                         else if scenario == 1 then "lean bull"
+                         else if scenario == -1 then "lean bear"
                          else if scenario == -2 then "BEARISH"
                          else if scenario == -3 then "STRONG BEARISH"
-                         else "NEUTRAL") + "\n\n" +
-         "Strength: " + Round(strengthScore, 0) + "\n\n" +
-         "Posture: " + (if posture == 1 then "BULLISH"
-                        else if posture == -1 then "BEARISH"
-                        else "NEUTRAL") + "\n\n\n" +
-         "PREDICTION: " + (if predictionType == 1 then "BULLISH CONTINUATION"
-                          else if predictionType == -1 then "BEARISH CONTINUATION"
-                          else if predictionType == 0 then "CHOPPY/BALANCED"
-                          else "MIXED SIGNALS") + "\n\n" +
-         "CONFIDENCE: " + confidence + "%",
+                         else "NEUTRAL") + " | Str: " + strengthScore + " | Conf: " + confidence + "%",
          if scenario >= 2 then GlobalColor("strong_bullish")
-         else if scenario >= 1 then GlobalColor("bullish")
+         else if scenario >= 1 then GlobalColor("weak_bull")
          else if scenario <= -2 then GlobalColor("strong_bearish")
-         else if scenario <= -1 then GlobalColor("bearish")
+         else if scenario <= -1 then GlobalColor("weak_bear")
          else GlobalColor("neutral"));
 
-# Label 2: METRICS (Vol, Breadth, Bias, Tick, VIX)
+# Label 2: TREND (Overall trend direction)
 AddLabel(showLabels,
-         "% VOL UP: " + Round(volUpPercent, 1) + "%" + "\n\n" +
-         "BREADTH (ADD): " + Round(add, 0) + "\n\n" +
-         "NET BIAS: " + Round(netBias, 2) + "M" + "\n\n\n" +
-         (if tickRange > 0 then "% TICK RANGE: " + Round(tickRangePercent, 1) + "%" + "\n\n" else "") +
-         "TICK: " + Round(tick, 0) + "\n\n\n" +
-         "VIX: " + Round(vix, 2) + "\n\n" +
-         "VIX Δ: " + Round(vixDelta, 2),
-         if volUpPercent >= volUpBullish and add >= addBullish then GlobalColor("bullish")
-         else if volUpPercent <= volUpBearish and add <= addBearish then GlobalColor("bearish")
+         "TREND: " + (if overallTrend >= 3 then "STRONG UP"
+                     else if overallTrend >= 1 then "UP"
+                     else if overallTrend == 0 then "FLAT"
+                     else if overallTrend >= -2 then "DOWN"
+                     else "STRONG DOWN") + " | " +
+         "ADD:" + (if addTrend > 0 then "+" else if addTrend < 0 then "-" else "=") + " " +
+         "TICK:" + (if tickTrend > 0 then "+" else if tickTrend < 0 then "-" else "=") + " " +
+         "TRIN:" + (if trinTrend > 0 then "+" else if trinTrend < 0 then "-" else "=") + " " +
+         "VIX:" + (if vixTrend > 0 then "+" else if vixTrend < 0 then "-" else "="),
+         if overallTrend >= 2 then GlobalColor("strong_bullish")
+         else if overallTrend > 0 then GlobalColor("bullish")
+         else if overallTrend <= -2 then GlobalColor("strong_bearish")
+         else if overallTrend < 0 then GlobalColor("bearish")
          else GlobalColor("neutral"));
+
+# Label 3: METRICS (Vol, Breadth, TRIN, NH/NL, Tick, VIX)
+AddLabel(showLabels,
+         "UVOL%: " + Round(volUpPercent, 1) + " | " +
+         "ADD: " + Round(add, 0) + (if addExtreme != 0 then "!" else "") + " | " +
+         "TICK: " + Round(tick, 0) + (if tickExtreme != 0 then "!" else "") + " | " +
+         "TRIN: " + Round(trin, 2) + (if trinExtreme != 0 then "!" else "") + " | " +
+         "NH/NL: " + Round(nhnlRatio, 1) + "x | " +
+         "VIX: " + Round(vix, 2) + " (" + (if vixDelta > 0 then "+" else "") + Round(vixDelta, 2) + ")",
+         if volUpPercent >= dynVolBull and add >= dynAddBull then GlobalColor("bullish")
+         else if volUpPercent <= dynVolBear and add <= dynAddBear then GlobalColor("bearish")
+         else GlobalColor("neutral"));
+
+# Label 4: SCORES BREAKDOWN
+AddLabel(showLabels,
+         "Scores: VOL:" + Round(scoreVol, 1) + " ADD:" + Round(scoreADD, 1) + 
+         " TICK:" + Round(scoreTICK, 1) + " TRIN:" + Round(scoreTRIN, 1) + 
+         " NH/NL:" + Round(scoreNHNL, 1) + " VIX:" + Round(scoreVIX, 1) +
+         " = " + Round(totalScore, 1),
+         if totalScore >= 2 then GlobalColor("strong_bullish")
+         else if totalScore >= 1 then GlobalColor("bullish")
+         else if totalScore <= -2 then GlobalColor("strong_bearish")
+         else if totalScore <= -1 then GlobalColor("bearish")
+         else GlobalColor("neutral"));
+
+# === DIVERGENCE ALERTS ===
+AddLabel(bullishDivergence and showDivergenceAlerts and showLabels, "BULLISH DIVERGENCE!", GlobalColor("divergence"));
+AddLabel(bearishDivergence and showDivergenceAlerts and showLabels, "BEARISH DIVERGENCE!", GlobalColor("divergence"));
+
+# === EXTREME ZONE ALERTS ===
+AddLabel(tickExtreme == 2 and showLabels, "TICK EXTREME BULL!", GlobalColor("extreme"));
+AddLabel(tickExtreme == -2 and showLabels, "TICK EXTREME BEAR!", GlobalColor("extreme"));
+AddLabel(addExtreme == 2 and showLabels, "ADD EXTREME BULL!", GlobalColor("extreme"));
+AddLabel(addExtreme == -2 and showLabels, "ADD EXTREME BEAR!", GlobalColor("extreme"));
+AddLabel(trinExtreme == 2 and showLabels, "TRIN EXTREME BULL!", GlobalColor("extreme"));
+AddLabel(trinExtreme == -2 and showLabels, "TRIN EXTREME BEAR!", GlobalColor("extreme"));
+AddLabel(vixExtreme == -2 and showLabels, "VIX FEAR SPIKE!", GlobalColor("extreme"));
+AddLabel(vixExtreme == 1 and showLabels, "VIX COMPLACENT!", GlobalColor("extreme"));
 
 # === TRADING SIGNALS ===
-def bullishSignal = scenario >= 2 and volUpPercent > volUpBullish and tick > tickBullish;
-def bearishSignal = scenario <= -2 and volUpPercent < volUpBearish and tick < tickBearish;
+def bullishSignal = scenario >= 2 and volUpPercent > dynVolBull and tick > dynTickBull and overallTrend > 0;
+def bearishSignal = scenario <= -2 and volUpPercent < dynVolBear and tick < dynTickBear and overallTrend < 0;
+def reversalBullish = scenario <= -2 and tick crosses above 0 and addTrend > 0;
+def reversalBearish = scenario >= 2 and tick crosses below 0 and addTrend < 0;
 
 AddLabel(bullishSignal, "BULLISH SIGNAL!", GlobalColor("strong_bullish"));
 AddLabel(bearishSignal, "BEARISH SIGNAL!", GlobalColor("strong_bearish"));
+AddLabel(reversalBullish, "REVERSAL UP?", GlobalColor("bullish"));
+AddLabel(reversalBearish, "REVERSAL DOWN?", GlobalColor("bearish"));
 
 # === ALERTS ===
 Alert(enableAlerts and bullishSignal and !bullishSignal[1], "BULLISH Market Internals Signal!", Alert.BAR, Sound.Ring);
 Alert(enableAlerts and bearishSignal and !bearishSignal[1], "BEARISH Market Internals Signal!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and scenario crosses above 1, "Market Turning BULLISH", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and scenario crosses below -1, "Market Turning BEARISH", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and scenario >= 2 and scenario[1] < 2, "Strong Bullish Internals Confirmed", Alert.BAR, Sound.Ding);
+Alert(enableAlerts and scenario <= -2 and scenario[1] > -2, "Strong Bearish Internals Confirmed", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and reversalBullish and !reversalBullish[1], "Potential BULLISH Reversal!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and reversalBearish and !reversalBearish[1], "Potential BEARISH Reversal!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and bullishDivergence and showDivergenceAlerts, "Bullish Divergence Detected!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and bearishDivergence and showDivergenceAlerts, "Bearish Divergence Detected!", Alert.BAR, Sound.Chimes);
 Alert(enableAlerts and tick crosses above tickExtremeBull, "TICK EXTREME BULLISH!", Alert.BAR, Sound.Ring);
 Alert(enableAlerts and tick crosses below tickExtremeBear, "TICK EXTREME BEARISH!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and vix crosses above vixHigh, "VIX FEAR SPIKE!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and vix crosses below vixLow, "VIX COMPLACENCY!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and add crosses above addExtremeBull, "ADD EXTREME BULLISH!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and add crosses below addExtremeBear, "ADD EXTREME BEARISH!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and vix crosses above vixElevated, "VIX FEAR SPIKE!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and vix crosses below vixCalm, "VIX COMPLACENCY!", Alert.BAR, Sound.Ring);
