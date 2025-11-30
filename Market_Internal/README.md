@@ -16,9 +16,39 @@ This dashboard aggregates 7 key market internal metrics into a single normalized
 | **ADD (Breadth)**   | $ADD         | NYSE Advancing - Declining issues    |
 | **TICK**            | $TICK        | NYSE upticks - downticks             |
 | **TRIN**            | $TRIN        | Arms Index (volume-weighted breadth) |
-| **NH/NL Ratio**     | $NAUH, $NADL | New Highs / New Lows ratio           |
+| **NH/NL Ratio**     | $NAUH, $NADL | New 52-week Highs / New 52-week Lows |
 | **VIX**             | $VIX         | Fear/volatility index                |
 | **Cumulative TICK** | Derived      | Running sum of TICK readings         |
+
+---
+
+## NH/NL Ratio Explained
+
+The **NH/NL (New Highs/New Lows) ratio** is a market breadth indicator comparing stocks making new 52-week highs versus new 52-week lows.
+
+### What It Measures
+- **New Highs (NH)**: Stocks hitting their highest price in 52 weeks
+- **New Lows (NL)**: Stocks hitting their lowest price in 52 weeks
+- **Ratio**: NH ÷ NL
+
+### Interpretation
+
+| NH/NL Ratio | Market Condition              |
+| ----------- | ----------------------------- |
+| > 10        | Very strong breadth (bullish) |
+| > 3         | Healthy breadth (bullish)     |
+| ~1          | Balanced market               |
+| < 0.5       | Weak breadth (bearish)        |
+| < 0.3       | Very weak breadth (bearish)   |
+
+### Why It Matters
+- **Confirms trends**: In a healthy uptrend, more stocks should be making new highs than new lows
+- **Spots divergences**: If SPY is rising but NH/NL is falling, the rally may be narrowing (fewer stocks participating)
+- **Warns of reversals**: A market making new highs with shrinking NH/NL ratio often precedes corrections
+
+### Platform Availability
+- **ThinkOrSwim**: Uses `$NAUH` (NYSE New Highs) and `$NADL` (NYSE New Lows) directly
+- **TradingView**: These symbols aren't available, so the PineScript version uses an ADD-based proxy to estimate breadth strength
 
 ---
 

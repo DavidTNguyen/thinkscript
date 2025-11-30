@@ -1,0 +1,250 @@
+//@version=6
+// === MARKET INTERNALS DASHBOARD v3.0 ===
+// Comprehensive market-wide internals with divergence detection & smart scoring
+// Updated: November 30, 2025
+// Converted from ThinkScript to PineScript v6
+//
+// Tracks: UVOL/DVOL, ADD, TICK, TRIN, NH/NL, VIX
+// Features: Dynamic VIX-based thresholds, Divergence detection, Normalized scoring
+// Provides overall market scenario assessment and trading signals
+//
+// NOTE: This indicator must be added to a separate pane (not overlay)
+// Works best on SPY, ES, or any US equity chart
+
+indicator("Market Internals Dashboard v3.0", shorttitle="INTERNALS", overlay=false)
+
+// === USER INPUTS ===
+showLabels = input.bool(true, "Show Labels", group="Display")
+enableAlerts = input.bool(true, "Enable Alerts", group="Display")
+lookbackPeriod = input.int(10, "Lookback Period", minval=1, maxval=50, group="Settings")
+useDynamicThresholds = input.bool(true, "Use Dynamic VIX Thresholds", group="Settings")
+showDivergenceAlerts = input.bool(true, "Show Divergence Alerts", group="Display")
+
+// VIX Regime Thresholds
+vixCalm = input.float(18.0, "VIX Calm", group="VIX Thresholds")
+vixNormal = input.float(25.0, "VIX Normal", group="VIX Thresholds")
+vixElevated = input.float(35.0, "VIX Elevated", group="VIX Thresholds")
+
+// TICK Thresholds
+tickBullish = input.float(500, "TICK Bullish", group="TICK Thresholds")
+tickBearish = input.float(-500, "TICK Bearish", group="TICK Thresholds")
+tickExtremeBull = input.float(1000, "TICK Extreme Bull", group="TICK Thresholds")
+tickExtremeBear = input.float(-1000, "TICK Extreme Bear", group="TICK Thresholds")
+
+// Breadth (ADD) Thresholds
+addBullish = input.float(500, "ADD Bullish", group="ADD Thresholds")
+addBearish = input.float(-500, "ADD Bearish", group="ADD Thresholds")
+addExtremeBull = input.float(1500, "ADD Extreme Bull", group="ADD Thresholds")
+addExtremeBear = input.float(-1500, "ADD Extreme Bear", group="ADD Thresholds")
+
+// === MARKET INTERNAL DATA ===
+// TradingView symbol mappings for market internals
+// Note: NH/NL data not readily available on TradingView - using ADD strength as proxy
+vixData = request.security("CBOE:VIX", timeframe.period, close)
+tickData = request.security("USI:TICK", timeframe.period, close)
+addData = request.security("USI:ADD", timeframe.period, close)
+trinData = request.security("USI:TRIN", timeframe.period, close)
+uvolData = request.security("USI:UVOL", timeframe.period, close)
+dvolData = request.security("USI:DVOL", timeframe.period, close)
+spyData = request.security("SPY", timeframe.period, close)
+
+// Handle null data gracefully
+vix = na(vixData) ? 20.0 : vixData
+tick = na(tickData) ? 0.0 : tickData
+add = na(addData) ? 0.0 : addData
+trin = na(trinData) ? 1.0 : trinData
+uvol = na(uvolData) ? 1.0 : uvolData
+dvol = na(dvolData) ? 1.0 : dvolData
+spy = na(spyData) ? close : spyData
+
+// NH/NL proxy based on ADD strength (since direct NH/NL not available)
+// Strong ADD suggests more new highs, weak ADD suggests more new lows
+nhnlRatio = add > 1000 ? 10.0 : add > 500 ? 5.0 : add > 0 ? 2.0 : add > -500 ? 0.8 : add > -1000 ? 0.3 : 0.1
+
+vixPrevious = vix[1]
+vixDelta = vix - vixPrevious
+vixMA = ta.sma(vix, 20)
+
+// === DYNAMIC VIX REGIME MULTIPLIER ===
+vixRegime = vix < vixCalm ? 0.8 : vix < vixNormal ? 1.0 : vix < vixElevated ? 1.3 : 1.6
+
+// Dynamic thresholds (higher VIX = looser thresholds)
+dynTickBull = useDynamicThresholds ? tickBullish * vixRegime : tickBullish
+dynTickBear = useDynamicThresholds ? tickBearish * vixRegime : tickBearish
+dynAddBull = useDynamicThresholds ? addBullish * vixRegime : addBullish
+dynAddBear = useDynamicThresholds ? addBearish * vixRegime : addBearish
+
+// === DERIVED CALCULATIONS ===
+// True UVOL/DVOL percentage
+totalVol = uvol + dvol
+volUpPercent = totalVol > 0 ? (uvol / totalVol) * 100 : 50.0
+dynVolBull = useDynamicThresholds ? 62 - (vixRegime * 5) : 60.0
+dynVolBear = useDynamicThresholds ? 38 + (vixRegime * 5) : 40.0
+
+// TICK range calculations
+tickHigh = ta.highest(tick, 390)
+tickLow = ta.lowest(tick, 390)
+tickRange = tickHigh - tickLow
+tickRangePercent = tickRange > 0 ? ((tick - tickLow) / tickRange) * 100 : 50.0
+
+// Cumulative TICK (running sum approximation)
+var float cumTick = 0
+cumTick := cumTick + tick
+cumTickMA = ta.sma(cumTick, lookbackPeriod)
+cumTickTrend = cumTick > cumTickMA ? 1 : cumTick < cumTickMA ? -1 : 0
+
+// === NORMALIZED SCORES (-1 to +1 per metric) ===
+scoreVol = volUpPercent >= dynVolBull ? 1.0 : volUpPercent >= 55 ? 0.5 : volUpPercent <= dynVolBear ? -1.0 : volUpPercent <= 45 ? -0.5 : 0.0
+scoreADD = add >= dynAddBull ? 1.0 : add >= 100 ? 0.5 : add <= dynAddBear ? -1.0 : add <= -100 ? -0.5 : 0.0
+scoreTICK = tick >= dynTickBull ? 1.0 : tick >= 300 ? 0.5 : tick <= dynTickBear ? -1.0 : tick <= -300 ? -0.5 : 0.0
+scoreTRIN = trin < 0.7 ? 1.0 : trin < 0.9 ? 0.5 : trin > 1.3 ? -1.0 : trin > 1.1 ? -0.5 : 0.0
+scoreNHNL = nhnlRatio > 10 ? 1.0 : nhnlRatio > 3 ? 0.5 : nhnlRatio < 0.3 ? -1.0 : nhnlRatio < 0.5 ? -0.5 : 0.0
+scoreVIX = vix < vixCalm and vixDelta < 0 ? 1.0 : vix < vixNormal ? 0.5 : vix > vixElevated ? -1.0 : vixDelta > 1 ? -0.5 : 0.0
+scoreCumTick = cumTickTrend > 0 ? 0.5 : cumTickTrend < 0 ? -0.5 : 0.0
+
+// === COMPOSITE SCORE ===
+totalScore = scoreVol + scoreADD + scoreTICK + scoreTRIN + scoreNHNL + scoreVIX + scoreCumTick
+
+// === TREND DETECTION ===
+addMA = ta.sma(add, lookbackPeriod)
+tickMA = ta.sma(tick, lookbackPeriod)
+vixTrendMA = ta.sma(vix, lookbackPeriod)
+trinMA = ta.sma(trin, lookbackPeriod)
+
+addTrend = add > addMA ? 1 : add < addMA ? -1 : 0
+tickTrend = tick > tickMA ? 1 : tick < tickMA ? -1 : 0
+vixTrend = vix < vixTrendMA ? 1 : vix > vixTrendMA ? -1 : 0  // Inverted - lower VIX is bullish
+trinTrend = trin < trinMA ? 1 : trin > trinMA ? -1 : 0  // Inverted - lower TRIN is bullish
+overallTrend = addTrend + tickTrend + vixTrend + cumTickTrend + trinTrend
+
+// === EXTREME DETECTION ===
+tickExtreme = tick >= tickExtremeBull ? 2 : tick <= tickExtremeBear ? -2 : 0
+addExtreme = add >= addExtremeBull ? 2 : add <= addExtremeBear ? -2 : 0
+vixExtreme = vix >= vixElevated ? -2 : vix <= vixCalm ? 1 : 0
+trinExtreme = trin < 0.5 ? 2 : trin > 2.0 ? -2 : 0
+
+// === MARKET SCENARIO ASSESSMENT ===
+scenario = totalScore >= 3 ? 3 : totalScore >= 1.5 ? 2 : totalScore >= 0.5 ? 1 : totalScore <= -3 ? -3 : totalScore <= -1.5 ? -2 : totalScore <= -0.5 ? -1 : 0
+strengthScore = math.round(50 + (totalScore * 7))
+posture = scenario >= 2 ? 1 : scenario <= -2 ? -1 : 0
+
+// === DIVERGENCE DETECTION ===
+spyUp = spy > spy[1]
+internalsBullish = totalScore >= 1.5
+internalsBearish = totalScore <= -1.5
+bullishDivergence = not spyUp and internalsBullish and internalsBullish[1]
+bearishDivergence = spyUp and internalsBearish and internalsBearish[1]
+
+// === TRADING SIGNALS ===
+bullishSignal = scenario >= 2 and volUpPercent > dynVolBull and tick > dynTickBull and overallTrend > 0
+bearishSignal = scenario <= -2 and volUpPercent < dynVolBear and tick < dynTickBear and overallTrend < 0
+reversalBullish = scenario <= -2 and ta.crossover(tick, 0) and addTrend > 0
+reversalBearish = scenario >= 2 and ta.crossunder(tick, 0) and addTrend < 0
+
+// === COLORS ===
+colorBullish = color.green
+colorBearish = color.red
+colorNeutral = color.yellow
+colorStrongBullish = color.aqua
+colorStrongBearish = color.fuchsia
+colorExtreme = color.white
+colorDivergence = color.orange
+colorWeakBull = color.new(color.green, 50)
+colorWeakBear = color.new(color.red, 50)
+
+// Scenario color
+scenarioColor = scenario >= 2 ? colorStrongBullish : scenario >= 1 ? colorWeakBull : scenario <= -2 ? colorStrongBearish : scenario <= -1 ? colorWeakBear : colorNeutral
+
+// === PLOT TOTAL SCORE AS HISTOGRAM ===
+plot(totalScore, "Total Score", color=scenarioColor, style=plot.style_histogram, linewidth=4)
+hline(0, "Zero Line", color=color.gray, linestyle=hline.style_dashed)
+hline(3, "Strong Bull", color=color.new(color.green, 70), linestyle=hline.style_dotted)
+hline(-3, "Strong Bear", color=color.new(color.red, 70), linestyle=hline.style_dotted)
+hline(1.5, "Bullish", color=color.new(color.green, 80), linestyle=hline.style_dotted)
+hline(-1.5, "Bearish", color=color.new(color.red, 80), linestyle=hline.style_dotted)
+
+// === TABLES FOR LABELS ===
+var table infoTable = table.new(position.top_right, 2, 10, bgcolor=color.new(color.black, 80), frame_width=1, frame_color=color.gray)
+
+if barstate.islast and showLabels
+    // Row 0: Scenario
+    scenarioText = scenario == 3 ? "STRONG BULLISH" : scenario == 2 ? "BULLISH" : scenario == 1 ? "lean bull" : scenario == -1 ? "lean bear" : scenario == -2 ? "BEARISH" : scenario == -3 ? "STRONG BEARISH" : "NEUTRAL"
+    table.cell(infoTable, 0, 0, "SCENARIO", text_color=color.white, text_size=size.small)
+    table.cell(infoTable, 1, 0, scenarioText + " | Str:" + str.tostring(strengthScore) + " | Score:" + str.tostring(totalScore, "#.#"), text_color=scenarioColor, text_size=size.small)
+    
+    // Row 1: Trend
+    trendText = overallTrend >= 3 ? "STRONG UP" : overallTrend >= 1 ? "UP" : overallTrend == 0 ? "FLAT" : overallTrend >= -2 ? "DOWN" : "STRONG DOWN"
+    trendColor = overallTrend >= 2 ? colorStrongBullish : overallTrend > 0 ? colorBullish : overallTrend <= -2 ? colorStrongBearish : overallTrend < 0 ? colorBearish : colorNeutral
+    table.cell(infoTable, 0, 1, "TREND", text_color=color.white, text_size=size.small)
+    table.cell(infoTable, 1, 1, trendText, text_color=trendColor, text_size=size.small)
+    
+    // Row 2: UVOL%
+    volColor = volUpPercent >= dynVolBull ? colorBullish : volUpPercent <= dynVolBear ? colorBearish : colorNeutral
+    table.cell(infoTable, 0, 2, "UVOL%", text_color=color.white, text_size=size.small)
+    table.cell(infoTable, 1, 2, str.tostring(volUpPercent, "#.#") + "%", text_color=volColor, text_size=size.small)
+    
+    // Row 3: ADD
+    addColor = add >= dynAddBull ? colorBullish : add <= dynAddBear ? colorBearish : colorNeutral
+    addExtremeFlag = addExtreme != 0 ? " !" : ""
+    table.cell(infoTable, 0, 3, "ADD", text_color=color.white, text_size=size.small)
+    table.cell(infoTable, 1, 3, str.tostring(add, "#") + addExtremeFlag, text_color=addColor, text_size=size.small)
+    
+    // Row 4: TICK
+    tickColor = tick >= dynTickBull ? colorBullish : tick <= dynTickBear ? colorBearish : colorNeutral
+    tickExtremeFlag = tickExtreme != 0 ? " !" : ""
+    table.cell(infoTable, 0, 4, "TICK", text_color=color.white, text_size=size.small)
+    table.cell(infoTable, 1, 4, str.tostring(tick, "#") + tickExtremeFlag, text_color=tickColor, text_size=size.small)
+    
+    // Row 5: TRIN
+    trinColor = trin < 0.9 ? colorBullish : trin > 1.1 ? colorBearish : colorNeutral
+    trinExtremeFlag = trinExtreme != 0 ? " !" : ""
+    table.cell(infoTable, 0, 5, "TRIN", text_color=color.white, text_size=size.small)
+    table.cell(infoTable, 1, 5, str.tostring(trin, "#.##") + trinExtremeFlag, text_color=trinColor, text_size=size.small)
+    
+    // Row 6: NH/NL
+    nhnlColor = nhnlRatio > 3 ? colorBullish : nhnlRatio < 0.5 ? colorBearish : colorNeutral
+    table.cell(infoTable, 0, 6, "NH/NL", text_color=color.white, text_size=size.small)
+    table.cell(infoTable, 1, 6, str.tostring(nhnlRatio, "#.#") + "x", text_color=nhnlColor, text_size=size.small)
+    
+    // Row 7: VIX
+    vixColor = vix < vixCalm ? colorBullish : vix > vixElevated ? colorBearish : colorNeutral
+    vixDeltaStr = vixDelta > 0 ? "+" + str.tostring(vixDelta, "#.##") : str.tostring(vixDelta, "#.##")
+    table.cell(infoTable, 0, 7, "VIX", text_color=color.white, text_size=size.small)
+    table.cell(infoTable, 1, 7, str.tostring(vix, "#.##") + " (" + vixDeltaStr + ")", text_color=vixColor, text_size=size.small)
+    
+    // Row 8: Score Breakdown
+    table.cell(infoTable, 0, 8, "SCORES", text_color=color.white, text_size=size.small)
+    table.cell(infoTable, 1, 8, "V:" + str.tostring(scoreVol, "#.#") + " A:" + str.tostring(scoreADD, "#.#") + " T:" + str.tostring(scoreTICK, "#.#") + " TR:" + str.tostring(scoreTRIN, "#.#"), text_color=color.silver, text_size=size.small)
+    
+    // Row 9: Signals
+    signalText = bullishSignal ? "BULLISH SIGNAL!" : bearishSignal ? "BEARISH SIGNAL!" : reversalBullish ? "REVERSAL UP?" : reversalBearish ? "REVERSAL DOWN?" : bullishDivergence and showDivergenceAlerts ? "BULL DIVERGENCE!" : bearishDivergence and showDivergenceAlerts ? "BEAR DIVERGENCE!" : "-"
+    signalColor = bullishSignal ? colorStrongBullish : bearishSignal ? colorStrongBearish : reversalBullish or bullishDivergence ? colorBullish : reversalBearish or bearishDivergence ? colorBearish : color.gray
+    table.cell(infoTable, 0, 9, "SIGNAL", text_color=color.white, text_size=size.small)
+    table.cell(infoTable, 1, 9, signalText, text_color=signalColor, text_size=size.small)
+
+// === BACKGROUND COLORING FOR EXTREME ZONES ===
+bgcolor(tickExtreme == 2 ? color.new(colorStrongBullish, 90) : tickExtreme == -2 ? color.new(colorStrongBearish, 90) : na)
+
+// === PLOT SHAPES FOR SIGNALS ===
+plotshape(bullishSignal and not bullishSignal[1], "Bull Signal", shape.triangleup, location.bottom, colorStrongBullish, size=size.small)
+plotshape(bearishSignal and not bearishSignal[1], "Bear Signal", shape.triangledown, location.top, colorStrongBearish, size=size.small)
+plotshape(reversalBullish and not reversalBullish[1], "Reversal Up", shape.diamond, location.bottom, colorBullish, size=size.tiny)
+plotshape(reversalBearish and not reversalBearish[1], "Reversal Down", shape.diamond, location.top, colorBearish, size=size.tiny)
+plotshape(bullishDivergence and showDivergenceAlerts, "Bull Divergence", shape.circle, location.bottom, colorDivergence, size=size.tiny)
+plotshape(bearishDivergence and showDivergenceAlerts, "Bear Divergence", shape.circle, location.top, colorDivergence, size=size.tiny)
+
+// === ALERTS ===
+alertcondition(bullishSignal and not bullishSignal[1], "Bullish Signal", "BULLISH Market Internals Signal!")
+alertcondition(bearishSignal and not bearishSignal[1], "Bearish Signal", "BEARISH Market Internals Signal!")
+alertcondition(scenario >= 2 and scenario[1] < 2, "Strong Bullish", "Strong Bullish Internals Confirmed")
+alertcondition(scenario <= -2 and scenario[1] > -2, "Strong Bearish", "Strong Bearish Internals Confirmed")
+alertcondition(reversalBullish and not reversalBullish[1], "Reversal Up", "Potential BULLISH Reversal!")
+alertcondition(reversalBearish and not reversalBearish[1], "Reversal Down", "Potential BEARISH Reversal!")
+alertcondition(bullishDivergence, "Bull Divergence", "Bullish Divergence Detected!")
+alertcondition(bearishDivergence, "Bear Divergence", "Bearish Divergence Detected!")
+alertcondition(ta.crossover(tick, tickExtremeBull), "TICK Extreme Bull", "TICK EXTREME BULLISH!")
+alertcondition(ta.crossunder(tick, tickExtremeBear), "TICK Extreme Bear", "TICK EXTREME BEARISH!")
+alertcondition(ta.crossover(add, addExtremeBull), "ADD Extreme Bull", "ADD EXTREME BULLISH!")
+alertcondition(ta.crossunder(add, addExtremeBear), "ADD Extreme Bear", "ADD EXTREME BEARISH!")
+alertcondition(ta.crossover(vix, vixElevated), "VIX Fear", "VIX FEAR SPIKE!")
+alertcondition(ta.crossunder(vix, vixCalm), "VIX Complacent", "VIX COMPLACENCY!")
