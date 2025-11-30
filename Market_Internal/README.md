@@ -246,4 +246,4 @@ This prevents false signals during high volatility periods.
 
 ## Author
 
-Enhanced by Trading Intelligence | Original dashboard concept expanded with professional-grade features.
+Strategy by [@VietRoadie](https://github.com/DavidTNguyen/) | Enhanced with professional-grade features including dynamic VIX thresholds, normalized scoring, and divergence detection.
