@@ -2,19 +2,19 @@
 # Updated: December 1, 2025
 # 
 # CONTEXT:
-# Digesting last week's 300pt rally - messy but getting moves.
-# 6805 support held exact. 6825 reclaimed, 6834 1st profit take HIT.
-# *Protect gains*, leave runner
+# Levels respecting PERFECT as we digest last weeks 300pt rally.
+# Messy process as ES sets up next leg.
+# 6805 support HELD EXACT. 6825 reclaim long trigger.
+# 6834 hit 2x ✓, 6841 hit 2x ✓ - HOLD RUNNER
 #
 # PLAN:
-# 6834 hit ✓ - 1st profit take
-# Next up: 6841, 6847, 6858
-# Support: 6825, 6805 (held exact)
+# 6841, 6847, 6858 next targets
+# Dip buyers below 6805
 # 
 # KEY LEVELS:
 # Targets: 6858, 6847, 6841
-# Hit: 6834 ✓
-# Support: 6825, 6805
+# Hit: 6841 ✓✓, 6834 ✓✓
+# Support: 6825, 6805 (held exact)
 
 # === KEY LEVELS ===
 input level1 = 6858;  # Target 3
@@ -90,8 +90,8 @@ L6.SetStyle(Curve.FIRM);
 # === CHART BUBBLES ===
 AddChartBubble(isLastBar and showLabels, level1, "R: 6858", Color.CYAN, yes);
 AddChartBubble(isLastBar and showLabels, level2, "R: 6847", Color.CYAN, yes);
-AddChartBubble(isLastBar and showLabels, level3, "R: 6841 next", Color.CYAN, yes);
-AddChartBubble(isLastBar and showLabels, level4, "6834 HIT 🎯", Color.MAGENTA, yes);
+AddChartBubble(isLastBar and showLabels, level3, "6841 HIT ✓✓", Color.MAGENTA, yes);
+AddChartBubble(isLastBar and showLabels, level4, "6834 HIT ✓✓", Color.MAGENTA, yes);
 AddChartBubble(isLastBar and showLabels, level5, "S: 6825", Color.YELLOW, no);
 AddChartBubble(isLastBar and showLabels, level6, "S: 6805 🔑", Color.GREEN, no);
 
