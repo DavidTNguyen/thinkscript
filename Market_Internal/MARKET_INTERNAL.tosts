@@ -260,7 +260,7 @@ AddLabel(showLabels and !compactLabels and !ultraCompact,
 # Compact consolidated label (replaces Metrics & Scores)
 AddLabel(showLabels and compactLabels and !ultraCompact,
          "COMPACT | " +
-         (if scenario == 3 then "STRONG BULL" else if scenario == 2 then "BULL" else if scenario == 1 then "lean bull" else if scenario == -1 then "lean bear" else if scenario == -2 then "BEAR" else if scenario == -3 then "STRONG BEAR" else "NEUTRAL") +
+         (if scenario == 3 then "STRONG 🐂" else if scenario == 2 then "🐂" else if scenario == 1 then "lean 🐂" else if scenario == -1 then "lean 🐻" else if scenario == -2 then "🐻" else if scenario == -3 then "STRONG 🐻" else "NEUTRAL") +
          " | Tot:" + AsText(Round(totalScoreSafe,1)) +
          " Str:" + AsText(strengthScore) + " Conf:" + AsText(confidence) + "%" +
          (if hasVol then " | V%:" + AsText(Round(volUpPercent,1)) else "") +
