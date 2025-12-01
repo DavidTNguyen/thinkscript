@@ -12,6 +12,8 @@ input enableAlerts = yes;
 input lookbackPeriod = 10;  # For trend detection
 input useDynamicThresholds = yes;  # Adjusts thresholds based on VIX regime
 input showDivergenceAlerts = yes;
+input compactLabels = no;  # Condensed single-line metrics/scores
+input ultraCompact = no;   # Minimal single-line output
 
 # VIX Regime Thresholds
 input vixCalm = 18.0;
@@ -207,7 +209,7 @@ def confidence = if AbsValue(totalScoreSafe) >= 4 then 95
 # Bright label backgrounds for visibility on dark charts
 
 # Label 1: OVERVIEW (Scenario, Strength, Confidence)
-AddLabel(showLabels,
+AddLabel(showLabels and !ultraCompact,
          "INTERNALS | " + (if scenario == 3 then "STRONG BULLISH"
                          else if scenario == 2 then "BULLISH"
                          else if scenario == 1 then "lean bull"
@@ -219,7 +221,7 @@ AddLabel(showLabels,
          Color.CYAN);
 
 # Label 2: TREND (Overall direction, conditional components)
-AddLabel(showLabels,
+AddLabel(showLabels and !ultraCompact,
          "TREND: " + (if overallTrend >= 3 then "STRONG UP"
                      else if overallTrend >= 1 then "UP"
                      else if overallTrend >= -1 then "FLAT"
@@ -232,8 +234,8 @@ AddLabel(showLabels,
          (if hasCumT then " | CUMTICK:" + (if cumTickTrend > 0 then "+" else if cumTickTrend < 0 then "-" else "=") else ""),
          Color.LIGHT_GREEN);
 
-# Label 3: METRICS (Vol, Breadth, TRIN, NH/NL, Tick, VIX) — conditional segments
-AddLabel(showLabels,
+ # Label 3 & 4 (full) or compact consolidated
+AddLabel(showLabels and !compactLabels and !ultraCompact,
          "METRICS:" +
          (if hasVol then " UVOL%:" + ("" + Round(volUpPercent, 1)) else "") +
          (if hasAdd then " | ADD:" + ("" + Round(add, 0)) + (if addExtreme != 0 then "!" else "") else "") +
@@ -243,8 +245,7 @@ AddLabel(showLabels,
          (if hasVIX then " | VIX:" + ("" + Round(vix, 2)) + " (" + ((if vixDelta > 0 then "+" else "") + ("" + Round(vixDelta, 2))) + ")" else ""),
          Color.YELLOW);
 
-# Label 4: SCORES BREAKDOWN
-AddLabel(showLabels,
+AddLabel(showLabels and !compactLabels and !ultraCompact,
          "Scores:" +
          (if hasVol then " VOL:" + AsText(Round(safeScoreVol, 1)) else "") +
          (if hasAdd then " ADD:" + AsText(Round(safeScoreADD, 1)) else "") +
@@ -255,6 +256,31 @@ AddLabel(showLabels,
          (if hasCumT then " CUMTICK:" + AsText(Round(safeScoreCumTick, 1)) else "") +
          " = " + AsText(Round(totalScoreSafe, 1)),
          Color.ORANGE);
+
+# Compact consolidated label (replaces Metrics & Scores)
+AddLabel(showLabels and compactLabels and !ultraCompact,
+         "COMPACT | " +
+         (if scenario == 3 then "STRONG BULL" else if scenario == 2 then "BULL" else if scenario == 1 then "lean bull" else if scenario == -1 then "lean bear" else if scenario == -2 then "BEAR" else if scenario == -3 then "STRONG BEAR" else "NEUTRAL") +
+         " | Tot:" + AsText(Round(totalScoreSafe,1)) +
+         " Str:" + AsText(strengthScore) + " Conf:" + AsText(confidence) + "%" +
+         (if hasVol then " | V%:" + AsText(Round(volUpPercent,1)) else "") +
+         (if hasAdd then " A:" + AsText(Round(add,0)) else "") +
+         (if hasTick then " T:" + AsText(Round(tick,0)) else "") +
+         (if hasTrin then " Tr:" + AsText(Round(trin,2)) else "") +
+         (if hasNHNL then " NHNL:" + AsText(Round(nhnlRatio,1)) + "x" else "") +
+         (if hasVIX then " VX:" + AsText(Round(vix,2)) + (if vixDelta > 0 then "+" else if vixDelta < 0 then "-" else "") + AsText(Round(AbsValue(vixDelta),2)) else ""),
+         Color.GRAY);
+
+# Ultra compact single-line label (inline scenario code)
+AddLabel(showLabels and ultraCompact,
+         "UC " + (if scenario == 3 then "SB" else if scenario == 2 then "B" else if scenario == 1 then "b" else if scenario == -1 then "b-" else if scenario == -2 then "Be" else if scenario == -3 then "SB-" else "N") +
+         " S:" + AsText(Round(totalScoreSafe,1)) +
+         (if hasVol then " V%:" + AsText(Round(volUpPercent,0)) else " V%:-") +
+         (if hasAdd then " A:" + AsText(Round(add,0)) else " A:-") +
+         (if hasTick then " T:" + AsText(Round(tick,0)) else " T:-") +
+         (if hasTrin then " Tr:" + AsText(Round(trin,2)) else " Tr:-") +
+         (if hasVIX then " VX:" + AsText(Round(vix,1)) else " VX:-"),
+         Color.GRAY);
 
 # === DIVERGENCE ALERTS ===
 AddLabel(bullishDivergence and showDivergenceAlerts and showLabels, "BULLISH DIVERGENCE!", Color.ORANGE);

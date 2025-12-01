@@ -1,3 +1,307 @@
+//@version=5
+indicator("Market Internals Dashboard v3 (Pine)", overlay=true, max_labels_count=500)
+
+// === USER INPUTS ===
+showLabels = input.bool(true, "Show Labels")
+compactLabels = input.bool(false, "Compact Labels")
+ultraCompact = input.bool(false, "Ultra Compact")
+useTable = input.bool(true, "Use Table Layout")
+
+useDynamicThresholds = input.bool(true, "Use Dynamic Thresholds")
+lookbackPeriod = input.int(10, "Trend Lookback", minval=2)
+
+// Symbol inputs (allow user to map to available feeds)
+symVIX = input.string("CBOE:VIX", "VIX Ticker")
+symTICK = input.string("NYSE:TICK", "TICK Ticker")
+symADD = input.string("NYSE:ADD", "ADD Ticker")
+symTRIN = input.string("NYSE:TRIN", "TRIN Ticker")
+symUVOL = input.string("NYSE:UVOL", "UVOL Ticker")
+symDVOL = input.string("NYSE:DVOL", "DVOL Ticker")
+symNAUH = input.string("NYSE:NAUH", "NH Ticker")
+symNADL = input.string("NYSE:NADL", "NL Ticker")
+symVOLD = input.string("NYSE:VOLD", "VOLD Ticker")
+
+// Thresholds
+vixCalm = input.float(18.0, "VIX Calm")
+vixNormal = input.float(25.0, "VIX Normal")
+vixElevated = input.float(35.0, "VIX Elevated")
+
+tickBullish = input.int(500, "TICK Bullish")
+tickBearish = input.int(-500, "TICK Bearish")
+tickExtremeBull = input.int(1000, "TICK Extreme Bull")
+tickExtremeBear = input.int(-1000, "TICK Extreme Bear")
+
+addBullish = input.int(500, "ADD Bullish")
+addBearish = input.int(-500, "ADD Bearish")
+addExtremeBull = input.int(1500, "ADD Extreme Bull")
+addExtremeBear = input.int(-1500, "ADD Extreme Bear")
+
+// === DATA FETCH ===
+vix = request.security(symVIX, timeframe.period, close)
+vixPrev = request.security(symVIX, timeframe.period, close[1])
+vixDelta = vix - vixPrev
+tick = request.security(symTICK, timeframe.period, close)
+add_ = request.security(symADD, timeframe.period, close)
+trin = request.security(symTRIN, timeframe.period, close)
+uvol = request.security(symUVOL, timeframe.period, close)
+dvol = request.security(symDVOL, timeframe.period, close)
+nh = request.security(symNAUH, timeframe.period, close)
+nl = request.security(symNADL, timeframe.period, close)
+vold = request.security(symVOLD, timeframe.period, close)
+
+// === DERIVED ===
+vixRegime = vix < vixCalm ? 0.8 : vix < vixNormal ? 1.0 : vix < vixElevated ? 1.3 : 1.6
+dynTickBull = useDynamicThresholds ? tickBullish * vixRegime : tickBullish
+dynTickBear = useDynamicThresholds ? tickBearish * vixRegime : tickBearish
+dynAddBull = useDynamicThresholds ? addBullish * vixRegime : addBullish
+dynAddBear = useDynamicThresholds ? addBearish * vixRegime : addBearish
+
+totalVol = uvol + dvol
+volUpPercentRaw = totalVol > 0 ? (uvol / totalVol) * 100.0 : na
+volUpPercent = na(volUpPercentRaw) ? 50.0 : volUpPercentRaw
+dynVolBull = useDynamicThresholds ? 62 - (vixRegime * 5) : 60
+dynVolBear = useDynamicThresholds ? 38 + (vixRegime * 5) : 40
+
+nhnlRatioRaw = nl != 0 ? nh / nl : na
+nhnlRatio = na(nhnlRatioRaw) ? na : nhnlRatioRaw
+
+cumTick = ta.cum(tick)
+cumTickMA = ta.sma(cumTick, lookbackPeriod)
+cumTickTrend = cumTick > cumTickMA ? 1 : cumTick < cumTickMA ? -1 : 0
+// Net Bias (scaled declining volume component)
+netBias = add_ + (tick / 5.0) + (vold / 1000000.0)
+
+// === SCORES ===
+scoreVol = na(volUpPercent) ? 0 : volUpPercent >= dynVolBull ? 1 : volUpPercent >= 55 ? 0.5 : volUpPercent <= dynVolBear ? -1 : volUpPercent <= 45 ? -0.5 : 0
+scoreADD = na(add_) ? 0 : add_ >= dynAddBull ? 1 : add_ >= 100 ? 0.5 : add_ <= dynAddBear ? -1 : add_ <= -100 ? -0.5 : 0
+scoreTICK = na(tick) ? 0 : tick >= dynTickBull ? 1 : tick >= 300 ? 0.5 : tick <= dynTickBear ? -1 : tick <= -300 ? -0.5 : 0
+scoreTRIN = na(trin) ? 0 : trin < 0.7 ? 1 : trin < 0.9 ? 0.5 : trin > 1.3 ? -1 : trin > 1.1 ? -0.5 : 0
+scoreNHNL = na(nhnlRatio) ? 0 : nhnlRatio > 10 ? 1 : nhnlRatio > 3 ? 0.5 : nhnlRatio < 0.3 ? -1 : nhnlRatio < 0.5 ? -0.5 : 0
+scoreVIX = na(vix) ? 0 : vix < vixCalm and vixDelta < 0 ? 1 : vix < vixNormal ? (vixDelta <= 0 ? 0.5 : 0.25) : vix > vixElevated ? -1 : (vixDelta <= 0 ? 0.25 : -0.25)
+scoreCumTick = cumTickTrend > 0 ? 0.5 : cumTickTrend < 0 ? -0.5 : 0
+
+totalScore = scoreVol + scoreADD + scoreTICK + scoreTRIN + scoreNHNL + scoreVIX + scoreCumTick
+totalScoreSafe = na(totalScore) ? 0 : totalScore
+
+// === TRENDS ===
+addTrend = add_ > ta.sma(add_, lookbackPeriod) ? 1 : add_ < ta.sma(add_, lookbackPeriod) ? -1 : 0
+tickTrend = tick > ta.sma(tick, lookbackPeriod) ? 1 : tick < ta.sma(tick, lookbackPeriod) ? -1 : 0
+vixTrend = vix < ta.sma(vix, lookbackPeriod) ? 1 : vix > ta.sma(vix, lookbackPeriod) ? -1 : 0
+trinTrend = trin < ta.sma(trin, lookbackPeriod) ? 1 : trin > ta.sma(trin, lookbackPeriod) ? -1 : 0
+
+safeAddTrend = na(addTrend) ? 0 : addTrend
+safeTickTrend = na(tickTrend) ? 0 : tickTrend
+safeVixTrend = na(vixTrend) ? 0 : vixTrend
+safeTrinTrend = na(trinTrend) ? 0 : trinTrend
+safeCumTickTrend = na(cumTickTrend) ? 0 : cumTickTrend
+overallTrend = safeAddTrend + safeTickTrend + safeVixTrend + safeCumTickTrend + safeTrinTrend
+
+// === EXTREMES ===
+tickExtreme = tick >= tickExtremeBull ? 2 : tick <= tickExtremeBear ? -2 : 0
+addExtreme = add_ >= addExtremeBull ? 2 : add_ <= addExtremeBear ? -2 : 0
+vixExtreme = vix >= vixElevated ? -2 : vix <= vixCalm ? 1 : 0
+trinExtreme = trin < 0.5 ? 2 : trin > 2.0 ? -2 : 0
+
+// === SCENARIO, STRENGTH, CONFIDENCE ===
+scenario = totalScoreSafe >= 3 ? 3 : totalScoreSafe >= 1.5 ? 2 : totalScoreSafe >= 0.5 ? 1 : totalScoreSafe <= -3 ? -3 : totalScoreSafe <= -1.5 ? -2 : totalScoreSafe <= -0.5 ? -1 : 0
+strengthScore = math.round(50 + (totalScoreSafe * 7))
+confidence = math.abs(totalScoreSafe) >= 4 ? 95 : math.abs(totalScoreSafe) >= 3 ? 85 : math.abs(totalScoreSafe) >= 2 ? 70 : math.abs(totalScoreSafe) >= 1 ? 55 : 30
+
+// === Availability Flags ===
+hasVol = not na(totalVol) and totalVol != 0
+hasAdd = not na(add_)
+hasTick = not na(tick)
+hasTrin = not na(trin)
+hasNHNL = not na(nhnlRatio)
+hasVIX = not na(vix)
+hasCumT = not na(cumTickTrend)
+
+// === Render Labels ===
+var label lblOverview = na
+var label lblTrend = na
+var label lblMetrics = na
+var label lblScores = na
+var label lblCompact = na
+var label lblUltra = na
+var table internalsTbl = na
+
+// Helper: scenario text
+scenarioText = scenario == 3 ? "STRONG BULLISH" : scenario == 2 ? "BULLISH" : scenario == 1 ? "lean bull" : scenario == -1 ? "lean bear" : scenario == -2 ? "BEARISH" : scenario == -3 ? "STRONG BEARISH" : "NEUTRAL"
+
+// Clear old labels on each bar
+if barstate.islast
+    if useTable
+        // Initialize table once
+        if na(internalsTbl)
+            internalsTbl := table.new(position.top_right, 12, 7, border_width=1)
+        // Clear cells by overwriting (no direct clear API); reuse
+        // Row 0 header labels
+        table.cell(internalsTbl, 0, 0, "SECTION", bgcolor=color.new(color.gray,85))
+        table.cell(internalsTbl, 1, 0, "VALUE", bgcolor=color.new(color.gray,85))
+        table.cell(internalsTbl, 2, 0, "EXTRA", bgcolor=color.new(color.gray,85))
+        table.cell(internalsTbl, 3, 0, "VOL", bgcolor=color.new(color.gray,85))
+        table.cell(internalsTbl, 4, 0, "BREADTH", bgcolor=color.new(color.gray,85))
+        table.cell(internalsTbl, 5, 0, "TICK", bgcolor=color.new(color.gray,85))
+        table.cell(internalsTbl, 6, 0, "TRIN", bgcolor=color.new(color.gray,85))
+        table.cell(internalsTbl, 7, 0, "VIX", bgcolor=color.new(color.gray,85))
+        table.cell(internalsTbl, 8, 0, "NHNL", bgcolor=color.new(color.gray,85))
+        table.cell(internalsTbl, 9, 0, "NHNL Sc", bgcolor=color.new(color.gray,85))
+        table.cell(internalsTbl,10, 0, "Bias", bgcolor=color.new(color.gray,85))
+        table.cell(internalsTbl,11, 0, "CumTick", bgcolor=color.new(color.gray,85))
+
+        // Helper color mapping
+        f_scoreColor(score) => score >= 1 ? color.new(color.lime, 0) : score >= 0.5 ? color.new(color.green, 30) : score <= -1 ? color.new(color.red, 0) : score <= -0.5 ? color.new(color.orange, 10) : color.new(color.gray, 85)
+        f_biasColor(b) => b >= 5 ? color.new(color.lime, 0) : b >= 2 ? color.new(color.green,30) : b <= -5 ? color.new(color.red,0) : b <= -2 ? color.new(color.orange,10) : color.new(color.gray,85)
+        scenarioColor = scenario >= 2 ? color.new(color.lime, 0) : scenario <= -2 ? color.new(color.red,0) : color.new(color.yellow,40)
+
+        // Row 1: Overview
+        table.cell(internalsTbl, 0, 1, "Overview", bgcolor=color.new(color.gray,90))
+        table.cell(internalsTbl, 1, 1, scenarioText, bgcolor=scenarioColor)
+        table.cell(internalsTbl, 2, 1, "Str:" + str.tostring(strengthScore) + " Conf:" + str.tostring(confidence) + "%", bgcolor=color.new(color.gray,90))
+        table.cell(internalsTbl, 3, 1, hasVol ? str.tostring(math.round(volUpPercent*10)/10.0) + "%" : "-", bgcolor=f_scoreColor(scoreVol))
+        table.cell(internalsTbl, 4, 1, hasAdd ? str.tostring(math.round(add_)) : "-", bgcolor=f_scoreColor(scoreADD))
+        table.cell(internalsTbl, 5, 1, hasTick ? str.tostring(math.round(tick)) : "-", bgcolor=f_scoreColor(scoreTICK))
+        table.cell(internalsTbl, 6, 1, hasTrin ? str.tostring(trin, format.mintick) : "-", bgcolor=f_scoreColor(scoreTRIN))
+        table.cell(internalsTbl, 7, 1, hasVIX ? str.tostring(vix, format.mintick) : "-", bgcolor=f_scoreColor(scoreVIX))
+        table.cell(internalsTbl, 8, 1, hasNHNL ? str.tostring(math.round(nhnlRatio*10)/10.0) + "x" : "-", bgcolor=f_scoreColor(scoreNHNL))
+        table.cell(internalsTbl, 9, 1, hasNHNL ? str.tostring(math.round(scoreNHNL*10)/10.0) : "-", bgcolor=f_scoreColor(scoreNHNL))
+        table.cell(internalsTbl,10, 1, str.tostring(math.round(netBias*10)/10.0), bgcolor=f_biasColor(netBias))
+        table.cell(internalsTbl,11, 1, str.tostring(math.round(cumTick*10)/10.0), bgcolor=f_scoreColor(scoreCumTick))
+
+        // Row 2: Scores breakdown
+        table.cell(internalsTbl, 0, 2, "Scores", bgcolor=color.new(color.gray,90))
+        table.cell(internalsTbl, 1, 2, "Total:" + str.tostring(math.round(totalScoreSafe*10)/10.0), bgcolor=f_scoreColor(totalScoreSafe))
+        table.cell(internalsTbl, 2, 2, "CumTick:" + (hasCumT ? str.tostring(scoreCumTick) : "-"), bgcolor=f_scoreColor(scoreCumTick))
+        table.cell(internalsTbl, 3, 2, str.tostring(math.round(scoreVol*10)/10.0), bgcolor=f_scoreColor(scoreVol))
+        table.cell(internalsTbl, 4, 2, str.tostring(math.round(scoreADD*10)/10.0), bgcolor=f_scoreColor(scoreADD))
+        table.cell(internalsTbl, 5, 2, str.tostring(math.round(scoreTICK*10)/10.0), bgcolor=f_scoreColor(scoreTICK))
+        table.cell(internalsTbl, 6, 2, str.tostring(math.round(scoreTRIN*10)/10.0), bgcolor=f_scoreColor(scoreTRIN))
+        table.cell(internalsTbl, 7, 2, str.tostring(math.round(scoreVIX*10)/10.0), bgcolor=f_scoreColor(scoreVIX))
+        table.cell(internalsTbl, 8, 2, str.tostring(math.round(scoreNHNL*10)/10.0), bgcolor=f_scoreColor(scoreNHNL))
+        table.cell(internalsTbl, 9, 2, str.tostring(math.round(netBias*10)/10.0), bgcolor=f_biasColor(netBias))
+        table.cell(internalsTbl,10, 2, str.tostring(math.round(cumTick*10)/10.0), bgcolor=f_scoreColor(scoreCumTick))
+        table.cell(internalsTbl,11, 2, "", bgcolor=color.new(color.gray,95))
+
+        // Row 3: Trend components
+        table.cell(internalsTbl, 0, 3, "Trend", bgcolor=color.new(color.gray,90))
+        table.cell(internalsTbl, 1, 3, "Sum:" + str.tostring(overallTrend), bgcolor=color.new(color.gray,80))
+        table.cell(internalsTbl, 2, 3, "ADD:" + (hasAdd ? (addTrend>0?"+":addTrend<0?"-":"=") : "-"), bgcolor=color.new(color.gray,85))
+        table.cell(internalsTbl, 3, 3, "TICK:" + (hasTick ? (tickTrend>0?"+":tickTrend<0?"-":"=") : "-"), bgcolor=color.new(color.gray,85))
+        table.cell(internalsTbl, 4, 3, "TRIN:" + (hasTrin ? (trinTrend>0?"+":trinTrend<0?"-":"=") : "-"), bgcolor=color.new(color.gray,85))
+        table.cell(internalsTbl, 5, 3, "VIX:" + (hasVIX ? (vixTrend>0?"+":vixTrend<0?"-":"=") : "-"), bgcolor=color.new(color.gray,85))
+        table.cell(internalsTbl, 6, 3, "CUMT:" + (hasCumT ? (cumTickTrend>0?"+":cumTickTrend<0?"-":"=") : "-"), bgcolor=color.new(color.gray,85))
+        table.cell(internalsTbl, 7, 3, "NHNL:" + (hasNHNL?"val":"-"), bgcolor=color.new(color.gray,95))
+        table.cell(internalsTbl, 8, 3, "NHNL Sc:" + (hasNHNL?str.tostring(scoreNHNL):"-"), bgcolor=color.new(color.gray,95))
+        table.cell(internalsTbl, 9, 3, "Bias:" + str.tostring(math.round(netBias)), bgcolor=f_biasColor(netBias))
+        table.cell(internalsTbl,10, 3, "CumTick:" + str.tostring(math.round(cumTick)), bgcolor=f_scoreColor(scoreCumTick))
+        table.cell(internalsTbl,11, 3, "", bgcolor=color.new(color.gray,95))
+
+        // Row 4: Extremes
+        table.cell(internalsTbl, 0, 4, "Extremes", bgcolor=color.new(color.gray,90))
+        table.cell(internalsTbl, 1, 4, tickExtreme!=0?"TICK!":"", bgcolor=tickExtreme!=0?color.new(color.orange,15):color.new(color.gray,95))
+        table.cell(internalsTbl, 2, 4, addExtreme!=0?"ADD!":"", bgcolor=addExtreme!=0?color.new(color.orange,15):color.new(color.gray,95))
+        table.cell(internalsTbl, 3, 4, trinExtreme!=0?"TRIN!":"", bgcolor=trinExtreme!=0?color.new(color.orange,15):color.new(color.gray,95))
+        table.cell(internalsTbl, 4, 4, vixExtreme!=0?"VIX!":"", bgcolor=vixExtreme!=0?color.new(color.orange,15):color.new(color.gray,95))
+        table.cell(internalsTbl, 5, 4, "", bgcolor=color.new(color.gray,95))
+        table.cell(internalsTbl, 6, 4, "", bgcolor=color.new(color.gray,95))
+        table.cell(internalsTbl, 7, 4, "", bgcolor=color.new(color.gray,95))
+        table.cell(internalsTbl, 8, 4, "", bgcolor=color.new(color.gray,95))
+        table.cell(internalsTbl, 9, 4, "", bgcolor=color.new(color.gray,95))
+        table.cell(internalsTbl,10, 4, "", bgcolor=color.new(color.gray,95))
+        table.cell(internalsTbl,11, 4, "", bgcolor=color.new(color.gray,95))
+
+        // Row 5: Compact summary (if enabled)
+        if compactLabels and not ultraCompact
+            comp = scenarioText + " | Tot:" + str.tostring(math.round(totalScoreSafe*10)/10.0) + " Str:" + str.tostring(strengthScore) + " Conf:" + str.tostring(confidence) + "%"
+            table.cell(internalsTbl, 0, 5, "Compact", bgcolor=color.new(color.gray,90))
+            table.cell(internalsTbl, 1, 5, comp, colspan=11, bgcolor=color.new(color.gray,80))
+
+        // Row 6: Ultra compact
+        if ultraCompact
+            code = scenario==3?"SB":scenario==2?"B":scenario==1?"b":scenario==-1?"b-":scenario==-2?"Be":scenario==-3?"SB-":"N"
+            uc = code + " S:" + str.tostring(math.round(totalScoreSafe*10)/10.0) + (hasVol?" V%:"+str.tostring(math.round(volUpPercent)):" V%:-")
+            uc += hasAdd?" A:"+str.tostring(math.round(add_)):" A:-"
+            uc += hasTick?" T:"+str.tostring(math.round(tick)):" T:-"
+            uc += hasTrin?" Tr:"+str.tostring(trin, format.mintick):" Tr:-"
+            uc += hasVIX?" VX:"+str.tostring(vix, format.mintick):" VX:-"
+            table.cell(internalsTbl, 0, 6, "Ultra", bgcolor=color.new(color.gray,90))
+            table.cell(internalsTbl, 1, 6, uc, colspan=11, bgcolor=color.new(color.gray,75))
+    else
+        // Delete table if switching off
+        if not na(internalsTbl)
+            internalsTbl := na
+    // Always clear labels (will be recreated below if needed and table not used)
+    label.delete(lblOverview)
+    label.delete(lblTrend)
+    label.delete(lblMetrics)
+    label.delete(lblScores)
+    label.delete(lblCompact)
+    label.delete(lblUltra)
+
+// Position settings
+yl = close
+x = bar_index
+
+// Overview
+if showLabels and not ultraCompact and not useTable
+    lblOverview := label.new(x, yl + 0, "INTERNALS | " + scenarioText + " | Str: " + str.tostring(strengthScore) + " | Conf: " + str.tostring(confidence) + "%", style=label.style_label_down, color=color.new(color.aqua, 0), textcolor=color.black)
+
+// Trend
+if showLabels and not ultraCompact and not useTable
+    trendStr = "TREND: " + (overallTrend >= 3 ? "STRONG UP" : overallTrend >= 1 ? "UP" : overallTrend >= -1 ? "FLAT" : overallTrend <= -3 ? "STRONG DOWN" : "DOWN") + " [sum=" + str.tostring(math.round(overallTrend)) + "]"
+    trendStr += hasAdd ? " | ADD:" + (addTrend > 0 ? "+" : addTrend < 0 ? "-" : "=") : ""
+    trendStr += hasTick ? " | TICK:" + (tickTrend > 0 ? "+" : tickTrend < 0 ? "-" : "=") : ""
+    trendStr += hasTrin ? " | TRIN:" + (trinTrend > 0 ? "+" : trinTrend < 0 ? "-" : "=") : ""
+    trendStr += hasVIX ? " | VIX:" + (vixTrend > 0 ? "+" : vixTrend < 0 ? "-" : "=") : ""
+    trendStr += hasCumT ? " | CUMTICK:" + (cumTickTrend > 0 ? "+" : cumTickTrend < 0 ? "-" : "=") : ""
+    lblTrend := label.new(x, yl - 0, trendStr, style=label.style_label_down, color=color.new(color.lime, 0), textcolor=color.black)
+
+// Metrics
+if showLabels and not compactLabels and not ultraCompact and not useTable
+    m = "METRICS:"
+    m += hasVol ? " UVOL%:" + str.tostring(math.round(volUpPercent * 10) / 10.0) : ""
+    m += hasAdd ? " | ADD:" + str.tostring(math.round(add_)) + (addExtreme != 0 ? "!" : "") : ""
+    m += hasTick ? " | TICK:" + str.tostring(math.round(tick)) + (tickExtreme != 0 ? "!" : "") : ""
+    m += hasTrin ? " | TRIN:" + str.tostring(trin, format.mintick) + (trinExtreme != 0 ? "!" : "") : ""
+    m += hasNHNL ? " | NH/NL:" + str.tostring(math.round(nhnlRatio * 10) / 10.0) + "x" : ""
+    m += hasVIX ? " | VIX:" + str.tostring(vix, format.mintick) + " (" + (vixDelta > 0 ? "+" : "") + str.tostring(vixDelta, format.mintick) + ")" : ""
+    lblMetrics := label.new(x, yl - 0, m, style=label.style_label_down, color=color.new(color.yellow, 0), textcolor=color.black)
+
+// Scores
+if showLabels and not compactLabels and not ultraCompact and not useTable
+    s = "Scores:"
+    s += hasVol ? " VOL:" + str.tostring(math.round(scoreVol * 10) / 10.0) : ""
+    s += hasAdd ? " ADD:" + str.tostring(math.round(scoreADD * 10) / 10.0) : ""
+    s += hasTick ? " TICK:" + str.tostring(math.round(scoreTICK * 10) / 10.0) : ""
+    s += hasTrin ? " TRIN:" + str.tostring(math.round(scoreTRIN * 10) / 10.0) : ""
+    s += hasNHNL ? " NH/NL:" + str.tostring(math.round(scoreNHNL * 10) / 10.0) : ""
+    s += hasVIX ? " VIX:" + str.tostring(math.round(scoreVIX * 10) / 10.0) : ""
+    s += hasCumT ? " CUMTICK:" + str.tostring(math.round(scoreCumTick * 10) / 10.0) : ""
+    s += " = " + str.tostring(math.round(totalScoreSafe * 10) / 10.0)
+    lblScores := label.new(x, yl - 0, s, style=label.style_label_down, color=color.new(color.orange, 0), textcolor=color.black)
+
+// Compact
+if showLabels and compactLabels and not ultraCompact and not useTable
+    c = "COMPACT | " + scenarioText + " | Tot:" + str.tostring(math.round(totalScoreSafe * 10) / 10.0) + " Str:" + str.tostring(strengthScore) + " Conf:" + str.tostring(confidence) + "%"
+    c += hasVol ? " | V%:" + str.tostring(math.round(volUpPercent * 10) / 10.0) : ""
+    c += hasAdd ? " A:" + str.tostring(math.round(add_)) : ""
+    c += hasTick ? " T:" + str.tostring(math.round(tick)) : ""
+    c += hasTrin ? " Tr:" + str.tostring(trin, format.mintick) : ""
+    c += hasNHNL ? " NHNL:" + str.tostring(math.round(nhnlRatio * 10) / 10.0) + "x" : ""
+    c += hasVIX ? " VX:" + str.tostring(vix, format.mintick) + (vixDelta > 0 ? "+" : vixDelta < 0 ? "-" : "") + str.tostring(math.abs(vixDelta), format.mintick) : ""
+    lblCompact := label.new(x, yl - 0, c, style=label.style_label_down, color=color.new(color.gray, 0), textcolor=color.black)
+
+// Ultra Compact
+if showLabels and ultraCompact and not useTable
+    code = scenario == 3 ? "SB" : scenario == 2 ? "B" : scenario == 1 ? "b" : scenario == -1 ? "b-" : scenario == -2 ? "Be" : scenario == -3 ? "SB-" : "N"
+    uc = "UC " + code + " S:" + str.tostring(math.round(totalScoreSafe * 10) / 10.0)
+    uc += hasVol ? " V%:" + str.tostring(math.round(volUpPercent)) : " V%:-"
+    uc += hasAdd ? " A:" + str.tostring(math.round(add_)) : " A:-"
+    uc += hasTick ? " T:" + str.tostring(math.round(tick)) : " T:-"
+    uc += hasTrin ? " Tr:" + str.tostring(trin, format.mintick) : " Tr:-"
+    uc += hasVIX ? " VX:" + str.tostring(vix, format.mintick) : " VX:-"
+    lblUltra := label.new(x, yl - 0, uc, style=label.style_label_down, color=color.new(color.gray, 0), textcolor=color.black)
+
 //@version=6
 // === MARKET INTERNALS DASHBOARD v3.0 ===
 // Comprehensive market-wide internals with divergence detection & smart scoring
