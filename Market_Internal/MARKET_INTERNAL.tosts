@@ -10,10 +10,11 @@
 input showLabels = yes;
 input enableAlerts = yes;
 input lookbackPeriod = 10;  # For trend detection
-input useDynamicThresholds = yes;  # Adjusts thresholds based on VIX regime
+input useDynamicThresholds = no;   # Static thresholds (matches TradingView behavior)
 input showDivergenceAlerts = yes;
 input compactLabels = no;  # Condensed single-line metrics/scores
 input ultraCompact = no;   # Minimal single-line output
+input showDebug = yes;     # Show component scores and totals for troubleshooting
 
 # VIX Regime Thresholds
 input vixCalm = 18.0;
@@ -78,7 +79,10 @@ def tickRangePercent = if tickRange > 0 then ((tick - tickLow) / tickRange) * 10
 # Cumulative TICK (running sum of TICK readings)
 def cumTick = TotalSum(tick);
 def cumTickMA = Average(cumTick, lookbackPeriod);
-def cumTickTrend = if cumTick > cumTickMA then 1 else if cumTick < cumTickMA then -1 else 0;
+def cumTickTrend = if IsNaN(cumTick) or IsNaN(cumTickMA) then 0 
+                   else if cumTick > cumTickMA then 1 
+                   else if cumTick < cumTickMA then -1 
+                   else 0;
 
 # Net Bias (weighted)
 def netBias = add + (tick / 5) + (vold / 1000000);
@@ -125,7 +129,10 @@ def scoreVIX = if IsNaN(vix) then 0
                else if vix > vixElevated then -1
                else (if vixDelta <= 0 then 0.25 else -0.25);
 
-def scoreCumTick = if cumTickTrend > 0 then 0.5 else if cumTickTrend < 0 then -0.5 else 0;
+def scoreCumTick = if IsNaN(cumTickTrend) then 0 
+                   else if cumTickTrend > 0 then 0.5 
+                   else if cumTickTrend < 0 then -0.5 
+                   else 0;
 
 # === COMPOSITE SCORE ===
 def totalScore = scoreVol + scoreADD + scoreTICK + scoreTRIN + scoreNHNL + scoreVIX + scoreCumTick;
@@ -147,7 +154,7 @@ def hasTick = !IsNaN(tick);
 def hasTrin = !IsNaN(trin);
 def hasNHNL = !IsNaN(nhnlRatio);
 def hasVIX = !IsNaN(vix);
-def hasCumT = !IsNaN(cumTickTrend);
+def hasCumT = !IsNaN(cumTick) and !IsNaN(cumTickMA);
 
 # === TREND DETECTION ===
 def addTrend = if add > Average(add, lookbackPeriod) then 1 else if add < Average(add, lookbackPeriod) then -1 else 0;
@@ -256,6 +263,19 @@ AddLabel(showLabels and !compactLabels and !ultraCompact,
          (if hasCumT then " CUMTICK:" + AsText(Round(safeScoreCumTick, 1)) else "") +
          " = " + AsText(Round(totalScoreSafe, 1)),
          Color.ORANGE);
+
+# Debug: print raw component scores and totals to reconcile with TradingView
+AddLabel(showLabels and showDebug,
+         "DEBUG | Tot:" + AsText(Round(totalScoreSafe, 2)) +
+         " | VOL:" + AsText(Round(scoreVol, 2)) +
+         " ADD:" + AsText(Round(scoreADD, 2)) +
+         " TICK:" + AsText(Round(scoreTICK, 2)) +
+         " TRIN:" + AsText(Round(scoreTRIN, 2)) +
+         " NHNL:" + AsText(Round(scoreNHNL, 2)) +
+         " VIX:" + AsText(Round(scoreVIX, 2)) +
+         " CUMT:" + AsText(Round(scoreCumTick, 2)) +
+         " | Scenario:" + AsText(scenario),
+         Color.LIGHT_GRAY);
 
 # Compact consolidated label (replaces Metrics & Scores)
 AddLabel(showLabels and compactLabels and !ultraCompact,

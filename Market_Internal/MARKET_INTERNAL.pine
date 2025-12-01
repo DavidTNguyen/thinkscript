@@ -6,8 +6,9 @@ showLabels = input.bool(true, "Show Labels")
 compactLabels = input.bool(false, "Compact Labels")
 ultraCompact = input.bool(false, "Ultra Compact")
 useTable = input.bool(true, "Use Table Layout")
+showUltraRow = input.bool(true, "Show Ultra Row (Table)")
 
-useDynamicThresholds = input.bool(true, "Use Dynamic Thresholds")
+useDynamicThresholds = input.bool(false, "Use Dynamic Thresholds")
 lookbackPeriod = input.int(10, "Trend Lookback", minval=2)
 
 // Symbol inputs (allow user to map to available feeds)
@@ -94,7 +95,7 @@ safeTickTrend = na(tickTrend) ? 0 : tickTrend
 safeVixTrend = na(vixTrend) ? 0 : vixTrend
 safeTrinTrend = na(trinTrend) ? 0 : trinTrend
 safeCumTickTrend = na(cumTickTrend) ? 0 : cumTickTrend
-overallTrend = safeAddTrend + safeTickTrend + safeVixTrend + safeCumTickTrend + safeTrinTrend
+overallTrend = safeAddTrend + safeTickTrend + safeVixTrend + safeTrinTrend + safeCumTickTrend
 
 // === EXTREMES ===
 tickExtreme = tick >= tickExtremeBull ? 2 : tick <= tickExtremeBear ? -2 : 0
@@ -129,15 +130,56 @@ var label lblCompact = na
 var label lblUltra = na
 var table internalsTbl = na
 
-// Helper: scenario text
-scenarioText = scenario == 3 ? "STRONG BULLISH" : scenario == 2 ? "BULLISH" : scenario == 1 ? "lean bull" : scenario == -1 ? "lean bear" : scenario == -2 ? "BEARISH" : scenario == -3 ? "STRONG BEARISH" : "NEUTRAL"
+// Helper: scenario text (use if/else to avoid multi-line ternary parsing issues)
+f_scenarioText(int sc) =>
+    string res = "NEUTRAL"
+    if sc == 3
+        res := "STRONG BULLISH"
+    else if sc == 2
+        res := "BULLISH"
+    else if sc == 1
+        res := "lean bull"
+    else if sc == -1
+        res := "lean bear"
+    else if sc == -2
+        res := "BEARISH"
+    else if sc == -3
+        res := "STRONG BEARISH"
+    res
+scenarioText = f_scenarioText(scenario)
+
+// Helper: scenario emoji text for compact label
+f_scenarioEmoji(int sc) =>
+    string e = "NEUTRAL"
+    if sc == 3
+        e := "STRONG 🐂"
+    else if sc == 2
+        e := "🐂"
+    else if sc == 1
+        e := "lean 🐂"
+    else if sc == -1
+        e := "lean 🐻"
+    else if sc == -2
+        e := "🐻"
+    else if sc == -3
+        e := "STRONG 🐻"
+    e
+
+// Helper: sign char for trend
+f_sign(int t) => t > 0 ? "+" : t < 0 ? "-" : "="
+
+// Helper: delta sign for floats ("+"/"-"/"")
+f_deltaSign(float d) => d > 0 ? "+" : d < 0 ? "-" : ""
+
+// Helper: score text color by sign (top-level declaration)
+f_scoreTextColor(float s) => s > 0 ? color.new(#00FF00, 0) : s < 0 ? color.new(#FF5555, 0) : color.new(color.gray, 0)
 
 // Clear old labels on each bar
 if barstate.islast
     if useTable
         // Initialize table once
         if na(internalsTbl)
-            internalsTbl := table.new(position.top_right, 12, 7, border_width=2)
+            internalsTbl := table.new(position.top_right, 12, 8, border_width=2)
         // Clear cells by overwriting (no direct clear API); reuse
         // Row 0 header labels
         table.cell(internalsTbl, 0, 0, "SECTION", bgcolor=color.new(#1E1E1E, 0), text_color=color.white, text_size=size.normal)
@@ -153,8 +195,16 @@ if barstate.islast
         table.cell(internalsTbl,10, 0, "Bias", bgcolor=color.new(#1E1E1E, 0), text_color=color.white, text_size=size.normal)
         table.cell(internalsTbl,11, 0, "CumTick", bgcolor=color.new(#1E1E1E, 0), text_color=color.white, text_size=size.normal)
 
-        // Scenario color
-        scenarioColor = scenario >= 2 ? color.new(#00FF00, 0) : scenario <= -2 ? color.new(#FF0000, 0) : scenario == 1 ? color.new(#90EE90, 0) : scenario == -1 ? color.new(#FFB6C1, 0) : color.new(#FFFF00, 0)
+        // Scenario color (reduced nesting)
+        scenarioColor = color.new(#FFFF00, 0)
+        if scenario >= 2
+            scenarioColor := color.new(#00FF00, 0)
+        else if scenario <= -2
+            scenarioColor := color.new(#FF0000, 0)
+        else if scenario == 1
+            scenarioColor := color.new(#90EE90, 0)
+        else if scenario == -1
+            scenarioColor := color.new(#FFB6C1, 0)
 
         // Row 1: Overview
         table.cell(internalsTbl, 0, 1, "Overview", bgcolor=color.new(#2E2E2E, 0), text_color=color.white, text_size=size.normal)
@@ -187,23 +237,39 @@ if barstate.islast
         // Row 3: Trend components
         table.cell(internalsTbl, 0, 3, "Trend", bgcolor=color.new(#2E2E2E, 0), text_color=color.white, text_size=size.normal)
         table.cell(internalsTbl, 1, 3, "Sum:" + str.tostring(overallTrend), bgcolor=color.new(#404040, 0), text_color=color.white, text_size=size.normal)
-        table.cell(internalsTbl, 2, 3, "ADD:" + (hasAdd ? (addTrend>0?"+":addTrend<0?"-":"=") : "-"), bgcolor=color.new(#383838, 0), text_color=color.white, text_size=size.small)
-        table.cell(internalsTbl, 3, 3, "TICK:" + (hasTick ? (tickTrend>0?"+":tickTrend<0?"-":"=") : "-"), bgcolor=color.new(#383838, 0), text_color=color.white, text_size=size.small)
-        table.cell(internalsTbl, 4, 3, "TRIN:" + (hasTrin ? (trinTrend>0?"+":trinTrend<0?"-":"=") : "-"), bgcolor=color.new(#383838, 0), text_color=color.white, text_size=size.small)
-        table.cell(internalsTbl, 5, 3, "VIX:" + (hasVIX ? (vixTrend>0?"+":vixTrend<0?"-":"=") : "-"), bgcolor=color.new(#383838, 0), text_color=color.white, text_size=size.small)
-        table.cell(internalsTbl, 6, 3, "CUMT:" + (hasCumT ? (cumTickTrend>0?"+":cumTickTrend<0?"-":"=") : "-"), bgcolor=color.new(#383838, 0), text_color=color.white, text_size=size.small)
+        table.cell(internalsTbl, 2, 3, "ADD:" + (hasAdd ? f_sign(addTrend) : "-"), bgcolor=color.new(#383838, 0), text_color=color.white, text_size=size.small)
+        table.cell(internalsTbl, 3, 3, "TICK:" + (hasTick ? f_sign(tickTrend) : "-"), bgcolor=color.new(#383838, 0), text_color=color.white, text_size=size.small)
+        table.cell(internalsTbl, 4, 3, "TRIN:" + (hasTrin ? f_sign(trinTrend) : "-"), bgcolor=color.new(#383838, 0), text_color=color.white, text_size=size.small)
+        table.cell(internalsTbl, 5, 3, "VIX:" + (hasVIX ? f_sign(vixTrend) : "-"), bgcolor=color.new(#383838, 0), text_color=color.white, text_size=size.small)
+        table.cell(internalsTbl, 6, 3, "CUMT:" + (hasCumT ? f_sign(cumTickTrend) : "-"), bgcolor=color.new(#383838, 0), text_color=color.white, text_size=size.small)
         table.cell(internalsTbl, 7, 3, "NHNL:" + (hasNHNL?"val":"-"), bgcolor=color.new(#2A2A2A, 0), text_color=color.white, text_size=size.small)
         table.cell(internalsTbl, 8, 3, "NHNL Sc:" + (hasNHNL?str.tostring(scoreNHNL):"-"), bgcolor=color.new(#2A2A2A, 0), text_color=color.white, text_size=size.small)
         table.cell(internalsTbl, 9, 3, "Bias:" + str.tostring(math.round(netBias)), bgcolor=f_biasColor(netBias), text_color=color.white, text_size=size.small)
         table.cell(internalsTbl,10, 3, "CumTick:" + str.tostring(math.round(cumTick)), bgcolor=f_scoreColor(scoreCumTick), text_color=color.white, text_size=size.small)
         table.cell(internalsTbl,11, 3, "", bgcolor=color.new(#1A1A1A, 0))
 
-        // Row 4: Extremes
+        // Row 4: Extremes (reduced nesting)
         table.cell(internalsTbl, 0, 4, "Extremes", bgcolor=color.new(#2E2E2E, 0), text_color=color.white, text_size=size.normal)
-        table.cell(internalsTbl, 1, 4, tickExtreme!=0?"TICK!":"", bgcolor=tickExtreme!=0?color.new(#FF8C00, 0):color.new(#1A1A1A, 0), text_color=tickExtreme!=0?color.white:color.gray, text_size=size.normal)
-        table.cell(internalsTbl, 2, 4, addExtreme!=0?"ADD!":"", bgcolor=addExtreme!=0?color.new(#FF8C00, 0):color.new(#1A1A1A, 0), text_color=addExtreme!=0?color.white:color.gray, text_size=size.normal)
-        table.cell(internalsTbl, 3, 4, trinExtreme!=0?"TRIN!":"", bgcolor=trinExtreme!=0?color.new(#FF8C00, 0):color.new(#1A1A1A, 0), text_color=trinExtreme!=0?color.white:color.gray, text_size=size.normal)
-        table.cell(internalsTbl, 4, 4, vixExtreme!=0?"VIX!":"", bgcolor=vixExtreme!=0?color.new(#FF8C00, 0):color.new(#1A1A1A, 0), text_color=vixExtreme!=0?color.white:color.gray, text_size=size.normal)
+        // TICK extreme
+        tickText = tickExtreme != 0 ? "TICK!" : ""
+        tickBg = tickExtreme != 0 ? color.new(#FF8C00, 0) : color.new(#1A1A1A, 0)
+        tickFg = tickExtreme != 0 ? color.white : color.gray
+        table.cell(internalsTbl, 1, 4, tickText, bgcolor=tickBg, text_color=tickFg, text_size=size.normal)
+        // ADD extreme
+        addText = addExtreme != 0 ? "ADD!" : ""
+        addBg = addExtreme != 0 ? color.new(#FF8C00, 0) : color.new(#1A1A1A, 0)
+        addFg = addExtreme != 0 ? color.white : color.gray
+        table.cell(internalsTbl, 2, 4, addText, bgcolor=addBg, text_color=addFg, text_size=size.normal)
+        // TRIN extreme
+        trinText = trinExtreme != 0 ? "TRIN!" : ""
+        trinBg = trinExtreme != 0 ? color.new(#FF8C00, 0) : color.new(#1A1A1A, 0)
+        trinFg = trinExtreme != 0 ? color.white : color.gray
+        table.cell(internalsTbl, 3, 4, trinText, bgcolor=trinBg, text_color=trinFg, text_size=size.normal)
+        // VIX extreme
+        vixText = vixExtreme != 0 ? "VIX!" : ""
+        vixBg = vixExtreme != 0 ? color.new(#FF8C00, 0) : color.new(#1A1A1A, 0)
+        vixFg = vixExtreme != 0 ? color.white : color.gray
+        table.cell(internalsTbl, 4, 4, vixText, bgcolor=vixBg, text_color=vixFg, text_size=size.normal)
         table.cell(internalsTbl, 5, 4, "", bgcolor=color.new(color.gray,95))
         table.cell(internalsTbl, 6, 4, "", bgcolor=color.new(color.gray,95))
         table.cell(internalsTbl, 7, 4, "", bgcolor=color.new(color.gray,95))
@@ -228,26 +294,58 @@ if barstate.islast
             table.cell(internalsTbl,10, 5, "", bgcolor=color.new(color.gray,80))
             table.cell(internalsTbl,11, 5, "", bgcolor=color.new(color.gray,80))
 
-        // Row 6: Ultra compact
-        if ultraCompact
-            code = scenario==3?"SB":scenario==2?"B":scenario==1?"b":scenario==-1?"b-":scenario==-2?"Be":scenario==-3?"SB-":"N"
-            uc = code + " S:" + str.tostring(math.round(totalScoreSafe*10)/10.0) + (hasVol?" V%:"+str.tostring(math.round(volUpPercent)):" V%:-")
-            uc += hasAdd?" A:"+str.tostring(math.round(add_)):" A:-"
-            uc += hasTick?" T:"+str.tostring(math.round(tick)):" T:-"
-            uc += hasTrin?" Tr:"+str.tostring(trin, format.mintick):" Tr:-"
-            uc += hasVIX?" VX:"+str.tostring(vix, format.mintick):" VX:-"
-            table.cell(internalsTbl, 0, 6, "Ultra", bgcolor=color.new(color.gray,90))
-            table.cell(internalsTbl, 1, 6, uc, bgcolor=color.new(color.gray,75))
-            table.cell(internalsTbl, 2, 6, "", bgcolor=color.new(color.gray,75))
-            table.cell(internalsTbl, 3, 6, "", bgcolor=color.new(color.gray,75))
-            table.cell(internalsTbl, 4, 6, "", bgcolor=color.new(color.gray,75))
-            table.cell(internalsTbl, 5, 6, "", bgcolor=color.new(color.gray,75))
-            table.cell(internalsTbl, 6, 6, "", bgcolor=color.new(color.gray,75))
-            table.cell(internalsTbl, 7, 6, "", bgcolor=color.new(color.gray,75))
-            table.cell(internalsTbl, 8, 6, "", bgcolor=color.new(color.gray,75))
-            table.cell(internalsTbl, 9, 6, "", bgcolor=color.new(color.gray,75))
-            table.cell(internalsTbl,10, 6, "", bgcolor=color.new(color.gray,75))
-            table.cell(internalsTbl,11, 6, "", bgcolor=color.new(color.gray,75))
+        // Row 6: Ultra compact (table visibility controlled by input)
+        if showUltraRow
+            // Reduce nesting: build code string via simple if/else
+            code = "N"
+            if scenario == 3
+                code := "SB"
+            else if scenario == 2
+                code := "B"
+            else if scenario == 1
+                code := "b"
+            else if scenario == -1
+                code := "b-"
+            else if scenario == -2
+                code := "Be"
+            else if scenario == -3
+                code := "SB-"
+            // Assemble ultra compact string with minimal ternaries
+            uc = code + " S:" + str.tostring(math.round(totalScoreSafe*10)/10.0)
+            uc += (hasVol ? " V%:" + str.tostring(math.round(volUpPercent)) : " V%:-")
+            uc += (hasAdd ? " A:" + str.tostring(math.round(add_)) : " A:-")
+            uc += (hasTick ? " T:" + str.tostring(math.round(tick)) : " T:-")
+            uc += (hasTrin ? " Tr:" + str.tostring(trin, format.mintick) : " Tr:-")
+            uc += (hasVIX ? " VX:" + str.tostring(vix, format.mintick) : " VX:-")
+            ultraBg = color.new(#2E2E2E, 0)
+            table.cell(internalsTbl, 0, 6, "Ultra", bgcolor=ultraBg, text_color=color.white, text_size=size.normal)
+            table.cell(internalsTbl, 1, 6, uc, bgcolor=ultraBg, text_color=color.white, text_size=size.normal)
+            table.cell(internalsTbl, 2, 6, "", bgcolor=ultraBg)
+            table.cell(internalsTbl, 3, 6, "", bgcolor=ultraBg)
+            table.cell(internalsTbl, 4, 6, "", bgcolor=ultraBg)
+            table.cell(internalsTbl, 5, 6, "", bgcolor=ultraBg)
+            table.cell(internalsTbl, 6, 6, "", bgcolor=ultraBg)
+            table.cell(internalsTbl, 7, 6, "", bgcolor=ultraBg)
+            table.cell(internalsTbl, 8, 6, "", bgcolor=ultraBg)
+            table.cell(internalsTbl, 9, 6, "", bgcolor=ultraBg)
+            table.cell(internalsTbl,10, 6, "", bgcolor=ultraBg)
+            table.cell(internalsTbl,11, 6, "", bgcolor=ultraBg)
+
+        // Row 7: Debug breakdown (higher contrast, larger text)
+        if showLabels
+            darkBg = color.new(#1E1E1E, 0)
+            table.cell(internalsTbl, 0, 7, "DEBUG", bgcolor=darkBg, text_color=color.white, text_size=size.normal)
+            table.cell(internalsTbl, 1, 7, "Tot:" + str.tostring(math.round(totalScoreSafe*100)/100.0), bgcolor=darkBg, text_color=f_scoreTextColor(totalScoreSafe), text_size=size.normal)
+            table.cell(internalsTbl, 2, 7, "VOL:" + str.tostring(math.round(scoreVol*100)/100.0), bgcolor=darkBg, text_color=f_scoreTextColor(scoreVol), text_size=size.normal)
+            table.cell(internalsTbl, 3, 7, "ADD:" + str.tostring(math.round(scoreADD*100)/100.0), bgcolor=darkBg, text_color=f_scoreTextColor(scoreADD), text_size=size.normal)
+            table.cell(internalsTbl, 4, 7, "TICK:" + str.tostring(math.round(scoreTICK*100)/100.0), bgcolor=darkBg, text_color=f_scoreTextColor(scoreTICK), text_size=size.normal)
+            table.cell(internalsTbl, 5, 7, "TRIN:" + str.tostring(math.round(scoreTRIN*100)/100.0), bgcolor=darkBg, text_color=f_scoreTextColor(scoreTRIN), text_size=size.normal)
+            table.cell(internalsTbl, 6, 7, "NHNL:" + str.tostring(math.round(scoreNHNL*100)/100.0), bgcolor=darkBg, text_color=f_scoreTextColor(scoreNHNL), text_size=size.normal)
+            table.cell(internalsTbl, 7, 7, "VIX:" + str.tostring(math.round(scoreVIX*100)/100.0), bgcolor=darkBg, text_color=f_scoreTextColor(scoreVIX), text_size=size.normal)
+            table.cell(internalsTbl, 8, 7, "CUMT:" + str.tostring(math.round(scoreCumTick*100)/100.0), bgcolor=darkBg, text_color=f_scoreTextColor(scoreCumTick), text_size=size.normal)
+            table.cell(internalsTbl, 9, 7, "Scenario:" + str.tostring(scenario), bgcolor=darkBg, text_color=color.white, text_size=size.normal)
+            table.cell(internalsTbl,10, 7, "", bgcolor=darkBg)
+            table.cell(internalsTbl,11, 7, "", bgcolor=darkBg)
     else
         // Delete table if switching off
         if not na(internalsTbl)
@@ -270,12 +368,22 @@ if showLabels and not ultraCompact and not useTable
 
 // Trend
 if showLabels and not ultraCompact and not useTable
-    trendStr = "TREND: " + (overallTrend >= 3 ? "STRONG UP" : overallTrend >= 1 ? "UP" : overallTrend >= -1 ? "FLAT" : overallTrend <= -3 ? "STRONG DOWN" : "DOWN") + " [sum=" + str.tostring(math.round(overallTrend)) + "]"
-    trendStr += hasAdd ? " | ADD:" + (addTrend > 0 ? "+" : addTrend < 0 ? "-" : "=") : ""
-    trendStr += hasTick ? " | TICK:" + (tickTrend > 0 ? "+" : tickTrend < 0 ? "-" : "=") : ""
-    trendStr += hasTrin ? " | TRIN:" + (trinTrend > 0 ? "+" : trinTrend < 0 ? "-" : "=") : ""
-    trendStr += hasVIX ? " | VIX:" + (vixTrend > 0 ? "+" : vixTrend < 0 ? "-" : "=") : ""
-    trendStr += hasCumT ? " | CUMTICK:" + (cumTickTrend > 0 ? "+" : cumTickTrend < 0 ? "-" : "=") : ""
+    // Build trend string with minimal nesting
+    trendWord = "FLAT"
+    if overallTrend >= 3
+        trendWord := "STRONG UP"
+    else if overallTrend >= 1
+        trendWord := "UP"
+    else if overallTrend <= -3
+        trendWord := "STRONG DOWN"
+    else if overallTrend < -1
+        trendWord := "DOWN"
+    trendStr = "TREND: " + trendWord + " [sum=" + str.tostring(math.round(overallTrend)) + "]"
+    trendStr += hasAdd ? " | ADD:" + f_sign(addTrend) : ""
+    trendStr += hasTick ? " | TICK:" + f_sign(tickTrend) : ""
+    trendStr += hasTrin ? " | TRIN:" + f_sign(trinTrend) : ""
+    trendStr += hasVIX ? " | VIX:" + f_sign(vixTrend) : ""
+    trendStr += hasCumT ? " | CUMTICK:" + f_sign(cumTickTrend) : ""
     lblTrend := label.new(x, yl - 0, trendStr, style=label.style_label_down, color=color.new(color.lime, 0), textcolor=color.black)
 
 // Metrics
@@ -286,7 +394,7 @@ if showLabels and not compactLabels and not ultraCompact and not useTable
     m += hasTick ? " | TICK:" + str.tostring(math.round(tick)) + (tickExtreme != 0 ? "!" : "") : ""
     m += hasTrin ? " | TRIN:" + str.tostring(trin, format.mintick) + (trinExtreme != 0 ? "!" : "") : ""
     m += hasNHNL ? " | NH/NL:" + str.tostring(math.round(nhnlRatio * 10) / 10.0) + "x" : ""
-    m += hasVIX ? " | VIX:" + str.tostring(vix, format.mintick) + " (" + (vixDelta > 0 ? "+" : "") + str.tostring(vixDelta, format.mintick) + ")" : ""
+    m += hasVIX ? " | VIX:" + str.tostring(vix, format.mintick) + " (" + f_deltaSign(vixDelta) + str.tostring(vixDelta, format.mintick) + ")" : ""
     lblMetrics := label.new(x, yl - 0, m, style=label.style_label_down, color=color.new(color.yellow, 0), textcolor=color.black)
 
 // Scores
@@ -304,22 +412,35 @@ if showLabels and not compactLabels and not ultraCompact and not useTable
 
 // Compact
 if showLabels and compactLabels and not ultraCompact and not useTable
-    c = "COMPACT | " + scenarioText + " | Tot:" + str.tostring(math.round(totalScoreSafe * 10) / 10.0) + " Str:" + str.tostring(strengthScore) + " Conf:" + str.tostring(confidence) + "%"
+    c = "COMPACT | " + f_scenarioEmoji(scenario) + " | Tot:" + str.tostring(math.round(totalScoreSafe * 10) / 10.0) + " Str:" + str.tostring(strengthScore) + " Conf:" + str.tostring(confidence) + "%"
     c += hasVol ? " | V%:" + str.tostring(math.round(volUpPercent * 10) / 10.0) : ""
     c += hasAdd ? " A:" + str.tostring(math.round(add_)) : ""
     c += hasTick ? " T:" + str.tostring(math.round(tick)) : ""
     c += hasTrin ? " Tr:" + str.tostring(trin, format.mintick) : ""
     c += hasNHNL ? " NHNL:" + str.tostring(math.round(nhnlRatio * 10) / 10.0) + "x" : ""
-    c += hasVIX ? " VX:" + str.tostring(vix, format.mintick) + (vixDelta > 0 ? "+" : vixDelta < 0 ? "-" : "") + str.tostring(math.abs(vixDelta), format.mintick) : ""
+    c += hasVIX ? " VX:" + str.tostring(vix, format.mintick) + f_deltaSign(vixDelta) + str.tostring(math.abs(vixDelta), format.mintick) : ""
     lblCompact := label.new(x, yl - 0, c, style=label.style_label_down, color=color.new(color.gray, 0), textcolor=color.black)
 
 // Ultra Compact
 if showLabels and ultraCompact and not useTable
-    code = scenario == 3 ? "SB" : scenario == 2 ? "B" : scenario == 1 ? "b" : scenario == -1 ? "b-" : scenario == -2 ? "Be" : scenario == -3 ? "SB-" : "N"
+    // Reduce nesting in ultra compact label creation
+    code = "N"
+    if scenario == 3
+        code := "SB"
+    else if scenario == 2
+        code := "B"
+    else if scenario == 1
+        code := "b"
+    else if scenario == -1
+        code := "b-"
+    else if scenario == -2
+        code := "Be"
+    else if scenario == -3
+        code := "SB-"
     uc = "UC " + code + " S:" + str.tostring(math.round(totalScoreSafe * 10) / 10.0)
-    uc += hasVol ? " V%:" + str.tostring(math.round(volUpPercent)) : " V%:-"
-    uc += hasAdd ? " A:" + str.tostring(math.round(add_)) : " A:-"
-    uc += hasTick ? " T:" + str.tostring(math.round(tick)) : " T:-"
-    uc += hasTrin ? " Tr:" + str.tostring(trin, format.mintick) : " Tr:-"
-    uc += hasVIX ? " VX:" + str.tostring(vix, format.mintick) : " VX:-"
+    uc += (hasVol ? " V%:" + str.tostring(math.round(volUpPercent)) : " V%:-")
+    uc += (hasAdd ? " A:" + str.tostring(math.round(add_)) : " A:-")
+    uc += (hasTick ? " T:" + str.tostring(math.round(tick)) : " T:-")
+    uc += (hasTrin ? " Tr:" + str.tostring(trin, format.mintick) : " Tr:-")
+    uc += (hasVIX ? " VX:" + str.tostring(vix, format.mintick) : " VX:-")
     lblUltra := label.new(x, yl - 0, uc, style=label.style_label_down, color=color.new(color.gray, 0), textcolor=color.black)
