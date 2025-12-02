@@ -7,6 +7,7 @@ compactLabels = input.bool(false, "Compact Labels")
 ultraCompact = input.bool(false, "Ultra Compact")
 useTable = input.bool(true, "Use Table Layout")
 showUltraRow = input.bool(true, "Show Ultra Row (Table)")
+showDebugRow = input.bool(true, "Show Debug Row (Table)")
 tablePosition = input.string("Top Right", "Dashboard Position", options=["Top Center", "Top Right", "Bottom Left", "Bottom Right"])
 
 useDynamicThresholds = input.bool(false, "Use Dynamic Thresholds")
@@ -346,7 +347,7 @@ if barstate.islast
             table.cell(internalsTbl,11, 6, "", bgcolor=ultraBg)
 
         // Row 7: Debug breakdown (higher contrast, larger text)
-        if showLabels
+        if showDebugRow
             darkBg = color.new(#1E1E1E, 0)
             table.cell(internalsTbl, 0, 7, "DEBUG", bgcolor=darkBg, text_color=color.white, text_size=size.normal)
             table.cell(internalsTbl, 1, 7, "Tot:" + str.tostring(math.round(totalScoreSafe*100)/100.0), bgcolor=darkBg, text_color=f_scoreTextColor(totalScoreSafe), text_size=size.normal)
