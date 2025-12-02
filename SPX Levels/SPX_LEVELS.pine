@@ -1,4 +1,4 @@
-//@version=5
+//@version=6
 indicator("SPX DEC 1 HEATMAP", overlay=true, max_lines_count=500, max_labels_count=500)
 
 // === SPX DEC 1 HEATMAP - Updated 11/28/2025 ===
@@ -112,18 +112,18 @@ if showLines and barstate.islast
 
 // === LABELS ===
 if barstate.islast and showLabels
-    label.new(bar_index, level1, "7000 Short 🔥", style=label.style_label_left, color=color.fuchsia, textcolor=color.white)
-    label.new(bar_index, level2, "6950 Magnet 🔥", style=label.style_label_left, color=color.fuchsia, textcolor=color.white)
-    label.new(bar_index, level3, "6930 TP 🔥", style=label.style_label_left, color=color.orange, textcolor=color.white)
-    label.new(bar_index, level4, "6885 BO ▲", style=label.style_label_left, color=color.yellow, textcolor=color.black)
-    label.new(bar_index, level5, "6880 Gamma Top", style=label.style_label_left, color=color.purple, textcolor=color.white)
-    label.new(bar_index, level6, "6870 Heavy 🏋️", style=label.style_label_left, color=color.purple, textcolor=color.white)
-    label.new(bar_index, level7, "6850", style=label.style_label_left, color=color.purple, textcolor=color.white)
-    label.new(bar_index, level8, "6820 PIN 🎯", style=label.style_label_center, color=color.aqua, textcolor=color.black, size=size.large)
-    label.new(bar_index, level9, "6815 BD ▼", style=label.style_label_left, color=color.yellow, textcolor=color.black)
-    label.new(bar_index, level10, "6785 Sup 🧊", style=label.style_label_right, color=color.aqua, textcolor=color.black)
-    label.new(bar_index, level11, "6750 Sup 🧊", style=label.style_label_right, color=color.aqua, textcolor=color.black)
-    label.new(bar_index, level12, "6720 Shelf 🧊", style=label.style_label_right, color=color.aqua, textcolor=color.black)
+    label.new(bar_index + 20, level1, "7000 Short 🔥", style=label.style_label_left, color=color.fuchsia, textcolor=color.white)
+    label.new(bar_index + 20, level2, "6950 Magnet 🔥", style=label.style_label_left, color=color.fuchsia, textcolor=color.white)
+    label.new(bar_index + 20, level3, "6930 TP 🔥", style=label.style_label_left, color=color.orange, textcolor=color.white)
+    label.new(bar_index + 20, level4, "6885 BO ▲", style=label.style_label_left, color=color.yellow, textcolor=color.black)
+    label.new(bar_index + 20, level5, "6880 Gamma Top", style=label.style_label_left, color=color.purple, textcolor=color.white)
+    label.new(bar_index + 20, level6, "6870 Heavy 🏋️", style=label.style_label_left, color=color.purple, textcolor=color.white)
+    label.new(bar_index + 20, level7, "6850", style=label.style_label_left, color=color.purple, textcolor=color.white)
+    label.new(bar_index + 20, level8, "6820 PIN 🎯", style=label.style_label_center, color=color.aqua, textcolor=color.black, size=size.large)
+    label.new(bar_index + 20, level9, "6815 BD ▼", style=label.style_label_left, color=color.yellow, textcolor=color.black)
+    label.new(bar_index + 20, level10, "6785 Sup 🧊", style=label.style_label_right, color=color.aqua, textcolor=color.black)
+    label.new(bar_index + 20, level11, "6750 Sup 🧊", style=label.style_label_right, color=color.aqua, textcolor=color.black)
+    label.new(bar_index + 20, level12, "6720 Shelf 🧊", style=label.style_label_right, color=color.aqua, textcolor=color.black)
 
 // === POSITION DETECTION ===
 above7000 = close > level1

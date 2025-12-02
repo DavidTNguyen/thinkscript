@@ -7,6 +7,7 @@ compactLabels = input.bool(false, "Compact Labels")
 ultraCompact = input.bool(false, "Ultra Compact")
 useTable = input.bool(true, "Use Table Layout")
 showUltraRow = input.bool(true, "Show Ultra Row (Table)")
+tablePosition = input.string("Top Right", "Dashboard Position", options=["Top Center", "Top Right", "Bottom Left", "Bottom Right"])
 
 useDynamicThresholds = input.bool(false, "Use Dynamic Thresholds")
 lookbackPeriod = input.int(10, "Trend Lookback", minval=2)
@@ -174,12 +175,25 @@ f_deltaSign(float d) => d > 0 ? "+" : d < 0 ? "-" : ""
 // Helper: score text color by sign (top-level declaration)
 f_scoreTextColor(float s) => s > 0 ? color.new(#00FF00, 0) : s < 0 ? color.new(#FF5555, 0) : color.new(color.gray, 0)
 
+// Helper: convert table position string to position constant
+f_tablePosition(string pos) =>
+    string result = position.top_right
+    if pos == "Top Center"
+        result := position.top_center
+    else if pos == "Top Right"
+        result := position.top_right
+    else if pos == "Bottom Left"
+        result := position.bottom_left
+    else if pos == "Bottom Right"
+        result := position.bottom_right
+    result
+
 // Clear old labels on each bar
 if barstate.islast
     if useTable
         // Initialize table once
         if na(internalsTbl)
-            internalsTbl := table.new(position.top_right, 12, 8, border_width=2)
+            internalsTbl := table.new(f_tablePosition(tablePosition), 12, 8, border_width=2)
         // Clear cells by overwriting (no direct clear API); reuse
         // Row 0 header labels
         table.cell(internalsTbl, 0, 0, "SECTION", bgcolor=color.new(#1E1E1E, 0), text_color=color.white, text_size=size.normal)
