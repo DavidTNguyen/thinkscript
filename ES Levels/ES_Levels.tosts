@@ -1,27 +1,34 @@
 
-# === ES Weekly Overview 11/30 ===
-# ES completed the full rotation back into 6850 after a massive Thanksgiving rally last week. This week we will monitor for continuation of the trend, acceptance above 6850, and watch buyers ability to defend backtests to determine possible retracement of last week. 6796 will be the first pivot to hold to prevent a larger retracement. 6902 above is likely the last resistance before another push to ATHs. New month flows and the return to normal volume after the holiday week could bring more selling pressure this week but that does not guarantee a pullback by any means and we don't want to be biased that this rally has to retrace or try to front run any pullbacks.
+# === ES Daily Update 12/2 ===
+# ES trapped under 6822 overnight, then rotated back to top of range.
+# Multi-day base building: ~6800 to 6850
+# Time & volume accumulation above 6800 = objectively bullish until 6800 fails
+# Continuation pattern until proven otherwise
+# Acceptance above 6850 favors trend move → 6902
+# Inside base = choppy, especially around 6822 mid pivot
+# Opening above 6850 with sustain = supportive dealer environment
+# Patient - few new entries after overnight move
+# JOLTs data 10am EST may cause movement
 
-# Bulls need to clear 6850 to test 6902
-# Sellers need to hold under 6796 to test 6720-30
+# Bulls: Clear 6850 → 6902
+# Bears: Hold under 6822, break 6800 → 6796
 
-# Key Pivots
-# 6902 resistance
-# 6796 pivot
-# 6720-30 backtest pivot
-# 6672 key support
+# Key Areas
+# Resistance: 6850, 6902
+# Support: 6822 (mid pivot), 6796
+# Watchlist: 6812 failed breakdown (B)
 
 # === KEY LEVELS ===
-input level1 = 6902;  # R5 - Resistance
+input level1 = 6902;  # Resistance - trend target
 input level1_thickness = 3;
-input level2 = 6850;  # R4 - Bull trigger
+input level2 = 6850;  # Resistance - base top / bull trigger
 input level2_thickness = 3;
-input level3 = 6796;  # R3 - Pivot
+input level3 = 6822;  # Mid pivot - chop zone
 input level3_thickness = 3;
-input level4 = 6720;  # R2 - Backtest pivot
-input level4_thickness = 2;
-input level5 = 6672;  # R1 - Key support
-input level5_thickness = 4;
+input level4 = 6796;  # Support - base low
+input level4_thickness = 3;
+input level5 = 6812;  # Failed breakdown (watchlist)
+input level5_thickness = 2;
 
 # === ANCHORED VWAP SETTINGS ===
 # Alert Settings
@@ -39,15 +46,18 @@ def isLastBar = isLastBar1[-bubblesBeforeLast];
 # === ANCHORED VWAP CALCULATION ===
 
 # Position detection
-def above6720 = close > level1;  # Major extension
-def at6720 = close >= level1 - 2 and close <= level1 + 2;  # At R3
-def above6702 = close > level2;  # Above R2
-def at6702 = close >= level2 - 2 and close <= level2 + 2;  # At R2
-def above6672 = close > level3;  # CLEARED - continuation active
-def at6672 = close >= level3 - 2 and close <= level3 + 2;  # Testing R1 flip line
-def below6672 = close < level3;  # Below overnight/Friday high
-def above6639 = close > level4;  # Above key support
-def at6639 = close >= level4 - 2 and close <= level4 + 2;  # At S1 key level
+def above6902 = close > level1;  # Above resistance
+def at6902 = close >= level1 - 2 and close <= level1 + 2;  # At resistance
+def above6850 = close > level2;  # Cleared base top - bullish
+def at6850 = close >= level2 - 2 and close <= level2 + 2;  # Testing base top
+def above6822 = close > level3;  # Above mid pivot
+def at6822 = close >= level3 - 2 and close <= level3 + 2;  # Chop zone
+def below6822 = close < level3;  # Trapped below mid
+def above6796 = close > level4;  # Above base low
+def at6796 = close >= level4 - 2 and close <= level4 + 2;  # Testing base low
+def below6796 = close < level4;  # Below base - bearish
+def above6812 = close > level5;  # Above failed breakdown
+def at6812 = close >= level5 - 2 and close <= level5 + 2;  # At failed breakdown
 def below6639 = close < level4;  # Failed breakdown failed - reversion risk
 
 # === LEVEL PLOTS ===
@@ -77,38 +87,45 @@ L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
 
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, "R5: 6902 Resistance", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level2, "R4: 6850 Bull Trigger", Color.CYAN, yes);
-AddChartBubble(isLastBar, level3, "R3: 6796 Pivot", Color.YELLOW, yes);
-AddChartBubble(isLastBar, level4, "R2: 6720 Backtest Pivot", Color.LIGHT_GREEN, yes);
-AddChartBubble(isLastBar, level5, "R1: 6672 Key Support", Color.PINK, yes);
+AddChartBubble(isLastBar, level1, "R: 6902", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level2, "R: 6850 Base Top", Color.CYAN, yes);
+AddChartBubble(isLastBar, level3, "Mid: 6822", Color.YELLOW, yes);
+AddChartBubble(isLastBar, level4, "S: 6796 Base Low", Color.LIGHT_GREEN, no);
+AddChartBubble(isLastBar, level5, "Watch: 6812 (B)", Color.PINK, no);
 
 # === ALERT SYSTEM ===
 
-# 6720 - R3
-Alert(enableAlerts and close crosses above level1, "ES UP 6720 - Major extension!", Alert.BAR, Sound.Ring);
+# 6902 - Resistance target
+Alert(enableAlerts and close crosses above level1, "ES >> 6902 - Trend target HIT!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6902, "ES @ 6902 - Testing resistance!", Alert.BAR, Sound.Chimes);
 
-# 6702 - R2
-Alert(enableAlerts and close crosses above level2, "ES UP 6702 - Continuation target!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6702, "ES at 6702 - Key resistance!", Alert.BAR, Sound.Chimes);
+# 6850 - Base top / Bull trigger
+Alert(enableAlerts and close crosses above level2, "ES >> 6850 - BASE BREAKOUT! Trend continuation!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6850, "ES @ 6850 - Testing base top!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses below level2, "ES << 6850 - Back in base range", Alert.BAR, Sound.Bell);
 
-# 6672 - R1 Flip line / Overnight high
-Alert(enableAlerts and close crosses above level3, "ES UP 6672 - FLIP TO GAMMA SUPPORT! Continuation active!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level3, "ES DOWN 6672 - Rejected at flip line!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6672, "ES at 6672 - OVERNIGHT/FRIDAY HIGH test!", Alert.BAR, Sound.Chimes);
+# 6822 - Mid pivot (chop zone)
+Alert(enableAlerts and close crosses above level3, "ES >> 6822 - Above mid pivot", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses below level3, "ES << 6822 - Trapped below mid", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6822, "ES @ 6822 - CHOP ZONE! Mid pivot test", Alert.BAR, Sound.Bell);
 
-// ...existing code...
+# 6796 - Base low / Support
+Alert(enableAlerts and close crosses below level4, "ES << 6796 - BASE BREAKDOWN! Bearish", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6796, "ES @ 6796 - Testing base low support!", Alert.BAR, Sound.Bell);
+
+# 6812 - Failed breakdown watchlist
+Alert(enableAlerts and close crosses above level5, "ES >> 6812 - Above failed breakdown", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and at6812, "ES @ 6812 - At failed breakdown level", Alert.BAR, Sound.Bell);
 
 # === STATUS LABELS ===
 AddLabel(showLabels, "ES: " + Round(close, 2), Color.CYAN);
 
-AddLabel(showLabels and above6720, "UP Above 6720 - Major extension!", Color.CYAN);
-AddLabel(showLabels and above6702 and close <= level1, "Above 6702 - Pushing higher", Color.LIGHT_GREEN);
-AddLabel(showLabels and above6672 and close <= level2, "CONTINUATION - Cleared 6672 flip line!", Color.GREEN);
-AddLabel(showLabels and at6672, "AT 6672 - Overnight/Friday high test!", Color.YELLOW);
-AddLabel(showLabels and below6672 and above6639, "Pushing to 6672 from failed breakdown", Color.YELLOW);
-AddLabel(showLabels and at6639, "AT 6639 - KEY LEVEL (failed breakdown)", Color.MAGENTA);
-// Removed obsolete position labels for deleted levels
-
-// ...existing code...
+AddLabel(showLabels and above6902, "Above 6902 - Extended!", Color.CYAN);
+AddLabel(showLabels and above6850 and close <= level1, "BREAKOUT - Above 6850 base top!", Color.GREEN);
+AddLabel(showLabels and above6822 and close <= level2, "Above 6822 mid - In upper base", Color.LIGHT_GREEN);
+AddLabel(showLabels and at6822, "AT 6822 - CHOP ZONE (mid pivot)", Color.YELLOW);
+AddLabel(showLabels and below6822 and above6796, "Below 6822 - Lower base range", Color.YELLOW);
+AddLabel(showLabels and at6796, "AT 6796 - Base low support!", Color.ORANGE);
+AddLabel(showLabels and below6796, "BREAKDOWN - Below 6796 base!", Color.RED);
+AddLabel(showLabels and at6812, "AT 6812 - Failed breakdown watch", Color.MAGENTA);
 

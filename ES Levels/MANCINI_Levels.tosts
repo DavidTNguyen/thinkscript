@@ -1,34 +1,36 @@
 # === MANCINI ES Levels: Weekly Plan ===
-# Updated: December 1, 2025
+# Updated: December 2, 2025 (PM Update)
 # 
 # CONTEXT:
-# Levels respecting PERFECT as we digest last weeks 300pt rally.
-# Messy process as ES sets up next leg.
-# 6805 support HELD EXACT. 6825 reclaim long trigger.
-# 6834 hit 2x ✓, 6841 hit 2x ✓ - HOLD RUNNER
+# Post-rally FLAG development - ES 101 lesson in action!
+# Flag range: 6811 to 6843 (held 6812, rallied to 6843)
+# 6852 1st target HIT ✓
 #
 # PLAN:
-# 6841, 6847, 6858 next targets
-# Dip buyers below 6805
+# Ride runner - watch flag support
+# Remaining targets: 6867, 6877
+# Support: 6843 (flag top)
+# Dip to 6830 observed
 # 
 # KEY LEVELS:
-# Targets: 6858, 6847, 6841
-# Hit: 6841 ✓✓, 6834 ✓✓
-# Support: 6825, 6805 (held exact)
+# Targets: 6877, 6867
+# Hit today: 6852 ✓
+# Support: 6843 (flag top), 6830 (dip)
+# Flag base: 6812
 
 # === KEY LEVELS ===
-input level1 = 6858;  # Target 3
+input level1 = 6877;  # Target 2 (final)
 input level1_thickness = 2;
-input level2 = 6847;  # Target 2
+input level2 = 6867;  # Target 1 (next)
 input level2_thickness = 2;
-input level3 = 6841;  # Target 1 (next up)
-input level3_thickness = 2;
-input level4 = 6834;  # 1st Profit Take HIT ✓
-input level4_thickness = 2;
-input level5 = 6825;  # Reclaim Level (held)
-input level5_thickness = 3;
-input level6 = 6805;  # Key Support (held exact)
-input level6_thickness = 3;
+input level3 = 6852;  # HIT ✓ (1st target)
+input level3_thickness = 1;
+input level4 = 6843;  # Support (flag top)
+input level4_thickness = 3;
+input level5 = 6830;  # Dip level
+input level5_thickness = 1;
+input level6 = 6812;  # Flag base ✓
+input level6_thickness = 2;
 
 # Alert Settings
 input enableAlerts = yes;
@@ -41,20 +43,21 @@ def isLastBar1 = IsNaN(close[-1]) and !IsNaN(close);
 def isLastBar = isLastBar1[-bubblesBeforeLast];
 
 # Position detection
-def above6858 = close > level1;
-def at6858 = close >= level1 - 2 and close <= level1 + 2;
-def above6847 = close > level2;
-def at6847 = close >= level2 - 2 and close <= level2 + 2;
-def above6841 = close > level3;
-def at6841 = close >= level3 - 2 and close <= level3 + 2;
-def above6834 = close > level4;
-def at6834 = close >= level4 - 2 and close <= level4 + 2;
-def above6825 = close > level5;
-def at6825 = close >= level5 - 2 and close <= level5 + 2;
-def below6825 = close < level5;
-def above6805 = close > level6;
-def at6805 = close >= level6 - 2 and close <= level6 + 2;
-def below6805 = close < level6;
+def above6877 = close > level1;
+def at6877 = close >= level1 - 2 and close <= level1 + 2;
+def above6867 = close > level2;
+def at6867 = close >= level2 - 2 and close <= level2 + 2;
+def above6852 = close > level3;
+def at6852 = close >= level3 - 2 and close <= level3 + 2;
+def above6843 = close > level4;
+def at6843 = close >= level4 - 2 and close <= level4 + 2;
+def below6843 = close < level4;
+def above6830 = close > level5;
+def at6830 = close >= level5 - 2 and close <= level5 + 2;
+def below6830 = close < level5;
+def above6812 = close > level6;
+def at6812 = close >= level6 - 2 and close <= level6 + 2;
+def below6812 = close < level6;
 
 # === LEVEL PLOTS ===
 plot L1 = level1;
@@ -73,14 +76,14 @@ L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
 plot L4 = level4;
-L4.SetDefaultColor(Color.MAGENTA);
+L4.SetDefaultColor(Color.YELLOW);
 L4.SetLineWeight(level4_thickness);
-L4.SetStyle(Curve.SHORT_DASH);
+L4.SetStyle(Curve.FIRM);
 
 plot L5 = level5;
-L5.SetDefaultColor(Color.YELLOW);
+L5.SetDefaultColor(Color.LIGHT_GRAY);
 L5.SetLineWeight(level5_thickness);
-L5.SetStyle(Curve.FIRM);
+L5.SetStyle(Curve.SHORT_DASH);
 
 plot L6 = level6;
 L6.SetDefaultColor(Color.GREEN);
@@ -88,45 +91,45 @@ L6.SetLineWeight(level6_thickness);
 L6.SetStyle(Curve.FIRM);
 
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar and showLabels, level1, "R: 6858", Color.CYAN, yes);
-AddChartBubble(isLastBar and showLabels, level2, "R: 6847", Color.CYAN, yes);
-AddChartBubble(isLastBar and showLabels, level3, "6841 HIT ✓✓", Color.MAGENTA, yes);
-AddChartBubble(isLastBar and showLabels, level4, "6834 HIT ✓✓", Color.MAGENTA, yes);
-AddChartBubble(isLastBar and showLabels, level5, "S: 6825", Color.YELLOW, no);
-AddChartBubble(isLastBar and showLabels, level6, "S: 6805 🔑", Color.GREEN, no);
+AddChartBubble(isLastBar and showLabels, level1, "R: 6877 Final", Color.CYAN, yes);
+AddChartBubble(isLastBar and showLabels, level2, "R: 6867 Next", Color.CYAN, yes);
+AddChartBubble(isLastBar and showLabels, level3, "6852 HIT ✓", Color.CYAN, yes);
+AddChartBubble(isLastBar and showLabels, level4, "S: 6843 Flag Top", Color.YELLOW, no);
+AddChartBubble(isLastBar and showLabels, level5, "6830 Dip", Color.LIGHT_GRAY, no);
+AddChartBubble(isLastBar and showLabels, level6, "6812 Flag Base", Color.GREEN, no);
 
 # === TOUCH LOGIC ===
-def touch6858 = low <= level1 and high >= level1;
-def firstTouch6858 = touch6858 and !touch6858[1];
+def touch6877 = low <= level1 and high >= level1;
+def firstTouch6877 = touch6877 and !touch6877[1];
 
-def touch6847 = low <= level2 and high >= level2;
-def firstTouch6847 = touch6847 and !touch6847[1];
+def touch6867 = low <= level2 and high >= level2;
+def firstTouch6867 = touch6867 and !touch6867[1];
 
-def touch6841 = low <= level3 and high >= level3;
-def firstTouch6841 = touch6841 and !touch6841[1];
+def touch6852 = low <= level3 and high >= level3;
+def firstTouch6852 = touch6852 and !touch6852[1];
 
-def touch6834 = low <= level4 and high >= level4;
-def firstTouch6834 = touch6834 and !touch6834[1];
+def touch6843 = low <= level4 and high >= level4;
+def firstTouch6843 = touch6843 and !touch6843[1];
 
-def touch6825 = low <= level5 and high >= level5;
-def firstTouch6825 = touch6825 and !touch6825[1];
+def touch6830 = low <= level5 and high >= level5;
+def firstTouch6830 = touch6830 and !touch6830[1];
 
-def touch6805 = low <= level6 and high >= level6;
-def firstTouch6805 = touch6805 and !touch6805[1];
+def touch6812 = low <= level6 and high >= level6;
+def firstTouch6812 = touch6812 and !touch6812[1];
 
 # === ALERT SYSTEM ===
-# Targets
-Alert(enableAlerts and firstTouch6858, "ES >> 6858 🎯 Target!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6847, "ES >> 6847 🎯 Target!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6841, "ES >> 6841 🎯 Next Target!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and above6841, "ES > 6841 - Watch 6847, 6858!", Alert.BAR, Sound.Chimes);
+# Remaining Targets
+Alert(enableAlerts and firstTouch6877, "ES >> 6877 🎯 Final Target!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6867, "ES >> 6867 🎯 Next Target!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and above6867, "ES > 6867 - Watch 6877!", Alert.BAR, Sound.Chimes);
 
-# Profit Take Level
-Alert(enableAlerts and firstTouch6834, "ES >> 6834 - 1st Profit Take HIT!", Alert.BAR, Sound.Ring);
+# Hit Level
+Alert(enableAlerts and firstTouch6852, "ES >> 6852 ✓ 1st Target HIT!", Alert.BAR, Sound.Ring);
 
 # Support Levels
-Alert(enableAlerts and firstTouch6825, "ES >> 6825 - Support!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6825, "ES @ 6825 - Testing Support!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and firstTouch6805, "ES >> 6805 - KEY SUPPORT!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6805, "ES @ 6805 - SUPPORT TEST!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and below6805, "ES < 6805 - Support FAILED!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and firstTouch6843, "ES >> 6843 - Flag top support!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6843, "ES @ 6843 - KEY SUPPORT!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and below6843, "ES < 6843 - Flag support break!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and firstTouch6830, "ES >> 6830 - Dip level!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and firstTouch6812, "ES >> 6812 - Flag base!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and below6812, "ES < 6812 - Below flag base!", Alert.BAR, Sound.Bell);
