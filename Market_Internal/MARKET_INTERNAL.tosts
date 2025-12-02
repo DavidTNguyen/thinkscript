@@ -34,8 +34,8 @@ input addExtremeBull = 1500;
 input addExtremeBear = -1500;
 
 # === MARKET INTERNAL DATA (True Market-Wide) ===
-def vix = close("$VIX");
-def vixPrevious = close("$VIX")[1];
+def vix = close("VIX");
+def vixPrevious = close("VIX")[1];
 def vixDelta = vix - vixPrevious;
 def vixMA = Average(vix, 20);
 def tick = close("$TICK");
@@ -225,7 +225,11 @@ AddLabel(showLabels and !ultraCompact,
                          else if scenario == -3 then "STRONG BEARISH"
                          else "NEUTRAL") +
          " | Str: " + AsText(strengthScore) + " | Conf: " + AsText(confidence) + "%",
-         Color.CYAN);
+         if scenario >= 2 then Color.GREEN
+         else if scenario == 1 then Color.LIGHT_GREEN
+         else if scenario == -1 then Color.MAGENTA
+         else if scenario <= -2 then Color.RED
+         else Color.LIGHT_GRAY);
 
 # Label 2: TREND (Overall direction, conditional components)
 AddLabel(showLabels and !ultraCompact,
@@ -237,9 +241,13 @@ AddLabel(showLabels and !ultraCompact,
          (if hasAdd then " | ADD:" + (if addTrend > 0 then "+" else if addTrend < 0 then "-" else "=") else "") +
          (if hasTick then " | TICK:" + (if tickTrend > 0 then "+" else if tickTrend < 0 then "-" else "=") else "") +
          (if hasTrin then " | TRIN:" + (if trinTrend > 0 then "+" else if trinTrend < 0 then "-" else "=") else "") +
-         (if hasVIX then " | VIX:" + (if vixTrend > 0 then "+" else if vixTrend < 0 then "-" else "=") else "") +
+         (if hasVIX then " | VIX:" + AsText(Round(vix, 2)) + (if vixTrend > 0 then "+" else if vixTrend < 0 then "-" else "=") else "") +
          (if hasCumT then " | CUMTICK:" + (if cumTickTrend > 0 then "+" else if cumTickTrend < 0 then "-" else "=") else ""),
-         Color.LIGHT_GREEN);
+         if scenario >= 2 then Color.GREEN
+         else if scenario == 1 then Color.LIGHT_GREEN
+         else if scenario == -1 then Color.MAGENTA
+         else if scenario <= -2 then Color.RED
+         else Color.LIGHT_GRAY);
 
  # Label 3 & 4 (full) or compact consolidated
 AddLabel(showLabels and !compactLabels and !ultraCompact,
@@ -248,8 +256,7 @@ AddLabel(showLabels and !compactLabels and !ultraCompact,
          (if hasAdd then " | ADD:" + ("" + Round(add, 0)) + (if addExtreme != 0 then "!" else "") else "") +
          (if hasTick then " | TICK:" + ("" + Round(tick, 0)) + (if tickExtreme != 0 then "!" else "") else "") +
          (if hasTrin then " | TRIN:" + ("" + Round(trin, 2)) + (if trinExtreme != 0 then "!" else "") else "") +
-         (if hasNHNL then " | NH/NL:" + ("" + Round(nhnlRatio, 1) + "x") else "") +
-         (if hasVIX then " | VIX:" + ("" + Round(vix, 2)) + " (" + ((if vixDelta > 0 then "+" else "") + ("" + Round(vixDelta, 2))) + ")" else ""),
+         " | VIX:" + AsText(Round(vix, 2)),
          Color.YELLOW);
 
 AddLabel(showLabels and !compactLabels and !ultraCompact,
