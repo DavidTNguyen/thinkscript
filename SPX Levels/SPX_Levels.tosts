@@ -35,6 +35,7 @@ input level6 = 6870;  # R2 - Heavy positioning cluster
 input level7 = 6850;  # R1 - Cluster
 input level8 = 6820;  # PIVOT - LARGEST POSITION (PIN)
 input level9 = 6815;  # S1 - Breakdown trigger
+input level13 = 6830; # Bear Level 🐻
 input level10 = 6785; # S2 - Support 1 (reaction long)
 input level11 = 6750; # S3 - Strong support (dealer long gamma)
 input level12 = 6720; # S4 - Final shelf
@@ -105,6 +106,12 @@ L9.SetLineWeight(1);
 L9.SetStyle(Curve.FIRM);
 L9.SetHiding(!showLines);
 
+plot L13 = level13;
+L13.SetDefaultColor(Color.ORANGE);
+L13.SetLineWeight(1);
+L13.SetStyle(Curve.FIRM);
+L13.SetHiding(!showLines);
+
 plot L10 = level10;
 L10.SetDefaultColor(Color.CYAN);
 L10.SetLineWeight(1);
@@ -131,6 +138,7 @@ AddCloud(if showClouds then L1 else Double.NaN, if showClouds then L1 + 0.5 else
 AddCloud(if showClouds then L2 else Double.NaN, if showClouds then L2 + 0.5 else Double.NaN, Color.MAGENTA, Color.MAGENTA);
 AddCloud(if showClouds then L3 else Double.NaN, if showClouds then L3 + 0.5 else Double.NaN, Color.ORANGE, Color.ORANGE);
 AddCloud(if showClouds then L4 else Double.NaN, if showClouds then L4 + 0.5 else Double.NaN, Color.YELLOW, Color.YELLOW);
+AddCloud(if showClouds then L13 else Double.NaN, if showClouds then L13 + 0.5 else Double.NaN, Color.ORANGE, Color.ORANGE);
 AddCloud(if showClouds then L8 else Double.NaN, if showClouds then L8 + 0.5 else Double.NaN, Color.CYAN, Color.CYAN);
 AddCloud(if showClouds then L10 else Double.NaN, if showClouds then L10 + 0.5 else Double.NaN, Color.CYAN, Color.CYAN);
 AddCloud(if showClouds then L11 else Double.NaN, if showClouds then L11 + 0.5 else Double.NaN, Color.CYAN, Color.CYAN);
@@ -164,6 +172,9 @@ def below6820 = close < level8;
 def above6815 = close > level9;
 def at6815 = close >= level9 - 5 and close <= level9 + 5;
 def below6815 = close < level9;  # BREAKDOWN TRIGGER
+def above6830 = close > level13;
+def at6830 = close >= level13 - 5 and close <= level13 + 5;
+def below6830 = close < level13;
 def above6785 = close > level10;
 def at6785 = close >= level10 - 5 and close <= level10 + 5;
 def above6750 = close > level11;
@@ -185,6 +196,7 @@ AddChartBubble(isLastBar and showLabels, level6, "6870 Heavy", Color.PLUM, yes);
 AddChartBubble(isLastBar and showLabels, level7, "6850", Color.PLUM, yes);
 AddChartBubble(isLastBar and showLabels, level8, "6820 📍", Color.CYAN, no);
 AddChartBubble(isLastBar and showLabels, level9, "6815 BD", Color.YELLOW, no);
+AddChartBubble(isLastBar and showLabels, level13, "6830 🐻", Color.ORANGE, no);
 AddChartBubble(isLastBar and showLabels, level10, "6785 S1", Color.CYAN, no);
 AddChartBubble(isLastBar and showLabels, level11, "6750 S2", Color.CYAN, no);
 AddChartBubble(isLastBar and showLabels, level12, "6720 S3", Color.CYAN, no);
@@ -218,6 +230,10 @@ def firstTouch6820 = touch6820 and !touch6820[1];
 def touch6815 = low <= level9 and high >= level9;
 def firstTouch6815Up = touch6815 and close > level9 and !touch6815[1];
 def firstTouch6815Down = touch6815 and close < level9 and !touch6815[1];
+
+def touch6830 = low <= level13 and high >= level13;
+def firstTouch6830Up = touch6830 and close > level13 and !touch6830[1];
+def firstTouch6830Down = touch6830 and close < level13 and !touch6830[1];
 
 def touch6785 = low <= level10 and high >= level10;
 def firstTouch6785 = touch6785 and !touch6785[1];
@@ -253,6 +269,11 @@ Alert(enableAlerts and at6820, "SPX at 6820 - Pin level!", Alert.BAR, Sound.Chim
 Alert(enableAlerts and firstTouch6815Up, "SPX UP 6815 - Holding breakdown trigger!", Alert.BAR, Sound.Ring);
 Alert(enableAlerts and firstTouch6815Down, "SPX DOWN 6815 ▼ BREAKDOWN - Watch 6785!", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and below6815, "SPX < 6815 - Breakdown triggered!", Alert.BAR, Sound.Bell);
+
+# BEAR LEVEL 6830
+Alert(enableAlerts and firstTouch6830Up, "SPX UP 6830 🐻 Bear level reclaim!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6830Down, "SPX >> 6830 🐻 Bear level test!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6830, "SPX at 6830 🐻 Bear level!", Alert.BAR, Sound.Chimes);
 
 # SUPPORT ZONE
 Alert(enableAlerts and firstTouch6785, "SPX >> 6785 🧊 Support 1 (reaction long)!", Alert.BAR, Sound.Ring);

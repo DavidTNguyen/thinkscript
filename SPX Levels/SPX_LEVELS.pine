@@ -50,6 +50,8 @@ level8 = input.float(6820, "LARGEST POSITION (PIN) 🎯", group="⚡ Short-Gamma
 level8_thickness = input.int(4, "6820 PIN Line Thickness", minval=1, maxval=10, group="⚡ Short-Gamma Zone (6815-6880)")
 level9 = input.float(6815, "Breakdown trigger ▼", group="⚡ Short-Gamma Zone (6815-6880)")
 level9_thickness = input.int(3, "6815 Line Thickness", minval=1, maxval=10, group="⚡ Short-Gamma Zone (6815-6880)")
+level13 = input.float(6830, "6830 🐻 Bear Level", group="⚡ Short-Gamma Zone (6815-6880)")
+level13_thickness = input.int(2, "6830 Line Thickness", minval=1, maxval=10, group="⚡ Short-Gamma Zone (6815-6880)")
 
 // Support Zone
 level10 = input.float(6785, "S1 - Support 1 🧊 (reaction long)", group="🟢 Support Zone")
@@ -80,6 +82,7 @@ var line l9 = na
 var line l10 = na
 var line l11 = na
 var line l12 = na
+var line l13 = na
 
 if showLines and barstate.islast
     // R7 - 7000 (Short scalp - Magenta, dashed)
@@ -105,6 +108,9 @@ if showLines and barstate.islast
     // 6815 Breakdown - Yellow
     l9 := line.new(bar_index - 100, level9, bar_index + 20, level9, color=color.yellow, width=level9_thickness, style=line.style_solid)
     
+    // 6830 Bear Level - Orange
+    l13 := line.new(bar_index - 100, level13, bar_index + 20, level13, color=color.orange, width=level13_thickness, style=line.style_solid)
+    
     // Support Zone - Cyan
     l10 := line.new(bar_index - 100, level10, bar_index + 20, level10, color=color.aqua, width=level10_thickness, style=line.style_solid)
     l11 := line.new(bar_index - 100, level11, bar_index + 20, level11, color=color.aqua, width=level11_thickness, style=line.style_solid)
@@ -121,6 +127,7 @@ if barstate.islast and showLabels
     label.new(bar_index + 20, level7, "6850", style=label.style_label_left, color=color.purple, textcolor=color.white)
     label.new(bar_index + 20, level8, "6820 PIN 🎯", style=label.style_label_center, color=color.aqua, textcolor=color.black, size=size.large)
     label.new(bar_index + 20, level9, "6815 BD ▼", style=label.style_label_left, color=color.yellow, textcolor=color.black)
+    label.new(bar_index + 20, level13, "6830 🐻", style=label.style_label_left, color=color.orange, textcolor=color.white)
     label.new(bar_index + 20, level10, "6785 Sup 🧊", style=label.style_label_right, color=color.aqua, textcolor=color.black)
     label.new(bar_index + 20, level11, "6750 Sup 🧊", style=label.style_label_right, color=color.aqua, textcolor=color.black)
     label.new(bar_index + 20, level12, "6720 Shelf 🧊", style=label.style_label_right, color=color.aqua, textcolor=color.black)
@@ -146,6 +153,9 @@ below6820 = close < level8
 above6815 = close > level9
 at6815 = close >= level9 - 5 and close <= level9 + 5
 below6815 = close < level9  // BREAKDOWN TRIGGER
+above6830 = close > level13
+at6830 = close >= level13 - 5 and close <= level13 + 5
+below6830 = close < level13
 above6785 = close > level10
 at6785 = close >= level10 - 5 and close <= level10 + 5
 above6750 = close > level11
@@ -184,6 +194,11 @@ alertcondition(ta.cross(close, level8), "6820 PIN TOUCH", "SPX at 6820 - Pin lev
 alertcondition(ta.crossunder(close, level9), "6815 BREAKDOWN", "SPX DOWN 6815 ▼ BREAKDOWN - Watch 6785!")
 alertcondition(ta.crossover(close, level9), "6815 HOLD", "SPX UP 6815 - Holding breakdown trigger!")
 alertcondition(below6815, "Below 6815", "SPX < 6815 - Breakdown triggered!")
+
+// BEAR LEVEL 6830
+alertcondition(ta.crossunder(close, level13), "6830 BEAR TEST", "SPX >> 6830 🐻 Bear level test!")
+alertcondition(ta.crossover(close, level13), "6830 RECLAIM", "SPX UP 6830 🐻 Bear level reclaim!")
+alertcondition(at6830, "At 6830", "SPX at 6830 🐻 Bear level!")
 
 // SUPPORT ZONE
 alertcondition(ta.crossunder(close, level10), "6785 SUPPORT 1", "SPX >> 6785 🧊 Support 1 (reaction long)!")
@@ -277,6 +292,7 @@ plot(level6, "Gamma: 6870", color=color.new(color.purple, 100))
 plot(level7, "Gamma: 6850", color=color.new(color.purple, 100))
 plot(level8, "PIN: 6820", color=color.new(color.aqua, 100))
 plot(level9, "BD: 6815", color=color.new(color.yellow, 100))
+plot(level13, "Bear: 6830", color=color.new(color.orange, 100))
 plot(level10, "S1: 6785", color=color.new(color.aqua, 100))
 plot(level11, "S2: 6750", color=color.new(color.aqua, 100))
 plot(level12, "S3: 6720", color=color.new(color.aqua, 100))
