@@ -1,201 +1,192 @@
-//@version=5
-indicator("MANCINI ES Levels: Dec 3 - 3 Day Flag Building", overlay=true, max_lines_count=500, max_labels_count=500)
+//@version=6
+indicator("ES Levels", overlay=true, max_lines_count=500, max_labels_count=500)
 
-// === MANCINI ES Levels: Weekly Plan ===
-// Updated: December 3, 2025 (PM Update)
-// 
-// CONTEXT:
-// 6842 target #2 HIT! 
-// As posted: 6830 reclaim → targets 6835, 6842 (BOTH HIT!)
-// Newsletter readers got lower 6818 Failed Breakdown entry
-// ES remains in congested chop - building 3 day flag
-// **ALWAYS** take profits level to level, leave runner. Moves don't last!
-// 
-// PLAN:
-// Upside targets: 6853, 6862+ above
-// Support: 6830 reclaim (proven), 6825 magnet, 6818 (failed breakdown entry)
-// Downside: 6805, 6796 if breakdown
+// === ES Levels: Flag Breakout - Runner Targets ===
+// Updated: December 2, 2025
+// RECLAIM EXECUTED! 6834 triggered → 6842 → 6852 ✓
+// Flag delivered: 6812-6843 with 6825 magnet
+// Clean breakout sequence after reclaim
+// Runner targets: 6862, 6868, 6877+
 
-// === UPSIDE TARGETS ===
-level1 = input.float(6862, "Upside: 6862 Extended Target", group="🎯 Upside")
-level1_thickness = input.int(2, "6862 Line Weight", minval=1, maxval=5, group="🎯 Upside")
-level2 = input.float(6853, "Upside: 6853 Next Above", group="🎯 Upside")
-level2_thickness = input.int(2, "6853 Line Weight", minval=1, maxval=5, group="🎯 Upside")
-
-// === HIT LEVELS ===
-level3 = input.float(6842, "HIT: 6842 Target #2 *", group="✓ Hit Levels")
-level3_thickness = input.int(1, "6842 Line Weight", minval=1, maxval=5, group="✓ Hit Levels")
-level4 = input.float(6835, "HIT: 6835 Target #1 *", group="✓ Hit Levels")
-level4_thickness = input.int(1, "6835 Line Weight", minval=1, maxval=5, group="✓ Hit Levels")
+// === RESISTANCE LEVELS (Runner Targets) ===
+level1 = input.float(6877, "R4: Runner continuation", group="Resistance")
+level1_thickness = input.int(2, "R4 Line Weight", minval=1, maxval=5, group="Resistance")
+level2 = input.float(6868, "R3: Target 2", group="Resistance")
+level2_thickness = input.int(2, "R3 Line Weight", minval=1, maxval=5, group="Resistance")
+level3 = input.float(6862, "R2: Next Target", group="Resistance")
+level3_thickness = input.int(2, "R2 Line Weight", minval=1, maxval=5, group="Resistance")
+level4 = input.float(6852, "R1: HIT ✓", group="Resistance")
+level4_thickness = input.int(1, "R1 Line Weight", minval=1, maxval=5, group="Resistance")
 
 // === SUPPORT LEVELS ===
-level5 = input.float(6830, "Support: 6830 Reclaim (proven)", group="🟢 Support")
-level5_thickness = input.int(2, "6830 Line Weight", minval=1, maxval=5, group="🟢 Support")
-level6 = input.float(6825, "Support: 6825 Magnet 🧲", group="🟢 Support")
-level6_thickness = input.int(3, "6825 Line Weight", minval=1, maxval=5, group="🟢 Support")
-level7 = input.float(6818, "Support: 6818 Failed Breakdown (newsletter)", group="🟢 Support")
-level7_thickness = input.int(2, "6818 Line Weight", minval=1, maxval=5, group="🟢 Support")
+level5 = input.float(6842, "S1: HIT ✓", group="Support")
+level5_thickness = input.int(1, "S1 Line Weight", minval=1, maxval=5, group="Support")
+level6 = input.float(6834, "S2: Reclaim trigger (now support)", group="Support")
+level6_thickness = input.int(3, "S2 Line Weight", minval=1, maxval=5, group="Support")
+level7 = input.float(6825, "S3: Magnet", group="Support")
+level7_thickness = input.int(2, "S3 Line Weight", minval=1, maxval=5, group="Support")
 
-// === DOWNSIDE LEVELS ===
-level8 = input.float(6805, "Downside: 6805 Target 1", group="🔴 Downside")
-level8_thickness = input.int(2, "6805 Line Weight", minval=1, maxval=5, group="🔴 Downside")
-level9 = input.float(6796, "Downside: 6796 Target 2", group="🔴 Downside")
-level9_thickness = input.int(2, "6796 Line Weight", minval=1, maxval=5, group="🔴 Downside")
+// Flag Structure
+flagTop = input.float(6843, "Flag Top: Back-tested", group="Key Levels")
+flagTop_thickness = input.int(2, "Flag Top Line Weight", minval=1, maxval=5, group="Key Levels")
 
 // Alert Settings
 enableAlerts = input.bool(true, "Enable Alerts", group="Alert Settings")
 alertSensitivity = input.float(0.5, "Alert Sensitivity (pts)", minval=0.1, maxval=5.0, group="Alert Settings")
+showLabels = input.bool(true, "Show Price Labels", group="Display Settings")
+showTable = input.bool(true, "Show Status Table", group="Display Settings")
 
-// === Plot Upside Targets ===
-plot(level1, "6862 Extended", color=color.new(color.aqua, 0), linewidth=level1_thickness, style=plot.style_line)
-plot(level2, "6853 Next Above", color=color.new(color.aqua, 0), linewidth=level2_thickness, style=plot.style_line)
+// === Plot Resistance Levels ===
+plot(level1, "R4: 6877+ Runner", #00FFFF, level1_thickness, trackprice=true)
+plot(level2, "R3: 6868", #00FFFF, level2_thickness, trackprice=true)
+plot(level3, "R2: 6862 Next", #00FFFF, level3_thickness, trackprice=true)
+plot(level4, "R1: 6852 HIT", #808080, level4_thickness, plot.style_linebr, trackprice=true)
 
-// === Plot Hit Levels ===
-plot(level3, "6842 HIT *", color=color.new(color.gray, 0), linewidth=level3_thickness, style=plot.style_line)
-plot(level4, "6835 HIT *", color=color.new(color.gray, 0), linewidth=level4_thickness, style=plot.style_line)
+// === Plot Key Level - Flag Top ===
+plot(flagTop, "Flag Top: 6843", #FF00FF, flagTop_thickness, trackprice=true)
 
-// === Plot Support ===
-plot(level5, "6830 Reclaim", color=color.new(color.aqua, 0), linewidth=level5_thickness, style=plot.style_line)
-plot(level6, "6825 Magnet", color=color.new(color.yellow, 0), linewidth=level6_thickness, style=plot.style_line)
-plot(level7, "6818 FB Entry", color=color.new(color.green, 0), linewidth=level7_thickness, style=plot.style_line)
-
-// === Plot Downside ===
-plot(level8, "6805 Downside", color=color.new(color.orange, 0), linewidth=level8_thickness, style=plot.style_line)
-plot(level9, "6796 Downside", color=color.new(color.red, 0), linewidth=level9_thickness, style=plot.style_line)
+// === Plot Support Levels ===
+plot(level5, "S1: 6842 HIT", #808080, level5_thickness, plot.style_linebr, trackprice=true)
+plot(level6, "S2: 6834 Support", #00FF00, level6_thickness, trackprice=true)
+plot(level7, "S3: 6825 Magnet", #FFFF00, level7_thickness, trackprice=true)
 
 // === Labels on Last Bar ===
-if barstate.islast
-    label.new(bar_index, level1, "6862 Target", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.aqua, 80), textcolor=color.aqua, style=label.style_label_left, size=size.small)
-    label.new(bar_index, level2, "6853 Next", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.aqua, 80), textcolor=color.aqua, style=label.style_label_left, size=size.small)
-    label.new(bar_index, level3, "6842 HIT *", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.gray, 80), textcolor=color.gray, style=label.style_label_left, size=size.small)
-    label.new(bar_index, level4, "6835 HIT *", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.gray, 80), textcolor=color.gray, style=label.style_label_left, size=size.small)
-    label.new(bar_index, level5, "6830 Reclaim ✓", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.aqua, 80), textcolor=color.aqua, style=label.style_label_right, size=size.small)
-    label.new(bar_index, level6, "6825 🧲", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.yellow, 80), textcolor=color.yellow, style=label.style_label_right, size=size.normal)
-    label.new(bar_index, level7, "6818 FB", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.green, 80), textcolor=color.green, style=label.style_label_right, size=size.small)
-    label.new(bar_index, level8, "6805 Down", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.orange, 80), textcolor=color.orange, style=label.style_label_right, size=size.small)
-    label.new(bar_index, level9, "6796 Down", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.red, 80), textcolor=color.red, style=label.style_label_right, size=size.small)
+if barstate.islast and showLabels
+    var label lbl1 = na
+    var label lbl2 = na
+    var label lbl3 = na
+    var label lbl4 = na
+    var label lblFlag = na
+    var label lbl5 = na
+    var label lbl6 = na
+    var label lbl7 = na
+    
+    label.delete(lbl1)
+    label.delete(lbl2)
+    label.delete(lbl3)
+    label.delete(lbl4)
+    label.delete(lblFlag)
+    label.delete(lbl5)
+    label.delete(lbl6)
+    label.delete(lbl7)
+    
+    lbl1 := label.new(bar_index + 5, level1, "R4: 6877+ Runner", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_down, size=size.small)
+    lbl2 := label.new(bar_index + 5, level2, "R3: 6868", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_down, size=size.small)
+    lbl3 := label.new(bar_index + 5, level3, "R2: 6862 Next", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_down, size=size.small)
+    lbl4 := label.new(bar_index + 5, level4, "R1: 6852 HIT ✓", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#808080, 80), textcolor=#808080, style=label.style_label_down, size=size.small)
+    lblFlag := label.new(bar_index + 5, flagTop, "Flag Top: 6843", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#FF00FF, 80), textcolor=#FF00FF, style=label.style_label_down, size=size.normal)
+    lbl5 := label.new(bar_index + 5, level5, "S1: 6842 HIT ✓", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#808080, 80), textcolor=#808080, style=label.style_label_down, size=size.small)
+    lbl6 := label.new(bar_index + 5, level6, "S2: 6834 Support", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#00FF00, 80), textcolor=#00FF00, style=label.style_label_down, size=size.small)
+    lbl7 := label.new(bar_index + 5, level7, "S3: 6825 Magnet", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#FFFF00, 80), textcolor=#FFFF00, style=label.style_label_down, size=size.small)
 
 // === Alert Conditions ===
-// RESISTANCE Breakout Alerts
-alertcondition(ta.crossover(close, overnightLow), "ES RECLAIM Overnight Low", "ES RECLAIMED Overnight Low - Pop Setup!")
-alertcondition(ta.crossover(close, level4), "ES ABOVE R1: 6815", "ES ABOVE R1: 6815!")
-alertcondition(ta.crossover(close, level3), "ES ABOVE R2: 6841", "ES ABOVE R2: 6841 - Bulls Fighting Back!")
-alertcondition(ta.crossover(close, level2), "ES ABOVE R3: 6851 MACRO", "ES ABOVE R3: 6851 - BULLS REGAIN MACRO CONTROL!")
-alertcondition(ta.crossover(close, level1), "ES ABOVE R4: 6869", "ES ABOVE R4: 6869 - Extended Target!")
+// RUNNER TARGET Alerts
+alertcondition(ta.crossover(close, level3), "ES ABOVE R2: 6862", "ES ABOVE R2: 6862 - Next Runner Target!")
+alertcondition(ta.crossover(close, level2), "ES ABOVE R3: 6868", "ES ABOVE R3: 6868 - Runner Active!")
+alertcondition(ta.crossover(close, level1), "ES ABOVE R4: 6877+", "ES ABOVE R4: 6877+ - Runner Continuation!")
+
+// HIT LEVEL Alerts
+alertcondition(ta.crossover(close, level4), "ES AT 6852", "ES AT 6852 - First Target Hit!")
+alertcondition(ta.crossover(close, level5), "ES AT 6842", "ES AT 6842 - Flag Target Hit!")
+
+// FLAG STRUCTURE Alerts
+alertcondition(ta.crossover(close, flagTop), "ES ABOVE Flag Top 6843", "ES ABOVE Flag Top 6843 - Breakout Confirmed!")
+alertcondition(ta.crossunder(close, flagTop), "ES BELOW Flag Top 6843", "ES BELOW Flag Top 6843 - Back-test!")
 
 // SUPPORT Break Alerts
-alertcondition(ta.crossunder(close, overnightLow), "ES LOST Overnight Low", "ES LOST Overnight Low - Watch 6782-85!")
-alertcondition(ta.crossunder(close, level5), "ES BELOW S1: 6785", "ES BELOW S1: 6785 - Next 6782!")
-alertcondition(ta.crossunder(close, level6), "ES BELOW S2: 6782", "ES BELOW S2: 6782 - 6766 Below!")
-alertcondition(ta.crossunder(close, level7), "ES BELOW S3: 6766", "ES BELOW S3: 6766 - Support Lost!")
+alertcondition(ta.crossunder(close, level6), "ES BELOW 6834 Support", "ES BELOW 6834 Support - Lost Reclaim Trigger!")
+alertcondition(ta.crossunder(close, level7), "ES BELOW 6825 Magnet", "ES BELOW 6825 Magnet - Flag Support Test!")
 
 // Testing Key Levels
-testingONLow = close >= overnightLow - alertSensitivity and close <= overnightLow + alertSensitivity
-testingR2 = close >= level3 - alertSensitivity and close <= level3 + alertSensitivity
-testingMacro = close >= level2 - alertSensitivity and close <= level2 + alertSensitivity
+testing6862 = close >= level3 - alertSensitivity and close <= level3 + alertSensitivity
+testing6868 = close >= level2 - alertSensitivity and close <= level2 + alertSensitivity
+testing6834 = close >= level6 - alertSensitivity and close <= level6 + alertSensitivity
 
-alertcondition(testingONLow, "ES Testing Overnight Low", "ES Testing Overnight Low - Critical Reclaim Level")
-alertcondition(testingR2, "ES Testing R2: 6841", "ES Testing R2: 6841 - Where Bears Took Over")
-alertcondition(testingMacro, "ES Testing R3: 6851", "ES Testing R3: 6851 - MACRO CONTROL Level")
+alertcondition(testing6862, "ES Testing 6862", "ES Testing 6862 - Next Runner Target")
+alertcondition(testing6868, "ES Testing 6868", "ES Testing 6868 - Target 2")
+alertcondition(testing6834, "ES Testing 6834", "ES Testing 6834 Support - Former Reclaim Trigger")
 
 // Bounce/Rejection Alerts
-bounceONLow = low[1] <= overnightLow and close > overnightLow + 3
-rejectR2 = high[1] >= level3 and close < level3 - 3
-rejectMacro = high[1] >= level2 and close < level2 - 3
+bounce6834 = low[1] <= level6 and close > level6 + 3
+reject6862 = high[1] >= level3 and close < level3 - 3
+reject6868 = high[1] >= level2 and close < level2 - 3
 
-alertcondition(bounceONLow, "ES BOUNCE from ON Low", "ES BOUNCE from Overnight Low! Pop Active")
-alertcondition(rejectR2, "ES REJECTION at R2: 6841", "ES REJECTION at R2: 6841 - Bears Still Control")
-alertcondition(rejectMacro, "ES REJECTION at R3: 6851", "ES REJECTION at R3: 6851 - Macro Control Denied")
+alertcondition(bounce6834, "ES BOUNCE from 6834", "ES BOUNCE from 6834 Support!")
+alertcondition(reject6862, "ES REJECTION at 6862", "ES REJECTION at 6862 - Target Denied")
+alertcondition(reject6868, "ES REJECTION at 6868", "ES REJECTION at 6868 - Runner Stalled")
 
 // === Market Structure Status Table ===
-var table statusTable = table.new(position.top_right, 2, 12, border_width=1)
+var table statusTable = table.new(position.top_right, 2, 13, border_width=1)
 
-if barstate.islast
-    table.cell(statusTable, 0, 0, "BEARS CONTROL AFTER 6841", text_color=color.white, bgcolor=color.new(color.red, 50))
-    table.cell(statusTable, 1, 0, "Hit 6851 & Sold", text_color=color.yellow, bgcolor=color.new(color.red, 50))
+if barstate.islast and showTable
+    table.cell(statusTable, 0, 0, "FLAG BREAKOUT - RUNNERS ACTIVE", text_color=#FFFFFF, bgcolor=color.new(#00FF00, 50))
+    table.cell(statusTable, 1, 0, "6834 Reclaim \u2192 6842 \u2192 6852 \u2713", text_color=#00FF00, bgcolor=color.new(#00FF00, 50))
     
-    table.cell(statusTable, 0, 1, "Now", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 1, str.tostring(close, "#.00"), text_color=color.aqua, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 0, 1, "Now", text_color=#FFFFFF, bgcolor=color.new(#808080, 50))
+    table.cell(statusTable, 1, 1, str.tostring(close, "#.00"), text_color=#00FFFF, bgcolor=color.new(#808080, 50))
     
     // Market Structure
-    structure = close >= level2 ? "ABOVE 6851 - BULLS MACRO CONTROL!" : close >= level3 ? "ABOVE 6841 - BULLS FIGHTING" : close >= overnightLow ? "ABOVE ON LOW - POP SETUP" : close >= level5 ? "BELOW ON LOW - NEXT 6782-85" : "BELOW 6785 - WATCH 6766"
-    structureColor = close >= level2 ? color.lime : close >= level3 ? color.aqua : close >= overnightLow ? color.yellow : close >= level5 ? color.orange : color.red
+    structure = close >= level1 ? "ABOVE 6877 - RUNNER CONTINUATION!" : close >= level2 ? "ABOVE 6868 - TARGET 2!" : close >= level3 ? "ABOVE 6862 - NEXT TARGET!" : close >= level4 ? "ABOVE 6852 - WATCH 6862" : close >= level6 ? "ABOVE 6834 - SUPPORT HELD" : "BELOW 6834 - LOST SUPPORT"
+    structureColor = close >= level1 ? #00FF00 : close >= level2 ? #00FF00 : close >= level3 ? #00FFFF : close >= level4 ? #FFFF00 : close >= level6 ? #00FF00 : #FF0000
     
-    table.cell(statusTable, 0, 2, "Structure", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 2, structure, text_color=structureColor, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 0, 2, "Structure", text_color=#FFFFFF, bgcolor=color.new(#808080, 50))
+    table.cell(statusTable, 1, 2, structure, text_color=structureColor, bgcolor=color.new(#808080, 50))
     
     // Control Status
-    control = close >= level2 ? "BULLS MACRO" : "BEARS CONTROL"
-    controlColor = close >= level2 ? color.lime : color.red
+    control = close >= level3 ? "BULLS - RUNNERS" : close >= level6 ? "BULLS - BREAKOUT" : "NEUTRAL"
+    controlColor = close >= level3 ? #00FF00 : close >= level6 ? #FFFF00 : #808080
     
-    table.cell(statusTable, 0, 3, "Control", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 3, control, text_color=controlColor, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 0, 3, "Control", text_color=#FFFFFF, bgcolor=color.new(#808080, 50))
+    table.cell(statusTable, 1, 3, control, text_color=controlColor, bgcolor=color.new(#808080, 50))
     
     // Trade Plan
-    tradePlan = close >= level2 ? "MACRO RECLAIMED - 6869+" : close >= overnightLow ? "RECLAIM: TARGET 6815-41-51" : "MUST RECLAIM ON LOW"
-    planColor = close >= level2 ? color.lime : close >= overnightLow ? color.yellow : color.red
+    tradePlan = close >= level3 ? "RUNNER: 6868 \u2192 6877+" : close >= level6 ? "BREAKOUT: TARGET 6862-68-77" : "MUST HOLD 6834"
+    planColor = close >= level3 ? #00FF00 : close >= level6 ? #FFFF00 : #FF0000
     
-    table.cell(statusTable, 0, 4, "Trade Plan", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 4, tradePlan, text_color=planColor, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 0, 4, "Trade Plan", text_color=#FFFFFF, bgcolor=color.new(#808080, 50))
+    table.cell(statusTable, 1, 4, tradePlan, text_color=planColor, bgcolor=color.new(#808080, 50))
     
     // Distance to Key Levels
-    distToONLow = overnightLow - close
-    distTo6815 = level4 - close
-    distTo6841 = level3 - close
-    distTo6851 = level2 - close
-    distTo6869 = level1 - close
-    distFrom6785 = close - level5
-    distFrom6782 = close - level6
-    distFrom6766 = close - level7
+    distTo6862 = level3 - close
+    distTo6868 = level2 - close
+    distTo6877 = level1 - close
+    distFrom6852 = close - level4
+    distFrom6842 = close - level5
+    distFrom6834 = close - level6
     
     rowNum = 5
     
-    if close < overnightLow
-        table.cell(statusTable, 0, rowNum, "->ON Low", text_color=color.white, bgcolor=color.new(color.gray, 50))
-        table.cell(statusTable, 1, rowNum, str.tostring(distToONLow, "#.0") + " pts", text_color=color.yellow, bgcolor=color.new(color.gray, 50))
-        rowNum += 1
-    
-    if close < level4
-        table.cell(statusTable, 0, rowNum, "->R1", text_color=color.white, bgcolor=color.new(color.gray, 50))
-        table.cell(statusTable, 1, rowNum, str.tostring(distTo6815, "#.0") + " pts", text_color=color.aqua, bgcolor=color.new(color.gray, 50))
-        rowNum += 1
-    
     if close < level3
-        table.cell(statusTable, 0, rowNum, "->R2 (Bears)", text_color=color.white, bgcolor=color.new(color.gray, 50))
-        table.cell(statusTable, 1, rowNum, str.tostring(distTo6841, "#.0") + " pts", text_color=color.orange, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 0, rowNum, "->6862 Next", text_color=#FFFFFF, bgcolor=color.new(#808080, 50))
+        table.cell(statusTable, 1, rowNum, str.tostring(distTo6862, "#.0") + " pts", text_color=#00FFFF, bgcolor=color.new(#808080, 50))
         rowNum += 1
     
     if close < level2
-        table.cell(statusTable, 0, rowNum, "->R3 (MACRO)", text_color=color.white, bgcolor=color.new(color.gray, 50))
-        table.cell(statusTable, 1, rowNum, str.tostring(distTo6851, "#.0") + " pts", text_color=color.red, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 0, rowNum, "->6868", text_color=#FFFFFF, bgcolor=color.new(#808080, 50))
+        table.cell(statusTable, 1, rowNum, str.tostring(distTo6868, "#.0") + " pts", text_color=#00FFFF, bgcolor=color.new(#808080, 50))
         rowNum += 1
     
     if close < level1
-        table.cell(statusTable, 0, rowNum, "->R4", text_color=color.white, bgcolor=color.new(color.gray, 50))
-        table.cell(statusTable, 1, rowNum, str.tostring(distTo6869, "#.0") + " pts", text_color=color.fuchsia, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 0, rowNum, "->6877+ Runner", text_color=#FFFFFF, bgcolor=color.new(#808080, 50))
+        table.cell(statusTable, 1, rowNum, str.tostring(distTo6877, "#.0") + " pts", text_color=#00FFFF, bgcolor=color.new(#808080, 50))
         rowNum += 1
     
-    if close >= level5
-        table.cell(statusTable, 0, rowNum, "S1+", text_color=color.white, bgcolor=color.new(color.gray, 50))
-        table.cell(statusTable, 1, rowNum, "+" + str.tostring(distFrom6785, "#.0") + " pts", text_color=color.lime, bgcolor=color.new(color.gray, 50))
+    if close >= level4
+        table.cell(statusTable, 0, rowNum, "6852+", text_color=#FFFFFF, bgcolor=color.new(#808080, 50))
+        table.cell(statusTable, 1, rowNum, "+" + str.tostring(distFrom6852, "#.0") + " pts", text_color=#00FF00, bgcolor=color.new(#808080, 50))
         rowNum += 1
     
     if close >= level6
-        table.cell(statusTable, 0, rowNum, "S2+", text_color=color.white, bgcolor=color.new(color.gray, 50))
-        table.cell(statusTable, 1, rowNum, "+" + str.tostring(distFrom6782, "#.0") + " pts", text_color=color.lime, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 0, rowNum, "6834+ Support", text_color=#FFFFFF, bgcolor=color.new(#808080, 50))
+        table.cell(statusTable, 1, rowNum, "+" + str.tostring(distFrom6834, "#.0") + " pts", text_color=#00FF00, bgcolor=color.new(#808080, 50))
         rowNum += 1
     
     // Context
-    table.cell(statusTable, 0, 10, "R:", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 10, "6869-6851-6841-6815", text_color=color.fuchsia, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 0, 10, "R:", text_color=#FFFFFF, bgcolor=color.new(#808080, 50))
+    table.cell(statusTable, 1, 10, "6877-6868-6862", text_color=#00FFFF, bgcolor=color.new(#808080, 50))
     
-    table.cell(statusTable, 0, 11, "S:", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 11, "6785-6782-6766", text_color=color.lime, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 0, 11, "S:", text_color=#FFFFFF, bgcolor=color.new(#808080, 50))
+    table.cell(statusTable, 1, 11, "6834-6825 (Flag)", text_color=#00FF00, bgcolor=color.new(#808080, 50))
     
-    table.cell(statusTable, 0, 12, "Key:", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 12, "6851=Macro, ON Low=Pop", text_color=color.yellow, bgcolor=color.new(color.gray, 50))
-
-// Background color based on structure
-bgColor = close >= level2 ? color.new(color.lime, 95) : close >= level3 ? color.new(color.aqua, 95) : close >= overnightLow ? color.new(color.yellow, 95) : close >= level5 ? color.new(color.orange, 95) : color.new(color.red, 95)
-
-bgcolor(bgColor, title="Structure Background")
+    table.cell(statusTable, 0, 12, "Key:", text_color=#FFFFFF, bgcolor=color.new(#808080, 50))
+    table.cell(statusTable, 1, 12, "Hit: 6852-6842 \u2713", text_color=#FFFF00, bgcolor=color.new(#808080, 50))
