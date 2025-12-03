@@ -22,6 +22,170 @@ This dashboard aggregates 7 key market internal metrics into a single normalized
 
 ---
 
+## Understanding Each Metric
+
+### UVOL/DVOL % (Up Volume / Down Volume)
+**What it is**: The percentage of total NYSE volume that's going into up-ticking stocks vs down-ticking stocks.
+
+**How to read it**:
+- **> 60%**: Bullish - More volume flowing into stocks moving up
+- **55-60%**: Mildly bullish
+- **45-55%**: Neutral - Volume balanced
+- **40-45%**: Mildly bearish
+- **< 40%**: Bearish - More volume flowing into stocks moving down
+
+**Intraday use**: 
+- Early morning UVOL > 65% often predicts bullish trend day
+- UVOL < 35% early often predicts bearish trend day
+- Reversals: Watch for UVOL crossing 50% midday - potential trend change
+
+**Swing trade use**:
+- Strong closes (last 30 min) with UVOL > 65% = bullish continuation likely
+- UVOL diverging from price = warning sign (price up but UVOL falling = weak rally)
+
+---
+
+### ADD (Advance/Decline Line - Breadth)
+**What it is**: The number of NYSE stocks advancing minus the number declining. Measures market participation.
+
+**How to read it**:
+- **> 1500**: Extreme bullish breadth - very broad rally
+- **> 500**: Strong bullish breadth
+- **100-500**: Mildly bullish
+- **-100 to +100**: Neutral/mixed
+- **-500 to -100**: Mildly bearish
+- **< -500**: Strong bearish breadth
+- **< -1500**: Extreme bearish breadth - broad selloff
+
+**Intraday use**:
+- ADD > 1000 + rising = "melt-up" conditions, don't fade
+- ADD < -1000 + falling = "washout" conditions, wait for stabilization
+- ADD crossing 0 = potential trend shift
+
+**Swing trade use**:
+- Sustained ADD > 500 for multiple days = healthy uptrend
+- Price making new highs with ADD falling = bearish divergence (narrow leadership)
+- ADD leading price lower = early warning of weakness
+
+---
+
+### TICK (NYSE Tick Index)
+**What it is**: Real-time snapshot of stocks upticking minus downticking on the NYSE. Most volatile intraday indicator.
+
+**How to read it**:
+- **> 1000**: Extreme buying pressure (often short-term top)
+- **500-1000**: Strong bullish momentum
+- **200-500**: Moderate bullish
+- **-200 to +200**: Neutral/choppy
+- **-500 to -200**: Moderate bearish
+- **-1000 to -500**: Strong bearish momentum
+- **< -1000**: Extreme selling pressure (often short-term bottom)
+
+**Intraday use** (CRITICAL for scalpers):
+- TICK crossing +500 = initiate longs or add to position
+- TICK crossing -500 = initiate shorts or reduce longs
+- **TICK extremes (+/-1000)** = fade the move - often marks 5-15 min reversals
+- TICK range matters: If stuck between -200/+200 = choppy, avoid overtrading
+
+**Swing trade use**:
+- Less relevant for swing traders
+- But watch close: If TICK ends day < -800 = institutional selling, expect gap down
+- TICK ends day > +800 = institutional buying, expect gap up
+
+---
+
+### TRIN (Arms Index / Trading Index)
+**What it is**: Volume-weighted breadth indicator. Ratio of (Declining Issues / Advancing Issues) / (Down Volume / Up Volume).
+
+**How to read it**:
+- **< 0.5**: Extreme bullish (oversold bounce or strong rally)
+- **0.5-0.7**: Strong bullish
+- **0.7-0.9**: Mildly bullish
+- **0.9-1.1**: Neutral
+- **1.1-1.3**: Mildly bearish
+- **1.3-2.0**: Strong bearish
+- **> 2.0**: Extreme bearish (panic selling, potential reversal)
+
+**Intraday use**:
+- TRIN < 0.7 in first hour = strong open, likely trend day up
+- TRIN > 1.5 in first hour = weak open, likely trend day down
+- **TRIN > 2.5** = capitulation, look for reversal longs (V-bottom setup)
+- **TRIN < 0.4** = euphoric buying, potential exhaustion top
+
+**Swing trade use**:
+- Multiple days of TRIN > 1.5 = market under distribution
+- TRIN < 0.8 for multiple days = market under accumulation
+- TRIN spiking > 3.0 on selloff = washout, potential swing entry
+
+---
+
+### NH/NL Ratio (New Highs / New Lows)
+**What it is**: Number of stocks making 52-week highs divided by stocks making 52-week lows.
+
+**How to read it**:
+- **> 10**: Very strong market breadth - healthy bull market
+- **3-10**: Good breadth - normal uptrend
+- **1-3**: Neutral to mildly bullish
+- **0.5-1**: Balanced
+- **0.3-0.5**: Weak breadth - caution
+- **< 0.3**: Very weak breadth - bear market conditions
+
+**Intraday use**:
+- Limited - this is a POSITION/SWING indicator
+- Can check at open: NH/NL > 5 = strong overnight strength
+
+**Swing trade use** (CRITICAL):
+- **Confirms trend health**: SPY at new highs with NH/NL > 5 = sustainable rally
+- **Spots divergences**: SPY at new highs but NH/NL < 2 = narrow leadership, bearish
+- **Warns of reversals**: NH/NL dropping below 1.0 while SPY rising = distribution
+- **Finds bottoms**: NH/NL > 2 after being < 0.5 = breadth improving, potential swing long
+
+---
+
+### VIX (Volatility Index)
+**What it is**: "Fear gauge" - measures expected 30-day volatility based on SPX options pricing.
+
+**How to read it**:
+- **< 12**: Extreme complacency - potential top forming
+- **12-18**: Low volatility - calm market
+- **18-25**: Normal volatility
+- **25-35**: Elevated fear - choppy market
+- **> 35**: High fear - potential panic, look for reversals
+
+**Intraday use**:
+- VIX rising while SPY rising = warning (rally on shaky ground)
+- VIX falling while SPY rising = healthy rally
+- **VIX spike > 5 points** = major reversal or event, reduce size
+- VIX < 15 + falling = complacent market, fade extremes
+
+**Swing trade use** (CRITICAL):
+- **VIX < 15**: Market complacent, be ready for volatility spike
+- **VIX > 30**: Fear elevated, look for mean reversion swing longs
+- **VIX closing below 20-day MA** after spike = all-clear signal
+- **VIX divergence**: SPY making lower lows but VIX not making higher highs = bullish divergence
+
+---
+
+### Cumulative TICK
+**What it is**: Running sum of all TICK readings throughout the day. Shows sustained directional pressure.
+
+**How to read it**:
+- **Rising**: Sustained buying pressure throughout day
+- **Falling**: Sustained selling pressure throughout day
+- **Flat**: Choppy, no directional conviction
+
+**Intraday use** (Day trader's secret weapon):
+- CumTick trending up all day = stay long, add on dips
+- CumTick trending down all day = stay short/cash, fade rallies
+- **CumTick reversal** (from down to up or vice versa) = major shift, follow new direction
+- CumTick flat + price trending = divergence, expect reversal
+
+**Swing trade use**:
+- Less relevant for multi-day holds
+- But strong positive CumTick close = bullish continuation likely next day
+
+---
+
 ## NH/NL Ratio Explained
 
 The **NH/NL (New Highs/New Lows) ratio** is a market breadth indicator comparing stocks making new 52-week highs versus new 52-week lows.
@@ -172,23 +336,140 @@ This prevents false signals during high volatility periods.
 
 ## How to Use
 
-### For Scalping / Day Trading
-1. Watch the **INTERNALS** label for overall market posture
-2. Trade with the trend when scenario is BULLISH/BEARISH
-3. Be cautious when NEUTRAL or lean bull/bear
-4. Watch for **REVERSAL** signals for counter-trend opportunities
+### For Intraday Trading (Scalpers & Day Traders)
 
-### For Swing Trading
-1. Use **DIVERGENCE** alerts to spot potential reversals
-2. Monitor **TREND** label for confirmation
-3. Check **Confidence %** - higher = stronger signal
+**Setup**:
+1. Use **1-5 minute chart** with Market Internals Dashboard
+2. Watch the main **INTERNALS** label for overall scenario
+3. Keep **TREND** label visible for individual metric momentum
 
-### Key Rules
-- ✅ **Go long** when BULLISH/STRONG BULLISH with high confidence
-- ✅ **Go short** when BEARISH/STRONG BEARISH with high confidence
-- ⚠️ **Be cautious** when NEUTRAL or low confidence
-- 🔄 **Watch for reversals** on divergence signals
-- 🚨 **Respect extremes** - often mark short-term tops/bottoms
+**Trading Rules**:
+
+**LONG ENTRIES** - Look for:
+- Scenario: BULLISH or STRONG BULLISH
+- UVOL > 60%, ADD > 500, TICK > 500
+- TRIN < 0.9
+- Cumulative TICK trending UP
+- **Entry trigger**: Price breaks resistance + all internals aligned
+- **Confidence check**: If Confidence > 70%, size up
+
+**SHORT ENTRIES** - Look for:
+- Scenario: BEARISH or STRONG BEARISH  
+- UVOL < 40%, ADD < -500, TICK < -500
+- TRIN > 1.1
+- Cumulative TICK trending DOWN
+- **Entry trigger**: Price breaks support + all internals aligned
+- **Confidence check**: If Confidence > 70%, size up
+
+**REVERSAL TRADES** (Advanced):
+- **Bullish reversal**: "REVERSAL UP?" alert + TICK > +1000 (extreme)
+  - Wait for TICK to pull back to +300-500, then long
+- **Bearish reversal**: "REVERSAL DOWN?" alert + TICK < -1000 (extreme)
+  - Wait for TICK to pull back to -300 to -500, then short
+
+**AVOID TRADING WHEN**:
+- Scenario: NEUTRAL or "lean" (low conviction)
+- Confidence < 50%
+- TICK range tight (-200 to +200) = choppy conditions
+- Internals conflicting (TICK bullish but ADD bearish)
+
+**Intraday Timing**:
+- **9:35-10:30 AM ET**: If scenario STRONG BULLISH/BEARISH in first 30 min → trend day likely
+- **10:30 AM-2:00 PM ET**: If NEUTRAL → range-bound, reduce size
+- **2:00-4:00 PM ET**: Watch for divergences - if internals weaken but price still rising → expect reversal
+
+---
+
+### For Swing Trading (Multi-Day Holds)
+
+**Setup**:
+1. Use **daily or 4-hour chart** with Market Internals Dashboard
+2. Focus on **NH/NL ratio, VIX, and DIVERGENCE alerts**
+3. Less focus on TICK (too noisy for swing trades)
+
+**Swing LONG Setup**:
+- **Entry conditions**:
+  - Scenario: BULLISH for 2+ days
+  - NH/NL > 3 (broad participation)
+  - VIX < 20 or falling
+  - No bearish divergence alerts
+  - ADD positive multiple days
+- **Best entry**: After pullback to support with internals still BULLISH
+- **Stop loss**: Below key support or if scenario turns BEARISH 2 days straight
+
+**Swing SHORT Setup**:
+- **Entry conditions**:
+  - Scenario: BEARISH for 2+ days
+  - NH/NL < 1 (weak breadth)
+  - VIX > 25 or rising
+  - No bullish divergence alerts
+  - ADD negative multiple days
+- **Best entry**: After bounce to resistance with internals still BEARISH
+- **Stop loss**: Above key resistance or if scenario turns BULLISH 2 days straight
+
+**Divergence-Based Swing Trades** (High probability):
+
+**Bullish Divergence Setup**:
+- **BULLISH DIVERGENCE!** alert fires
+- SPY making lower lows BUT internals improving (scenario turning BULLISH)
+- NH/NL starting to rise above 1.0
+- VIX spiking but starting to decline
+- **Action**: Wait for price to break above recent resistance, then long
+- **Target**: Previous swing high
+- **Edge**: You're buying when institutions are accumulating but retail is panicking
+
+**Bearish Divergence Setup**:
+- **BEARISH DIVERGENCE!** alert fires
+- SPY making higher highs BUT internals weakening (scenario turning BEARISH)
+- NH/NL falling below 2.0
+- VIX starting to rise
+- **Action**: Wait for price to break below recent support, then short
+- **Target**: Previous swing low
+- **Edge**: You're selling when institutions are distributing but retail is euphoric
+
+**VIX-Based Swing Trades**:
+- **VIX > 35 + "VIX FEAR SPIKE!" alert**: Market panic, look for swing longs on oversold bounces
+- **VIX < 15 + "VIX COMPLACENT!" alert**: Market complacency, be ready to take profits or hedge longs
+
+**NH/NL Confirmation for Swing Trades**:
+- **Strong uptrend**: NH/NL should be > 5. If it drops below 2 while price at highs → EXIT longs
+- **Reversal confirmation**: After downtrend, NH/NL crossing above 2 = breadth improving, safe to swing long
+- **Bear market signal**: NH/NL < 0.5 for multiple weeks = avoid longs entirely
+
+---
+
+### Key Rules (Both Intraday & Swing)
+
+✅ **ALWAYS trade with the scenario**
+- BULLISH/STRONG BULLISH = bias long
+- BEARISH/STRONG BEARISH = bias short  
+- NEUTRAL = reduce size or sit out
+
+✅ **Use confidence as a sizing guide**
+- Confidence > 85% = max size (for your risk tolerance)
+- Confidence 70-85% = normal size
+- Confidence 50-70% = half size
+- Confidence < 50% = no trade or paper trade only
+
+✅ **Respect extreme readings**
+- TICK > +1000 or < -1000 = don't chase, wait for pullback
+- ADD > +1500 or < -1500 = market exhausting, expect mean reversion
+- TRIN > 2.5 = panic selling, but wait for stabilization before buying
+- VIX spike > 10 points in one session = wait for 1-2 day consolidation
+
+✅ **Watch for divergences**
+- Price up + internals down = bearish divergence, prepare to exit longs
+- Price down + internals up = bullish divergence, prepare to enter longs
+
+✅ **Combine with price action**
+- Internals tell you WHAT the market wants to do
+- Price action tells you WHEN to enter
+- Never trade internals alone - use with support/resistance, patterns, etc.
+
+⚠️ **Don't overtrade**
+- If scenario flips multiple times in one day = choppy market, reduce trades
+- If TICK range tight all day = low conviction, step aside
+- If confidence keeps dropping below 50% = market uncertain, wait for clarity
 
 ---
 
