@@ -56,25 +56,31 @@ if barstate.islast and showLabels
     var label lbl2 = na
     var label lbl3 = na
     var label lbl4 = na
-    var label lblFlag = na
     var label lbl5 = na
     var label lbl6 = na
     var label lbl7 = na
+    var label lbl8 = na
+    var label lbl9 = na
     
     label.delete(lbl1)
     label.delete(lbl2)
     label.delete(lbl3)
     label.delete(lbl4)
-    label.delete(lblFlag)
     label.delete(lbl5)
     label.delete(lbl6)
     label.delete(lbl7)
+    label.delete(lbl8)
+    label.delete(lbl9)
     
-    lbl1 := label.new(bar_index + 5, level1, "R4: 6877+ Runner", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_down, size=size.small)
-    lbl2 := label.new(bar_index + 5, level2, "R3: 6868", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_down, size=size.small)
-    lbl3 := label.new(bar_index + 5, level3, "R2: 6862 Next", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_down, size=size.small)
-    lbl4 := label.new(bar_index + 5, level4, "R1: 6852 HIT ✓", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#808080, 80), textcolor=#808080, style=label.style_label_down, size=size.small)
-    lblFlag := label.new(bar_index + 5, flagTop, "Flag Top: 6843", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#FF00FF, 80), textcolor=#FF00FF, style=label.style_label_down, size=size.normal)
+    lbl1 := label.new(bar_index + 5, level1, "6877+ Target", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_down, size=size.small)
+    lbl2 := label.new(bar_index + 5, level2, "6868 Target", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_down, size=size.small)
+    lbl3 := label.new(bar_index + 5, level3, "6863 Next", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_down, size=size.small)
+    lbl4 := label.new(bar_index + 5, level4, "6853 HIT ✓", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#808080, 80), textcolor=#808080, style=label.style_label_down, size=size.small)
+    lbl5 := label.new(bar_index + 5, level5, "6842 HIT ✓", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#808080, 80), textcolor=#808080, style=label.style_label_down, size=size.small)
+    lbl6 := label.new(bar_index + 5, level6, "6835 HIT ✓", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#808080, 80), textcolor=#808080, style=label.style_label_down, size=size.small)
+    lbl7 := label.new(bar_index + 5, level7, "6830 Reclaim", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_down, size=size.small)
+    lbl8 := label.new(bar_index + 5, level8, "6825 Magnet", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#FFFF00, 80), textcolor=#FFFF00, style=label.style_label_down, size=size.small)
+    lbl9 := label.new(bar_index + 5, level9, "6818 FB", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#00FF00, 80), textcolor=#00FF00, style=label.style_label_down, size=size.small)
 // === Alert Conditions ===
 // Upside Targets
 alertcondition(ta.crossover(close, level1), "ES >> 6877", "ES >> 6877+ \uD83C\uDFAF Extended Target!")
