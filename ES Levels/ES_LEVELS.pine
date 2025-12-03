@@ -40,15 +40,15 @@ showLabels = input.bool(true, "Show Price Labels", group="Display Settings")
 showTable = input.bool(true, "Show Status Table", group="Display Settings")
 
 // === Plot Levels ===
-plot(level1, "6877 Target", #00FFFF, level1_thickness, trackprice=true)
-plot(level2, "6868 Target", #00FFFF, level2_thickness, trackprice=true)
-plot(level3, "6863 Next", #00FFFF, level3_thickness, trackprice=true)
-plot(level4, "6853 HIT", #808080, level4_thickness, plot.style_linebr, trackprice=true)
-plot(level5, "6842 HIT", #808080, level5_thickness, plot.style_linebr, trackprice=true)
-plot(level6, "6835 HIT", #808080, level6_thickness, plot.style_linebr, trackprice=true)
-plot(level7, "6830 Reclaim", #00FFFF, level7_thickness, trackprice=true)
-plot(level8, "6825 Magnet", #FFFF00, level8_thickness, trackprice=true)
-plot(level9, "6818 FB", #00FF00, level9_thickness, trackprice=true)
+plot(level1, "6877 Target", #00FFFF, level1_thickness, trackprice=false)
+plot(level2, "6868 Target", #00FFFF, level2_thickness, trackprice=false)
+plot(level3, "6863 Next", #00FFFF, level3_thickness, trackprice=false)
+plot(level4, "6853 HIT", #808080, level4_thickness, plot.style_linebr, trackprice=false)
+plot(level5, "6842 HIT", #808080, level5_thickness, plot.style_linebr, trackprice=false)
+plot(level6, "6835 HIT", #808080, level6_thickness, plot.style_linebr, trackprice=false)
+plot(level7, "6830 Reclaim", #00FFFF, level7_thickness, trackprice=false)
+plot(level8, "6825 Magnet", #FFFF00, level8_thickness, trackprice=false)
+plot(level9, "6818 FB", #00FF00, level9_thickness, trackprice=false)
 
 // === Labels on Last Bar ===
 if barstate.islast and showLabels
@@ -72,15 +72,16 @@ if barstate.islast and showLabels
     label.delete(lbl8)
     label.delete(lbl9)
     
-    lbl1 := label.new(bar_index + 5, level1, "6877+ Target", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_down, size=size.small)
-    lbl2 := label.new(bar_index + 5, level2, "6868 Target", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_down, size=size.small)
-    lbl3 := label.new(bar_index + 5, level3, "6863 Next", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_down, size=size.small)
-    lbl4 := label.new(bar_index + 5, level4, "6853 HIT ✓", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#808080, 80), textcolor=#808080, style=label.style_label_down, size=size.small)
-    lbl5 := label.new(bar_index + 5, level5, "6842 HIT ✓", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#808080, 80), textcolor=#808080, style=label.style_label_down, size=size.small)
-    lbl6 := label.new(bar_index + 5, level6, "6835 HIT ✓", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#808080, 80), textcolor=#808080, style=label.style_label_down, size=size.small)
-    lbl7 := label.new(bar_index + 5, level7, "6830 Reclaim", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_down, size=size.small)
-    lbl8 := label.new(bar_index + 5, level8, "6825 Magnet", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#FFFF00, 80), textcolor=#FFFF00, style=label.style_label_down, size=size.small)
-    lbl9 := label.new(bar_index + 5, level9, "6818 FB", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#00FF00, 80), textcolor=#00FF00, style=label.style_label_down, size=size.small)
+    lbl1 := label.new(bar_index + 5, level1, "6877+ Target", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
+    lbl2 := label.new(bar_index + 5, level2, "6868 Target", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
+    lbl3 := label.new(bar_index + 5, level3, "6863 Next", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
+    lbl4 := label.new(bar_index + 5, level4, "6853 HIT ✓", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#808080, 80), textcolor=#808080, style=label.style_label_left, size=size.small)
+    lbl5 := label.new(bar_index + 5, level5, "6842 HIT ✓", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#808080, 80), textcolor=#808080, style=label.style_label_left, size=size.small)
+    lbl6 := label.new(bar_index + 5, level6, "6835 HIT ✓", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#808080, 80), textcolor=#808080, style=label.style_label_left, size=size.small)
+    lbl7 := label.new(bar_index + 5, level7, "6830 Reclaim", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
+    lbl8 := label.new(bar_index + 5, level8, "6825 Magnet", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFFF00, 80), textcolor=#FFFF00, style=label.style_label_left, size=size.small)
+    lbl9 := label.new(bar_index + 5, level9, "6818 FB", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FF00, 80), textcolor=#00FF00, style=label.style_label_left, size=size.small)
+
 // === Alert Conditions ===
 // Upside Targets
 alertcondition(ta.crossover(close, level1), "ES >> 6877", "ES >> 6877+ \uD83C\uDFAF Extended Target!")
@@ -114,8 +115,8 @@ alertcondition(ta.crossunder(close, level9), "ES < 6796", "ES < 6796 - Deep dip!
 // === Market Structure Status Table ===
 var table statusTable = table.new(position.top_right, 2, 10, border_width=1)
 
-if barstate.islast
-    table.cell(statusTable, 0, 0, "MANCINI ES - Dec 3", text_color=color.white, bgcolor=color.new(color.blue, 50))
+if barstate.islast and showTable
+    table.cell(statusTable, 0, 0, "ES - Dec 3", text_color=color.white, bgcolor=color.new(color.blue, 50))
     table.cell(statusTable, 1, 0, "3 Day Flag Building", text_color=color.yellow, bgcolor=color.new(color.blue, 50))
     
     table.cell(statusTable, 0, 1, "Now", text_color=color.white, bgcolor=color.new(color.gray, 50))
