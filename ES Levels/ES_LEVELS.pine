@@ -1,63 +1,79 @@
 //@version=5
-indicator("ES Levels: Bears Control After 6841 - Reclaim Overnight Low", overlay=true, max_lines_count=500, max_labels_count=500)
+indicator("MANCINI ES Levels: Dec 3 - 3 Day Flag Building", overlay=true, max_lines_count=500, max_labels_count=500)
 
-// === ES Levels: Bears Control After 6841 Pop ===
-// Updated: November 6, 2025
-// After pop to 6841 (1st res), bears took over.
-// Yesterday: 6851 rally target (backtest Monday's breakdown). Hit & sold.
-// Bulls need above 6851 to regain macro control.
-// No change: Overnight low must reclaim to pop. 6782-85 next. 6766 below.
+// === MANCINI ES Levels: Weekly Plan ===
+// Updated: December 3, 2025 (PM Update)
+// 
+// CONTEXT:
+// 6842 target #2 HIT! 
+// As posted: 6830 reclaim → targets 6835, 6842 (BOTH HIT!)
+// Newsletter readers got lower 6818 Failed Breakdown entry
+// ES remains in congested chop - building 3 day flag
+// **ALWAYS** take profits level to level, leave runner. Moves don't last!
+// 
+// PLAN:
+// Upside targets: 6853, 6862+ above
+// Support: 6830 reclaim (proven), 6825 magnet, 6818 (failed breakdown entry)
+// Downside: 6805, 6796 if breakdown
 
-// === RESISTANCE LEVELS (Bull Recovery) ===
-level1 = input.float(6869, "R4: Extended target", group="Resistance")
-level1_thickness = input.int(2, "R4 Line Weight", minval=1, maxval=5, group="Resistance")
-level2 = input.float(6851, "R3: MACRO CONTROL (Monday breakdown backtest)", group="Resistance")
-level2_thickness = input.int(3, "R3 Line Weight", minval=1, maxval=5, group="Resistance")
-level3 = input.float(6841, "R2: 1st res - Bears took over", group="Resistance")
-level3_thickness = input.int(2, "R2 Line Weight", minval=1, maxval=5, group="Resistance")
-level4 = input.float(6815, "R1: Reclaim for pop", group="Resistance")
-level4_thickness = input.int(2, "R1 Line Weight", minval=1, maxval=5, group="Resistance")
+// === UPSIDE TARGETS ===
+level1 = input.float(6862, "Upside: 6862 Extended Target", group="🎯 Upside")
+level1_thickness = input.int(2, "6862 Line Weight", minval=1, maxval=5, group="🎯 Upside")
+level2 = input.float(6853, "Upside: 6853 Next Above", group="🎯 Upside")
+level2_thickness = input.int(2, "6853 Line Weight", minval=1, maxval=5, group="🎯 Upside")
+
+// === HIT LEVELS ===
+level3 = input.float(6842, "HIT: 6842 Target #2 *", group="✓ Hit Levels")
+level3_thickness = input.int(1, "6842 Line Weight", minval=1, maxval=5, group="✓ Hit Levels")
+level4 = input.float(6835, "HIT: 6835 Target #1 *", group="✓ Hit Levels")
+level4_thickness = input.int(1, "6835 Line Weight", minval=1, maxval=5, group="✓ Hit Levels")
 
 // === SUPPORT LEVELS ===
-level5 = input.float(6785, "S1: Next target (high)", group="Support")
-level5_thickness = input.int(3, "S1 Line Weight", minval=1, maxval=5, group="Support")
-level6 = input.float(6782, "S2: Next target (low)", group="Support")
-level6_thickness = input.int(3, "S2 Line Weight", minval=1, maxval=5, group="Support")
-level7 = input.float(6766, "S3: Below support", group="Support")
-level7_thickness = input.int(2, "S3 Line Weight", minval=1, maxval=5, group="Support")
+level5 = input.float(6830, "Support: 6830 Reclaim (proven)", group="🟢 Support")
+level5_thickness = input.int(2, "6830 Line Weight", minval=1, maxval=5, group="🟢 Support")
+level6 = input.float(6825, "Support: 6825 Magnet 🧲", group="🟢 Support")
+level6_thickness = input.int(3, "6825 Line Weight", minval=1, maxval=5, group="🟢 Support")
+level7 = input.float(6818, "Support: 6818 Failed Breakdown (newsletter)", group="🟢 Support")
+level7_thickness = input.int(2, "6818 Line Weight", minval=1, maxval=5, group="🟢 Support")
 
-// Overnight Low
-overnightLow = input.float(6798, "Overnight Low: MUST RECLAIM", group="Key Levels")
-overnightLow_thickness = input.int(3, "Overnight Low Line Weight", minval=1, maxval=5, group="Key Levels")
+// === DOWNSIDE LEVELS ===
+level8 = input.float(6805, "Downside: 6805 Target 1", group="🔴 Downside")
+level8_thickness = input.int(2, "6805 Line Weight", minval=1, maxval=5, group="🔴 Downside")
+level9 = input.float(6796, "Downside: 6796 Target 2", group="🔴 Downside")
+level9_thickness = input.int(2, "6796 Line Weight", minval=1, maxval=5, group="🔴 Downside")
 
 // Alert Settings
 enableAlerts = input.bool(true, "Enable Alerts", group="Alert Settings")
 alertSensitivity = input.float(0.5, "Alert Sensitivity (pts)", minval=0.1, maxval=5.0, group="Alert Settings")
 
-// === Plot Resistance Levels ===
-plot(level1, "R4: 6869", color=color.new(color.fuchsia, 0), linewidth=level1_thickness, style=plot.style_line)
-plot(level2, "R3: 6851 (MACRO CONTROL)", color=color.new(color.red, 0), linewidth=level2_thickness, style=plot.style_line)
-plot(level3, "R2: 6841 (Bears Took Over)", color=color.new(color.orange, 0), linewidth=level3_thickness, style=plot.style_line)
-plot(level4, "R1: 6815", color=color.new(color.aqua, 0), linewidth=level4_thickness, style=plot.style_line)
+// === Plot Upside Targets ===
+plot(level1, "6862 Extended", color=color.new(color.aqua, 0), linewidth=level1_thickness, style=plot.style_line)
+plot(level2, "6853 Next Above", color=color.new(color.aqua, 0), linewidth=level2_thickness, style=plot.style_line)
 
-// === Plot Key Level - Overnight Low ===
-plot(overnightLow, "Overnight Low (MUST RECLAIM)", color=color.new(color.yellow, 0), linewidth=overnightLow_thickness, style=plot.style_cross)
+// === Plot Hit Levels ===
+plot(level3, "6842 HIT *", color=color.new(color.gray, 0), linewidth=level3_thickness, style=plot.style_line)
+plot(level4, "6835 HIT *", color=color.new(color.gray, 0), linewidth=level4_thickness, style=plot.style_line)
 
-// === Plot Support Levels ===
-plot(level5, "S1: 6785", color=color.new(color.lime, 0), linewidth=level5_thickness, style=plot.style_line)
-plot(level6, "S2: 6782", color=color.new(color.lime, 0), linewidth=level6_thickness, style=plot.style_line)
-plot(level7, "S3: 6766", color=color.new(color.green, 0), linewidth=level7_thickness, style=plot.style_line)
+// === Plot Support ===
+plot(level5, "6830 Reclaim", color=color.new(color.aqua, 0), linewidth=level5_thickness, style=plot.style_line)
+plot(level6, "6825 Magnet", color=color.new(color.yellow, 0), linewidth=level6_thickness, style=plot.style_line)
+plot(level7, "6818 FB Entry", color=color.new(color.green, 0), linewidth=level7_thickness, style=plot.style_line)
+
+// === Plot Downside ===
+plot(level8, "6805 Downside", color=color.new(color.orange, 0), linewidth=level8_thickness, style=plot.style_line)
+plot(level9, "6796 Downside", color=color.new(color.red, 0), linewidth=level9_thickness, style=plot.style_line)
 
 // === Labels on Last Bar ===
 if barstate.islast
-    label.new(bar_index, level1, "R4: 6869", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.fuchsia, 80), textcolor=color.fuchsia, style=label.style_label_left, size=size.small)
-    label.new(bar_index, level2, "R3: 6851 (MACRO)", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.red, 80), textcolor=color.red, style=label.style_label_left, size=size.small)
-    label.new(bar_index, level3, "R2: 6841 (Bears)", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.orange, 80), textcolor=color.orange, style=label.style_label_left, size=size.small)
-    label.new(bar_index, level4, "R1: 6815", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.aqua, 80), textcolor=color.aqua, style=label.style_label_left, size=size.small)
-    label.new(bar_index, overnightLow, "ON Low: RECLAIM", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.yellow, 80), textcolor=color.yellow, style=label.style_label_center, size=size.normal)
-    label.new(bar_index, level5, "S1: 6785", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.lime, 80), textcolor=color.lime, style=label.style_label_right, size=size.small)
-    label.new(bar_index, level6, "S2: 6782", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.lime, 80), textcolor=color.lime, style=label.style_label_right, size=size.small)
-    label.new(bar_index, level7, "S3: 6766", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.green, 80), textcolor=color.green, style=label.style_label_right, size=size.small)
+    label.new(bar_index, level1, "6862 Target", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.aqua, 80), textcolor=color.aqua, style=label.style_label_left, size=size.small)
+    label.new(bar_index, level2, "6853 Next", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.aqua, 80), textcolor=color.aqua, style=label.style_label_left, size=size.small)
+    label.new(bar_index, level3, "6842 HIT *", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.gray, 80), textcolor=color.gray, style=label.style_label_left, size=size.small)
+    label.new(bar_index, level4, "6835 HIT *", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.gray, 80), textcolor=color.gray, style=label.style_label_left, size=size.small)
+    label.new(bar_index, level5, "6830 Reclaim ✓", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.aqua, 80), textcolor=color.aqua, style=label.style_label_right, size=size.small)
+    label.new(bar_index, level6, "6825 🧲", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.yellow, 80), textcolor=color.yellow, style=label.style_label_right, size=size.normal)
+    label.new(bar_index, level7, "6818 FB", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.green, 80), textcolor=color.green, style=label.style_label_right, size=size.small)
+    label.new(bar_index, level8, "6805 Down", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.orange, 80), textcolor=color.orange, style=label.style_label_right, size=size.small)
+    label.new(bar_index, level9, "6796 Down", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(color.red, 80), textcolor=color.red, style=label.style_label_right, size=size.small)
 
 // === Alert Conditions ===
 // RESISTANCE Breakout Alerts
