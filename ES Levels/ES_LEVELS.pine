@@ -1,34 +1,37 @@
 //@version=6
 indicator("ES Levels", overlay=true, max_lines_count=500, max_labels_count=500)
 
-// === ES Levels: Flag Breakout - Runner Targets ===
-// Updated: December 2, 2025
-// RECLAIM EXECUTED! 6834 triggered → 6842 → 6852 ✓
-// Flag delivered: 6812-6843 with 6825 magnet
-// Clean breakout sequence after reclaim
-// Runner targets: 6862, 6868, 6877+
+// === MANCINI ES Levels: Dec 3 - Building MASSIVE FLAG ===
+// Updated: December 3, 2025 (6853 HIT!)
+// 6830 reclaim → 6835, 6842, 6853 ALL HIT!
+// Newsletter readers got lower 6818 Failed Breakdown entry
+// Next targets: 6863, 6868, 6877+
+// Same supports: 6830, 6825, 6818
+// **ALWAYS** take profits level to level!
 
-// === RESISTANCE LEVELS (Runner Targets) ===
-level1 = input.float(6877, "R4: Runner continuation", group="Resistance")
-level1_thickness = input.int(2, "R4 Line Weight", minval=1, maxval=5, group="Resistance")
-level2 = input.float(6868, "R3: Target 2", group="Resistance")
-level2_thickness = input.int(2, "R3 Line Weight", minval=1, maxval=5, group="Resistance")
-level3 = input.float(6862, "R2: Next Target", group="Resistance")
-level3_thickness = input.int(2, "R2 Line Weight", minval=1, maxval=5, group="Resistance")
-level4 = input.float(6852, "R1: HIT ✓", group="Resistance")
-level4_thickness = input.int(1, "R1 Line Weight", minval=1, maxval=5, group="Resistance")
+// === 🎯 UPSIDE TARGETS ===
+level1 = input.float(6877, "Target 3: 6877+", group="🎯 Upside")
+level1_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="🎯 Upside")
+level2 = input.float(6868, "Target 2: 6868", group="🎯 Upside")
+level2_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="🎯 Upside")
+level3 = input.float(6863, "Target 1: 6863 (next)", group="🎯 Upside")
+level3_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="🎯 Upside")
 
-// === SUPPORT LEVELS ===
-level5 = input.float(6842, "S1: HIT ✓", group="Support")
-level5_thickness = input.int(1, "S1 Line Weight", minval=1, maxval=5, group="Support")
-level6 = input.float(6834, "S2: Reclaim trigger (now support)", group="Support")
-level6_thickness = input.int(3, "S2 Line Weight", minval=1, maxval=5, group="Support")
-level7 = input.float(6825, "S3: Magnet", group="Support")
-level7_thickness = input.int(2, "S3 Line Weight", minval=1, maxval=5, group="Support")
+// === ✓ HIT LEVELS (from 6830 reclaim) ===
+level4 = input.float(6853, "6853 HIT *", group="✓ Hit Levels")
+level4_thickness = input.int(1, "Line Weight", minval=1, maxval=5, group="✓ Hit Levels")
+level5 = input.float(6842, "6842 HIT *", group="✓ Hit Levels")
+level5_thickness = input.int(1, "Line Weight", minval=1, maxval=5, group="✓ Hit Levels")
+level6 = input.float(6835, "6835 HIT *", group="✓ Hit Levels")
+level6_thickness = input.int(1, "Line Weight", minval=1, maxval=5, group="✓ Hit Levels")
 
-// Flag Structure
-flagTop = input.float(6843, "Flag Top: Back-tested", group="Key Levels")
-flagTop_thickness = input.int(2, "Flag Top Line Weight", minval=1, maxval=5, group="Key Levels")
+// === 🟢 SUPPORT LEVELS ===
+level7 = input.float(6830, "6830 Reclaim (proven!)", group="🟢 Support")
+level7_thickness = input.int(3, "Line Weight", minval=1, maxval=5, group="🟢 Support")
+level8 = input.float(6825, "6825 Magnet", group="🟢 Support")
+level8_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="🟢 Support")
+level9 = input.float(6818, "6818 Failed Breakdown", group="🟢 Support")
+level9_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="🟢 Support")
 
 // Alert Settings
 enableAlerts = input.bool(true, "Enable Alerts", group="Alert Settings")
@@ -36,19 +39,16 @@ alertSensitivity = input.float(0.5, "Alert Sensitivity (pts)", minval=0.1, maxva
 showLabels = input.bool(true, "Show Price Labels", group="Display Settings")
 showTable = input.bool(true, "Show Status Table", group="Display Settings")
 
-// === Plot Resistance Levels ===
-plot(level1, "R4: 6877+ Runner", #00FFFF, level1_thickness, trackprice=true)
-plot(level2, "R3: 6868", #00FFFF, level2_thickness, trackprice=true)
-plot(level3, "R2: 6862 Next", #00FFFF, level3_thickness, trackprice=true)
-plot(level4, "R1: 6852 HIT", #808080, level4_thickness, plot.style_linebr, trackprice=true)
-
-// === Plot Key Level - Flag Top ===
-plot(flagTop, "Flag Top: 6843", #FF00FF, flagTop_thickness, trackprice=true)
-
-// === Plot Support Levels ===
-plot(level5, "S1: 6842 HIT", #808080, level5_thickness, plot.style_linebr, trackprice=true)
-plot(level6, "S2: 6834 Support", #00FF00, level6_thickness, trackprice=true)
-plot(level7, "S3: 6825 Magnet", #FFFF00, level7_thickness, trackprice=true)
+// === Plot Levels ===
+plot(level1, "6877 Target", #00FFFF, level1_thickness, trackprice=true)
+plot(level2, "6868 Target", #00FFFF, level2_thickness, trackprice=true)
+plot(level3, "6863 Next", #00FFFF, level3_thickness, trackprice=true)
+plot(level4, "6853 HIT", #808080, level4_thickness, plot.style_linebr, trackprice=true)
+plot(level5, "6842 HIT", #808080, level5_thickness, plot.style_linebr, trackprice=true)
+plot(level6, "6835 HIT", #808080, level6_thickness, plot.style_linebr, trackprice=true)
+plot(level7, "6830 Reclaim", #00FFFF, level7_thickness, trackprice=true)
+plot(level8, "6825 Magnet", #FFFF00, level8_thickness, trackprice=true)
+plot(level9, "6818 FB", #00FF00, level9_thickness, trackprice=true)
 
 // === Labels on Last Bar ===
 if barstate.islast and showLabels
@@ -77,14 +77,18 @@ if barstate.islast and showLabels
     lblFlag := label.new(bar_index + 5, flagTop, "Flag Top: 6843", xloc=xloc.bar_index, yloc=yloc.abovebar, color=color.new(#FF00FF, 80), textcolor=#FF00FF, style=label.style_label_down, size=size.normal)
 // === Alert Conditions ===
 // Upside Targets
-alertcondition(ta.crossover(close, level1), "ES >> 6862", "ES >> 6862+ 🎯 Extended Target!")
-alertcondition(ta.crossover(close, level2), "ES >> 6853", "ES >> 6853 🎯 Next Target Above!")
+alertcondition(ta.crossover(close, level1), "ES >> 6877", "ES >> 6877+ \uD83C\uDFAF Extended Target!")
+alertcondition(ta.crossover(close, level2), "ES >> 6868", "ES >> 6868 \uD83C\uDFAF Target 2!")
+alertcondition(ta.crossover(close, level3), "ES >> 6863", "ES >> 6863 \uD83C\uDFAF Next Target!")
 
 // Hit Levels (from 6830 reclaim)
-alertcondition(ta.cross(close, level3), "ES >> 6842", "ES >> 6842 * Target #2 HIT! (6830 reclaim worked!)")
-alertcondition(ta.cross(close, level4), "ES >> 6835", "ES >> 6835 * Target #1 HIT!")
+alertcondition(ta.cross(close, level4), "ES >> 6853", "ES >> 6853 * Target #3 HIT! (All 3 targets from 6830 reclaim!)")
+alertcondition(ta.cross(close, level5), "ES >> 6842", "ES >> 6842 * Target #2 HIT!")
+alertcondition(ta.cross(close, level6), "ES >> 6835", "ES >> 6835 * Target #1 HIT!")
 
 // Reclaim Level
+alertcondition(ta.crossover(close, level7), "ES RECLAIM 6830", "ES >> 6830 RECLAIM - Proven level (hit 6835, 6842, 6853)!")
+alertcondition(ta.crossunder(close, level7), "ES LOST 6830", "ES << 6830 - Lost reclaim!")
 alertcondition(ta.crossover(close, level5), "ES RECLAIM 6830", "ES >> 6830 RECLAIM - Proven level (hit 6835, 6842)!")
 alertcondition(ta.crossunder(close, level5), "ES LOST 6830", "ES << 6830 - Lost reclaim!")
 
