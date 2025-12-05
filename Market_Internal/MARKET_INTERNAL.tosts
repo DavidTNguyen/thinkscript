@@ -14,7 +14,7 @@ input useDynamicThresholds = no;   # Static thresholds (matches TradingView beha
 input showDivergenceAlerts = yes;
 input compactLabels = no;  # Condensed single-line metrics/scores
 input ultraCompact = no;   # Minimal single-line output
-input showDebug = yes;     # Show component scores and totals for troubleshooting
+input showDebug = no;      # Show component scores and totals for troubleshooting
 
 # VIX Regime Thresholds
 input vixCalm = 18.0;

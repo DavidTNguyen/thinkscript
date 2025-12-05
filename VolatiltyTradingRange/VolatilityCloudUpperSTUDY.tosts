@@ -4,28 +4,70 @@
 
 # --- User Inputs ---
 input iv_source = {default VIX, VX};
-input length = 14;
+input length = 20; # bars to calculate IV range (20 bars for intraday)
+input cloudWidth = 2.0; # multiplier for cloud width
+input cloudOffset = 0.3; # how far from price to position clouds (% of ATR)
 input showCloud = yes;
 input showLabels = yes;
 
 
 # --- Implied Volatility Source ---
-def iv = if iv_source == iv_source.VIX then close("VIX") else close("/VX");
+def iv = if iv_source == iv_source.VIX then close("VIX", period = AggregationPeriod.DAY) else close("/VX", period = AggregationPeriod.DAY);
 
 def ivHigh = Highest(iv, length);
 def ivLow = Lowest(iv, length);
 
-def upperBand = ivHigh;
-def lowerBand = ivLow;
+# --- Normalize IV to Price Scale ---
+def priceHigh = Highest(high(period = AggregationPeriod.DAY), length);
+def priceLow = Lowest(low(period = AggregationPeriod.DAY), length);
+def priceRange = priceHigh - priceLow;
+def ivRange = ivHigh - ivLow;
 
-# --- Plot Cloud ---
-plot Upper = if showCloud then upperBand else Double.NaN;
-plot Lower = if showCloud then lowerBand else Double.NaN;
-Upper.SetDefaultColor(Color.YELLOW);
-Lower.SetDefaultColor(Color.CYAN);
-Upper.SetStyle(Curve.SHORT_DASH);
-Lower.SetStyle(Curve.SHORT_DASH);
-AddCloud(Upper, Lower, Color.LIGHT_RED, Color.LIGHT_GREEN);
+# Calculate average true range for scaling - use daily ATR
+def atr = Average(TrueRange(high(period = AggregationPeriod.DAY), close(period = AggregationPeriod.DAY), low(period = AggregationPeriod.DAY)), length);
+
+# Normalize IV (0 to 1 scale based on its range) - use yesterday's IV for stability
+def yesterdayIV = if iv_source == iv_source.VIX then close("VIX", period = AggregationPeriod.DAY)[1] else close("/VX", period = AggregationPeriod.DAY)[1];
+def ivNormalized = if ivRange > 0 then (yesterdayIV - ivLow) / ivRange else 0.5;
+
+# Cloud thickness based on IV level
+def cloudThickness = atr * cloudWidth * ivNormalized;
+
+# Position clouds offset from price
+def offset = atr * cloudOffset;
+
+# Get previous day's high/low for stable cloud positioning
+def yesterdayHigh = high(period = AggregationPeriod.DAY)[1];
+def yesterdayLow = low(period = AggregationPeriod.DAY)[1];
+
+# Upper cloud (above price) - anchored to yesterday's high
+def upperCloudTop = yesterdayHigh + offset + cloudThickness;
+def upperCloudBottom = yesterdayHigh + offset;
+
+# Lower cloud (below price) - anchored to yesterday's low
+def lowerCloudTop = yesterdayLow - offset;
+def lowerCloudBottom = yesterdayLow - offset - cloudThickness;
+
+# --- Plot Clouds ---
+plot UpperTop = if showCloud then upperCloudTop else Double.NaN;
+plot UpperBottom = if showCloud then upperCloudBottom else Double.NaN;
+plot LowerTop = if showCloud then lowerCloudTop else Double.NaN;
+plot LowerBottom = if showCloud then lowerCloudBottom else Double.NaN;
+
+# Make boundary lines match cloud colors so they blend in
+UpperTop.SetDefaultColor(Color.DARK_RED);
+UpperBottom.SetDefaultColor(Color.DARK_RED);
+LowerTop.SetDefaultColor(Color.DARK_GREEN);
+LowerBottom.SetDefaultColor(Color.DARK_GREEN);
+
+UpperTop.SetLineWeight(1);
+UpperBottom.SetLineWeight(1);
+LowerTop.SetLineWeight(1);
+LowerBottom.SetLineWeight(1);
+
+# Create two separate clouds
+AddCloud(UpperTop, UpperBottom, Color.DARK_RED, Color.DARK_RED);
+AddCloud(LowerTop, LowerBottom, Color.DARK_GREEN, Color.DARK_GREEN);
 
 # --- Labels ---
 AddLabel(showLabels, "IV High: " + AsText(ivHigh), Color.YELLOW);

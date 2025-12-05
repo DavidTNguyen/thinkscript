@@ -1,70 +1,141 @@
 # Created by @VietRoadie
-# Version Volatility Range Visualizer v1.0
+# Version Volatility Range Visualizer v2.0 - Enhanced for Intraday & Swing Trading
+# Improved by GitHub Copilot
+
 # Start Configurations
-def aggregationPeriod = AggregationPeriod.MONTH;
-def aggregationPeriod_nd = AggregationPeriod.WEEK;
-def averageType = AverageType.WILDERS;
-input monthly_range = yes;
-input weekly_range = no;
-input percentile_plot = no;
+input timeframe_select = {default "Daily", "4-Hour", "Weekly", "Monthly"};
+input show_secondary_range = yes;  # Shows additional reference range
+input secondary_timeframe = {"4-Hour", default "Weekly", "Monthly"};
+input percentile_plot = yes;
 input labels = yes;
+input show_price_alerts = yes;  # Alert when price reaches range extremes
 input percentile = 0.90;
-input length = 14;
+input secondary_percentile = 0.75;  # Additional level for partial targets
+
+# ATR Settings - Optimized for shorter timeframes
+input atr_length = 14;  # Standard for daily/swing
+input atr_length_intraday = 9;  # Faster for 4-hour charts
+input averageType = AverageType.WILDERS;
+
+# Visual Options
+input show_midline = yes;
+input show_price_location = yes;  # Shows if price is in upper/lower half of range
 # End Configurations
 
-# Start Aggregation Periods
-def hi = high(period = aggregationPeriod)[1];
-def lo = low(period = aggregationPeriod)[1];
-def cl = close(period = aggregationPeriod)[1];
-def open = open(period = aggregationPeriod);
+# Start Aggregation Periods - Dynamic based on user selection
+def primaryPeriod = 
+    if timeframe_select == timeframe_select."Daily" then AggregationPeriod.DAY
+    else if timeframe_select == timeframe_select."4-Hour" then AggregationPeriod.FOUR_HOURS
+    else if timeframe_select == timeframe_select."Weekly" then AggregationPeriod.WEEK
+    else AggregationPeriod.MONTH;
 
-def hi_nd = high(period = aggregationPeriod_nd)[1];
-def lo_nd = low(period = aggregationPeriod_nd)[1];
-def cl_nd = close(period = aggregationPeriod_nd)[1];
-def open_nd = open(period = aggregationPeriod_nd);
+def secondaryPeriod = 
+    if secondary_timeframe == secondary_timeframe."4-Hour" then AggregationPeriod.FOUR_HOURS
+    else if secondary_timeframe == secondary_timeframe."Weekly" then AggregationPeriod.WEEK
+    else AggregationPeriod.MONTH;
+
+# Primary Range Data
+def hi = high(period = primaryPeriod)[1];
+def lo = low(period = primaryPeriod)[1];
+def cl = close(period = primaryPeriod)[1];
+def op = open(period = primaryPeriod);
+
+# Secondary Range Data
+def hi_nd = high(period = secondaryPeriod)[1];
+def lo_nd = low(period = secondaryPeriod)[1];
+def cl_nd = close(period = secondaryPeriod)[1];
+def op_nd = open(period = secondaryPeriod);
 # End Aggregation Periods
 
-# Start Volatility Range A
-def ATR = MovingAverage(averageType, TrueRange(hi, cl, lo), length);
-def op = open;
-plot t1 = if monthly_range then (op + ATR) else double.nan;
-plot t1_percentile = if monthly_range and percentile_plot then (op + ATR * percentile) else double.nan;
-plot b1 = if monthly_range then (op - ATR) else double.nan;
-plot b1_percentile = if monthly_range and percentile_plot then (op - ATR * percentile) else double.nan;
-# End Volatility Range A
+# Start Primary Volatility Range
+# Use shorter ATR length for intraday timeframes
+def effective_length = if timeframe_select == timeframe_select."4-Hour" then atr_length_intraday else atr_length;
+def ATR = MovingAverage(averageType, TrueRange(hi, cl, lo), effective_length);
 
-# Start Volatility Range B
-def ATR_nd = MovingAverage(averageType, TrueRange(hi_nd, cl_nd, lo_nd), length);
-def op_nd = open_nd;
-plot t2 = if weekly_range then (op_nd + ATR_nd) else double.nan;
-plot t2_percentile = if weekly_range and percentile_plot then (op_nd + ATR_nd * percentile) else double.nan;
-plot b2 = if weekly_range then (op_nd - ATR_nd) else double.nan;
-plot b2_percentile = if weekly_range and percentile_plot then (op_nd - ATR_nd * percentile) else double.nan;
-# End Volatility Range B
+# Primary range plots
+plot t1 = op + ATR;
+plot t1_percentile = if percentile_plot then (op + ATR * percentile) else double.nan;
+plot t1_secondary_percentile = if percentile_plot then (op + ATR * secondary_percentile) else double.nan;
+plot midline = if show_midline then op else double.nan;
+plot b1_secondary_percentile = if percentile_plot then (op - ATR * secondary_percentile) else double.nan;
+plot b1_percentile = if percentile_plot then (op - ATR * percentile) else double.nan;
+plot b1 = op - ATR;
+# End Primary Volatility Range
+
+# Start Secondary Volatility Range
+def effective_length_nd = if secondary_timeframe == secondary_timeframe."4-Hour" then atr_length_intraday else atr_length;
+def ATR_nd = MovingAverage(averageType, TrueRange(hi_nd, cl_nd, lo_nd), effective_length_nd);
+
+# Secondary range plots
+plot t2 = if show_secondary_range then (op_nd + ATR_nd) else double.nan;
+plot t2_percentile = if show_secondary_range and percentile_plot then (op_nd + ATR_nd * percentile) else double.nan;
+plot b2 = if show_secondary_range then (op_nd - ATR_nd) else double.nan;
+plot b2_percentile = if show_secondary_range and percentile_plot then (op_nd - ATR_nd * percentile) else double.nan;
+# End Secondary Volatility Range
 
 # Customizations
+# Primary Range Colors
 t1.AssignValueColor(color.red);
-t1_percentile.AssignValueColor(color.red);
-t2.AssignValueColor(color.light_red);
-t2_percentile.AssignValueColor(color.light_red);
+t1.SetLineWeight(2);
+t1_percentile.AssignValueColor(color.dark_red);
+t1_secondary_percentile.AssignValueColor(color.dark_orange);
+midline.AssignValueColor(color.gray);
+midline.SetLineWeight(1);
+midline.SetStyle(Curve.SHORT_DASH);
+b1_secondary_percentile.AssignValueColor(color.dark_green);
+b1_percentile.AssignValueColor(color.dark_green);
 b1.AssignValueColor(color.green);
-b1_percentile.AssignValueColor(color.green);
+b1.SetLineWeight(2);
+
+# Secondary Range Colors
+t2.AssignValueColor(color.light_red);
+t2.SetStyle(Curve.SHORT_DASH);
+t2_percentile.AssignValueColor(color.light_red);
 b2.AssignValueColor(color.light_green);
+b2.SetStyle(Curve.SHORT_DASH);
 b2_percentile.AssignValueColor(color.light_green);
 
+# Set all to horizontal lines
 t1.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+t1_percentile.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+t1_secondary_percentile.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+midline.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+b1_secondary_percentile.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+b1_percentile.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 b1.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 t2.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-b2.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-t1_percentile.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-b1_percentile.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 t2_percentile.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+b2.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 b2_percentile.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-t 
-AddCloud(t1, t1_percentile, color.red, color.red);
-AddCloud(b1, b1_percentile, color.green, color.green);
-AddCloud(t2, t2_percentile, color.light_red, color.light_red);
-AddCloud(b2, b2_percentile, color.light_green, color.light_green);
-AddLabel(yes and labels and monthly_range, "Monthly Range: Active", color.orange);
-AddLabel(yes and labels and weekly_range, "Weekly Range: Active", color.orange);
+
+# Cloud fills for visual zones
+AddCloud(t1, t1_percentile, Color.DARK_RED, Color.DARK_RED);
+AddCloud(t1_percentile, t1_secondary_percentile, Color.RED, Color.RED);
+AddCloud(b1_secondary_percentile, b1_percentile, Color.DARK_GREEN, Color.DARK_GREEN);
+AddCloud(b1_percentile, b1, Color.GREEN, Color.GREEN);
+AddCloud(t2, t2_percentile, Color.LIGHT_RED, Color.LIGHT_RED);
+AddCloud(b2, b2_percentile, Color.LIGHT_GREEN, Color.LIGHT_GREEN);
+
+# Price Location Indicator
+def price_in_upper_half = close > op;
+def range_size = ATR * 2;
+def price_position = if range_size != 0 then ((close - b1) / range_size) * 100 else 0;
+
+# Alert Conditions
+def near_top = close >= t1_percentile;
+def near_bottom = close <= b1_percentile;
+
+# Dynamic Labels
+AddLabel(labels, "Range: " + AsText(ATR, NumberFormat.TWO_DECIMAL_PLACES), Color.ORANGE);
+AddLabel(labels and show_secondary_range, "Ref Range Active", Color.GRAY);
+AddLabel(labels and show_price_location, 
+    "Pos: " + Round(price_position, 0) + "%",
+    if price_position > 90 then Color.RED 
+    else if price_position > 75 then Color.ORANGE
+    else if price_position < 10 then Color.GREEN
+    else if price_position < 25 then Color.DARK_GREEN
+    else Color.GRAY);
+AddLabel(show_price_alerts and near_top, "NEAR TOP", Color.RED);
+AddLabel(show_price_alerts and near_bottom, "NEAR BOTTOM", Color.GREEN);
+AddLabel(labels, "ATR(" + effective_length + ")", Color.GRAY);
 # End Customizations
