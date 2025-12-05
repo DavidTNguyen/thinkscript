@@ -17,27 +17,27 @@ def symbolES = GetSymbol() == "/ES";
 def symbolNQ = GetSymbol() == "/NQ";
 def symbolNDX = GetSymbol() == "NDX";
 
-# Daily Expected Move Ranges - Updated 12/2/2025
+# Daily Expected Move Ranges - Updated 12/5/2025
 def defaultDailyHigh =
-    if symbolSPY then 684.39
-    else if symbolSPX then 6849.60
-    else if symbolXSP then 684.96
-    else if symbolQQQ then 622.15
-    else if symbolIWM then 247.75
-    else if symbolES then 6868.19
-    else if symbolNQ then 25620.75
-    else if symbolNDX then 25532.96
+    if symbolSPY then 687.96
+    else if symbolSPX then 6891.78
+    else if symbolXSP then 689.18
+    else if symbolQQQ then 627.60
+    else if symbolIWM then 254.01
+    else if symbolES then 6903.66
+    else if symbolNQ then 25631.40
+    else if symbolNDX then Double.NaN
     else Double.NaN;
 
 def defaultDailyLow =
-    if symbolSPY then 676.15
-    else if symbolSPX then 6775.66
-    else if symbolXSP then 677.62
-    else if symbolQQQ then 612.19
-    else if symbolIWM then 243.49
-    else if symbolES then 6793.81
-    else if symbolNQ then 25246.75
-    else if symbolNDX then 25161.54
+    if symbolSPY then 680.82
+    else if symbolSPX then 6822.46
+    else if symbolXSP then 682.25
+    else if symbolQQQ then 618.29
+    else if symbolIWM then 249.63
+    else if symbolES then 6834.34
+    else if symbolNQ then 25461.10
+    else if symbolNDX then Double.NaN
     else Double.NaN;
 
 # Weekly Expected Move Ranges - Updated 11/28 close basis
@@ -49,7 +49,7 @@ def defaultWeeklyHigh =
     else if symbolIWM then 253.69
     else if symbolES then 6949.24
     else if symbolNQ then 25884.96
-    else if symbolNDX then 25783.62
+    else if symbolNDX then Double.NaN
     else Double.NaN;
 
 def defaultWeeklyLow =
@@ -60,7 +60,7 @@ def defaultWeeklyLow =
     else if symbolIWM then 243.81
     else if symbolES then 6766.26
     else if symbolNQ then 25084.04
-    else if symbolNDX then 24989.88
+    else if symbolNDX then Double.NaN
     else Double.NaN;
 
 def activeDailyHigh = if dailyHigh != 0 then dailyHigh else defaultDailyHigh;
