@@ -1,65 +1,62 @@
 //@version=6
-indicator("SPX DEC 1 HEATMAP", overlay=true, max_lines_count=500, max_labels_count=500)
+indicator("SPX DEC 5 HEATMAP", overlay=true, max_lines_count=500, max_labels_count=500)
 
-// === SPX DEC 1 HEATMAP - Updated 11/28/2025 ===
+// === SPX DEC 5 HEATMAP - Updated 12/5/2025 ===
 // 
 // MARKET STRUCTURE (Gamma Positioning):
-// HIGH RESISTANCE / SHORT ZONE:
-// 7000 - Short scalp 🔥
-// 6950 - Major magnet 🔥 (big customer long)
-// 6930 - Reaction short / take profit zone 🔥
-// 6885 - Breakout trigger ▲
+// ATM STRIKE: 6870 (highest concentration)
 //
-// SHORT-GAMMA ZONE (6815-6880):
-// 6880 - Cluster positioning
-// 6870 - Heavy positioning cluster 🏋️
-// 6850 - Cluster
-// 6820 - LARGEST POSITION (PIN) 🎯
-// 6815 - Breakdown trigger ▼
+// HIGH RESISTANCE / SHORT ZONE:
+// 6900 - Heavy Vanna positioning 🔥
+// 6890 - Strong Vanna/Charm cluster 🔥
+// 6885 - Moderate resistance
+//
+// SHORT-GAMMA ZONE (6870-6890):
+// 6890 - Zone top / heavy resistance
+// 6885 - Moderate positioning
+// 6880 - Heavy Gamma/Vanna cluster 🎯
+// 6875 - Strong positioning
+// 6870 - ATM STRIKE / breakdown watch ▼
 //
 // SUPPORT ZONE:
-// 6785 - Support 1 🧊 (reaction long)
-// 6750 - Strong support 🧊 (dealer long gamma)
-// 6720 - Final shelf 🧊
+// 6865 - Support 1 (negative gamma below)
+// 6860 - Support 2 / negative gamma
+// 6850 - Moderate support
+// 6845 - Deep support 🧊
 //
 // CURRENT CONTEXT:
-// Market pinned to 6820 (largest position)
-// Short-gamma zone 6815-6880 = consolidation/chop
-// Breakout above 6885 targets 6930-6950-7000
-// Breakdown below 6815 targets 6785-6750-6720
+// Market near ATM strike 6870 (pin point)
+// Short-gamma zone 6870-6890 = consolidation/chop expected
+// Breakout above 6890 targets 6900+
+// Breakdown below 6870 targets 6865-6860-6850-6845
+// Heavy negative gamma 6860-6870 = volatile moves expected
 
 // === INPUTS ===
-// High Resistance / Short Zone
-level1 = input.float(7000, "R7 - Short scalp 🔥", group="🔴 High Resistance Zone")
-level1_thickness = input.int(2, "R7 Line Thickness", minval=1, maxval=10, group="🔴 High Resistance Zone")
-level2 = input.float(6950, "R6 - Major magnet 🔥 (big customer long)", group="🔴 High Resistance Zone")
-level2_thickness = input.int(3, "R6 Line Thickness", minval=1, maxval=10, group="🔴 High Resistance Zone")
-level3 = input.float(6930, "R5 - Reaction short / TP 🔥", group="🔴 High Resistance Zone")
-level3_thickness = input.int(2, "R5 Line Thickness", minval=1, maxval=10, group="🔴 High Resistance Zone")
-level4 = input.float(6885, "R4 - Breakout trigger ▲", group="🔴 High Resistance Zone")
-level4_thickness = input.int(3, "R4 Line Thickness", minval=1, maxval=10, group="🔴 High Resistance Zone")
+// High Resistance Zone
+level1 = input.float(6900, "R4 - Heavy Vanna positioning 🔥", group="🔴 High Resistance Zone")
+level1_thickness = input.int(2, "6900 Line Thickness", minval=1, maxval=10, group="🔴 High Resistance Zone")
+level2 = input.float(6890, "R3 - Vanna/Charm cluster (zone top) 🔥", group="🔴 High Resistance Zone")
+level2_thickness = input.int(3, "6890 Line Thickness", minval=1, maxval=10, group="🔴 High Resistance Zone")
+level3 = input.float(6885, "R2 - Moderate resistance", group="🔴 High Resistance Zone")
+level3_thickness = input.int(2, "6885 Line Thickness", minval=1, maxval=10, group="🔴 High Resistance Zone")
+level4 = input.float(6880, "R1 - Heavy Gamma/Vanna cluster 🎯", group="🔴 High Resistance Zone")
+level4_thickness = input.int(2, "6880 Line Thickness", minval=1, maxval=10, group="🔴 High Resistance Zone")
 
 // Short-Gamma Zone
-level5 = input.float(6880, "Gamma Top - 6880", group="⚡ Short-Gamma Zone (6815-6880)")
-level5_thickness = input.int(2, "6880 Line Thickness", minval=1, maxval=10, group="⚡ Short-Gamma Zone (6815-6880)")
-level6 = input.float(6870, "Heavy Cluster - 6870 🏋️", group="⚡ Short-Gamma Zone (6815-6880)")
-level6_thickness = input.int(2, "6870 Line Thickness", minval=1, maxval=10, group="⚡ Short-Gamma Zone (6815-6880)")
-level7 = input.float(6850, "Gamma Mid - 6850", group="⚡ Short-Gamma Zone (6815-6880)")
-level7_thickness = input.int(2, "6850 Line Thickness", minval=1, maxval=10, group="⚡ Short-Gamma Zone (6815-6880)")
-level8 = input.float(6820, "LARGEST POSITION (PIN) 🎯", group="⚡ Short-Gamma Zone (6815-6880)")
-level8_thickness = input.int(4, "6820 PIN Line Thickness", minval=1, maxval=10, group="⚡ Short-Gamma Zone (6815-6880)")
-level9 = input.float(6815, "Breakdown trigger ▼", group="⚡ Short-Gamma Zone (6815-6880)")
-level9_thickness = input.int(3, "6815 Line Thickness", minval=1, maxval=10, group="⚡ Short-Gamma Zone (6815-6880)")
-level13 = input.float(6830, "6830 🐻 Bear Level", group="⚡ Short-Gamma Zone (6815-6880)")
-level13_thickness = input.int(2, "6830 Line Thickness", minval=1, maxval=10, group="⚡ Short-Gamma Zone (6815-6880)")
+level5 = input.float(6875, "PIVOT - Strong positioning", group="⚡ Short-Gamma Zone (6870-6890)")
+level5_thickness = input.int(2, "6875 Line Thickness", minval=1, maxval=10, group="⚡ Short-Gamma Zone (6870-6890)")
+level6 = input.float(6870, "ATM STRIKE - breakdown watch 📍", group="⚡ Short-Gamma Zone (6870-6890)")
+level6_thickness = input.int(4, "6870 ATM Line Thickness", minval=1, maxval=10, group="⚡ Short-Gamma Zone (6870-6890)")
 
 // Support Zone
-level10 = input.float(6785, "S1 - Support 1 🧊 (reaction long)", group="🟢 Support Zone")
-level10_thickness = input.int(2, "S1 Line Thickness", minval=1, maxval=10, group="🟢 Support Zone")
-level11 = input.float(6750, "S2 - Strong support 🧊 (dealer long gamma)", group="🟢 Support Zone")
-level11_thickness = input.int(3, "S2 Line Thickness", minval=1, maxval=10, group="🟢 Support Zone")
-level12 = input.float(6720, "S3 - Final shelf 🧊", group="🟢 Support Zone")
-level12_thickness = input.int(2, "S3 Line Thickness", minval=1, maxval=10, group="🟢 Support Zone")
+level7 = input.float(6865, "S1 - Support 1 (negative gamma below)", group="🟢 Support Zone")
+level7_thickness = input.int(2, "6865 Line Thickness", minval=1, maxval=10, group="🟢 Support Zone")
+level8 = input.float(6860, "S2 - Support 2 / negative gamma", group="🟢 Support Zone")
+level8_thickness = input.int(2, "6860 Line Thickness", minval=1, maxval=10, group="🟢 Support Zone")
+level9 = input.float(6850, "S3 - Moderate support", group="🟢 Support Zone")
+level9_thickness = input.int(2, "6850 Line Thickness", minval=1, maxval=10, group="🟢 Support Zone")
+level10 = input.float(6845, "S4 - Deep support 🧊", group="🟢 Support Zone")
+level10_thickness = input.int(2, "6845 Line Thickness", minval=1, maxval=10, group="🟢 Support Zone")
 
 // Alert Settings
 enableAlerts = input.bool(true, "Enable Alerts", group="🔔 Alert Settings")
@@ -80,191 +77,162 @@ var line l7 = na
 var line l8 = na
 var line l9 = na
 var line l10 = na
-var line l11 = na
-var line l12 = na
-var line l13 = na
 
 if showLines and barstate.islast
-    // R7 - 7000 (Short scalp - Magenta, dashed)
-    l1 := line.new(bar_index - 100, level1, bar_index + 20, level1, color=color.fuchsia, width=level1_thickness, style=line.style_dashed)
+    // R4 - 6900 (Heavy Vanna - Magenta)
+    l1 := line.new(bar_index - 100, level1, bar_index + 20, level1, color=color.fuchsia, width=level1_thickness, style=line.style_solid)
     
-    // R6 - 6950 (Major magnet - Magenta)
+    // R3 - 6890 (Vanna/Charm cluster - Magenta)
     l2 := line.new(bar_index - 100, level2, bar_index + 20, level2, color=color.fuchsia, width=level2_thickness, style=line.style_solid)
     
-    // R5 - 6930 (Reaction short/TP - Orange)
+    // R2 - 6885 (Moderate resistance - Orange)
     l3 := line.new(bar_index - 100, level3, bar_index + 20, level3, color=color.orange, width=level3_thickness, style=line.style_solid)
     
-    // R4 - 6885 (Breakout trigger - Yellow)
-    l4 := line.new(bar_index - 100, level4, bar_index + 20, level4, color=color.yellow, width=level4_thickness, style=line.style_solid)
+    // R1 - 6880 (Heavy Gamma/Vanna - Cyan)
+    l4 := line.new(bar_index - 100, level4, bar_index + 20, level4, color=color.aqua, width=level4_thickness, style=line.style_solid)
     
-    // Short-Gamma Zone (Purple)
+    // PIVOT - 6875 (Purple)
     l5 := line.new(bar_index - 100, level5, bar_index + 20, level5, color=color.purple, width=level5_thickness, style=line.style_solid)
-    l6 := line.new(bar_index - 100, level6, bar_index + 20, level6, color=color.purple, width=level6_thickness, style=line.style_solid)
-    l7 := line.new(bar_index - 100, level7, bar_index + 20, level7, color=color.purple, width=level7_thickness, style=line.style_solid)
     
-    // 6820 PIN - Cyan, thick
-    l8 := line.new(bar_index - 100, level8, bar_index + 20, level8, color=color.aqua, width=level8_thickness, style=line.style_solid)
-    
-    // 6815 Breakdown - Yellow
-    l9 := line.new(bar_index - 100, level9, bar_index + 20, level9, color=color.yellow, width=level9_thickness, style=line.style_solid)
-    
-    // 6830 Bear Level - Orange
-    l13 := line.new(bar_index - 100, level13, bar_index + 20, level13, color=color.orange, width=level13_thickness, style=line.style_solid)
+    // ATM STRIKE - 6870 (Yellow, thick)
+    l6 := line.new(bar_index - 100, level6, bar_index + 20, level6, color=color.yellow, width=level6_thickness, style=line.style_solid)
     
     // Support Zone - Cyan
+    l7 := line.new(bar_index - 100, level7, bar_index + 20, level7, color=color.yellow, width=level7_thickness, style=line.style_solid)
+    l8 := line.new(bar_index - 100, level8, bar_index + 20, level8, color=color.aqua, width=level8_thickness, style=line.style_solid)
+    l9 := line.new(bar_index - 100, level9, bar_index + 20, level9, color=color.aqua, width=level9_thickness, style=line.style_solid)
     l10 := line.new(bar_index - 100, level10, bar_index + 20, level10, color=color.aqua, width=level10_thickness, style=line.style_solid)
-    l11 := line.new(bar_index - 100, level11, bar_index + 20, level11, color=color.aqua, width=level11_thickness, style=line.style_solid)
-    l12 := line.new(bar_index - 100, level12, bar_index + 20, level12, color=color.aqua, width=level12_thickness, style=line.style_solid)
 
 // === LABELS ===
 if barstate.islast and showLabels
-    label.new(bar_index + 20, level1, "7000 Short 🔥", style=label.style_label_left, color=color.fuchsia, textcolor=color.white)
-    label.new(bar_index + 20, level2, "6950 Magnet 🔥", style=label.style_label_left, color=color.fuchsia, textcolor=color.white)
-    label.new(bar_index + 20, level3, "6930 TP 🔥", style=label.style_label_left, color=color.orange, textcolor=color.white)
-    label.new(bar_index + 20, level4, "6885 BO ▲", style=label.style_label_left, color=color.yellow, textcolor=color.black)
-    label.new(bar_index + 20, level5, "6880 Gamma Top", style=label.style_label_left, color=color.purple, textcolor=color.white)
-    label.new(bar_index + 20, level6, "6870 Heavy 🏋️", style=label.style_label_left, color=color.purple, textcolor=color.white)
-    label.new(bar_index + 20, level7, "6850", style=label.style_label_left, color=color.purple, textcolor=color.white)
-    label.new(bar_index + 20, level8, "6820 PIN 🎯", style=label.style_label_center, color=color.aqua, textcolor=color.black, size=size.large)
-    label.new(bar_index + 20, level9, "6815 BD ▼", style=label.style_label_left, color=color.yellow, textcolor=color.black)
-    label.new(bar_index + 20, level13, "6830 🐻", style=label.style_label_left, color=color.orange, textcolor=color.white)
-    label.new(bar_index + 20, level10, "6785 Sup 🧊", style=label.style_label_right, color=color.aqua, textcolor=color.black)
-    label.new(bar_index + 20, level11, "6750 Sup 🧊", style=label.style_label_right, color=color.aqua, textcolor=color.black)
-    label.new(bar_index + 20, level12, "6720 Shelf 🧊", style=label.style_label_right, color=color.aqua, textcolor=color.black)
+    label.new(bar_index + 5, level1, "6900 Heavy", style=label.style_label_left, color=color.fuchsia, textcolor=color.white)
+    label.new(bar_index + 5, level2, "6890 BO", style=label.style_label_left, color=color.fuchsia, textcolor=color.white)
+    label.new(bar_index + 5, level3, "6885", style=label.style_label_left, color=color.orange, textcolor=color.white)
+    label.new(bar_index + 5, level4, "6880 🎯", style=label.style_label_left, color=color.aqua, textcolor=color.black)
+    label.new(bar_index + 5, level5, "6875", style=label.style_label_left, color=color.purple, textcolor=color.white)
+    label.new(bar_index + 5, level6, "6870 📍 ATM", style=label.style_label_left, color=color.yellow, textcolor=color.black, size=size.large)
+    label.new(bar_index + 5, level7, "6865 S1", style=label.style_label_left, color=color.yellow, textcolor=color.black)
+    label.new(bar_index + 5, level8, "6860 S2", style=label.style_label_left, color=color.aqua, textcolor=color.black)
+    label.new(bar_index + 5, level9, "6850 S3", style=label.style_label_left, color=color.aqua, textcolor=color.black)
+    label.new(bar_index + 5, level10, "6845 S4 🧊", style=label.style_label_left, color=color.aqua, textcolor=color.black)
 
 // === POSITION DETECTION ===
-above7000 = close > level1
-at7000 = close >= level1 - 5 and close <= level1 + 5
-above6950 = close > level2
-at6950 = close >= level2 - 5 and close <= level2 + 5
-above6930 = close > level3
-at6930 = close >= level3 - 5 and close <= level3 + 5
-above6885 = close > level4  // BREAKOUT TRIGGER
-at6885 = close >= level4 - 5 and close <= level4 + 5
-above6880 = close > level5
-at6880 = close >= level5 - 5 and close <= level5 + 5
-above6870 = close > level6
+above6900 = close > level1
+at6900 = close >= level1 - 5 and close <= level1 + 5
+above6890 = close > level2  // BREAKOUT TRIGGER
+at6890 = close >= level2 - 5 and close <= level2 + 5
+above6885 = close > level3
+at6885 = close >= level3 - 5 and close <= level3 + 5
+above6880 = close > level4
+at6880 = close >= level4 - 5 and close <= level4 + 5
+above6875 = close > level5
+at6875 = close >= level5 - 5 and close <= level5 + 5
+above6870 = close > level6  // ATM STRIKE
 at6870 = close >= level6 - 5 and close <= level6 + 5
-above6850 = close > level7
-at6850 = close >= level7 - 5 and close <= level7 + 5
-above6820 = close > level8  // PIVOT - PIN
-at6820 = close >= level8 - 5 and close <= level8 + 5
-below6820 = close < level8
-above6815 = close > level9
-at6815 = close >= level9 - 5 and close <= level9 + 5
-below6815 = close < level9  // BREAKDOWN TRIGGER
-above6830 = close > level13
-at6830 = close >= level13 - 5 and close <= level13 + 5
-below6830 = close < level13
-above6785 = close > level10
-at6785 = close >= level10 - 5 and close <= level10 + 5
-above6750 = close > level11
-at6750 = close >= level11 - 5 and close <= level11 + 5
-above6720 = close > level12
-at6720 = close >= level12 - 5 and close <= level12 + 5
-below6720 = close < level12
-inGammaZone = close >= level9 and close <= level5  // 6815-6880 short-gamma zone
+below6870 = close < level6  // BREAKDOWN WATCH
+above6865 = close > level7
+at6865 = close >= level7 - 5 and close <= level7 + 5
+above6860 = close > level8
+at6860 = close >= level8 - 5 and close <= level8 + 5
+above6850 = close > level9
+at6850 = close >= level9 - 5 and close <= level9 + 5
+above6845 = close > level10
+at6845 = close >= level10 - 5 and close <= level10 + 5
+below6845 = close < level10
+inGammaZone = close >= level6 and close <= level2  // 6870-6890 short-gamma zone
 
 // Volume spike detection
 volSpike = volume > ta.sma(volume, 20) * 1.5
 
 // === ALERT CONDITIONS ===
 
-// HIGH RESISTANCE / SHORT ZONE
-alertcondition(ta.crossover(close, level1), "7000 SHORT ZONE", "SPX >> 7000 🔥 Short scalp zone!")
-alertcondition(ta.crossover(close, level2), "6950 MAGNET", "SPX >> 6950 🔥 Major magnet (big customer long)!")
-alertcondition(ta.crossover(close, level3), "6930 TP ZONE", "SPX >> 6930 🔥 Reaction short / TP zone!")
+// HIGH RESISTANCE ZONE
+alertcondition(ta.crossover(close, level1), "6900 HEAVY VANNA", "SPX >> 6900 🔥 Heavy Vanna positioning!")
+alertcondition(at6900, "At 6900", "SPX at 6900 - Heavy resistance!")
 
 // BREAKOUT TRIGGER
-alertcondition(ta.crossover(close, level4), "6885 BREAKOUT", "SPX UP 6885 ▲ BREAKOUT TRIGGER - Watch 6930-6950!")
-alertcondition(ta.crossunder(close, level4), "6885 REJECT", "SPX DOWN 6885 - Breakout rejected!")
-alertcondition(at6885, "At 6885", "SPX at 6885 - Breakout trigger!")
+alertcondition(ta.crossover(close, level2), "6890 BREAKOUT", "SPX UP 6890 ▲ BREAKOUT TRIGGER - Watch 6900+!")
+alertcondition(ta.crossunder(close, level2), "6890 REJECT", "SPX DOWN 6890 - Breakout rejected!")
+alertcondition(at6890, "At 6890", "SPX at 6890 - Zone top / breakout trigger!")
 
 // SHORT-GAMMA ZONE
-alertcondition(inGammaZone, "In Gamma Zone", "SPX in short-gamma zone (6815-6880) - Expect chop!")
-alertcondition(ta.crossover(close, level5), "6880 GAMMA TOP", "SPX >> 6880 - Gamma zone top!")
-alertcondition(ta.crossover(close, level6), "6870 HEAVY CLUSTER", "SPX >> 6870 🏋️ Heavy positioning cluster!")
-alertcondition(ta.crossover(close, level7), "6850 GAMMA MID", "SPX >> 6850 - Gamma zone mid!")
+alertcondition(inGammaZone, "In Gamma Zone", "SPX in short-gamma zone (6870-6890) - Expect chop!")
+alertcondition(ta.crossover(close, level3), "6885 RESISTANCE", "SPX >> 6885 - Moderate resistance!")
+alertcondition(ta.crossover(close, level4), "6880 GAMMA CLUSTER", "SPX >> 6880 🎯 Heavy Gamma/Vanna cluster!")
+alertcondition(ta.crossover(close, level5), "6875 POSITIONING", "SPX >> 6875 - Strong positioning!")
 
-// LARGEST POSITION (PIN)
-alertcondition(at6820, "At 6820 PIN", "SPX >> 6820 🎯 LARGEST POSITION (PIN)!")
-alertcondition(ta.cross(close, level8), "6820 PIN TOUCH", "SPX at 6820 - Pin level!")
-
-// BREAKDOWN TRIGGER
-alertcondition(ta.crossunder(close, level9), "6815 BREAKDOWN", "SPX DOWN 6815 ▼ BREAKDOWN - Watch 6785!")
-alertcondition(ta.crossover(close, level9), "6815 HOLD", "SPX UP 6815 - Holding breakdown trigger!")
-alertcondition(below6815, "Below 6815", "SPX < 6815 - Breakdown triggered!")
-
-// BEAR LEVEL 6830
-alertcondition(ta.crossunder(close, level13), "6830 BEAR TEST", "SPX >> 6830 🐻 Bear level test!")
-alertcondition(ta.crossover(close, level13), "6830 RECLAIM", "SPX UP 6830 🐻 Bear level reclaim!")
-alertcondition(at6830, "At 6830", "SPX at 6830 🐻 Bear level!")
+// ATM STRIKE (PIN POINT)
+alertcondition(ta.crossover(close, level6), "6870 HOLD", "SPX UP 6870 - Holding ATM strike!")
+alertcondition(ta.crossunder(close, level6), "6870 BREAKDOWN", "SPX DOWN 6870 ▼ ATM BREAKDOWN - Watch 6865-6860!")
+alertcondition(at6870, "At 6870 ATM", "SPX at 6870 📍 ATM STRIKE!")
+alertcondition(below6870, "Below 6870", "SPX < 6870 - Breakdown zone!")
 
 // SUPPORT ZONE
-alertcondition(ta.crossunder(close, level10), "6785 SUPPORT 1", "SPX >> 6785 🧊 Support 1 (reaction long)!")
-alertcondition(ta.crossunder(close, level11), "6750 STRONG SUPPORT", "SPX >> 6750 🧊 Strong support (dealer long gamma)!")
-alertcondition(ta.crossunder(close, level12), "6720 FINAL SHELF", "SPX >> 6720 🧊 Final shelf!")
-alertcondition(below6720, "Below 6720", "SPX < 6720 - Final shelf broken!")
+alertcondition(ta.crossunder(close, level7), "6865 SUPPORT 1", "SPX >> 6865 - Support 1 (negative gamma below)!")
+alertcondition(ta.crossunder(close, level8), "6860 SUPPORT 2", "SPX >> 6860 - Support 2 / negative gamma!")
+alertcondition(ta.crossunder(close, level9), "6850 SUPPORT 3", "SPX >> 6850 - Moderate support!")
+alertcondition(ta.crossunder(close, level10), "6845 DEEP SUPPORT", "SPX >> 6845 🧊 Deep support!")
+alertcondition(below6845, "Below 6845", "SPX < 6845 - Deep support broken!")
 
 // === STATUS TABLE ===
 var table statusTable = table.new(position.top_right, 2, 20, border_width=1)
 
 if barstate.islast and showLabels
     // Header
-    table.cell(statusTable, 0, 0, "SPX DEC 1", bgcolor=color.new(color.blue, 70), text_color=color.white)
+    table.cell(statusTable, 0, 0, "SPX DEC 5", bgcolor=color.new(color.blue, 70), text_color=color.white)
     table.cell(statusTable, 1, 0, str.tostring(close, "#.##"), bgcolor=color.new(color.blue, 70), text_color=color.white)
     
     // Alert Status
     table.cell(statusTable, 0, 1, "Alerts", text_color=color.white)
     table.cell(statusTable, 1, 1, enableAlerts ? "ON" : "OFF", bgcolor=enableAlerts ? color.green : color.red, text_color=color.white)
     
-    // Bias based on 6820 PIN
-    bias = above6885 ? "📈 BREAKOUT" : inGammaZone ? "⚡ GAMMA ZONE" : below6815 ? "📉 BREAKDOWN" : "🎯 AT PIN"
-    biasColor = above6885 ? color.green : inGammaZone ? color.purple : below6815 ? color.red : color.aqua
-    table.cell(statusTable, 0, 2, "Bias (6820)", text_color=color.white)
+    // Bias based on 6870 ATM
+    bias = above6890 ? "📈 BREAKOUT" : inGammaZone ? "⚡ GAMMA ZONE" : below6870 ? "📉 BREAKDOWN" : "📍 AT ATM"
+    biasColor = above6890 ? color.green : inGammaZone ? color.purple : below6870 ? color.red : color.yellow
+    table.cell(statusTable, 0, 2, "Bias (6870)", text_color=color.white)
     table.cell(statusTable, 1, 2, bias, bgcolor=color.new(biasColor, 70), text_color=color.white)
     
     // Position Status
-    position = above7000 ? "↑ 7000!" : above6950 ? "6950 Magnet" : above6930 ? "6930 TP" : above6885 ? "Above BO" : above6880 ? "Gamma Top" : above6870 ? "Heavy Cluster" : above6850 ? "Gamma Mid" : above6820 ? "Above PIN" : above6815 ? "At PIN" : above6785 ? "Support 1" : above6750 ? "Strong Sup" : above6720 ? "Final Shelf" : "Below Shelf"
-    posColor = above7000 ? color.fuchsia : above6950 ? color.fuchsia : above6930 ? color.orange : above6885 ? color.yellow : above6815 ? color.purple : above6785 ? color.aqua : above6750 ? color.aqua : color.red
+    position = above6900 ? "↑ 6900!" : above6890 ? "Above BO" : above6885 ? "6885" : above6880 ? "6880 Cluster" : above6875 ? "6875" : above6870 ? "Above ATM" : above6865 ? "At ATM" : above6860 ? "Support 1" : above6850 ? "Support 2" : above6845 ? "Support 3" : "Below 6845"
+    posColor = above6900 ? color.fuchsia : above6890 ? color.fuchsia : above6885 ? color.orange : above6880 ? color.aqua : above6870 ? color.purple : above6865 ? color.yellow : above6860 ? color.aqua : color.red
     table.cell(statusTable, 0, 3, "Position", text_color=color.white)
     table.cell(statusTable, 1, 3, position, bgcolor=color.new(posColor, 70), text_color=color.white)
     
     // Strategy
-    strategy = above6885 ? "Watch 6930-6950-7000" : inGammaZone ? "Chop/Pin to 6820" : below6815 ? "Watch 6785-6750-6720" : "At PIN level"
+    strategy = above6890 ? "Watch 6900+" : inGammaZone ? "Chop/Pin to 6870" : below6870 ? "Watch 6865-6860-6850-6845" : "At ATM level"
     table.cell(statusTable, 0, 4, "Strategy", text_color=color.white)
     table.cell(statusTable, 1, 4, strategy, bgcolor=color.new(color.blue, 80), text_color=color.white)
     
     // Key Levels Summary
-    table.cell(statusTable, 0, 5, "6820 PIN 🎯", text_color=color.white)
-    table.cell(statusTable, 1, 5, "Largest Position", bgcolor=color.new(color.aqua, 80), text_color=color.black)
+    table.cell(statusTable, 0, 5, "6870 ATM 📍", text_color=color.white)
+    table.cell(statusTable, 1, 5, "ATM Strike", bgcolor=color.new(color.yellow, 80), text_color=color.black)
     
     table.cell(statusTable, 0, 6, "Gamma Zone", text_color=color.white)
-    table.cell(statusTable, 1, 6, "6815-6880", bgcolor=color.new(color.purple, 80), text_color=color.white)
+    table.cell(statusTable, 1, 6, "6870-6890", bgcolor=color.new(color.purple, 80), text_color=color.white)
     
     table.cell(statusTable, 0, 7, "Breakout", text_color=color.white)
-    table.cell(statusTable, 1, 7, "6885 ▲", bgcolor=color.new(color.yellow, 80), text_color=color.black)
+    table.cell(statusTable, 1, 7, "6890 ▲", bgcolor=color.new(color.fuchsia, 80), text_color=color.white)
     
     table.cell(statusTable, 0, 8, "Breakdown", text_color=color.white)
-    table.cell(statusTable, 1, 8, "6815 ▼", bgcolor=color.new(color.yellow, 80), text_color=color.black)
+    table.cell(statusTable, 1, 8, "6870 ▼", bgcolor=color.new(color.yellow, 80), text_color=color.black)
     
-    // Distance to 6820 PIN
-    distTo6820 = level8 - close
-    distTo6820Str = distTo6820 > 0 ? "-" + str.tostring(math.abs(distTo6820), "#.#") : "+" + str.tostring(math.abs(distTo6820), "#.#")
-    table.cell(statusTable, 0, 9, "To 6820 PIN", text_color=color.white)
-    table.cell(statusTable, 1, 9, distTo6820Str, bgcolor=color.new(color.aqua, 80), text_color=color.black)
+    // Distance to 6870 ATM
+    distTo6870 = level6 - close
+    distTo6870Str = distTo6870 > 0 ? "-" + str.tostring(math.abs(distTo6870), "#.#") : "+" + str.tostring(math.abs(distTo6870), "#.#")
+    table.cell(statusTable, 0, 9, "To 6870 ATM", text_color=color.white)
+    table.cell(statusTable, 1, 9, distTo6870Str, bgcolor=color.new(color.yellow, 80), text_color=color.black)
     
-    // Distance to 6885 breakout
-    distTo6885 = level4 - close
-    distTo6885Str = distTo6885 > 0 ? "-" + str.tostring(math.abs(distTo6885), "#.#") : "+" + str.tostring(math.abs(distTo6885), "#.#")
-    table.cell(statusTable, 0, 10, "To 6885 BO", text_color=color.white)
-    table.cell(statusTable, 1, 10, distTo6885Str, bgcolor=color.new(color.yellow, 80), text_color=color.black)
+    // Distance to 6890 breakout
+    distTo6890 = level2 - close
+    distTo6890Str = distTo6890 > 0 ? "-" + str.tostring(math.abs(distTo6890), "#.#") : "+" + str.tostring(math.abs(distTo6890), "#.#")
+    table.cell(statusTable, 0, 10, "To 6890 BO", text_color=color.white)
+    table.cell(statusTable, 1, 10, distTo6890Str, bgcolor=color.new(color.fuchsia, 80), text_color=color.white)
     
-    // Distance to 6815 breakdown
-    distTo6815 = level9 - close
-    distTo6815Str = distTo6815 > 0 ? "-" + str.tostring(math.abs(distTo6815), "#.#") : "+" + str.tostring(math.abs(distTo6815), "#.#")
-    table.cell(statusTable, 0, 11, "To 6815 BD", text_color=color.white)
-    table.cell(statusTable, 1, 11, distTo6815Str, bgcolor=color.new(color.yellow, 80), text_color=color.black)
+    // Distance to 6845 deep support
+    distTo6845 = level10 - close
+    distTo6845Str = distTo6845 > 0 ? "-" + str.tostring(math.abs(distTo6845), "#.#") : "+" + str.tostring(math.abs(distTo6845), "#.#")
+    table.cell(statusTable, 0, 11, "To 6845 Sup", text_color=color.white)
+    table.cell(statusTable, 1, 11, distTo6845Str, bgcolor=color.new(color.aqua, 80), text_color=color.black)
     
     // Volume Status
     volStatus = volSpike ? "🔥 SPIKE" : "Normal"
@@ -277,22 +245,19 @@ if barstate.islast and showLabels
     table.cell(statusTable, 1, 13, "Gamma Positioning", bgcolor=color.new(color.gray, 80), text_color=color.white)
     
     table.cell(statusTable, 0, 14, "Upside", text_color=color.white)
-    table.cell(statusTable, 1, 14, "6885->6930->6950->7K", bgcolor=color.new(color.gray, 80), text_color=color.white)
+    table.cell(statusTable, 1, 14, "6890->6900+", bgcolor=color.new(color.gray, 80), text_color=color.white)
     
     table.cell(statusTable, 0, 15, "Downside", text_color=color.white)
-    table.cell(statusTable, 1, 15, "6815->6785->6750->6720", bgcolor=color.new(color.gray, 80), text_color=color.white)
+    table.cell(statusTable, 1, 15, "6865->6860->6850->6845", bgcolor=color.new(color.gray, 80), text_color=color.white)
 
 // === PLOT INVISIBLE LINES FOR ALERT TRIGGERS ===
-plot(level1, "R7: 7000", color=color.new(color.fuchsia, 100))
-plot(level2, "R6: 6950", color=color.new(color.fuchsia, 100))
-plot(level3, "R5: 6930", color=color.new(color.orange, 100))
-plot(level4, "R4: 6885 BO", color=color.new(color.yellow, 100))
-plot(level5, "Gamma: 6880", color=color.new(color.purple, 100))
-plot(level6, "Gamma: 6870", color=color.new(color.purple, 100))
-plot(level7, "Gamma: 6850", color=color.new(color.purple, 100))
-plot(level8, "PIN: 6820", color=color.new(color.aqua, 100))
-plot(level9, "BD: 6815", color=color.new(color.yellow, 100))
-plot(level13, "Bear: 6830", color=color.new(color.orange, 100))
-plot(level10, "S1: 6785", color=color.new(color.aqua, 100))
-plot(level11, "S2: 6750", color=color.new(color.aqua, 100))
-plot(level12, "S3: 6720", color=color.new(color.aqua, 100))
+plot(level1, "R4: 6900", color=color.new(color.fuchsia, 100))
+plot(level2, "R3: 6890 BO", color=color.new(color.fuchsia, 100))
+plot(level3, "R2: 6885", color=color.new(color.orange, 100))
+plot(level4, "R1: 6880", color=color.new(color.aqua, 100))
+plot(level5, "PIVOT: 6875", color=color.new(color.purple, 100))
+plot(level6, "ATM: 6870", color=color.new(color.yellow, 100))
+plot(level7, "S1: 6865", color=color.new(color.yellow, 100))
+plot(level8, "S2: 6860", color=color.new(color.aqua, 100))
+plot(level9, "S3: 6850", color=color.new(color.aqua, 100))
+plot(level10, "S4: 6845", color=color.new(color.aqua, 100))
