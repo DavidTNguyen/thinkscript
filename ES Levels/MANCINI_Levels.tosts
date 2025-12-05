@@ -1,43 +1,44 @@
 # === MANCINI ES Levels: Weekly Plan ===
-# Updated: December 3, 2025 (PM Update - 6853 HIT!)
+# Updated: December 5, 2025 (Mid-Day - Chop Continues)
 # 
 # CONTEXT:
-# 6853 target #3 HIT! 
-# As posted: 6830 reclaim → targets 6835, 6842, 6853 (ALL HIT!)
-# Newsletter readers got lower 6818 Failed Breakdown entry
-# Building MASSIVE FLAG - congested chop continues
-# **ALWAYS** take profits level to level, leave runner. Moves don't last!
+# A+ TRADE: 6860 reclaim long → 6903 target = 43 POINT RALLY!
+# Planned, posted, executed perfectly
+# 
+# MID-DAY: Chop continues as warned - DON'T OVERTRADE
+# Sit on hands until vol comes back
 # 
 # PLAN:
-# Next targets: 6863, 6868, 6877+
-# Same supports: 6830, 6825, 6818
-# 6830 reclaim proven (hit all 3 targets!)
-# Take it level to level
+# No change to supports
+# Watch sweeps of morning low (68xx area)
+# 6877 reclaim WITH VOL = pop setup
+# Hold runners, protect profits
 # 
 # KEY LEVELS:
-# Upside: 6877, 6868, 6863 (next)
-# Hit: 6853 *, 6842 *, 6835 * (all from 6830 reclaim!)
-# Support: 6830 (proven reclaim), 6825 (magnet), 6818 (failed breakdown)
+# Upside: 6910+, 6902, 6889 (next targets)
+# Key: 6877 (reclaim with vol = pop)
+# Support: 68xx (morning low - watch sweeps)
+# Trade: A+ given, now patience until vol returns
 
 # === KEY LEVELS ===
-input level1 = 6877;  # Upside target 3
+input level1 = 6910;  # Upside target 3
 input level1_thickness = 2;
-input level2 = 6868;  # Upside target 2
+input level2 = 6902;  # Upside target 2
 input level2_thickness = 2;
-input level3 = 6863;  # Upside target 1 (next)
+input level3 = 6889;  # Upside target 1 (next)
 input level3_thickness = 2;
-input level4 = 6853;  # Target #3 HIT *
+input level4 = 6877;  # Target HIT * (spent night here)
 input level4_thickness = 1;
-input level5 = 6842;  # Target #2 HIT *
-input level5_thickness = 1;
-input level6 = 6835;  # Target #1 HIT *
+input level5 = 6868;  # Target HIT * + Support
+input level5_thickness = 2;
+input level6 = 6863;  # Target HIT *
 input level6_thickness = 1;
-input level7 = 6830;  # Reclaim level (proven!)
-input level7_thickness = 3;
-input level8 = 6825;  # Magnet
-input level8_thickness = 2;
-input level9 = 6818;  # Failed Breakdown (newsletter entry)
-input level9_thickness = 2;
+input level7 = 6847;  # Reclaim level (triggered up)
+input level7_thickness = 1;
+input level8 = 6836;  # Failed Breakdown
+input level8_thickness = 1;
+input level9 = 6825;  # Lower support
+input level9_thickness = 1;
 
 # Alert Settings
 input enableAlerts = yes;
@@ -50,28 +51,27 @@ def isLastBar1 = IsNaN(close[-1]) and !IsNaN(close);
 def isLastBar = isLastBar1[-bubblesBeforeLast];
 
 # Position detection
-def above6877 = close > level1;
-def at6877 = close >= level1 - 2 and close <= level1 + 2;
-def above6868 = close > level2;
-def at6868 = close >= level2 - 2 and close <= level2 + 2;
-def above6863 = close > level3;
-def at6863 = close >= level3 - 2 and close <= level3 + 2;
-def above6853 = close > level4;
-def at6853 = close >= level4 - 2 and close <= level4 + 2;
-def above6842 = close > level5;
-def at6842 = close >= level5 - 2 and close <= level5 + 2;
-def above6835 = close > level6;
-def at6835 = close >= level6 - 2 and close <= level6 + 2;
-def above6830 = close > level7;
-def at6830 = close >= level7 - 2 and close <= level7 + 2;
-def below6830 = close < level7;
-def above6825 = close > level8;
-def at6825 = close >= level8 - 2 and close <= level8 + 2;
-def below6825 = close < level8;
-def above6818 = close > level9;
-def at6818 = close >= level9 - 2 and close <= level9 + 2;
-def below6818 = close < level9;
+def above6910 = close > level1;
+def at6910 = close >= level1 - 2 and close <= level1 + 2;
+def above6902 = close > level2;
+def at6902 = close >= level2 - 2 and close <= level2 + 2;
+def above6889 = close > level3;
+def at6889 = close >= level3 - 2 and close <= level3 + 2;
+def above6877 = close > level4;
+def at6877 = close >= level4 - 2 and close <= level4 + 2;
+def above6868 = close > level5;
+def at6868 = close >= level5 - 2 and close <= level5 + 2;
+def below6868 = close < level5;
+def above6863 = close > level6;
+def at6863 = close >= level6 - 2 and close <= level6 + 2;
+def above6847 = close > level7;
+def at6847 = close >= level7 - 2 and close <= level7 + 2;
+def above6836 = close > level8;
+def at6836 = close >= level8 - 2 and close <= level8 + 2;
+def above6825 = close > level9;
+def at6825 = close >= level9 - 2 and close <= level9 + 2;
 
+# === LEVEL PLOTS ===
 # === LEVEL PLOTS ===
 plot L1 = level1;
 L1.SetDefaultColor(Color.CYAN);
@@ -94,9 +94,9 @@ L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.SHORT_DASH);
 
 plot L5 = level5;
-L5.SetDefaultColor(Color.LIGHT_GRAY);
+L5.SetDefaultColor(Color.GREEN);
 L5.SetLineWeight(level5_thickness);
-L5.SetStyle(Curve.SHORT_DASH);
+L5.SetStyle(Curve.FIRM);
 
 plot L6 = level6;
 L6.SetDefaultColor(Color.LIGHT_GRAY);
@@ -104,79 +104,81 @@ L6.SetLineWeight(level6_thickness);
 L6.SetStyle(Curve.SHORT_DASH);
 
 plot L7 = level7;
-L7.SetDefaultColor(Color.CYAN);
+L7.SetDefaultColor(Color.LIGHT_GRAY);
 L7.SetLineWeight(level7_thickness);
-L7.SetStyle(Curve.FIRM);
+L7.SetStyle(Curve.SHORT_DASH);
 
 plot L8 = level8;
-L8.SetDefaultColor(Color.YELLOW);
+L8.SetDefaultColor(Color.LIGHT_GRAY);
 L8.SetLineWeight(level8_thickness);
-L8.SetStyle(Curve.FIRM);
+L8.SetStyle(Curve.SHORT_DASH);
 
 plot L9 = level9;
-L9.SetDefaultColor(Color.GREEN);
+L9.SetDefaultColor(Color.YELLOW);
 L9.SetLineWeight(level9_thickness);
-L9.SetStyle(Curve.FIRM);
-
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar and showLabels, level1, "6877 Target", Color.CYAN, yes);
-AddChartBubble(isLastBar and showLabels, level2, "6868 Target", Color.CYAN, yes);
-AddChartBubble(isLastBar and showLabels, level3, "6863 Next", Color.CYAN, yes);
-AddChartBubble(isLastBar and showLabels, level4, "6853 HIT *", Color.LIGHT_GRAY, yes);
-AddChartBubble(isLastBar and showLabels, level5, "6842 HIT *", Color.LIGHT_GRAY, yes);
-AddChartBubble(isLastBar and showLabels, level6, "6835 HIT *", Color.LIGHT_GRAY, yes);
-AddChartBubble(isLastBar and showLabels, level7, "6830 Reclaim", Color.CYAN, yes);
-AddChartBubble(isLastBar and showLabels, level8, "6825 Magnet", Color.YELLOW, yes);
-AddChartBubble(isLastBar and showLabels, level9, "6818 FB", Color.GREEN, yes);
-
+AddChartBubble(isLastBar and showLabels, level1, "6910🎯", Color.CYAN, yes);
+AddChartBubble(isLastBar and showLabels, level2, "6902🎯", Color.CYAN, yes);
+AddChartBubble(isLastBar and showLabels, level3, "6889🎯", Color.CYAN, yes);
+AddChartBubble(isLastBar and showLabels, level4, "6877 HIT *", Color.LIGHT_GRAY, yes);
+AddChartBubble(isLastBar and showLabels, level5, "6868 S", Color.GREEN, yes);
+AddChartBubble(isLastBar and showLabels, level6, "6863 HIT *", Color.LIGHT_GRAY, yes);
+AddChartBubble(isLastBar and showLabels, level7, "6847 Reclaim", Color.LIGHT_GRAY, yes);
+AddChartBubble(isLastBar and showLabels, level8, "6836 FB", Color.LIGHT_GRAY, yes);
+AddChartBubble(isLastBar and showLabels, level9, "6825", Color.YELLOW, yes);
+AddChartBubble(isLastBar and showLabels, level9, "6818", Color.LIGHT_GRAY, yes);
 # === TOUCH LOGIC ===
-def touch6877 = low <= level1 and high >= level1;
+# === TOUCH LOGIC ===
+def touch6910 = low <= level1 and high >= level1;
+def firstTouch6910 = touch6910 and !touch6910[1];
+
+def touch6902 = low <= level2 and high >= level2;
+def firstTouch6902 = touch6902 and !touch6902[1];
+
+def touch6889 = low <= level3 and high >= level3;
+def firstTouch6889 = touch6889 and !touch6889[1];
+
+def touch6877 = low <= level4 and high >= level4;
 def firstTouch6877 = touch6877 and !touch6877[1];
 
-def touch6868 = low <= level2 and high >= level2;
+def touch6868 = low <= level5 and high >= level5;
 def firstTouch6868 = touch6868 and !touch6868[1];
 
-def touch6863 = low <= level3 and high >= level3;
+def touch6863 = low <= level6 and high >= level6;
 def firstTouch6863 = touch6863 and !touch6863[1];
 
-def touch6853 = low <= level4 and high >= level4;
-def firstTouch6853 = touch6853 and !touch6853[1];
+def touch6847 = low <= level7 and high >= level7;
+def firstTouch6847 = touch6847 and !touch6847[1];
 
-def touch6842 = low <= level5 and high >= level5;
-def firstTouch6842 = touch6842 and !touch6842[1];
+def touch6836 = low <= level8 and high >= level8;
+def firstTouch6836 = touch6836 and !touch6836[1];
 
-def touch6835 = low <= level6 and high >= level6;
-def firstTouch6835 = touch6835 and !touch6835[1];
-
-def touch6830 = low <= level7 and high >= level7;
-def firstTouch6830 = touch6830 and !touch6830[1];
-
-def touch6825 = low <= level8 and high >= level8;
+def touch6825 = low <= level9 and high >= level9;
 def firstTouch6825 = touch6825 and !touch6825[1];
-
-def touch6818 = low <= level9 and high >= level9;
-def firstTouch6818 = touch6818 and !touch6818[1];
-
 # === ALERT SYSTEM ===
-# Upside Targets
-Alert(enableAlerts and firstTouch6877, "ES >> 6877 Target 3!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6868, "ES >> 6868 Target 2!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6863, "ES >> 6863 Next Target!", Alert.BAR, Sound.Ring);
+# Upside Targets (next leg)
+# === ALERT SYSTEM ===
+# Upside Targets (next)
+Alert(enableAlerts and firstTouch6910, "ES >> 6910 Target!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6902, "ES >> 6902 Target!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6889, "ES >> 6889 Next Target!", Alert.BAR, Sound.Ring);
 
-# Hit Levels (all from 6830 reclaim!)
-Alert(enableAlerts and firstTouch6853, "ES >> 6853 * Target #3 HIT! (6830 reclaim hit all 3!)", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and firstTouch6842, "ES >> 6842 * Target #2 HIT!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and firstTouch6835, "ES >> 6835 * Target #1 HIT!", Alert.BAR, Sound.Chimes);
+# Hit Levels - Perfect follow through!
+Alert(enableAlerts and firstTouch6877, "ES >> 6877 * HIT! (spent night here - from 6847 reclaim)", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and at6877, "ES @ 6877 - HOLD RUNNERS", Alert.BAR, Sound.Chimes);
 
-# Reclaim Level (proven!)
-Alert(enableAlerts and close crosses above level7, "ES >> 6830 RECLAIM - Proven (hit 6835, 6842, 6853)!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6830, "ES @ 6830 - PROVEN RECLAIM LEVEL!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close crosses below level7, "ES << 6830 - Lost reclaim!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and firstTouch6863, "ES >> 6863 * (from 6847 reclaim)", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and at6863, "ES @ 6863 - Target hit!", Alert.BAR, Sound.Chimes);
 
-# Magnet Level
-Alert(enableAlerts and firstTouch6825, "ES >> 6825 MAGNET!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6825, "ES @ 6825 - At magnet!", Alert.BAR, Sound.Bell);
+# Current Support - 6877/6868
+Alert(enableAlerts and firstTouch6868, "ES >> 6868 SUPPORT!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6868, "ES @ 6868 - Support level!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level5, "ES << 6868 - Support broken!", Alert.BAR, Sound.Bell);
 
-# Failed Breakdown (newsletter entry)
-Alert(enableAlerts and firstTouch6818, "ES >> 6818 - Failed Breakdown (newsletter entry)!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6818, "ES @ 6818 - Newsletter entry level!", Alert.BAR, Sound.Bell);
+# Perfect setup - hold runners
+AddLabel(yes, "6877 HIT (from 6847 reclaim) - HOLD RUNNERS", Color.CYAN);
+
+# Reclaim & Failed Breakdown levels
+Alert(enableAlerts and firstTouch6847, "ES >> 6847 - Reclaim level", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and firstTouch6836, "ES >> 6836 - Failed Breakdown", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and firstTouch6825, "ES >> 6825", Alert.BAR, Sound.Bell);

@@ -1,36 +1,54 @@
 
-# === ES Daily Update 12/2 ===
-# ES trapped under 6822 overnight, then rotated back to top of range.
-# Multi-day base building: ~6800 to 6850
-# Time & volume accumulation above 6800 = objectively bullish until 6800 fails
-# Continuation pattern until proven otherwise
-# Acceptance above 6850 favors trend move → 6902
-# Inside base = choppy, especially around 6822 mid pivot
-# Opening above 6850 with sustain = supportive dealer environment
-# Patient - few new entries after overnight move
-# JOLTs data 10am EST may cause movement
-
-# Bulls: Clear 6850 → 6902
-# Bears: Hold under 6822, break 6800 → 6796
-
-# Key Areas
-# Resistance: 6850, 6902
-# Support: 6822 (mid pivot), 6796
-# Watchlist: 6812 failed breakdown (B)
+# === ES Intraday Update - Friday Dec 05 (PM) ===
+# PERFECT PRECISION TODAY!
+# 6860 reclaim = long entry (posted in newsletter)
+# We triggered!
+# Targets: 6868, 6877, 6889 ALL HIT
+# Bonus slate: 6903 (hit, dipped), 6910, 6918
+# WE'VE BEEN PAID - Just hold runner
+#
+# Yesterday: 6847 reclaim = long trigger (posted live) → 6863, 6868, 6877 ALL HIT
+# Same setup, over and over, everyday - Never changes
+#
+# CURRENT: Holding runner from both trades
+# 6877 = support (new)
+# Bulls continue higher with same levels otherwise
+#
+# Key Areas:
+# Resistance: 6918 (bonus 3), 6910 (bonus 2), 6903 (bonus 1, hit/dipped), 6902
+# Support: 6877 (new support), 6860 (entry reclaim), 6854, 6846
+#
+# Watchlist:
+# 6877 support hold: Continue higher
+# 6860 reclaim worked perfectly - same setup repeats
 
 # === KEY LEVELS ===
-input level1 = 6902;  # Resistance - trend target
+input level1 = 6918;  # Bonus target 3
 input level1_thickness = 3;
-input level2 = 6850;  # Resistance - base top / bull trigger
+input level2 = 6910;  # Bonus target 2
 input level2_thickness = 3;
-input level3 = 6822;  # Mid pivot - chop zone
-input level3_thickness = 3;
-input level4 = 6796;  # Support - base low
+input level3 = 6903;  # Bonus target 1 (hit, dipped)
+input level3_thickness = 2;
+input level4 = 6902;  # Resistance - upside target (original)
 input level4_thickness = 3;
-input level5 = 6812;  # Failed breakdown (watchlist)
-input level5_thickness = 2;
+input level5 = 6889;  # Target HIT *
+input level5_thickness = 1;
+input level6 = 6877;  # Support NEW * (was target, now support)
+input level6_thickness = 3;
+input level7 = 6868;  # Target HIT *
+input level7_thickness = 1;
+input level8 = 6860;  # Entry reclaim level (long trigger)
+input level8_thickness = 2;
+input level9 = 6854;  # Support - pullback
+input level9_thickness = 2;
+input level10 = 6846;  # Support - downside
+input level10_thickness = 2;
 
 # === ANCHORED VWAP SETTINGS ===
+input showAnchoredVWAP = no;
+input anchorDate = 20251130;  # YYYYMMDD format - Nov 30, 2025 (11:30 PM from image)
+input anchorTime = 1130;  # HHMM format (24hr)
+
 # Alert Settings
 input enableAlerts = yes;
 input alertSensitivity = 0.5;
@@ -45,20 +63,64 @@ def isLastBar = isLastBar1[-bubblesBeforeLast];
 
 # === ANCHORED VWAP CALCULATION ===
 
+# Anchor point detection
+def currentDate = GetYYYYMMDD();
+def currentTime = SecondsTillTime(0) / 60;  # Convert to minutes from midnight
+def anchorTimeMinutes = Floor(anchorTime / 100) * 60 + (anchorTime % 100);
+
+# Check if we're at or after the anchor point
+def isAfterAnchor = currentDate > anchorDate or 
+                    (currentDate == anchorDate and currentTime >= anchorTimeMinutes);
+
+# Reset condition - start from anchor bar
+def isAnchorBar = currentDate == anchorDate and 
+                  currentTime >= anchorTimeMinutes and 
+                  currentTime[1] < anchorTimeMinutes;
+
+# Cumulative calculations from anchor point
+def sumPV = if !isAfterAnchor then 0
+            else if isAnchorBar then (high + low + close) / 3 * volume
+            else sumPV[1] + (high + low + close) / 3 * volume;
+
+def sumV = if !isAfterAnchor then 0
+           else if isAnchorBar then volume
+           else sumV[1] + volume;
+
+# Anchored VWAP
+def anchoredVWAP = if sumV > 0 then sumPV / sumV else Double.NaN;
+
+# Plot Anchored VWAP
+plot AVWAP = if showAnchoredVWAP and isAfterAnchor then anchoredVWAP else Double.NaN;
+AVWAP.SetDefaultColor(Color.WHITE);
+AVWAP.SetLineWeight(2);
+AVWAP.SetStyle(Curve.FIRM);
+
+# Add label for AVWAP
+AddLabel(showAnchoredVWAP and showLabels, "AVWAP: " + Round(anchoredVWAP, 2), Color.WHITE);
+
 # Position detection
-def above6902 = close > level1;  # Above resistance
-def at6902 = close >= level1 - 2 and close <= level1 + 2;  # At resistance
-def above6850 = close > level2;  # Cleared base top - bullish
-def at6850 = close >= level2 - 2 and close <= level2 + 2;  # Testing base top
-def above6822 = close > level3;  # Above mid pivot
-def at6822 = close >= level3 - 2 and close <= level3 + 2;  # Chop zone
-def below6822 = close < level3;  # Trapped below mid
-def above6796 = close > level4;  # Above base low
-def at6796 = close >= level4 - 2 and close <= level4 + 2;  # Testing base low
-def below6796 = close < level4;  # Below base - bearish
-def above6812 = close > level5;  # Above failed breakdown
-def at6812 = close >= level5 - 2 and close <= level5 + 2;  # At failed breakdown
-def below6639 = close < level4;  # Failed breakdown failed - reversion risk
+def above6918 = close > level1;
+def at6918 = close >= level1 - 2 and close <= level1 + 2;
+def above6910 = close > level2;
+def at6910 = close >= level2 - 2 and close <= level2 + 2;
+def above6903 = close > level3;
+def at6903 = close >= level3 - 2 and close <= level3 + 2;
+def above6902 = close > level4;
+def at6902 = close >= level4 - 2 and close <= level4 + 2;
+def above6889 = close > level5;  # Above target hit
+def at6889 = close >= level5 - 2 and close <= level5 + 2;
+def above6877 = close > level6;  # Above new support
+def at6877 = close >= level6 - 2 and close <= level6 + 2;
+def below6877 = close < level6;  # Support broken
+def above6868 = close > level7;
+def at6868 = close >= level7 - 2 and close <= level7 + 2;
+def above6860 = close > level8;  # Above entry reclaim
+def at6860 = close >= level8 - 2 and close <= level8 + 2;
+def below6860 = close < level8;  # Entry level lost
+def above6854 = close > level9;
+def at6854 = close >= level9 - 2 and close <= level9 + 2;
+def above6846 = close > level10;
+def at6846 = close >= level10 - 2 and close <= level10 + 2;
 
 # === LEVEL PLOTS ===
 plot L1 = level1;
@@ -67,65 +129,118 @@ L1.SetLineWeight(level1_thickness);
 L1.SetStyle(Curve.FIRM);
 
 plot L2 = level2;
-L2.SetDefaultColor(Color.CYAN);
+L2.SetDefaultColor(Color.MAGENTA);
 L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
 
 plot L3 = level3;
-L3.SetDefaultColor(Color.YELLOW);
+L3.SetDefaultColor(Color.LIGHT_GRAY);
 L3.SetLineWeight(level3_thickness);
-L3.SetStyle(Curve.FIRM);
+L3.SetStyle(Curve.SHORT_DASH);
 
 plot L4 = level4;
-L4.SetDefaultColor(Color.LIGHT_GREEN);
+L4.SetDefaultColor(Color.ORANGE);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
 plot L5 = level5;
-L5.SetDefaultColor(Color.PINK);
+L5.SetDefaultColor(Color.LIGHT_GRAY);
 L5.SetLineWeight(level5_thickness);
-L5.SetStyle(Curve.FIRM);
+L5.SetStyle(Curve.SHORT_DASH);
+
+plot L6 = level6;
+L6.SetDefaultColor(Color.GREEN);
+L6.SetLineWeight(level6_thickness);
+L6.SetStyle(Curve.FIRM);
+
+plot L7 = level7;
+L7.SetDefaultColor(Color.LIGHT_GRAY);
+L7.SetLineWeight(level7_thickness);
+L7.SetStyle(Curve.SHORT_DASH);
+
+plot L8 = level8;
+L8.SetDefaultColor(Color.CYAN);
+L8.SetLineWeight(level8_thickness);
+L8.SetStyle(Curve.FIRM);
+
+plot L9 = level9;
+L9.SetDefaultColor(Color.YELLOW);
+L9.SetLineWeight(level9_thickness);
+L9.SetStyle(Curve.SHORT_DASH);
+
+plot L10 = level10;
+L10.SetDefaultColor(Color.LIGHT_GREEN);
+L10.SetLineWeight(level10_thickness);
+L10.SetStyle(Curve.SHORT_DASH);
 
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, "R: 6902", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level2, "R: 6850 Base Top", Color.CYAN, yes);
-AddChartBubble(isLastBar, level3, "Mid: 6822", Color.YELLOW, yes);
-AddChartBubble(isLastBar, level4, "S: 6796 Base Low", Color.LIGHT_GREEN, no);
-AddChartBubble(isLastBar, level5, "Watch: 6812 (B)", Color.PINK, no);
+AddChartBubble(isLastBar, level1, "B3: 6918", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level2, "B2: 6910", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level3, "B1: 6903 *", Color.LIGHT_GRAY, yes);
+AddChartBubble(isLastBar, level4, "R: 6902", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level5, "6889 HIT *", Color.LIGHT_GRAY, yes);
+AddChartBubble(isLastBar, level6, "S: 6877 NEW", Color.GREEN, yes);
+AddChartBubble(isLastBar, level7, "6868 HIT *", Color.LIGHT_GRAY, yes);
+AddChartBubble(isLastBar, level8, "Entry: 6860", Color.CYAN, yes);
+AddChartBubble(isLastBar, level9, "S: 6854", Color.YELLOW, no);
+AddChartBubble(isLastBar, level10, "S: 6846", Color.LIGHT_GREEN, no);
 
 # === ALERT SYSTEM ===
 
-# 6902 - Resistance target
-Alert(enableAlerts and close crosses above level1, "ES >> 6902 - Trend target HIT!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6902, "ES @ 6902 - Testing resistance!", Alert.BAR, Sound.Chimes);
+# BONUS TARGETS
+Alert(enableAlerts and close crosses above level1, "ES >> 6918 - BONUS TARGET 3!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6918, "ES @ 6918", Alert.BAR, Sound.Chimes);
 
-# 6850 - Base top / Bull trigger
-Alert(enableAlerts and close crosses above level2, "ES >> 6850 - BASE BREAKOUT! Trend continuation!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6850, "ES @ 6850 - Testing base top!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close crosses below level2, "ES << 6850 - Back in base range", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses above level2, "ES >> 6910 - BONUS TARGET 2!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6910, "ES @ 6910", Alert.BAR, Sound.Chimes);
 
-# 6822 - Mid pivot (chop zone)
-Alert(enableAlerts and close crosses above level3, "ES >> 6822 - Above mid pivot", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close crosses below level3, "ES << 6822 - Trapped below mid", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6822, "ES @ 6822 - CHOP ZONE! Mid pivot test", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses above level3, "ES >> 6903 - BONUS TARGET 1!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and at6903, "ES @ 6903 - Hit, dipped", Alert.BAR, Sound.Chimes);
 
-# 6796 - Base low / Support
-Alert(enableAlerts and close crosses below level4, "ES << 6796 - BASE BREAKDOWN! Bearish", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6796, "ES @ 6796 - Testing base low support!", Alert.BAR, Sound.Bell);
+# ORIGINAL RESISTANCE
+Alert(enableAlerts and close crosses above level4, "ES >> 6902 - Upside target!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6902, "ES @ 6902", Alert.BAR, Sound.Chimes);
 
-# 6812 - Failed breakdown watchlist
-Alert(enableAlerts and close crosses above level5, "ES >> 6812 - Above failed breakdown", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and at6812, "ES @ 6812 - At failed breakdown level", Alert.BAR, Sound.Bell);
+# TARGETS HIT
+Alert(enableAlerts and at6889, "ES @ 6889 - Target HIT!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and at6868, "ES @ 6868 - Target HIT!", Alert.BAR, Sound.Chimes);
+
+# 6877 - NEW SUPPORT (was target, now support)
+Alert(enableAlerts and close crosses below level6, "ES << 6877 - NEW SUPPORT BROKEN!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6877, "ES @ 6877 - New support! Hold here", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses above level6, "ES >> 6877 - New support reclaim!", Alert.BAR, Sound.Ring);
+
+# 6860 - Entry reclaim level (long trigger)
+Alert(enableAlerts and close crosses above level8, "ES >> 6860 - RECLAIM! Long entry trigger", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6860, "ES @ 6860 - Entry reclaim level (worked perfectly!)", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses below level8, "ES << 6860 - Entry level lost", Alert.BAR, Sound.Bell);
+
+# SUPPORT ZONE
+Alert(enableAlerts and close crosses below level9, "ES << 6854 - Support failed", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6854, "ES @ 6854", Alert.BAR, Sound.Bell);
+
+Alert(enableAlerts and close crosses below level10, "ES << 6846 - Downside", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6846, "ES @ 6846", Alert.BAR, Sound.Bell);
 
 # === STATUS LABELS ===
 AddLabel(showLabels, "ES: " + Round(close, 2), Color.CYAN);
+AddLabel(showLabels, "FRI Dec 05 PM - PERFECT PRECISION!", Color.WHITE);
 
-AddLabel(showLabels and above6902, "Above 6902 - Extended!", Color.CYAN);
-AddLabel(showLabels and above6850 and close <= level1, "BREAKOUT - Above 6850 base top!", Color.GREEN);
-AddLabel(showLabels and above6822 and close <= level2, "Above 6822 mid - In upper base", Color.LIGHT_GREEN);
-AddLabel(showLabels and at6822, "AT 6822 - CHOP ZONE (mid pivot)", Color.YELLOW);
-AddLabel(showLabels and below6822 and above6796, "Below 6822 - Lower base range", Color.YELLOW);
-AddLabel(showLabels and at6796, "AT 6796 - Base low support!", Color.ORANGE);
-AddLabel(showLabels and below6796, "BREAKDOWN - Below 6796 base!", Color.RED);
-AddLabel(showLabels and at6812, "AT 6812 - Failed breakdown watch", Color.MAGENTA);
+# Position status
+AddLabel(showLabels and above6918, "Above 6918 - Bonus 3 hit!", Color.MAGENTA);
+AddLabel(showLabels and above6910 and close <= level1, "Above 6910 - Bonus 2 hit!", Color.MAGENTA);
+AddLabel(showLabels and above6903 and close <= level2, "Above 6903 - Bonus 1!", Color.LIGHT_GRAY);
+AddLabel(showLabels and above6902 and close <= level3, "Above 6902 - Original target!", Color.ORANGE);
+AddLabel(showLabels and above6877 and close <= level4, "Above 6877 - NEW SUPPORT holding!", Color.GREEN);
+AddLabel(showLabels and at6877, "AT 6877 - New support test", Color.GREEN);
+AddLabel(showLabels and below6877 and above6860, "Below 6877 - Support broken, watch 6860", Color.YELLOW);
+AddLabel(showLabels and at6860, "AT 6860 - Entry reclaim (worked perfectly!)", Color.CYAN);
+AddLabel(showLabels and below6860, "Below 6860 - Entry level lost", Color.RED);
+
+# Trade context
+AddLabel(showLabels, "6860 reclaim = long entry (newsletter)", Color.CYAN);
+AddLabel(showLabels, "Targets: 6868✓ 6877✓ 6889✓ ALL HIT", Color.GREEN);
+AddLabel(showLabels, "Bonus: 6903✓(dip) 6910 6918", Color.MAGENTA);
+AddLabel(showLabels, "WE'VE BEEN PAID - Hold runner", Color.GREEN);
+AddLabel(showLabels, "Yesterday: 6847→6863→6868→6877 ALL HIT", Color.LIGHT_GRAY);
 
