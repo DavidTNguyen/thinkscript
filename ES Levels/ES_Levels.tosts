@@ -1,47 +1,51 @@
 
-# === ES Intraday Update - Friday Dec 05 (PM) ===
-# PERFECT PRECISION TODAY!
-# 6860 reclaim = long entry (posted in newsletter)
-# We triggered!
-# Targets: 6868, 6877, 6889 ALL HIT
-# Bonus slate: 6903 (hit, dipped), 6910, 6918
-# WE'VE BEEN PAID - Just hold runner
+# === ES Weekly Update - December 6, 2025 ===
+# BIG PICTURE OVERVIEW - Macro structures for context
+# (For detailed daily setups/intraday levels: tradecompanionsubstack.com)
 #
-# Yesterday: 6847 reclaim = long trigger (posted live) → 6863, 6868, 6877 ALL HIT
-# Same setup, over and over, everyday - Never changes
+# STRUCTURES TO NOTE:
+# - November correction contained by large bull flag (yellow) - broke out this week
+# - Back-tested successfully at 6805
+# - Green rising channel (May recovery) - lost in November, then recovered
+# - Channel support formed higher lows all week at 6847
 #
-# CURRENT: Holding runner from both trades
-# 6877 = support (new)
-# Bulls continue higher with same levels otherwise
+# TRAJECTORY: Targets 6903, 6931 as long as above holds
+# Dip there → new ATHs: 6963, 7000, 7045 first batch
+#
+# NEXT WEEK SYNTHESIS:
+# 6855-59, 6847 supports to watch for traps
+# This keeps 6903, 6931 live - perhaps dip there, then 6963, 7000, 7045
+#
+# If 6847 fails → sell to 6805
+# Bulls must defend that, or finally start retracement to 6774, 6730
+#
+# NOTE: We don't predict - we REACT and follow price level to level.
 #
 # Key Areas:
-# Resistance: 6918 (bonus 3), 6910 (bonus 2), 6903 (bonus 1, hit/dipped), 6902
-# Support: 6877 (new support), 6860 (entry reclaim), 6854, 6846
-#
-# Watchlist:
-# 6877 support hold: Continue higher
-# 6860 reclaim worked perfectly - same setup repeats
+# Rally Targets: 6931 (T3), 6903 (T1), 6976.75 (T2) → then 6963, 7000, 7045
+# Support: 6855-59, 6847 (channel - CRITICAL), 6805 (back-tested)
+# Downside: 6774, 6730, 6674
 
 # === KEY LEVELS ===
-input level1 = 6918;  # Bonus target 3
+input level1 = 6931;  # Rally Target 3
 input level1_thickness = 3;
-input level2 = 6910;  # Bonus target 2
+input level2 = 6976.75;  # Rally Target 2
 input level2_thickness = 3;
-input level3 = 6903;  # Bonus target 1 (hit, dipped)
-input level3_thickness = 2;
-input level4 = 6902;  # Resistance - upside target (original)
-input level4_thickness = 3;
-input level5 = 6889;  # Target HIT *
-input level5_thickness = 1;
-input level6 = 6877;  # Support NEW * (was target, now support)
+input level3 = 6903;  # Rally Target 1
+input level3_thickness = 3;
+input level4 = 6859;  # Support watch (upper)
+input level4_thickness = 2;
+input level5 = 6855;  # Support watch (trap zone)
+input level5_thickness = 2;
+input level6 = 6847;  # Channel support (critical)
 input level6_thickness = 3;
-input level7 = 6868;  # Target HIT *
-input level7_thickness = 1;
-input level8 = 6860;  # Entry reclaim level (long trigger)
+input level7 = 6805;  # Back-tested support (bulls defend)
+input level7_thickness = 3;
+input level8 = 6774;  # Downside 1
 input level8_thickness = 2;
-input level9 = 6854;  # Support - pullback
+input level9 = 6730;  # Downside 2 (retracement)
 input level9_thickness = 2;
-input level10 = 6846;  # Support - downside
+input level10 = 6674;  # Downside 3
 input level10_thickness = 2;
 
 # === ANCHORED VWAP SETTINGS ===
@@ -99,28 +103,28 @@ AVWAP.SetStyle(Curve.FIRM);
 AddLabel(showAnchoredVWAP and showLabels, "AVWAP: " + Round(anchoredVWAP, 2), Color.WHITE);
 
 # Position detection
-def above6918 = close > level1;
-def at6918 = close >= level1 - 2 and close <= level1 + 2;
-def above6910 = close > level2;
-def at6910 = close >= level2 - 2 and close <= level2 + 2;
+def above6931 = close > level1;
+def at6931 = close >= level1 - 2 and close <= level1 + 2;
+def above6977 = close > level2;
+def at6977 = close >= level2 - 2 and close <= level2 + 2;
 def above6903 = close > level3;
 def at6903 = close >= level3 - 2 and close <= level3 + 2;
-def above6902 = close > level4;
-def at6902 = close >= level4 - 2 and close <= level4 + 2;
-def above6889 = close > level5;  # Above target hit
-def at6889 = close >= level5 - 2 and close <= level5 + 2;
-def above6877 = close > level6;  # Above new support
-def at6877 = close >= level6 - 2 and close <= level6 + 2;
-def below6877 = close < level6;  # Support broken
-def above6868 = close > level7;
-def at6868 = close >= level7 - 2 and close <= level7 + 2;
-def above6860 = close > level8;  # Above entry reclaim
-def at6860 = close >= level8 - 2 and close <= level8 + 2;
-def below6860 = close < level8;  # Entry level lost
-def above6854 = close > level9;
-def at6854 = close >= level9 - 2 and close <= level9 + 2;
-def above6846 = close > level10;
-def at6846 = close >= level10 - 2 and close <= level10 + 2;
+def above6859 = close > level4;
+def at6859 = close >= level4 - 2 and close <= level4 + 2;
+def above6855 = close > level5;
+def at6855 = close >= level5 - 2 and close <= level5 + 2;
+def above6847 = close > level6;  # Above channel support
+def at6847 = close >= level6 - 2 and close <= level6 + 2;
+def below6847 = close < level6;  # Channel broken
+def above6805 = close > level7;  # Above back-tested support
+def at6805 = close >= level7 - 2 and close <= level7 + 2;
+def below6805 = close < level7;  # Back-test failed
+def above6774 = close > level8;
+def at6774 = close >= level8 - 2 and close <= level8 + 2;
+def above6730 = close > level9;
+def at6730 = close >= level9 - 2 and close <= level9 + 2;
+def above6674 = close > level10;
+def at6674 = close >= level10 - 2 and close <= level10 + 2;
 
 # === LEVEL PLOTS ===
 plot L1 = level1;
@@ -174,73 +178,69 @@ L10.SetLineWeight(level10_thickness);
 L10.SetStyle(Curve.SHORT_DASH);
 
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, "B3: 6918", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level2, "B2: 6910", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level3, "B1: 6903 *", Color.LIGHT_GRAY, yes);
-AddChartBubble(isLastBar, level4, "R: 6902", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level5, "6889 HIT *", Color.LIGHT_GRAY, yes);
-AddChartBubble(isLastBar, level6, "S: 6877 NEW", Color.GREEN, yes);
-AddChartBubble(isLastBar, level7, "6868 HIT *", Color.LIGHT_GRAY, yes);
-AddChartBubble(isLastBar, level8, "Entry: 6860", Color.CYAN, yes);
-AddChartBubble(isLastBar, level9, "S: 6854", Color.YELLOW, no);
-AddChartBubble(isLastBar, level10, "S: 6846", Color.LIGHT_GREEN, no);
+AddChartBubble(isLastBar, level1, "Rally T3: 6931", Color.CYAN, yes);
+AddChartBubble(isLastBar, level2, "Rally T2: 6976.75", Color.CYAN, yes);
+AddChartBubble(isLastBar, level3, "Rally T1: 6903", Color.CYAN, yes);
+AddChartBubble(isLastBar, level4, "S: 6859", Color.YELLOW, yes);
+AddChartBubble(isLastBar, level5, "S: 6855 trap", Color.YELLOW, yes);
+AddChartBubble(isLastBar, level6, "Channel: 6847", Color.GREEN, yes);
+AddChartBubble(isLastBar, level7, "Back-test: 6805", Color.CYAN, yes);
+AddChartBubble(isLastBar, level8, "Down: 6774", Color.ORANGE, no);
+AddChartBubble(isLastBar, level9, "Down: 6730", Color.ORANGE, no);
+AddChartBubble(isLastBar, level10, "Down: 6674", Color.RED, no);
 
 # === ALERT SYSTEM ===
 
-# BONUS TARGETS
-Alert(enableAlerts and close crosses above level1, "ES >> 6918 - BONUS TARGET 3!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6918, "ES @ 6918", Alert.BAR, Sound.Chimes);
+# RALLY TARGETS
+Alert(enableAlerts and close crosses above level1, "ES >> 6931 - RALLY TARGET 3!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6931, "ES @ 6931 - Rally target 3", Alert.BAR, Sound.Chimes);
 
-Alert(enableAlerts and close crosses above level2, "ES >> 6910 - BONUS TARGET 2!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6910, "ES @ 6910", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses above level2, "ES >> 6976.75 - RALLY TARGET 2!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6977, "ES @ 6976.75 - Rally target 2", Alert.BAR, Sound.Chimes);
 
-Alert(enableAlerts and close crosses above level3, "ES >> 6903 - BONUS TARGET 1!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and at6903, "ES @ 6903 - Hit, dipped", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses above level3, "ES >> 6903 - RALLY TARGET 1!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6903, "ES @ 6903 - First rally target!", Alert.BAR, Sound.Chimes);
 
-# ORIGINAL RESISTANCE
-Alert(enableAlerts and close crosses above level4, "ES >> 6902 - Upside target!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6902, "ES @ 6902", Alert.BAR, Sound.Chimes);
+# SUPPORT WATCH ZONE
+Alert(enableAlerts and at6859, "ES @ 6859 - Support watch", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6855, "ES @ 6855 - Trap zone!", Alert.BAR, Sound.Bell);
 
-# TARGETS HIT
-Alert(enableAlerts and at6889, "ES @ 6889 - Target HIT!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and at6868, "ES @ 6868 - Target HIT!", Alert.BAR, Sound.Chimes);
+# CHANNEL SUPPORT - CRITICAL
+Alert(enableAlerts and close crosses below level6, "ES << 6847 - CHANNEL BROKEN! Sell to 6805", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6847, "ES @ 6847 - Channel support CRITICAL", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses above level6, "ES >> 6847 - Channel reclaim!", Alert.BAR, Sound.Ring);
 
-# 6877 - NEW SUPPORT (was target, now support)
-Alert(enableAlerts and close crosses below level6, "ES << 6877 - NEW SUPPORT BROKEN!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6877, "ES @ 6877 - New support! Hold here", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close crosses above level6, "ES >> 6877 - New support reclaim!", Alert.BAR, Sound.Ring);
+# BACK-TESTED SUPPORT
+Alert(enableAlerts and close crosses below level7, "ES << 6805 - Back-test failed! Bulls must defend", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6805, "ES @ 6805 - Back-tested support (successful this week)", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses above level7, "ES >> 6805 - Back-test hold!", Alert.BAR, Sound.Ring);
 
-# 6860 - Entry reclaim level (long trigger)
-Alert(enableAlerts and close crosses above level8, "ES >> 6860 - RECLAIM! Long entry trigger", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6860, "ES @ 6860 - Entry reclaim level (worked perfectly!)", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close crosses below level8, "ES << 6860 - Entry level lost", Alert.BAR, Sound.Bell);
+# DOWNSIDE TARGETS
+Alert(enableAlerts and close crosses below level8, "ES << 6774 - Downside 1", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6774, "ES @ 6774", Alert.BAR, Sound.Bell);
 
-# SUPPORT ZONE
-Alert(enableAlerts and close crosses below level9, "ES << 6854 - Support failed", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6854, "ES @ 6854", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level9, "ES << 6730 - RETRACEMENT ZONE", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6730, "ES @ 6730 - Major retracement level", Alert.BAR, Sound.Bell);
 
-Alert(enableAlerts and close crosses below level10, "ES << 6846 - Downside", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6846, "ES @ 6846", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level10, "ES << 6674 - Deep downside", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6674, "ES @ 6674", Alert.BAR, Sound.Bell);
 
 # === STATUS LABELS ===
 AddLabel(showLabels, "ES: " + Round(close, 2), Color.CYAN);
-AddLabel(showLabels, "FRI Dec 05 PM - PERFECT PRECISION!", Color.WHITE);
+AddLabel(showLabels, "WEEK Dec 6 - Bull Flag Breakout!", Color.WHITE);
 
 # Position status
-AddLabel(showLabels and above6918, "Above 6918 - Bonus 3 hit!", Color.MAGENTA);
-AddLabel(showLabels and above6910 and close <= level1, "Above 6910 - Bonus 2 hit!", Color.MAGENTA);
-AddLabel(showLabels and above6903 and close <= level2, "Above 6903 - Bonus 1!", Color.LIGHT_GRAY);
-AddLabel(showLabels and above6902 and close <= level3, "Above 6902 - Original target!", Color.ORANGE);
-AddLabel(showLabels and above6877 and close <= level4, "Above 6877 - NEW SUPPORT holding!", Color.GREEN);
-AddLabel(showLabels and at6877, "AT 6877 - New support test", Color.GREEN);
-AddLabel(showLabels and below6877 and above6860, "Below 6877 - Support broken, watch 6860", Color.YELLOW);
-AddLabel(showLabels and at6860, "AT 6860 - Entry reclaim (worked perfectly!)", Color.CYAN);
-AddLabel(showLabels and below6860, "Below 6860 - Entry level lost", Color.RED);
+AddLabel(showLabels and above6931, "Above 6931 - Rally target 3 hit!", Color.CYAN);
+AddLabel(showLabels and above6903 and close <= level1, "Above 6903 - Rally target 1! Next: 6931", Color.CYAN);
+AddLabel(showLabels and above6847 and close <= level3, "Above 6847 - Channel holding! Rally continues", Color.GREEN);
+AddLabel(showLabels and at6847, "AT 6847 - CRITICAL channel support", Color.YELLOW);
+AddLabel(showLabels and below6847 and above6805, "Below 6847 - Channel broken! Sell to 6805", Color.ORANGE);
+AddLabel(showLabels and at6805, "AT 6805 - Back-tested support (bulls defend here)", Color.CYAN);
+AddLabel(showLabels and below6805, "Below 6805 - Retracement to 6730 started", Color.RED);
 
 # Trade context
-AddLabel(showLabels, "6860 reclaim = long entry (newsletter)", Color.CYAN);
-AddLabel(showLabels, "Targets: 6868✓ 6877✓ 6889✓ ALL HIT", Color.GREEN);
-AddLabel(showLabels, "Bonus: 6903✓(dip) 6910 6918", Color.MAGENTA);
-AddLabel(showLabels, "WE'VE BEEN PAID - Hold runner", Color.GREEN);
-AddLabel(showLabels, "Yesterday: 6847→6863→6868→6877 ALL HIT", Color.LIGHT_GRAY);
+AddLabel(showLabels, "Bull flag broke out - back-tested 6805✓", Color.GREEN);
+AddLabel(showLabels, "Rally targets: 6903, 6931 (then 6963, 7000, 7045)", Color.CYAN);
+AddLabel(showLabels, "Support: 6847 channel (critical)", Color.YELLOW);
+AddLabel(showLabels, "6847 fail → 6805 → 6730 retracement", Color.ORANGE);
 
