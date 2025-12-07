@@ -30,6 +30,12 @@ indicator("SPX DEC 5 HEATMAP", overlay=true, max_lines_count=500, max_labels_cou
 // Breakout above 6890 targets 6900+
 // Breakdown below 6870 targets 6865-6860-6850-6845
 // Heavy negative gamma 6860-6870 = volatile moves expected
+//
+// KEY TECHNICAL LEVELS:
+// Bear resistance failed 5 times at 6089.5
+// Upside targets: 6920 and 6991 if breakout occurs
+// Downside stops around 6799
+// Quantitative buyers waiting at 6770s
 
 // === INPUTS ===
 // High Resistance Zone
@@ -41,6 +47,16 @@ level3 = input.float(6885, "R2 - Moderate resistance", group="🔴 High Resistan
 level3_thickness = input.int(2, "6885 Line Thickness", minval=1, maxval=10, group="🔴 High Resistance Zone")
 level4 = input.float(6880, "R1 - Heavy Gamma/Vanna cluster 🎯", group="🔴 High Resistance Zone")
 level4_thickness = input.int(2, "6880 Line Thickness", minval=1, maxval=10, group="🔴 High Resistance Zone")
+
+// Key Technical Levels
+level_upside1 = input.float(6991, "Upside Target 1 - 6991 📈", group="🎯 Key Technical Levels")
+level_upside1_thickness = input.int(2, "6991 Line Thickness", minval=1, maxval=10, group="🎯 Key Technical Levels")
+level_upside2 = input.float(6920, "Upside Target 2 - 6920 📈", group="🎯 Key Technical Levels")
+level_upside2_thickness = input.int(2, "6920 Line Thickness", minval=1, maxval=10, group="🎯 Key Technical Levels")
+level_downside1 = input.float(6799, "Downside Stop - 6799 📉", group="🎯 Key Technical Levels")
+level_downside1_thickness = input.int(2, "6799 Line Thickness", minval=1, maxval=10, group="🎯 Key Technical Levels")
+level_downside2 = input.float(6770, "Quant Buyers - 6770s 💰", group="🎯 Key Technical Levels")
+level_downside2_thickness = input.int(2, "6770 Line Thickness", minval=1, maxval=10, group="🎯 Key Technical Levels")
 
 // Short-Gamma Zone
 level5 = input.float(6875, "PIVOT - Strong positioning", group="⚡ Short-Gamma Zone (6870-6890)")
@@ -77,6 +93,10 @@ var line l7 = na
 var line l8 = na
 var line l9 = na
 var line l10 = na
+var line l_up1 = na
+var line l_up2 = na
+var line l_dn1 = na
+var line l_dn2 = na
 
 if showLines and barstate.islast
     // R4 - 6900 (Heavy Vanna - Magenta)
@@ -102,6 +122,12 @@ if showLines and barstate.islast
     l8 := line.new(bar_index - 100, level8, bar_index + 20, level8, color=color.aqua, width=level8_thickness, style=line.style_solid)
     l9 := line.new(bar_index - 100, level9, bar_index + 20, level9, color=color.aqua, width=level9_thickness, style=line.style_solid)
     l10 := line.new(bar_index - 100, level10, bar_index + 20, level10, color=color.aqua, width=level10_thickness, style=line.style_solid)
+    
+    // Key Technical Levels
+    l_up1 := line.new(bar_index - 100, level_upside1, bar_index + 20, level_upside1, color=color.lime, width=level_upside1_thickness, style=line.style_dashed)
+    l_up2 := line.new(bar_index - 100, level_upside2, bar_index + 20, level_upside2, color=color.lime, width=level_upside2_thickness, style=line.style_dashed)
+    l_dn1 := line.new(bar_index - 100, level_downside1, bar_index + 20, level_downside1, color=color.red, width=level_downside1_thickness, style=line.style_dashed)
+    l_dn2 := line.new(bar_index - 100, level_downside2, bar_index + 20, level_downside2, color=color.green, width=level_downside2_thickness, style=line.style_dashed)
 
 // === LABELS ===
 if barstate.islast and showLabels
@@ -115,6 +141,12 @@ if barstate.islast and showLabels
     label.new(bar_index + 5, level8, "6860 S2", style=label.style_label_left, color=color.aqua, textcolor=color.black)
     label.new(bar_index + 5, level9, "6850 S3", style=label.style_label_left, color=color.aqua, textcolor=color.black)
     label.new(bar_index + 5, level10, "6845 S4 🧊", style=label.style_label_left, color=color.aqua, textcolor=color.black)
+    
+    // Key Technical Level Labels
+    label.new(bar_index + 5, level_upside1, "6991 Target", style=label.style_label_left, color=color.lime, textcolor=color.black)
+    label.new(bar_index + 5, level_upside2, "6920 Target", style=label.style_label_left, color=color.lime, textcolor=color.black)
+    label.new(bar_index + 5, level_downside1, "6799 Stop", style=label.style_label_left, color=color.red, textcolor=color.white)
+    label.new(bar_index + 5, level_downside2, "6770 Buyers", style=label.style_label_left, color=color.green, textcolor=color.white)
 
 // === POSITION DETECTION ===
 above6900 = close > level1
@@ -261,3 +293,7 @@ plot(level7, "S1: 6865", color=color.new(color.yellow, 100))
 plot(level8, "S2: 6860", color=color.new(color.aqua, 100))
 plot(level9, "S3: 6850", color=color.new(color.aqua, 100))
 plot(level10, "S4: 6845", color=color.new(color.aqua, 100))
+plot(level_upside1, "Target: 6991", color=color.new(color.lime, 100))
+plot(level_upside2, "Target: 6920", color=color.new(color.lime, 100))
+plot(level_downside1, "Stop: 6799", color=color.new(color.red, 100))
+plot(level_downside2, "Buyers: 6770", color=color.new(color.green, 100))

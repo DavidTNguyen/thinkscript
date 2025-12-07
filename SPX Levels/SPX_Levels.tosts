@@ -27,6 +27,12 @@
 # Breakout above 6890 targets 6900+
 # Breakdown below 6870 targets 6865-6860-6850-6845
 # Heavy negative gamma 6860-6870 = volatile moves expected
+#
+# KEY TECHNICAL LEVELS:
+# Bear resistance failed 5 times at 6089.5
+# Upside targets: 6920 and 6991 if breakout occurs
+# Downside stops around 6799
+# Quantitative buyers waiting at 6770s
 
 # === KEY LEVELS ===
 input level1 = 6900;  # R4 - Heavy Vanna positioning
@@ -39,6 +45,12 @@ input level7 = 6865;  # S1 - Support 1 (negative gamma below)
 input level8 = 6860;  # S2 - Support 2 / negative gamma
 input level9 = 6850;  # S3 - Moderate support
 input level10 = 6845; # S4 - Deep support
+
+# Key Technical Levels
+input level_upside1 = 6991;  # Upside Target 1
+input level_upside2 = 6920;  # Upside Target 2
+input level_downside1 = 6799; # Downside Stop
+input level_downside2 = 6770; # Quant Buyers
 
 # Alert Settings
 input enableAlerts = yes;
@@ -112,6 +124,31 @@ L10.SetLineWeight(1);
 L10.SetStyle(Curve.FIRM);
 L10.SetHiding(!showLines);
 
+# Key Technical Levels
+plot L_UP1 = level_upside1;
+L_UP1.SetDefaultColor(Color.GREEN);
+L_UP1.SetLineWeight(2);
+L_UP1.SetStyle(Curve.LONG_DASH);
+L_UP1.SetHiding(!showLines);
+
+plot L_UP2 = level_upside2;
+L_UP2.SetDefaultColor(Color.GREEN);
+L_UP2.SetLineWeight(2);
+L_UP2.SetStyle(Curve.LONG_DASH);
+L_UP2.SetHiding(!showLines);
+
+plot L_DN1 = level_downside1;
+L_DN1.SetDefaultColor(Color.RED);
+L_DN1.SetLineWeight(2);
+L_DN1.SetStyle(Curve.LONG_DASH);
+L_DN1.SetHiding(!showLines);
+
+plot L_DN2 = level_downside2;
+L_DN2.SetDefaultColor(Color.DARK_GREEN);
+L_DN2.SetLineWeight(2);
+L_DN2.SetStyle(Curve.LONG_DASH);
+L_DN2.SetHiding(!showLines);
+
 # === OPTIONAL CLOUDS ===
 # Short-gamma zone cloud (6870-6890)
 AddCloud(if showClouds then L2 else Double.NaN, if showClouds then L6 else Double.NaN, CreateColor(150, 100, 150), CreateColor(150, 100, 150));
@@ -169,6 +206,12 @@ AddChartBubble(isLastBar and showLabels, level7, "6865 S1", Color.CYAN, no);
 AddChartBubble(isLastBar and showLabels, level8, "6860 S2", Color.CYAN, no);
 AddChartBubble(isLastBar and showLabels, level9, "6850 S3", Color.CYAN, no);
 AddChartBubble(isLastBar and showLabels, level10, "6845 S4", Color.CYAN, no);
+
+# Key Technical Level Bubbles
+AddChartBubble(isLastBar and showLabels, level_upside1, "6991 Target", Color.GREEN, yes);
+AddChartBubble(isLastBar and showLabels, level_upside2, "6920 Target", Color.GREEN, yes);
+AddChartBubble(isLastBar and showLabels, level_downside1, "6799 Stop", Color.RED, no);
+AddChartBubble(isLastBar and showLabels, level_downside2, "6770 Buyers", Color.DARK_GREEN, no);
 
 # === TOUCH LOGIC ===
 def touch6900 = low <= level1 and high >= level1;
