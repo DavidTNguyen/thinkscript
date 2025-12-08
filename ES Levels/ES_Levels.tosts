@@ -1,51 +1,51 @@
 
-# === ES Weekly Update - December 6, 2025 ===
+# === ES Update - December 8, 2025 ===
 # BIG PICTURE OVERVIEW - Macro structures for context
 # (For detailed daily setups/intraday levels: tradecompanionsubstack.com)
 #
-# STRUCTURES TO NOTE:
-# - November correction contained by large bull flag (yellow) - broke out this week
+# CURRENT LEVELS:
+# Next resistance: 6893, 6899, 6910
+# Support: 6877 (weak now)
+# Dip targets: 6868, 6857-59 below
+#
+# PREVIOUS CONTEXT:
+# - Bull flag breakout completed
 # - Back-tested successfully at 6805
-# - Green rising channel (May recovery) - lost in November, then recovered
-# - Channel support formed higher lows all week at 6847
+# - Channel support at 6847 held
 #
-# TRAJECTORY: Targets 6903, 6931 as long as above holds
-# Dip there → new ATHs: 6963, 7000, 7045 first batch
-#
-# NEXT WEEK SYNTHESIS:
-# 6855-59, 6847 supports to watch for traps
-# This keeps 6903, 6931 live - perhaps dip there, then 6963, 7000, 7045
-#
-# If 6847 fails → sell to 6805
-# Bulls must defend that, or finally start retracement to 6774, 6730
+# TRAJECTORY: 
+# Watch 6893, 6899, 6910 resistance cluster
+# Support weakening at 6877
+# If fails → dip to 6868, then 6857-59 zone
 #
 # NOTE: We don't predict - we REACT and follow price level to level.
 #
 # Key Areas:
-# Rally Targets: 6931 (T3), 6903 (T1), 6976.75 (T2) → then 6963, 7000, 7045
-# Support: 6855-59, 6847 (channel - CRITICAL), 6805 (back-tested)
-# Downside: 6774, 6730, 6674
+# Resistance: 6893, 6899, 6910
+# Support: 6877 (WEAK NOW)
+# Dip Levels: 6868, 6857-59
+# Deeper Support: 6847, 6805, 6774
 
 # === KEY LEVELS ===
-input level1 = 6931;  # Rally Target 3
+input level1 = 6910;  # Resistance 3
 input level1_thickness = 3;
-input level2 = 6976.75;  # Rally Target 2
+input level2 = 6899;  # Resistance 2
 input level2_thickness = 3;
-input level3 = 6903;  # Rally Target 1
+input level3 = 6893;  # Resistance 1
 input level3_thickness = 3;
-input level4 = 6859;  # Support watch (upper)
+input level4 = 6877;  # Support (WEAK NOW)
 input level4_thickness = 2;
-input level5 = 6855;  # Support watch (trap zone)
+input level5 = 6868;  # Dip Level 1
 input level5_thickness = 2;
-input level6 = 6847;  # Channel support (critical)
+input level6 = 6859;  # Dip Zone (6857-59)
 input level6_thickness = 3;
-input level7 = 6805;  # Back-tested support (bulls defend)
-input level7_thickness = 3;
-input level8 = 6774;  # Downside 1
+input level7 = 6847;  # Prior channel support
+input level7_thickness = 2;
+input level8 = 6805;  # Back-tested support
 input level8_thickness = 2;
-input level9 = 6730;  # Downside 2 (retracement)
+input level9 = 6774;  # Deeper downside
 input level9_thickness = 2;
-input level10 = 6674;  # Downside 3
+input level10 = 6730;  # Retracement level
 input level10_thickness = 2;
 
 # === ANCHORED VWAP SETTINGS ===
@@ -103,28 +103,28 @@ AVWAP.SetStyle(Curve.FIRM);
 AddLabel(showAnchoredVWAP and showLabels, "AVWAP: " + Round(anchoredVWAP, 2), Color.WHITE);
 
 # Position detection
-def above6931 = close > level1;
-def at6931 = close >= level1 - 2 and close <= level1 + 2;
-def above6977 = close > level2;
-def at6977 = close >= level2 - 2 and close <= level2 + 2;
-def above6903 = close > level3;
-def at6903 = close >= level3 - 2 and close <= level3 + 2;
-def above6859 = close > level4;
-def at6859 = close >= level4 - 2 and close <= level4 + 2;
-def above6855 = close > level5;
-def at6855 = close >= level5 - 2 and close <= level5 + 2;
-def above6847 = close > level6;  # Above channel support
-def at6847 = close >= level6 - 2 and close <= level6 + 2;
-def below6847 = close < level6;  # Channel broken
-def above6805 = close > level7;  # Above back-tested support
-def at6805 = close >= level7 - 2 and close <= level7 + 2;
-def below6805 = close < level7;  # Back-test failed
-def above6774 = close > level8;
-def at6774 = close >= level8 - 2 and close <= level8 + 2;
-def above6730 = close > level9;
-def at6730 = close >= level9 - 2 and close <= level9 + 2;
-def above6674 = close > level10;
-def at6674 = close >= level10 - 2 and close <= level10 + 2;
+def above6910 = close > level1;
+def at6910 = close >= level1 - 2 and close <= level1 + 2;
+def above6899 = close > level2;
+def at6899 = close >= level2 - 2 and close <= level2 + 2;
+def above6893 = close > level3;
+def at6893 = close >= level3 - 2 and close <= level3 + 2;
+def above6877 = close > level4;  # Above weak support
+def at6877 = close >= level4 - 2 and close <= level4 + 2;
+def below6877 = close < level4;  # Weak support lost
+def above6868 = close > level5;
+def at6868 = close >= level5 - 2 and close <= level5 + 2;
+def above6859 = close > level6;  # Above dip zone
+def at6859 = close >= level6 - 2 and close <= level6 + 2;
+def below6859 = close < level6;  # In dip zone
+def above6847 = close > level7;  # Above prior channel
+def at6847 = close >= level7 - 2 and close <= level7 + 2;
+def above6805 = close > level8;  # Above back-tested support
+def at6805 = close >= level8 - 2 and close <= level8 + 2;
+def above6774 = close > level9;
+def at6774 = close >= level9 - 2 and close <= level9 + 2;
+def above6730 = close > level10;
+def at6730 = close >= level10 - 2 and close <= level10 + 2;
 
 # === LEVEL PLOTS ===
 plot L1 = level1;
@@ -138,109 +138,112 @@ L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
 
 plot L3 = level3;
-L3.SetDefaultColor(Color.LIGHT_GRAY);
+L3.SetDefaultColor(Color.MAGENTA);
 L3.SetLineWeight(level3_thickness);
-L3.SetStyle(Curve.SHORT_DASH);
+L3.SetStyle(Curve.FIRM);
 
 plot L4 = level4;
-L4.SetDefaultColor(Color.ORANGE);
+L4.SetDefaultColor(Color.YELLOW);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
 plot L5 = level5;
-L5.SetDefaultColor(Color.LIGHT_GRAY);
+L5.SetDefaultColor(Color.ORANGE);
 L5.SetLineWeight(level5_thickness);
-L5.SetStyle(Curve.SHORT_DASH);
+L5.SetStyle(Curve.FIRM);
 
 plot L6 = level6;
-L6.SetDefaultColor(Color.GREEN);
+L6.SetDefaultColor(Color.ORANGE);
 L6.SetLineWeight(level6_thickness);
 L6.SetStyle(Curve.FIRM);
 
 plot L7 = level7;
-L7.SetDefaultColor(Color.LIGHT_GRAY);
+L7.SetDefaultColor(Color.CYAN);
 L7.SetLineWeight(level7_thickness);
 L7.SetStyle(Curve.SHORT_DASH);
 
 plot L8 = level8;
 L8.SetDefaultColor(Color.CYAN);
 L8.SetLineWeight(level8_thickness);
-L8.SetStyle(Curve.FIRM);
+L8.SetStyle(Curve.SHORT_DASH);
 
 plot L9 = level9;
-L9.SetDefaultColor(Color.YELLOW);
+L9.SetDefaultColor(Color.GRAY);
 L9.SetLineWeight(level9_thickness);
 L9.SetStyle(Curve.SHORT_DASH);
 
 plot L10 = level10;
-L10.SetDefaultColor(Color.LIGHT_GREEN);
+L10.SetDefaultColor(Color.GRAY);
 L10.SetLineWeight(level10_thickness);
 L10.SetStyle(Curve.SHORT_DASH);
 
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, "Rally T3: 6931", Color.CYAN, yes);
-AddChartBubble(isLastBar, level2, "Rally T2: 6976.75", Color.CYAN, yes);
-AddChartBubble(isLastBar, level3, "Rally T1: 6903", Color.CYAN, yes);
-AddChartBubble(isLastBar, level4, "S: 6859", Color.YELLOW, yes);
-AddChartBubble(isLastBar, level5, "S: 6855 trap", Color.YELLOW, yes);
-AddChartBubble(isLastBar, level6, "Channel: 6847", Color.GREEN, yes);
-AddChartBubble(isLastBar, level7, "Back-test: 6805", Color.CYAN, yes);
-AddChartBubble(isLastBar, level8, "Down: 6774", Color.ORANGE, no);
-AddChartBubble(isLastBar, level9, "Down: 6730", Color.ORANGE, no);
-AddChartBubble(isLastBar, level10, "Down: 6674", Color.RED, no);
+AddChartBubble(isLastBar, level1, "R3: 6910", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level2, "R2: 6899", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level3, "R1: 6893", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level4, "6877 WEAK", Color.YELLOW, yes);
+AddChartBubble(isLastBar, level5, "Dip: 6868", Color.ORANGE, no);
+AddChartBubble(isLastBar, level6, "Dip Zone: 6859", Color.ORANGE, no);
+AddChartBubble(isLastBar, level7, "Prior: 6847", Color.CYAN, no);
+AddChartBubble(isLastBar, level8, "Back-test: 6805", Color.CYAN, no);
+AddChartBubble(isLastBar, level9, "Down: 6774", Color.GRAY, no);
+AddChartBubble(isLastBar, level10, "Down: 6730", Color.GRAY, no);
 
 # === ALERT SYSTEM ===
 
-# RALLY TARGETS
-Alert(enableAlerts and close crosses above level1, "ES >> 6931 - RALLY TARGET 3!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6931, "ES @ 6931 - Rally target 3", Alert.BAR, Sound.Chimes);
+# RESISTANCE LEVELS
+Alert(enableAlerts and close crosses above level1, "ES >> 6910 - RESISTANCE 3!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6910, "ES @ 6910 - Resistance 3", Alert.BAR, Sound.Chimes);
 
-Alert(enableAlerts and close crosses above level2, "ES >> 6976.75 - RALLY TARGET 2!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6977, "ES @ 6976.75 - Rally target 2", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses above level2, "ES >> 6899 - RESISTANCE 2!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6899, "ES @ 6899 - Resistance 2", Alert.BAR, Sound.Chimes);
 
-Alert(enableAlerts and close crosses above level3, "ES >> 6903 - RALLY TARGET 1!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6903, "ES @ 6903 - First rally target!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses above level3, "ES >> 6893 - RESISTANCE 1!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6893, "ES @ 6893 - First resistance!", Alert.BAR, Sound.Chimes);
 
-# SUPPORT WATCH ZONE
-Alert(enableAlerts and at6859, "ES @ 6859 - Support watch", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6855, "ES @ 6855 - Trap zone!", Alert.BAR, Sound.Bell);
+# SUPPORT WATCH - WEAK
+Alert(enableAlerts and close crosses above level4, "ES >> 6877 - Support reclaim (was weak)", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level4, "ES << 6877 - WEAK SUPPORT FAILED!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6877, "ES @ 6877 - Weak support test", Alert.BAR, Sound.Bell);
 
-# CHANNEL SUPPORT - CRITICAL
-Alert(enableAlerts and close crosses below level6, "ES << 6847 - CHANNEL BROKEN! Sell to 6805", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6847, "ES @ 6847 - Channel support CRITICAL", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close crosses above level6, "ES >> 6847 - Channel reclaim!", Alert.BAR, Sound.Ring);
+# DIP LEVELS
+Alert(enableAlerts and close crosses below level5, "ES << 6868 - DIP LEVEL 1", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6868, "ES @ 6868 - Dip level", Alert.BAR, Sound.Bell);
 
-# BACK-TESTED SUPPORT
-Alert(enableAlerts and close crosses below level7, "ES << 6805 - Back-test failed! Bulls must defend", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6805, "ES @ 6805 - Back-tested support (successful this week)", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close crosses above level7, "ES >> 6805 - Back-test hold!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level6, "ES << 6857-59 - DIP ZONE", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6859, "ES @ 6857-59 - Dip zone!", Alert.BAR, Sound.Chimes);
 
-# DOWNSIDE TARGETS
-Alert(enableAlerts and close crosses below level8, "ES << 6774 - Downside 1", Alert.BAR, Sound.Bell);
+# PRIOR SUPPORT REFERENCE
+Alert(enableAlerts and close crosses below level7, "ES << 6847 - Prior channel support lost", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6847, "ES @ 6847 - Prior channel level", Alert.BAR, Sound.Bell);
+
+# DEEPER SUPPORT
+Alert(enableAlerts and close crosses below level8, "ES << 6805 - Back-test level reached", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6805, "ES @ 6805 - Back-tested support", Alert.BAR, Sound.Chimes);
+
+Alert(enableAlerts and close crosses below level9, "ES << 6774 - Deeper downside", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and at6774, "ES @ 6774", Alert.BAR, Sound.Bell);
 
-Alert(enableAlerts and close crosses below level9, "ES << 6730 - RETRACEMENT ZONE", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level10, "ES << 6730 - RETRACEMENT ZONE", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and at6730, "ES @ 6730 - Major retracement level", Alert.BAR, Sound.Bell);
-
-Alert(enableAlerts and close crosses below level10, "ES << 6674 - Deep downside", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6674, "ES @ 6674", Alert.BAR, Sound.Bell);
 
 # === STATUS LABELS ===
 AddLabel(showLabels, "ES: " + Round(close, 2), Color.CYAN);
-AddLabel(showLabels, "WEEK Dec 6 - Bull Flag Breakout!", Color.WHITE);
+AddLabel(showLabels, "Dec 8 - Resistance Ahead", Color.MAGENTA);
 
 # Position status
-AddLabel(showLabels and above6931, "Above 6931 - Rally target 3 hit!", Color.CYAN);
-AddLabel(showLabels and above6903 and close <= level1, "Above 6903 - Rally target 1! Next: 6931", Color.CYAN);
-AddLabel(showLabels and above6847 and close <= level3, "Above 6847 - Channel holding! Rally continues", Color.GREEN);
-AddLabel(showLabels and at6847, "AT 6847 - CRITICAL channel support", Color.YELLOW);
-AddLabel(showLabels and below6847 and above6805, "Below 6847 - Channel broken! Sell to 6805", Color.ORANGE);
-AddLabel(showLabels and at6805, "AT 6805 - Back-tested support (bulls defend here)", Color.CYAN);
-AddLabel(showLabels and below6805, "Below 6805 - Retracement to 6730 started", Color.RED);
+AddLabel(showLabels and above6910, "Above 6910 - Resistance 3 cleared!", Color.MAGENTA);
+AddLabel(showLabels and above6893 and close <= level1, "Above 6893 - R1 cleared! Next: 6899, 6910", Color.MAGENTA);
+AddLabel(showLabels and above6877 and close <= level3, "Above 6877 - Weak support holding", Color.YELLOW);
+AddLabel(showLabels and at6877, "AT 6877 - WEAK SUPPORT TEST", Color.YELLOW);
+AddLabel(showLabels and below6877 and above6868, "Below 6877 - Dip to 6868", Color.ORANGE);
+AddLabel(showLabels and below6868 and above6859, "Dip 6868-6859 zone", Color.ORANGE);
+AddLabel(showLabels and at6859, "AT 6857-59 - DIP ZONE", Color.ORANGE);
+AddLabel(showLabels and below6859 and above6847, "Below dip zone - Watch 6847", Color.RED);
 
 # Trade context
-AddLabel(showLabels, "Bull flag broke out - back-tested 6805✓", Color.GREEN);
-AddLabel(showLabels, "Rally targets: 6903, 6931 (then 6963, 7000, 7045)", Color.CYAN);
-AddLabel(showLabels, "Support: 6847 channel (critical)", Color.YELLOW);
-AddLabel(showLabels, "6847 fail → 6805 → 6730 retracement", Color.ORANGE);
+AddLabel(showLabels, "Resistance: 6893-6899-6910", Color.MAGENTA);
+AddLabel(showLabels, "Support 6877 (WEAK NOW)", Color.YELLOW);
+AddLabel(showLabels, "Dip levels: 6868, 6857-59", Color.ORANGE);
+AddLabel(showLabels, "Deeper: 6847, 6805", Color.CYAN);
 
