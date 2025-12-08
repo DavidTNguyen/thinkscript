@@ -1,7 +1,7 @@
 //@version=6
-indicator("SPX DEC 5 HEATMAP", overlay=true, max_lines_count=500, max_labels_count=500)
+indicator("SPX DEC 8 KEY LEVELS", overlay=true, max_lines_count=500, max_labels_count=500)
 
-// === SPX DEC 5 HEATMAP - Updated 12/5/2025 ===
+// === SPX DEC 8 KEY LEVELS - Updated 12/8/2025 ===
 // 
 // MARKET STRUCTURE (Gamma Positioning):
 // ATM STRIKE: 6870 (highest concentration)
@@ -81,6 +81,7 @@ alertSensitivity = input.float(5.0, "Alert Sensitivity", minval=0.1, maxval=10.0
 // Label Visibility
 showLabels = input.bool(true, "Show Labels", group="📊 Display Settings")
 showLines = input.bool(true, "Show Level Lines", group="📊 Display Settings")
+showTable = input.bool(true, "Show Status Table", group="📊 Display Settings")
 
 // === LEVEL LINES ===
 var line l1 = na
@@ -209,9 +210,9 @@ alertcondition(below6845, "Below 6845", "SPX < 6845 - Deep support broken!")
 // === STATUS TABLE ===
 var table statusTable = table.new(position.top_right, 2, 20, border_width=1)
 
-if barstate.islast and showLabels
+if barstate.islast and showLabels and showTable
     // Header
-    table.cell(statusTable, 0, 0, "SPX DEC 5", bgcolor=color.new(color.blue, 70), text_color=color.white)
+    table.cell(statusTable, 0, 0, "SPX DEC 8", bgcolor=color.new(color.blue, 70), text_color=color.white)
     table.cell(statusTable, 1, 0, str.tostring(close, "#.##"), bgcolor=color.new(color.blue, 70), text_color=color.white)
     
     // Alert Status
