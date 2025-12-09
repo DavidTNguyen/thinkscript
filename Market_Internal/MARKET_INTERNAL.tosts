@@ -14,7 +14,7 @@ input useDynamicThresholds = no;   # Static thresholds (matches TradingView beha
 input showDivergenceAlerts = yes;
 input compactLabels = no;  # Condensed single-line metrics/scores
 input ultraCompact = no;   # Minimal single-line output
-input showDebug = no;      # Show component scores and totals for troubleshooting
+input showDebug = no;      # Show component scores and totals for troubleshooting (OFF by default)
 
 # VIX Regime Thresholds
 input vixCalm = 18.0;
@@ -304,7 +304,7 @@ AddLabel(showLabels and compactLabels and !ultraCompact,
          (if hasVIX then " VX:" + AsText(Round(vix,2)) + (if vixDelta > 0 then "+" else if vixDelta < 0 then "-" else "") + AsText(Round(AbsValue(vixDelta),2)) else ""),
          Color.GRAY);
 
-# Ultra compact single-line label (inline scenario code)
+# Ultra compact single-line label (inline scenario code) - color coded by trend
 AddLabel(showLabels and ultraCompact,
          "UC " + (if scenario == 3 then "SB" else if scenario == 2 then "B" else if scenario == 1 then "b" else if scenario == -1 then "b-" else if scenario == -2 then "Be" else if scenario == -3 then "SB-" else "N") +
          " S:" + AsText(Round(totalScoreSafe,1)) +
@@ -313,7 +313,11 @@ AddLabel(showLabels and ultraCompact,
          (if hasTick then " T:" + AsText(Round(tick,0)) else " T:-") +
          (if hasTrin then " Tr:" + AsText(Round(trin,2)) else " Tr:-") +
          (if hasVIX then " VX:" + AsText(Round(vix,1)) else " VX:-"),
-         Color.GRAY);
+         if overallTrend >= 3 then Color.GREEN
+         else if overallTrend >= 1 then Color.DARK_GREEN
+         else if overallTrend <= -3 then Color.RED
+         else if overallTrend <= -1 then Color.DARK_RED
+         else Color.GRAY);
 
 # === DIVERGENCE ALERTS ===
 AddLabel(bullishDivergence and showDivergenceAlerts and showLabels, "BULLISH DIVERGENCE!", Color.ORANGE);
