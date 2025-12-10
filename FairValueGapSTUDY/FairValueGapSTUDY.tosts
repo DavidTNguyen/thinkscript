@@ -1,73 +1,154 @@
-# Author - VietRoadie - SuperLuckeee Community
-# 08/14/2025
+# Fair Value Gap (FVG) Multi-Timeframe
+# Rebuilt to show standard Fair Value Gaps
+# Supports 3 Timeframes: Hour, Day, Week (Configurable)
 
-input useManualTimeFrame = no;
-input manualTimeFrame = AggregationPeriod.HOUR;
-input autoTimeFrameMultiplier = 4;
+declare upper;
 
-# Dynamically set timeFrame
-def chartAgg = GetAggregationPeriod();
-def autoTimeFrame = chartAgg * autoTimeFrameMultiplier;
-def timeFrame = if useManualTimeFrame then manualTimeFrame else autoTimeFrame;
+input show_1 = yes;
+input agg_1 = AggregationPeriod.HOUR;
+input show_2 = yes;
+input agg_2 = AggregationPeriod.DAY;
+input show_3 = yes;
+input agg_3 = AggregationPeriod.WEEK;
 
-# Get the low of the last 3 periods
-def lowN3 = low(period = timeFrame);
+input hide_filled = yes;
+input show_midline = yes;
 
-# Get the high of the first period 2 periods ago
-def highN1 = high(period = timeFrame)[2];
+# Colors
+DefineGlobalColor("Bullish", CreateColor(0, 255, 0));
+DefineGlobalColor("Bearish", CreateColor(255, 0, 0));
+DefineGlobalColor("MidLine", Color.WHITE);
 
-# Check if the price is increasing
-def priceIsIncreasing = lowN3 > highN1;
+# ==========================================
+# Timeframe 1
+# ==========================================
+def h1 = high(period = agg_1);
+def l1 = low(period = agg_1);
 
-# Calculate the Fractal Vertical Gap (FVG) for increasing prices
-def fvgIncrease = if priceIsIncreasing then lowN3 - highN1 else Double.NaN;
+# Bullish FVG 1
+# Gap between High of 2 bars ago and Low of current bar
+def isBull1 = l1 > h1[2];
 
-# Get the high of the last 3 periods
-def highN3 = high(period = timeFrame);
+rec rBullTop1 = if isBull1 then l1 else rBullTop1[1];
+rec rBullBot1 = if isBull1 then h1[2] else rBullBot1[1];
+rec rBullActive1 = if isBull1 then 1 
+                   else if hide_filled and low < rBullBot1[1] then 0 
+                   else rBullActive1[1];
 
-# Get the low of the first period 2 periods ago
-def lowN1 = low(period = timeFrame)[2];
+plot BullTop1 = if show_1 and rBullActive1 then rBullTop1 else Double.NaN;
+plot BullBot1 = if show_1 and rBullActive1 then rBullBot1 else Double.NaN;
+plot BullMid1 = if show_1 and show_midline and rBullActive1 then (rBullTop1 + rBullBot1) / 2 else Double.NaN;
 
-# Check if the price is decreasing
-def priceIsDecreasing = lowN1 > highN3;
+BullTop1.SetDefaultColor(GlobalColor("Bullish"));
+BullBot1.SetDefaultColor(GlobalColor("Bullish"));
+BullMid1.SetDefaultColor(GlobalColor("MidLine"));
+BullMid1.SetStyle(Curve.SHORT_DASH);
+AddCloud(BullTop1, BullBot1, GlobalColor("Bullish"), GlobalColor("Bullish"));
 
-# Calculate the Fractal Vertical Gap (FVG) for decreasing prices
-def fvgDecrease = if priceIsDecreasing then lowN1 - highN3 else Double.NaN;
+# Bearish FVG 1
+# Gap between Low of 2 bars ago and High of current bar
+def isBear1 = h1 < l1[2];
 
-# Determine the highest high (H) and lowest low (L) among the given conditions
-def H = if priceIsIncreasing then lowN3 else H[1];
-def L = if priceIsIncreasing then highN1 else L[1];
-def HD = if priceIsDecreasing then lowN1 else HD[1];
-def LD = if priceIsDecreasing then highN3 else LD[1];
+rec rBearTop1 = if isBear1 then l1[2] else rBearTop1[1];
+rec rBearBot1 = if isBear1 then h1 else rBearBot1[1];
+rec rBearActive1 = if isBear1 then 1 
+                   else if hide_filled and high > rBearTop1[1] then 0 
+                   else rBearActive1[1];
 
-# Alert if the price is increasing or decreasing
-Alert(priceIsIncreasing or priceIsDecreasing, "", Alert.BAR, Sound.Bell);
+plot BearTop1 = if show_1 and rBearActive1 then rBearTop1 else Double.NaN;
+plot BearBot1 = if show_1 and rBearActive1 then rBearBot1 else Double.NaN;
+plot BearMid1 = if show_1 and show_midline and rBearActive1 then (rBearTop1 + rBearBot1) / 2 else Double.NaN;
 
-# Add labels to display H and L with timeframe info
-def tfMinutes = timeFrame / 60000;
-def tfHours = tfMinutes / 60;
-def tfDays = tfMinutes / 1440;
+BearTop1.SetDefaultColor(GlobalColor("Bearish"));
+BearBot1.SetDefaultColor(GlobalColor("Bearish"));
+BearMid1.SetDefaultColor(GlobalColor("MidLine"));
+BearMid1.SetStyle(Curve.SHORT_DASH);
+AddCloud(BearBot1, BearTop1, GlobalColor("Bearish"), GlobalColor("Bearish"));
 
-def showMinutes = tfMinutes < 60;
-def showHours = tfMinutes >= 60 and tfMinutes < 1440;
-def showDays = tfMinutes >= 1440;
+# ==========================================
+# Timeframe 2
+# ==========================================
+def h2 = high(period = agg_2);
+def l2 = low(period = agg_2);
 
-AddLabel(showMinutes, "FVG TF: " + tfMinutes + "m" + (if useManualTimeFrame then " (Manual)" else " (Auto)"), Color.GRAY);
-AddLabel(showHours, "FVG TF: " + tfHours + "H" + (if useManualTimeFrame then " (Manual)" else " (Auto)"), Color.GRAY);
-AddLabel(showDays, "FVG TF: " + tfDays + "D" + (if useManualTimeFrame then " (Manual)" else " (Auto)"), Color.GRAY);
+# Bullish FVG 2
+def isBull2 = l2 > h2[2];
 
-AddLabel(yes, " H: " + Round(H, 2) + " L: " + Round(L, 2), if priceIsIncreasing then Color.GREEN else if priceIsDecreasing then Color.RED else Color.WHITE);
+rec rBullTop2 = if isBull2 then l2 else rBullTop2[1];
+rec rBullBot2 = if isBull2 then h2[2] else rBullBot2[1];
+rec rBullActive2 = if isBull2 then 1 
+                   else if hide_filled and low < rBullBot2[1] then 0 
+                   else rBullActive2[1];
 
-# Plot H and L
-plot H1 = H;
-plot L1 = L;
-H1.SetHiding(yes);
-L1.SetHiding(yes);
-plot H2 = HD;
-plot L2 = LD;
-H2.SetHiding(yes);
-L2.SetHiding(yes);
+plot BullTop2 = if show_2 and rBullActive2 then rBullTop2 else Double.NaN;
+plot BullBot2 = if show_2 and rBullActive2 then rBullBot2 else Double.NaN;
+plot BullMid2 = if show_2 and show_midline and rBullActive2 then (rBullTop2 + rBullBot2) / 2 else Double.NaN;
 
-# Add cloud to highlight the area between H and L
-AddCloud(H1, L1, color1 = Color.LIGHT_GREEN, color2 = Color.LIGHT_GREEN);
-AddCloud(H2, L2, color1 = Color.LIGHT_RED, color2 = Color.LIGHT_RED);
+BullTop2.SetDefaultColor(GlobalColor("Bullish"));
+BullBot2.SetDefaultColor(GlobalColor("Bullish"));
+BullMid2.SetDefaultColor(GlobalColor("MidLine"));
+BullMid2.SetStyle(Curve.SHORT_DASH);
+AddCloud(BullTop2, BullBot2, GlobalColor("Bullish"), GlobalColor("Bullish"));
+
+# Bearish FVG 2
+def isBear2 = h2 < l2[2];
+
+rec rBearTop2 = if isBear2 then l2[2] else rBearTop2[1];
+rec rBearBot2 = if isBear2 then h2 else rBearBot2[1];
+rec rBearActive2 = if isBear2 then 1 
+                   else if hide_filled and high > rBearTop2[1] then 0 
+                   else rBearActive2[1];
+
+plot BearTop2 = if show_2 and rBearActive2 then rBearTop2 else Double.NaN;
+plot BearBot2 = if show_2 and rBearActive2 then rBearBot2 else Double.NaN;
+plot BearMid2 = if show_2 and show_midline and rBearActive2 then (rBearTop2 + rBearBot2) / 2 else Double.NaN;
+
+BearTop2.SetDefaultColor(GlobalColor("Bearish"));
+BearBot2.SetDefaultColor(GlobalColor("Bearish"));
+BearMid2.SetDefaultColor(GlobalColor("MidLine"));
+BearMid2.SetStyle(Curve.SHORT_DASH);
+AddCloud(BearBot2, BearTop2, GlobalColor("Bearish"), GlobalColor("Bearish"));
+
+# ==========================================
+# Timeframe 3
+# ==========================================
+def h3 = high(period = agg_3);
+def l3 = low(period = agg_3);
+
+# Bullish FVG 3
+def isBull3 = l3 > h3[2];
+
+rec rBullTop3 = if isBull3 then l3 else rBullTop3[1];
+rec rBullBot3 = if isBull3 then h3[2] else rBullBot3[1];
+rec rBullActive3 = if isBull3 then 1 
+                   else if hide_filled and low < rBullBot3[1] then 0 
+                   else rBullActive3[1];
+
+plot BullTop3 = if show_3 and rBullActive3 then rBullTop3 else Double.NaN;
+plot BullBot3 = if show_3 and rBullActive3 then rBullBot3 else Double.NaN;
+plot BullMid3 = if show_3 and show_midline and rBullActive3 then (rBullTop3 + rBullBot3) / 2 else Double.NaN;
+
+BullTop3.SetDefaultColor(GlobalColor("Bullish"));
+BullBot3.SetDefaultColor(GlobalColor("Bullish"));
+BullMid3.SetDefaultColor(GlobalColor("MidLine"));
+BullMid3.SetStyle(Curve.SHORT_DASH);
+AddCloud(BullTop3, BullBot3, GlobalColor("Bullish"), GlobalColor("Bullish"));
+
+# Bearish FVG 3
+def isBear3 = h3 < l3[2];
+
+rec rBearTop3 = if isBear3 then l3[2] else rBearTop3[1];
+rec rBearBot3 = if isBear3 then h3 else rBearBot3[1];
+rec rBearActive3 = if isBear3 then 1 
+                   else if hide_filled and high > rBearTop3[1] then 0 
+                   else rBearActive3[1];
+
+plot BearTop3 = if show_3 and rBearActive3 then rBearTop3 else Double.NaN;
+plot BearBot3 = if show_3 and rBearActive3 then rBearBot3 else Double.NaN;
+plot BearMid3 = if show_3 and show_midline and rBearActive3 then (rBearTop3 + rBearBot3) / 2 else Double.NaN;
+
+BearTop3.SetDefaultColor(GlobalColor("Bearish"));
+BearBot3.SetDefaultColor(GlobalColor("Bearish"));
+BearMid3.SetDefaultColor(GlobalColor("MidLine"));
+BearMid3.SetStyle(Curve.SHORT_DASH);
+AddCloud(BearBot3, BearTop3, GlobalColor("Bearish"), GlobalColor("Bearish"));

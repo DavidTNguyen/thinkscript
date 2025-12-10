@@ -1,0 +1,259 @@
+# Smart Money Concepts for ThinkScript
+# Converted from LuxAlgo Pine Script
+# Original: https://www.tradingview.com/script/SMgKoc0H-Smart-Money-Concepts-LuxAlgo/
+# License: CC BY-NC-SA 4.0
+
+declare upper;
+
+# INPUTS
+
+# Structure Settings
+input showInternalStructure = no;
+input showSwingStructure = yes;
+input swingLength = 50;
+input showSwings = no;
+input showHighLowSwings = no;
+
+# Order Blocks
+input showInternalOrderBlocks = yes;
+input internalOrderBlocksSize = 5;
+input showSwingOrderBlocks = yes;
+input swingOrderBlocksSize = 5;
+
+# Fair Value Gaps (Use FairValueGapSTUDY for proper FVG display)
+input showFairValueGaps = no;
+input fairValueGapsAutoThreshold = yes;
+input fairValueGapsExtend = 1;
+
+# Equal Highs/Lows
+input showEqualHighsLows = yes;
+input equalHighsLowsLength = 20;
+input equalHighsLowsThreshold = 0.001;
+
+# Premium/Discount Zones
+input showPremiumDiscountZones = no;
+
+# Colors
+DefineGlobalColor("BullishStructure", CreateColor(8, 153, 129));
+DefineGlobalColor("BearishStructure", CreateColor(242, 54, 69));
+DefineGlobalColor("InternalBullishOB", CreateColor(49, 121, 245));
+DefineGlobalColor("InternalBearishOB", CreateColor(247, 124, 128));
+DefineGlobalColor("SwingBullishOB", CreateColor(24, 72, 204));
+DefineGlobalColor("SwingBearishOB", CreateColor(178, 40, 51));
+DefineGlobalColor("BullishFVG", CreateColor(0, 255, 104));
+DefineGlobalColor("BearishFVG", CreateColor(255, 0, 8));
+
+# ===== SWING DETECTION =====
+
+def swingHighBar = high == Highest(high, swingLength);
+def swingLowBar = low == Lowest(low, swingLength);
+
+# Store swing highs and lows
+def swingHigh = if swingHighBar then high else swingHigh[1];
+def swingLow = if swingLowBar then low else swingLow[1];
+
+# Track last swing high/low bar index
+def lastSwingHighBar = if swingHighBar then BarNumber() else lastSwingHighBar[1];
+def lastSwingLowBar = if swingLowBar then BarNumber() else lastSwingLowBar[1];
+
+# ===== MARKET STRUCTURE =====
+
+# Determine trend based on swing structure - only on actual swing changes
+def bullishStructure = swingHighBar and low > swingLow[1];
+def bearishStructure = swingLowBar and high < swingHigh[1];
+
+def currentTrend = if bullishStructure then 1 
+                   else if bearishStructure then -1 
+                   else currentTrend[1];
+
+# Break of Structure (BOS) detection - continuation in trend direction
+def bosBreakUp = currentTrend[1] == 1 and swingHighBar and high > swingHigh[1];
+def bosBreakDown = currentTrend[1] == -1 and swingLowBar and low < swingLow[1];
+
+# Change of Character (CHoCH) detection - trend reversal
+def chochBreakUp = currentTrend[1] == -1 and swingHighBar and high > swingHigh[1];
+def chochBreakDown = currentTrend[1] == 1 and swingLowBar and low < swingLow[1];
+
+# ===== ORDER BLOCKS =====
+
+# Volatility measure for filtering
+def atrValue = Average(TrueRange(high, close, low), 200);
+
+# Bullish Order Block: last down candle before bullish move
+def bullishOB = close > open[1] and open[1] > close[1];
+def bullishOBTop = if bullishOB then high[1] else bullishOBTop[1];
+def bullishOBBot = if bullishOB then low[1] else bullishOBBot[1];
+def bullishOBBar = if bullishOB then BarNumber() else bullishOBBar[1];
+
+# Bearish Order Block: last up candle before bearish move
+def bearishOB = close < open[1] and open[1] < close[1];
+def bearishOBTop = if bearishOB then high[1] else bearishOBTop[1];
+def bearishOBBot = if bearishOB then low[1] else bearishOBBot[1];
+def bearishOBBar = if bearishOB then BarNumber() else bearishOBBar[1];
+
+# Order Block mitigation (when price returns to block)
+def bullishOBMitigated = low <= bullishOBTop and BarNumber() > bullishOBBar;
+def bearishOBMitigated = high >= bearishOBBot and BarNumber() > bearishOBBar;
+
+# ===== FAIR VALUE GAPS =====
+
+# Bullish FVG: gap between high[2] and low (current bar high > low[2])
+def bullishFVG = low > high[2];
+def bullishFVGTop = if bullishFVG then low else Double.NaN;
+def bullishFVGBottom = if bullishFVG then high[2] else Double.NaN;
+
+# Bearish FVG: gap between low[2] and high (current bar low < high[2])
+def bearishFVG = high < low[2];
+def bearishFVGTop = if bearishFVG then low[2] else Double.NaN;
+def bearishFVGBottom = if bearishFVG then high else Double.NaN;
+
+# ===== EQUAL HIGHS/LOWS =====
+
+def recentHigh = Highest(high, equalHighsLowsLength);
+def recentLow = Lowest(low, equalHighsLowsLength);
+
+# Equal highs: current high approximately equal to recent high
+# Only show if high is actually at the peak and within threshold
+# Must be at swing high (local peak) and have matching peak with strong confirmation
+def equalHigh = swingHighBar
+                and high[equalHighsLowsLength] == Highest(high[equalHighsLowsLength], equalHighsLowsLength)
+                and AbsValue(high - high[equalHighsLowsLength]) / high <= equalHighsLowsThreshold
+                and high[equalHighsLowsLength + 1] != high[equalHighsLowsLength];
+
+# Equal lows: current low approximately equal to recent low
+# Only show if low is actually at the trough and within threshold
+# Must be at swing low (local trough) and have matching trough with strong confirmation
+def equalLow = swingLowBar
+               and low[equalHighsLowsLength] == Lowest(low[equalHighsLowsLength], equalHighsLowsLength)
+               and AbsValue(low - low[equalHighsLowsLength]) / low <= equalHighsLowsThreshold
+               and low[equalHighsLowsLength + 1] != low[equalHighsLowsLength];
+
+# ===== PREMIUM/DISCOUNT ZONES =====
+
+def highestSwing = Highest(swingHigh, 100);
+def lowestSwing = Lowest(swingLow, 100);
+def swingRange = highestSwing - lowestSwing;
+
+def premiumZone = highestSwing - (swingRange * 0.25);
+def equilibrium = highestSwing - (swingRange * 0.5);
+def discountZone = lowestSwing + (swingRange * 0.25);
+
+# ===== PLOTS =====
+
+# Structure Break Points
+plot BullishBOS = if showSwingStructure and bosBreakUp then low else Double.NaN;
+BullishBOS.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+BullishBOS.SetDefaultColor(GlobalColor("BullishStructure"));
+BullishBOS.SetLineWeight(3);
+
+plot BearishBOS = if showSwingStructure and bosBreakDown then high else Double.NaN;
+BearishBOS.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+BearishBOS.SetDefaultColor(GlobalColor("BearishStructure"));
+BearishBOS.SetLineWeight(3);
+
+plot BullishCHoCH = if showSwingStructure and chochBreakUp then low else Double.NaN;
+BullishCHoCH.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+BullishCHoCH.SetDefaultColor(Color.CYAN);
+BullishCHoCH.SetLineWeight(2);
+
+plot BearishCHoCH = if showSwingStructure and chochBreakDown then high else Double.NaN;
+BearishCHoCH.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+BearishCHoCH.SetDefaultColor(Color.MAGENTA);
+BearishCHoCH.SetLineWeight(2);
+
+# Swing Points
+plot SwingHighPlot = if showSwings and swingHighBar then high else Double.NaN;
+SwingHighPlot.SetPaintingStrategy(PaintingStrategy.BOOLEAN_POINTS);
+SwingHighPlot.SetDefaultColor(Color.YELLOW);
+SwingHighPlot.SetLineWeight(3);
+
+plot SwingLowPlot = if showSwings and swingLowBar then low else Double.NaN;
+SwingLowPlot.SetPaintingStrategy(PaintingStrategy.BOOLEAN_POINTS);
+SwingLowPlot.SetDefaultColor(Color.YELLOW);
+SwingLowPlot.SetLineWeight(3);
+
+# Order Blocks (as zones with clouds)
+plot BullishOBHigh = if showSwingOrderBlocks and !bullishOBMitigated 
+                      and BarNumber() - bullishOBBar <= 50 
+                      then bullishOBTop else Double.NaN;
+plot BullishOBLow = if showSwingOrderBlocks and !bullishOBMitigated 
+                     and BarNumber() - bullishOBBar <= 50 
+                     then bullishOBBot else Double.NaN;
+                     
+BullishOBHigh.SetDefaultColor(GlobalColor("SwingBullishOB"));
+BullishOBHigh.SetLineWeight(1);
+BullishOBLow.SetDefaultColor(GlobalColor("SwingBullishOB"));
+BullishOBLow.SetLineWeight(1);
+
+plot BearishOBHigh = if showSwingOrderBlocks and !bearishOBMitigated 
+                      and BarNumber() - bearishOBBar <= 50 
+                      then bearishOBTop else Double.NaN;
+plot BearishOBLow = if showSwingOrderBlocks and !bearishOBMitigated 
+                     and BarNumber() - bearishOBBar <= 50 
+                     then bearishOBBot else Double.NaN;
+                     
+BearishOBHigh.SetDefaultColor(GlobalColor("SwingBearishOB"));
+BearishOBHigh.SetLineWeight(1);
+BearishOBLow.SetDefaultColor(GlobalColor("SwingBearishOB"));
+BearishOBLow.SetLineWeight(1);
+
+# Order Block Clouds (create rectangle effect)
+AddCloud(BullishOBHigh, BullishOBLow, GlobalColor("SwingBullishOB"), GlobalColor("SwingBullishOB"));
+AddCloud(BearishOBHigh, BearishOBLow, GlobalColor("SwingBearishOB"), GlobalColor("SwingBearishOB"));
+
+# Fair Value Gaps
+plot BullishFVGTopPlot = if showFairValueGaps and !IsNaN(bullishFVGTop) then bullishFVGTop else Double.NaN;
+BullishFVGTopPlot.SetDefaultColor(Color.CURRENT);
+BullishFVGTopPlot.HideBubble();
+BullishFVGTopPlot.HideTitle();
+BullishFVGTopPlot.Hide();
+
+plot BullishFVGBottomPlot = if showFairValueGaps and !IsNaN(bullishFVGBottom) then bullishFVGBottom else Double.NaN;
+BullishFVGBottomPlot.SetDefaultColor(Color.CURRENT);
+BullishFVGBottomPlot.HideBubble();
+BullishFVGBottomPlot.HideTitle();
+BullishFVGBottomPlot.Hide();
+
+plot BearishFVGTopPlot = if showFairValueGaps and !IsNaN(bearishFVGTop) then bearishFVGTop else Double.NaN;
+BearishFVGTopPlot.SetDefaultColor(Color.CURRENT);
+BearishFVGTopPlot.HideBubble();
+BearishFVGTopPlot.HideTitle();
+BearishFVGTopPlot.Hide();
+
+plot BearishFVGBottomPlot = if showFairValueGaps and !IsNaN(bearishFVGBottom) then bearishFVGBottom else Double.NaN;
+BearishFVGBottomPlot.SetDefaultColor(Color.CURRENT);
+BearishFVGBottomPlot.HideBubble();
+BearishFVGBottomPlot.HideTitle();
+BearishFVGBottomPlot.Hide();
+
+# FVG Clouds
+AddCloud(BullishFVGTopPlot, BullishFVGBottomPlot, CreateColor(0, 255, 104), CreateColor(0, 255, 104));
+AddCloud(BearishFVGTopPlot, BearishFVGBottomPlot, CreateColor(255, 0, 8), CreateColor(255, 0, 8));
+
+# Premium/Discount Zones
+plot PremiumLevel = if showPremiumDiscountZones then premiumZone else Double.NaN;
+PremiumLevel.SetDefaultColor(GlobalColor("BearishStructure"));
+PremiumLevel.SetStyle(Curve.SHORT_DASH);
+
+plot EquilibriumLevel = if showPremiumDiscountZones then equilibrium else Double.NaN;
+EquilibriumLevel.SetDefaultColor(Color.GRAY);
+EquilibriumLevel.SetStyle(Curve.SHORT_DASH);
+
+plot DiscountLevel = if showPremiumDiscountZones then discountZone else Double.NaN;
+DiscountLevel.SetDefaultColor(GlobalColor("BullishStructure"));
+DiscountLevel.SetStyle(Curve.SHORT_DASH);
+
+# Candle Coloring based on trend
+AssignPriceColor(if currentTrend == 1 then GlobalColor("BullishStructure") 
+                 else if currentTrend == -1 then GlobalColor("BearishStructure") 
+                 else Color.GRAY);
+
+# Labels for Equal Highs/Lows
+AddChartBubble(showEqualHighsLows and equalHigh, high, "EQH", Color.YELLOW, yes);
+AddChartBubble(showEqualHighsLows and equalLow, low, "EQL", Color.YELLOW, no);
+
+# Labels for Structure Breaks
+AddChartBubble(showSwingStructure and bosBreakUp, low, "BOS", GlobalColor("BullishStructure"), no);
+AddChartBubble(showSwingStructure and bosBreakDown, high, "BOS", GlobalColor("BearishStructure"), yes);
+AddChartBubble(showSwingStructure and chochBreakUp, low, "CHoCH", Color.CYAN, no);
+AddChartBubble(showSwingStructure and chochBreakDown, high, "CHoCH", Color.MAGENTA, yes);
