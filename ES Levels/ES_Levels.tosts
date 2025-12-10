@@ -28,25 +28,25 @@
 
 # === KEY LEVELS ===
 input level1 = 6931;  # Rally Target 3
-input level1_thickness = 3;
+input level1_thickness = 1;
 input level2 = 6976.75;  # Rally Target 2
-input level2_thickness = 3;
+input level2_thickness = 1;
 input level3 = 6903;  # Rally Target 1
-input level3_thickness = 3;
+input level3_thickness = 1;
 input level4 = 6859;  # Support watch (upper)
-input level4_thickness = 2;
+input level4_thickness = 1;
 input level5 = 6855;  # Support watch (trap zone)
-input level5_thickness = 2;
+input level5_thickness = 1;
 input level6 = 6847;  # Channel support (critical)
-input level6_thickness = 3;
+input level6_thickness = 1;
 input level7 = 6805;  # Back-tested support (bulls defend)
-input level7_thickness = 3;
+input level7_thickness = 1;
 input level8 = 6774;  # Downside 1
-input level8_thickness = 2;
+input level8_thickness = 1;
 input level9 = 6730;  # Downside 2 (retracement)
-input level9_thickness = 2;
+input level9_thickness = 1;
 input level10 = 6674;  # Downside 3
-input level10_thickness = 2;
+input level10_thickness = 1;
 
 # === ANCHORED VWAP SETTINGS ===
 input showAnchoredVWAP = no;
