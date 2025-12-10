@@ -1,50 +1,49 @@
 //@version=6
-indicator("ES Levels - Dec 6", overlay=true, max_lines_count=500, max_labels_count=500)
+indicator("ES Levels - Dec 8", overlay=true, max_lines_count=500, max_labels_count=500)
 
-// === ES Weekly Update - December 6, 2025 ===
+// === ES Update - December 8, 2025 ===
 // BIG PICTURE OVERVIEW - Macro structures for context
 // (For detailed daily setups/intraday levels: tradecompanionsubstack.com)
 //
-// STRUCTURES TO NOTE:
-// - November correction contained by large bull flag (yellow) - broke out this week
+// CURRENT LEVELS:
+// Next resistance: 6893, 6899, 6910
+// Support: 6877 (weak now)
+// Dip targets: 6868, 6857-59 below
+//
+// PREVIOUS CONTEXT:
+// - Bull flag breakout completed
 // - Back-tested successfully at 6805
-// - Green rising channel (May recovery) - lost in November, then recovered
-// - Channel support formed higher lows all week at 6847
+// - Channel support at 6847 held
 //
-// TRAJECTORY: Targets 6903, 6931 as long as above holds
-// Dip there → new ATHs: 6963, 7000, 7045 first batch
-//
-// NEXT WEEK SYNTHESIS:
-// 6855-59, 6847 supports to watch for traps
-// This keeps 6903, 6931 live - perhaps dip there, then 6963, 7000, 7045
-//
-// If 6847 fails → sell to 6805
-// Bulls must defend that, or finally start retracement to 6774, 6730
+// TRAJECTORY: 
+// Watch 6893, 6899, 6910 resistance cluster
+// Support weakening at 6877
+// If fails → dip to 6868, then 6857-59 zone
 //
 // NOTE: We don't predict - we REACT and follow price level to level.
 
-// === 🎯 RALLY TARGETS ===
-level1 = input.float(6931, "Rally Target 3: 6931", group="🎯 Rally Targets")
-level1_thickness = input.int(3, "Line Weight", minval=1, maxval=5, group="🎯 Rally Targets")
-level2 = input.float(6976.75, "Rally Target 2: 6976.75", group="🎯 Rally Targets")
-level2_thickness = input.int(3, "Line Weight", minval=1, maxval=5, group="🎯 Rally Targets")
-level3 = input.float(6903, "Rally Target 1: 6903", group="🎯 Rally Targets")
+// === 🎯 RESISTANCE LEVELS ===
+level1 = input.float(6910, "Resistance 3: 6910", group="🎯 Resistance Levels")
+level1_thickness = input.int(3, "Line Weight", minval=1, maxval=5, group="🎯 Resistance Levels")
+level2 = input.float(6899, "Resistance 2: 6899", group="🎯 Resistance Levels")
+level2_thickness = input.int(3, "Line Weight", minval=1, maxval=5, group="🎯 Resistance Levels")
+level3 = input.float(6893, "Resistance 1: 6893", group="🎯 Resistance Levels")
 level3_thickness = input.int(3, "Line Weight", minval=1, maxval=5, group="🎯 Rally Targets")
 
 // === 🟡 SUPPORT WATCH ===
-level4 = input.float(6859, "Support: 6859", group="🟡 Support Watch")
+level4 = input.float(6877, "Support: 6877 (WEAK NOW)", group="🟡 Support Watch")
 level4_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="🟡 Support Watch")
-level5 = input.float(6855, "Support: 6855 (trap zone)", group="🟡 Support Watch")
+level5 = input.float(6868, "Dip Level 1: 6868", group="🟡 Support Watch")
 level5_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="🟡 Support Watch")
-level6 = input.float(6847, "Channel Support: 6847 (CRITICAL)", group="🟡 Support Watch")
+level6 = input.float(6859, "Dip Zone: 6857-59", group="🟡 Support Watch")
 level6_thickness = input.int(3, "Line Weight", minval=1, maxval=5, group="🟡 Support Watch")
 
-// === 🟢 BACK-TESTED / DOWNSIDE ===
-level7 = input.float(6805, "Back-tested: 6805 (bulls defend)", group="🟢 Downside Levels")
-level7_thickness = input.int(3, "Line Weight", minval=1, maxval=5, group="🟢 Downside Levels")
-level8 = input.float(6774, "Downside: 6774", group="🟢 Downside Levels")
-level8_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="🟢 Downside Levels")
-level9 = input.float(6730, "Retracement: 6730", group="🟢 Downside Levels")
+// === 🟢 DEEPER SUPPORT LEVELS ===
+level7 = input.float(6847, "Prior Support: 6847", group="🟢 Deeper Support")
+level7_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="🟢 Deeper Support")
+level8 = input.float(6805, "Back-tested: 6805", group="🟢 Deeper Support")
+level8_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="🟢 Deeper Support")
+level9 = input.float(6774, "Downside: 6774", group="🟢 Deeper Support")
 level9_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="🟢 Downside Levels")
 
 // Alert Settings
@@ -54,15 +53,15 @@ showLabels = input.bool(true, "Show Price Labels", group="Display Settings")
 showTable = input.bool(true, "Show Status Table", group="Display Settings")
 
 // === Plot Levels ===
-plot(level1, "6931 Rally T3", #00FFFF, level1_thickness, trackprice=false)
-plot(level2, "6976.75 Rally T2", #00FFFF, level2_thickness, trackprice=false)
-plot(level3, "6903 Rally T1", #00FFFF, level3_thickness, trackprice=false)
-plot(level4, "6859 Support", #FFFF00, level4_thickness, trackprice=false)
-plot(level5, "6855 Trap", #FFFF00, level5_thickness, trackprice=false)
-plot(level6, "6847 Channel", #00FF00, level6_thickness, trackprice=false)
-plot(level7, "6805 Back-test", #00FFFF, level7_thickness, trackprice=false)
-plot(level8, "6774 Down", #FFA500, level8_thickness, trackprice=false)
-plot(level9, "6730 Retrace", #FFA500, level9_thickness, trackprice=false)
+plot(level1, "6910 R3", #FF00FF, level1_thickness, trackprice=false)
+plot(level2, "6899 R2", #FF00FF, level2_thickness, trackprice=false)
+plot(level3, "6893 R1", #FF00FF, level3_thickness, trackprice=false)
+plot(level4, "6877 Support (weak)", #FFFF00, level4_thickness, trackprice=false)
+plot(level5, "6868 Dip", #FFA500, level5_thickness, trackprice=false)
+plot(level6, "6859 Dip Zone", #FFA500, level6_thickness, trackprice=false)
+plot(level7, "6847 Prior", #00FFFF, level7_thickness, trackprice=false)
+plot(level8, "6805 Back-test", #00FFFF, level8_thickness, trackprice=false)
+plot(level9, "6774 Down", #808080, level9_thickness, trackprice=false)
 
 // === Labels on Last Bar ===
 if barstate.islast and showLabels
@@ -86,82 +85,81 @@ if barstate.islast and showLabels
     label.delete(lbl8)
     label.delete(lbl9)
     
-    lbl1 := label.new(bar_index + 5, level1, "6931 Rally T3", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
-    lbl2 := label.new(bar_index + 5, level2, "6976.75 Rally T2", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
-    lbl3 := label.new(bar_index + 5, level3, "6903 Rally T1", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
-    lbl4 := label.new(bar_index + 5, level4, "6859 Support", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFFF00, 80), textcolor=#FFFF00, style=label.style_label_left, size=size.small)
-    lbl5 := label.new(bar_index + 5, level5, "6855 Trap", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFFF00, 80), textcolor=#FFFF00, style=label.style_label_left, size=size.small)
-    lbl6 := label.new(bar_index + 5, level6, "6847 Channel", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FF00, 80), textcolor=#00FF00, style=label.style_label_left, size=size.small)
-    lbl7 := label.new(bar_index + 5, level7, "6805 Back-test", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
-    lbl8 := label.new(bar_index + 5, level8, "6774 Down", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFA500, 80), textcolor=#FFA500, style=label.style_label_left, size=size.small)
-    lbl9 := label.new(bar_index + 5, level9, "6730 Retrace", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFA500, 80), textcolor=#FFA500, style=label.style_label_left, size=size.small)
+    lbl1 := label.new(bar_index + 5, level1, "6910 R3", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF00FF, 80), textcolor=#FF00FF, style=label.style_label_left, size=size.small)
+    lbl2 := label.new(bar_index + 5, level2, "6899 R2", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF00FF, 80), textcolor=#FF00FF, style=label.style_label_left, size=size.small)
+    lbl3 := label.new(bar_index + 5, level3, "6893 R1", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF00FF, 80), textcolor=#FF00FF, style=label.style_label_left, size=size.small)
+    lbl4 := label.new(bar_index + 5, level4, "6877 Weak", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFFF00, 80), textcolor=#FFFF00, style=label.style_label_left, size=size.small)
+    lbl5 := label.new(bar_index + 5, level5, "6868 Dip", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFA500, 80), textcolor=#FFA500, style=label.style_label_left, size=size.small)
+    lbl6 := label.new(bar_index + 5, level6, "6859 Zone", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFA500, 80), textcolor=#FFA500, style=label.style_label_left, size=size.small)
+    lbl7 := label.new(bar_index + 5, level7, "6847 Prior", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
+    lbl8 := label.new(bar_index + 5, level8, "6805 Back-test", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
+    lbl9 := label.new(bar_index + 5, level9, "6774 Down", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#808080, 80), textcolor=#808080, style=label.style_label_left, size=size.small)
 
 // === Alert Conditions ===
-// Rally Targets
-alertcondition(ta.crossover(close, level1), "ES >> 6931", "ES >> 6931 Rally Target 3!")
-alertcondition(ta.crossover(close, level2), "ES >> 6976.75", "ES >> 6976.75 Rally Target 2!")
-alertcondition(ta.crossover(close, level3), "ES >> 6903", "ES >> 6903 Rally Target 1!")
+// Resistance Levels
+alertcondition(ta.crossover(close, level1), "ES >> 6910", "ES >> 6910 Resistance 3!")
+alertcondition(ta.crossover(close, level2), "ES >> 6899", "ES >> 6899 Resistance 2!")
+alertcondition(ta.crossover(close, level3), "ES >> 6893", "ES >> 6893 Resistance 1!")
 
-// Support Watch
-alertcondition(ta.cross(close, level4), "ES >> 6859", "ES >> 6859 - Support watch")
-alertcondition(ta.cross(close, level5), "ES >> 6855", "ES >> 6855 - Trap zone!")
+// Support Watch - WEAK
+alertcondition(ta.crossover(close, level4), "ES RECLAIM 6877", "ES >> 6877 - Support reclaim (was weak)")
+alertcondition(ta.crossunder(close, level4), "ES LOST 6877", "ES << 6877 - WEAK SUPPORT FAILED!")
 
-// Channel Support - CRITICAL
-alertcondition(ta.crossover(close, level6), "ES RECLAIM 6847", "ES >> 6847 CHANNEL RECLAIM - Rally continues!")
-alertcondition(ta.crossunder(close, level6), "ES LOST 6847", "ES << 6847 - CHANNEL BROKEN! Sell to 6805")
+// Dip Levels
+alertcondition(ta.crossunder(close, level5), "ES DIP 6868", "ES >> 6868 - Dip Level 1")
+alertcondition(ta.crossunder(close, level6), "ES DIP ZONE 6859", "ES >> 6857-59 - DIP ZONE")
 
-// Back-tested Support
-alertcondition(ta.crossover(close, level7), "ES HOLD 6805", "ES >> 6805 - Back-test successful!")
-alertcondition(ta.crossunder(close, level7), "ES FAILED 6805", "ES << 6805 - Back-test FAILED! Bulls must defend")
+// Prior Support Reference
+alertcondition(ta.crossunder(close, level7), "ES << 6847", "ES << 6847 - Prior channel support lost")
 
-// Downside Targets
-alertcondition(ta.crossunder(close, level8), "ES >> 6774", "ES >> 6774 - Downside 1")
-alertcondition(ta.crossunder(close, level9), "ES >> 6730", "ES >> 6730 - RETRACEMENT ZONE")
+// Deeper Support
+alertcondition(ta.crossunder(close, level8), "ES >> 6805", "ES >> 6805 - Back-test level")
+alertcondition(ta.crossunder(close, level9), "ES >> 6774", "ES >> 6774 - Deeper downside")
 
 // === Market Structure Status Table ===
 var table statusTable = table.new(position.top_right, 2, 10, border_width=1)
 
 if barstate.islast and showTable
-    table.cell(statusTable, 0, 0, "ES - Dec 6", text_color=color.white, bgcolor=color.new(color.blue, 50))
-    table.cell(statusTable, 1, 0, "Bull Flag Breakout", text_color=color.lime, bgcolor=color.new(color.blue, 50))
+    table.cell(statusTable, 0, 0, "ES - Dec 8", text_color=color.white, bgcolor=color.new(color.blue, 50))
+    table.cell(statusTable, 1, 0, "Resistance Ahead", text_color=color.fuchsia, bgcolor=color.new(color.blue, 50))
     
     table.cell(statusTable, 0, 1, "Now", text_color=color.white, bgcolor=color.new(color.gray, 50))
     table.cell(statusTable, 1, 1, str.tostring(close, "#.00"), text_color=color.aqua, bgcolor=color.new(color.gray, 50))
     
-    // Channel Status
-    channelStatus = close >= level6 ? "6847 CHANNEL HOLD ✓" : "BELOW 6847"
-    channelColor = close >= level6 ? color.lime : color.red
+    // Support Status
+    supportStatus = close >= level4 ? "6877 HOLDING" : close >= level5 ? "DIP 6868" : "DIP ZONE"
+    supportColor = close >= level4 ? color.yellow : close >= level5 ? color.orange : color.red
     
-    table.cell(statusTable, 0, 2, "Channel", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 2, channelStatus, text_color=channelColor, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 0, 2, "Support", text_color=color.white, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 2, supportStatus, text_color=supportColor, bgcolor=color.new(color.gray, 50))
     
     // Trade Plan
-    tradePlan = close >= level6 ? "RALLY 6903, 6931" : close >= level7 ? "DEFEND 6805" : "RETRACE 6730"
-    planColor = close >= level6 ? color.lime : close >= level7 ? color.yellow : color.orange
+    tradePlan = close >= level4 ? "R: 6893-99-6910" : close >= level6 ? "WATCH 6857-59" : "DEFEND 6847"
+    planColor = close >= level4 ? color.fuchsia : close >= level6 ? color.orange : color.red
     
     table.cell(statusTable, 0, 3, "Plan", text_color=color.white, bgcolor=color.new(color.gray, 50))
     table.cell(statusTable, 1, 3, tradePlan, text_color=planColor, bgcolor=color.new(color.gray, 50))
     
-    // Back-test Status
-    table.cell(statusTable, 0, 4, "6805 Back-test", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 4, "Successful ✓", text_color=color.lime, bgcolor=color.new(color.gray, 50))
+    // Support Note
+    table.cell(statusTable, 0, 4, "6877 Status", text_color=color.white, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 4, "WEAK NOW", text_color=color.orange, bgcolor=color.new(color.gray, 50))
     
     // Key Levels Summary
-    table.cell(statusTable, 0, 5, "Rally Targets", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 5, "6903, 6931", text_color=color.aqua, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 0, 5, "Resistance", text_color=color.white, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 5, "6893-99-6910", text_color=color.fuchsia, bgcolor=color.new(color.gray, 50))
     
-    table.cell(statusTable, 0, 6, "Support", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 6, "6847, 6805", text_color=color.yellow, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 0, 6, "Dip Levels", text_color=color.white, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 6, "6868, 6857-59", text_color=color.orange, bgcolor=color.new(color.gray, 50))
     
-    table.cell(statusTable, 0, 7, "Downside", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 7, "6774, 6730", text_color=color.orange, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 0, 7, "Deeper Sup", text_color=color.white, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 7, "6847, 6805", text_color=color.aqua, bgcolor=color.new(color.gray, 50))
     
-    // Distance to 6847 Channel
-    if close >= level6
-        dist6 = close - level6
-        table.cell(statusTable, 0, 8, "6847 Channel+", text_color=color.white, bgcolor=color.new(color.gray, 50))
-        table.cell(statusTable, 1, 8, "+" + str.tostring(dist6, "#.0") + " pts", text_color=color.lime, bgcolor=color.new(color.gray, 50))
+    // Distance to next resistance
+    if close < level3
+        dist3 = level3 - close
+        table.cell(statusTable, 0, 8, "->6893 R1", text_color=color.white, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 1, 8, str.tostring(dist3, "#.0") + " pts", text_color=color.fuchsia, bgcolor=color.new(color.gray, 50))
     else
-        dist6 = level6 - close
-        table.cell(statusTable, 0, 8, "->6847 Channel", text_color=color.white, bgcolor=color.new(color.gray, 50))
-        table.cell(statusTable, 1, 8, str.tostring(dist6, "#.0") + " pts", text_color=color.yellow, bgcolor=color.new(color.gray, 50))
+        dist3 = close - level3
+        table.cell(statusTable, 0, 8, "Above 6893", text_color=color.white, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 1, 8, "+" + str.tostring(dist3, "#.0") + " pts", text_color=color.lime, bgcolor=color.new(color.gray, 50))
