@@ -1,52 +1,40 @@
 
-# === ES Weekly Update - December 6, 2025 ===
+# === ES Daily Update - December 11, 2025 ===
 # BIG PICTURE OVERVIEW - Macro structures for context
 # (For detailed daily setups/intraday levels: tradecompanionsubstack.com)
 #
 # STRUCTURES TO NOTE:
-# - November correction contained by large bull flag (yellow) - broke out this week
-# - Back-tested successfully at 6805
-# - Green rising channel (May recovery) - lost in November, then recovered
-# - Channel support formed higher lows all week at 6847
+# - Failed Breakdown long setup triggered!
+# - Per 4pm newsletter: flush of ystd's 6830 low & reclaim triggers long
+# - Got it 10:20PM, +45 points
 #
-# TRAJECTORY: Targets 6903, 6931 as long as above holds
-# Dip there → new ATHs: 6963, 7000, 7045 first batch
-#
-# NEXT WEEK SYNTHESIS:
-# 6855-59, 6847 supports to watch for traps
-# This keeps 6903, 6931 live - perhaps dip there, then 6963, 7000, 7045
-#
-# If 6847 fails → sell to 6805
-# Bulls must defend that, or finally start retracement to 6774, 6730
+# PLAN TODAY:
+# Ride runner
+# Supports: 6868-65, 6857
+# Targets: 6884, 6893, 6899
 #
 # NOTE: We don't predict - we REACT and follow price level to level.
 #
 # Key Areas:
-# Rally Targets: 6931 (T3), 6903 (T1), 6976.75 (T2) → then 6963, 7000, 7045
-# Support: 6855-59, 6847 (channel - CRITICAL), 6805 (back-tested)
-# Downside: 6774, 6730, 6674
+# Rally Targets: 6884, 6893, 6899
+# Support: 6868-65, 6857
+# FBD Trigger: 6830 (+45pts)
 
 # === KEY LEVELS ===
-input level1 = 6931;  # Rally Target 3
+input level1 = 6899;  # Rally Target 3
 input level1_thickness = 1;
-input level2 = 6976.75;  # Rally Target 2
+input level2 = 6893;  # Rally Target 2
 input level2_thickness = 1;
-input level3 = 6903;  # Rally Target 1
+input level3 = 6884;  # Rally Target 1
 input level3_thickness = 1;
-input level4 = 6859;  # Support watch (upper)
+input level4 = 6868;  # Support (upper)
 input level4_thickness = 1;
-input level5 = 6855;  # Support watch (trap zone)
+input level5 = 6865;  # Support (lower)
 input level5_thickness = 1;
-input level6 = 6847;  # Channel support (critical)
+input level6 = 6857;  # Support
 input level6_thickness = 1;
-input level7 = 6805;  # Back-tested support (bulls defend)
+input level7 = 6830;  # FBD Trigger (+45pts)
 input level7_thickness = 1;
-input level8 = 6774;  # Downside 1
-input level8_thickness = 1;
-input level9 = 6730;  # Downside 2 (retracement)
-input level9_thickness = 1;
-input level10 = 6674;  # Downside 3
-input level10_thickness = 1;
 
 # === ANCHORED VWAP SETTINGS ===
 input showAnchoredVWAP = no;
@@ -60,7 +48,7 @@ input alertSensitivity = 0.5;
 # Label Visibility
 input showLabels = yes;
 
-input bubblesBeforeLast = -5;  # number of candles AFTER the last one (move bubbles further right by increasing negative value)
+input bubblesBeforeLast = -8;  # number of candles AFTER the last one (move bubbles further right by increasing negative value)
 def isLastBar1 = IsNaN(close[-1]) and !IsNaN(close);
 def isLastBar = isLastBar1[-bubblesBeforeLast];
 
@@ -103,28 +91,21 @@ AVWAP.SetStyle(Curve.FIRM);
 # AddLabel(showAnchoredVWAP and showLabels, "AVWAP: " + Round(anchoredVWAP, 2), Color.WHITE);
 
 # Position detection
-def above6931 = close > level1;
-def at6931 = close >= level1 - 2 and close <= level1 + 2;
-def above6977 = close > level2;
-def at6977 = close >= level2 - 2 and close <= level2 + 2;
-def above6903 = close > level3;
-def at6903 = close >= level3 - 2 and close <= level3 + 2;
-def above6859 = close > level4;
-def at6859 = close >= level4 - 2 and close <= level4 + 2;
-def above6855 = close > level5;
-def at6855 = close >= level5 - 2 and close <= level5 + 2;
-def above6847 = close > level6;  # Above channel support
-def at6847 = close >= level6 - 2 and close <= level6 + 2;
-def below6847 = close < level6;  # Channel broken
-def above6805 = close > level7;  # Above back-tested support
-def at6805 = close >= level7 - 2 and close <= level7 + 2;
-def below6805 = close < level7;  # Back-test failed
-def above6774 = close > level8;
-def at6774 = close >= level8 - 2 and close <= level8 + 2;
-def above6730 = close > level9;
-def at6730 = close >= level9 - 2 and close <= level9 + 2;
-def above6674 = close > level10;
-def at6674 = close >= level10 - 2 and close <= level10 + 2;
+def above6899 = close > level1;
+def at6899 = close >= level1 - 2 and close <= level1 + 2;
+def above6893 = close > level2;
+def at6893 = close >= level2 - 2 and close <= level2 + 2;
+def above6884 = close > level3;
+def at6884 = close >= level3 - 2 and close <= level3 + 2;
+def above6868 = close > level4;
+def at6868 = close >= level4 - 2 and close <= level4 + 2;
+def above6865 = close > level5;
+def at6865 = close >= level5 - 2 and close <= level5 + 2;
+def above6857 = close > level6;
+def at6857 = close >= level6 - 2 and close <= level6 + 2;
+def above6830 = close > level7;
+def at6830 = close >= level7 - 2 and close <= level7 + 2;
+def below6830 = close < level7;
 
 # === LEVEL PLOTS ===
 plot L1 = level1;
@@ -135,112 +116,64 @@ L1.SetStyle(Curve.FIRM);
 plot L2 = level2;
 L2.SetDefaultColor(Color.CYAN);
 L2.SetLineWeight(level2_thickness);
-L2.SetStyle(Curve.SHORT_DASH);
+L2.SetStyle(Curve.FIRM);
 
 plot L3 = level3;
-L3.SetDefaultColor(Color.LIGHT_GRAY);
+L3.SetDefaultColor(Color.GREEN);
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
 plot L4 = level4;
-L4.SetDefaultColor(Color.ORANGE);
+L4.SetDefaultColor(Color.GREEN);
 L4.SetLineWeight(level4_thickness);
-L4.SetStyle(Curve.FIRM);
+L4.SetStyle(Curve.SHORT_DASH);
 
 plot L5 = level5;
-L5.SetDefaultColor(Color.LIGHT_GRAY);
+L5.SetDefaultColor(Color.GREEN);
 L5.SetLineWeight(level5_thickness);
-L5.SetStyle(Curve.FIRM);
+L5.SetStyle(Curve.SHORT_DASH);
 
 plot L6 = level6;
-L6.SetDefaultColor(Color.ORANGE);
+L6.SetDefaultColor(Color.GREEN);
 L6.SetLineWeight(level6_thickness);
 L6.SetStyle(Curve.FIRM);
 
 plot L7 = level7;
-L7.SetDefaultColor(Color.LIGHT_GRAY);
+L7.SetDefaultColor(Color.ORANGE);
 L7.SetLineWeight(level7_thickness);
-L7.SetStyle(Curve.SHORT_DASH);
-
-plot L8 = level8;
-L8.SetDefaultColor(Color.CYAN);
-L8.SetLineWeight(level8_thickness);
-L8.SetStyle(Curve.FIRM);
-
-plot L9 = level9;
-L9.SetDefaultColor(Color.YELLOW);
-L9.SetLineWeight(level9_thickness);
-L9.SetStyle(Curve.SHORT_DASH);
-
-plot L10 = level10;
-L10.SetDefaultColor(Color.LIGHT_GREEN);
-L10.SetLineWeight(level10_thickness);
-L10.SetStyle(Curve.SHORT_DASH);
+L7.SetStyle(Curve.FIRM);
 
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, "Rally T3: 6931", Color.CYAN, yes);
-AddChartBubble(isLastBar, level2, "Rally T2: 6976.75", Color.CYAN, yes);
-AddChartBubble(isLastBar, level3, "Rally T1: 6903", Color.CYAN, yes);
-AddChartBubble(isLastBar, level4, "S: 6859", Color.YELLOW, yes);
-AddChartBubble(isLastBar, level5, "S: 6855 trap", Color.YELLOW, yes);
-AddChartBubble(isLastBar, level6, "Channel: 6847", Color.GREEN, yes);
-AddChartBubble(isLastBar, level7, "Back-test: 6805", Color.CYAN, yes);
-AddChartBubble(isLastBar, level8, "Down: 6774", Color.ORANGE, no);
-AddChartBubble(isLastBar, level9, "Down: 6730", Color.ORANGE, no);
-AddChartBubble(isLastBar, level10, "Down: 6674", Color.RED, no);
+AddChartBubble(isLastBar, level1, ">> 6899", Color.CYAN, yes);
+AddChartBubble(isLastBar, level2, ">> 6893", Color.CYAN, yes);
+AddChartBubble(isLastBar, level3, ">> 6884", Color.CYAN, yes);
+AddChartBubble(isLastBar, level4, "S: 6868", Color.GREEN, yes);
+AddChartBubble(isLastBar, level5, "S: 6865", Color.GREEN, yes);
+AddChartBubble(isLastBar, level6, "S: 6857", Color.GREEN, yes);
+AddChartBubble(isLastBar, level7, "FBD: 6830 (+45pts)", Color.ORANGE, no);
 
 # === ALERT SYSTEM ===
 
 # RALLY TARGETS
-Alert(enableAlerts and close crosses above level1, "ES >> 6931 - RALLY TARGET 3!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6931, "ES @ 6931 - Rally target 3", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses above level1, "ES >> 6899 - TARGET!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6899, "ES @ 6899", Alert.BAR, Sound.Chimes);
 
-Alert(enableAlerts and close crosses above level2, "ES >> 6976.75 - RALLY TARGET 2!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6977, "ES @ 6976.75 - Rally target 2", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses above level2, "ES >> 6893 - TARGET!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6893, "ES @ 6893", Alert.BAR, Sound.Chimes);
 
-Alert(enableAlerts and close crosses above level3, "ES >> 6903 - RALLY TARGET 1!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6903, "ES @ 6903 - First rally target!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses above level3, "ES >> 6884 - TARGET!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6884, "ES @ 6884", Alert.BAR, Sound.Chimes);
 
-# SUPPORT WATCH ZONE
-Alert(enableAlerts and at6859, "ES @ 6859 - Support watch", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6855, "ES @ 6855 - Trap zone!", Alert.BAR, Sound.Bell);
+# SUPPORTS
+Alert(enableAlerts and close crosses below level4, "ES << 6868 - Below support", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6868, "ES @ 6868 - Support", Alert.BAR, Sound.Chimes);
 
-# CHANNEL SUPPORT - CRITICAL
-Alert(enableAlerts and close crosses below level6, "ES << 6847 - CHANNEL BROKEN! Sell to 6805", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6847, "ES @ 6847 - Channel support CRITICAL", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close crosses above level6, "ES >> 6847 - Channel reclaim!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level5, "ES << 6865 - Below support", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6865, "ES @ 6865 - Support", Alert.BAR, Sound.Chimes);
 
-# BACK-TESTED SUPPORT
-Alert(enableAlerts and close crosses below level7, "ES << 6805 - Back-test failed! Bulls must defend", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6805, "ES @ 6805 - Back-tested support (successful this week)", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close crosses above level7, "ES >> 6805 - Back-test hold!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level6, "ES << 6857 - Below support", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6857, "ES @ 6857 - Support", Alert.BAR, Sound.Chimes);
 
-# DOWNSIDE TARGETS
-Alert(enableAlerts and close crosses below level8, "ES << 6774 - Downside 1", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6774, "ES @ 6774", Alert.BAR, Sound.Bell);
-
-Alert(enableAlerts and close crosses below level9, "ES << 6730 - RETRACEMENT ZONE", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6730, "ES @ 6730 - Major retracement level", Alert.BAR, Sound.Bell);
-
-Alert(enableAlerts and close crosses below level10, "ES << 6674 - Deep downside", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6674, "ES @ 6674", Alert.BAR, Sound.Bell);
-
-# === STATUS LABELS ===
-AddLabel(showLabels, "ES: " + Round(close, 2), Color.CYAN);
-AddLabel(showLabels, "WEEK Dec 6 - Bull Flag Breakout!", Color.WHITE);
-
-# Position status
-AddLabel(showLabels and above6931, "Above 6931 - Rally target 3 hit!", Color.CYAN);
-AddLabel(showLabels and above6903 and close <= level1, "Above 6903 - Rally target 1! Next: 6931", Color.CYAN);
-AddLabel(showLabels and above6847 and close <= level3, "Above 6847 - Channel holding! Rally continues", Color.GREEN);
-AddLabel(showLabels and at6847, "AT 6847 - CRITICAL channel support", Color.YELLOW);
-AddLabel(showLabels and below6847 and above6805, "Below 6847 - Channel broken! Sell to 6805", Color.ORANGE);
-AddLabel(showLabels and at6805, "AT 6805 - Back-tested support (bulls defend here)", Color.CYAN);
-AddLabel(showLabels and below6805, "Below 6805 - Retracement to 6730 started", Color.RED);
-
-# Trade context
-AddLabel(showLabels, "Bull flag broke out - back-tested 6805✓", Color.GREEN);
-AddLabel(showLabels, "Rally targets: 6903, 6931 (then 6963, 7000, 7045)", Color.CYAN);
-AddLabel(showLabels, "Support: 6847 channel (critical)", Color.YELLOW);
-AddLabel(showLabels, "6847 fail → 6805 → 6730 retracement", Color.ORANGE);
-
+# FAILED BREAKDOWN TRIGGER
+Alert(enableAlerts and close crosses below level7, "ES << 6830 - Below FBD trigger", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6830, "ES @ 6830 - FBD trigger (+45pts)", Alert.BAR, Sound.Chimes);
