@@ -162,7 +162,7 @@ AddCloud(if showClouds then L9 else Double.NaN, if showClouds then L9 + 0.5 else
 AddCloud(if showClouds then L10 else Double.NaN, if showClouds then L10 + 0.5 else Double.NaN, Color.CYAN, Color.CYAN);
 
 # Fixed bubble logic - show only on last bar
-input bubblesBeforeLast = -3;  # number of candles AFTER the last one
+input bubblesBeforeLast = -8;  # number of candles AFTER the last one
 def isLastBar1 = IsNaN(close[-1]) and !IsNaN(close);
 def isLastBar = isLastBar1[-bubblesBeforeLast];
 

@@ -1,47 +1,50 @@
 
-# === ES Daily Update - December 11, 2025 ===
+# === ES Daily Update - December 12, 2025 ===
 # BIG PICTURE OVERVIEW - Macro structures for context
 # (For detailed daily setups/intraday levels: tradecompanionsubstack.com)
 #
 # STRUCTURES TO NOTE:
-# - 6884 HIT again (2nd time)!
-# - Running off 6838 test (held exact) / 6842 reclaim long
-# - 6868-65 flipped from resistance to support
-# - Close to trending
+# - 6838 was support posted with 6842 triggering long
+# - Warned trend leg was starting - hit ~6929 after 4pm!
 #
-# COMPLETED:
-# 6868-65 [x], 6877 [x], 6884 [x]
+# TODAY'S PLAN:
+# - 6889-84 = Support (tested)
+# - 6905-10 = Next (BIG resistance)
+# - 6918, 6931 above
+# - If 84 fails: dip to 6877, then 6868
 #
-# NEXT TARGETS (bonus runner):
-# 6893, 6899, 6910
+# SIGNALS:
+# - Failed breakdown 6857: B
+# - Gamma Short 6912: C
 #
 # NOTE: We don't predict - we REACT and follow price level to level.
 #
 # Key Areas:
-# Rally Targets: 6893, 6899, 6910
-# Completed: 6884 [x], 6877 [x], 6868-65 [x]
-# Support: 6868-65, 6842, 6838
-# FBD Trigger: 6830 (+45pts)
+# Rally Targets: 6918, 6931, ATH
+# Resistance: 6905-10 (BIG)
+# Support: 6889-84, 6877, 6868, 6857
 
 # === KEY LEVELS ===
-input level1 = 6910;  # Rally Target 3 (bonus)
+input level1 = 6931;  # Rally Target - ATH
 input level1_thickness = 1;
-input level2 = 6899;  # Rally Target 2
+input level2 = 6918;  # Rally Target
 input level2_thickness = 1;
-input level3 = 6893;  # Rally Target 1
+input level3 = 6912;  # Gamma Short (C)
 input level3_thickness = 1;
-input level4 = 6884;  # Hit [x]
-input level4_thickness = 1;
-input level5 = 6877;  # Hit [x]
-input level5_thickness = 1;
-input level6 = 6868;  # Support (was resistance)
+input level4 = 6910;  # BIG Resistance (upper)
+input level4_thickness = 2;
+input level5 = 6905;  # BIG Resistance (lower)
+input level5_thickness = 2;
+input level6 = 6889;  # Support (upper) - tested
 input level6_thickness = 1;
-input level7 = 6865;  # Support (was resistance)
+input level7 = 6884;  # Support (lower) - tested
 input level7_thickness = 1;
-input level8 = 6842;  # Reclaim trigger
+input level8 = 6877;  # Dip level if 84 fails
 input level8_thickness = 1;
-input level9 = 6838;  # Held exact
+input level9 = 6868;  # Deep support
 input level9_thickness = 1;
+input level10 = 6857;  # Failed breakdown (B)
+input level10_thickness = 1;
 
 # === ANCHORED VWAP SETTINGS ===
 input showAnchoredVWAP = no;
@@ -98,25 +101,27 @@ AVWAP.SetStyle(Curve.FIRM);
 # AddLabel(showAnchoredVWAP and showLabels, "AVWAP: " + Round(anchoredVWAP, 2), Color.WHITE);
 
 # Position detection
-def above6910 = close > level1;
-def at6910 = close >= level1 - 2 and close <= level1 + 2;
-def above6899 = close > level2;
-def at6899 = close >= level2 - 2 and close <= level2 + 2;
-def above6893 = close > level3;
-def at6893 = close >= level3 - 2 and close <= level3 + 2;
-def above6884 = close > level4;
-def at6884 = close >= level4 - 2 and close <= level4 + 2;
-def above6877 = close > level5;
-def at6877 = close >= level5 - 2 and close <= level5 + 2;
-def above6868 = close > level6;
-def at6868 = close >= level6 - 2 and close <= level6 + 2;
-def above6865 = close > level7;
-def at6865 = close >= level7 - 2 and close <= level7 + 2;
-def above6842 = close > level8;
-def at6842 = close >= level8 - 2 and close <= level8 + 2;
-def above6838 = close > level9;
-def at6838 = close >= level9 - 2 and close <= level9 + 2;
-def below6838 = close < level9;
+def above6931 = close > level1;
+def at6931 = close >= level1 - 2 and close <= level1 + 2;
+def above6918 = close > level2;
+def at6918 = close >= level2 - 2 and close <= level2 + 2;
+def above6912 = close > level3;
+def at6912 = close >= level3 - 2 and close <= level3 + 2;
+def above6910 = close > level4;
+def at6910 = close >= level4 - 2 and close <= level4 + 2;
+def above6905 = close > level5;
+def at6905 = close >= level5 - 2 and close <= level5 + 2;
+def above6889 = close > level6;
+def at6889 = close >= level6 - 2 and close <= level6 + 2;
+def above6884 = close > level7;
+def at6884 = close >= level7 - 2 and close <= level7 + 2;
+def above6877 = close > level8;
+def at6877 = close >= level8 - 2 and close <= level8 + 2;
+def above6868 = close > level9;
+def at6868 = close >= level9 - 2 and close <= level9 + 2;
+def above6857 = close > level10;
+def at6857 = close >= level10 - 2 and close <= level10 + 2;
+def below6857 = close < level10;
 
 # === LEVEL PLOTS ===
 plot L1 = level1;
@@ -130,17 +135,17 @@ L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
 
 plot L3 = level3;
-L3.SetDefaultColor(Color.CYAN);
+L3.SetDefaultColor(Color.MAGENTA);
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
 plot L4 = level4;
-L4.SetDefaultColor(Color.GREEN);
+L4.SetDefaultColor(Color.RED);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
 plot L5 = level5;
-L5.SetDefaultColor(Color.GREEN);
+L5.SetDefaultColor(Color.RED);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
 
@@ -164,43 +169,53 @@ L9.SetDefaultColor(Color.ORANGE);
 L9.SetLineWeight(level9_thickness);
 L9.SetStyle(Curve.FIRM);
 
+plot L10 = level10;
+L10.SetDefaultColor(Color.YELLOW);
+L10.SetLineWeight(level10_thickness);
+L10.SetStyle(Curve.FIRM);
+
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, ">> 6910", Color.CYAN, yes);
-AddChartBubble(isLastBar, level2, ">> 6899", Color.CYAN, yes);
-AddChartBubble(isLastBar, level3, ">> 6893", Color.CYAN, yes);
-AddChartBubble(isLastBar, level4, "[x] 6884", Color.GREEN, yes);
-AddChartBubble(isLastBar, level5, "[x] 6877", Color.GREEN, yes);
-AddChartBubble(isLastBar, level6, "S: 6868", Color.GREEN, yes);
-AddChartBubble(isLastBar, level7, "S: 6865", Color.GREEN, yes);
-AddChartBubble(isLastBar, level8, "6842 reclaim", Color.ORANGE, no);
-AddChartBubble(isLastBar, level9, "6838 held", Color.ORANGE, no);
+AddChartBubble(isLastBar, level1, "31 ATH", Color.CYAN, yes);
+AddChartBubble(isLastBar, level2, "18", Color.CYAN, yes);
+AddChartBubble(isLastBar, level3, "12 🐻", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level4, "10 R", Color.RED, yes);
+AddChartBubble(isLastBar, level5, "05 R", Color.RED, yes);
+AddChartBubble(isLastBar, level6, "89 S", Color.GREEN, no);
+AddChartBubble(isLastBar, level7, "84 S", Color.GREEN, no);
+AddChartBubble(isLastBar, level8, "77", Color.ORANGE, no);
+AddChartBubble(isLastBar, level9, "68", Color.ORANGE, no);
+AddChartBubble(isLastBar, level10, "57 FB", Color.YELLOW, no);
 
 # === ALERT SYSTEM ===
 
-# RALLY TARGETS (bonus runner)
-Alert(enableAlerts and close crosses above level1, "ES >> 6910 - BONUS TARGET!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6910, "ES @ 6910", Alert.BAR, Sound.Chimes);
+# RALLY TARGETS
+Alert(enableAlerts and close crosses above level1, "ES >> 6931 - ATH ZONE!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6931, "ES @ 6931", Alert.BAR, Sound.Chimes);
 
-Alert(enableAlerts and close crosses above level2, "ES >> 6899 - TARGET!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6899, "ES @ 6899", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses above level2, "ES >> 6918 - TARGET!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6918, "ES @ 6918", Alert.BAR, Sound.Chimes);
 
-Alert(enableAlerts and close crosses above level3, "ES >> 6893 - TARGET!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6893, "ES @ 6893", Alert.BAR, Sound.Chimes);
+# GAMMA SHORT
+Alert(enableAlerts and at6912, "ES @ 6912 - Gamma Short (C)", Alert.BAR, Sound.Chimes);
 
-# COMPLETED TARGETS
-Alert(enableAlerts and at6884, "ES @ 6884 - Completed", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and at6877, "ES @ 6877 - Completed", Alert.BAR, Sound.Chimes);
+# BIG RESISTANCE
+Alert(enableAlerts and close crosses above level4, "ES >> 6910 - BIG RESISTANCE!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6910, "ES @ 6910 - BIG RES", Alert.BAR, Sound.Chimes);
 
-# SUPPORTS
-Alert(enableAlerts and close crosses below level6, "ES << 6868 - Below support", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6868, "ES @ 6868 - Support", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses above level5, "ES >> 6905 - BIG RESISTANCE!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6905, "ES @ 6905 - BIG RES", Alert.BAR, Sound.Chimes);
 
-Alert(enableAlerts and close crosses below level7, "ES << 6865 - Below support", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6865, "ES @ 6865 - Support", Alert.BAR, Sound.Chimes);
+# SUPPORT LEVELS
+Alert(enableAlerts and close crosses below level6, "ES << 6889 - Below support", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6889, "ES @ 6889 - Support", Alert.BAR, Sound.Chimes);
 
-# KEY LEVELS
-Alert(enableAlerts and close crosses below level8, "ES << 6842 - Below reclaim", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6842, "ES @ 6842 - Reclaim trigger", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses below level7, "ES << 6884 - Below support", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6884, "ES @ 6884 - Support", Alert.BAR, Sound.Chimes);
 
-Alert(enableAlerts and close crosses below level9, "ES << 6838 - Below key support", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6838, "ES @ 6838 - Held exact", Alert.BAR, Sound.Chimes);
+# DIP LEVELS
+Alert(enableAlerts and at6877, "ES @ 6877 - Dip level", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and at6868, "ES @ 6868 - Deep support", Alert.BAR, Sound.Chimes);
+
+# FAILED BREAKDOWN
+Alert(enableAlerts and at6857, "ES @ 6857 - Failed Breakdown (B)", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses below level10, "ES << 6857 - Below FB level", Alert.BAR, Sound.Bell);
