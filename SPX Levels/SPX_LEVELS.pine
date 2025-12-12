@@ -132,22 +132,22 @@ if showLines and barstate.islast
 
 // === LABELS ===
 if barstate.islast and showLabels
-    label.new(bar_index + 5, level1, "6900 Heavy", style=label.style_label_left, color=color.fuchsia, textcolor=color.white)
-    label.new(bar_index + 5, level2, "6890 BO", style=label.style_label_left, color=color.fuchsia, textcolor=color.white)
-    label.new(bar_index + 5, level3, "6885", style=label.style_label_left, color=color.orange, textcolor=color.white)
-    label.new(bar_index + 5, level4, "6880 🎯", style=label.style_label_left, color=color.aqua, textcolor=color.black)
-    label.new(bar_index + 5, level5, "6875", style=label.style_label_left, color=color.purple, textcolor=color.white)
-    label.new(bar_index + 5, level6, "6870 📍 ATM", style=label.style_label_left, color=color.yellow, textcolor=color.black, size=size.large)
-    label.new(bar_index + 5, level7, "6865 S1", style=label.style_label_left, color=color.yellow, textcolor=color.black)
-    label.new(bar_index + 5, level8, "6860 S2", style=label.style_label_left, color=color.aqua, textcolor=color.black)
-    label.new(bar_index + 5, level9, "6850 S3", style=label.style_label_left, color=color.aqua, textcolor=color.black)
-    label.new(bar_index + 5, level10, "6845 S4 🧊", style=label.style_label_left, color=color.aqua, textcolor=color.black)
+    label.new(bar_index + 8, level1, "6900 Heavy", style=label.style_label_left, color=color.fuchsia, textcolor=color.white)
+    label.new(bar_index + 8, level2, "6890 BO", style=label.style_label_left, color=color.fuchsia, textcolor=color.white)
+    label.new(bar_index + 8, level3, "6885", style=label.style_label_left, color=color.orange, textcolor=color.white)
+    label.new(bar_index + 8, level4, "6880 🎯", style=label.style_label_left, color=color.aqua, textcolor=color.black)
+    label.new(bar_index + 8, level5, "6875", style=label.style_label_left, color=color.purple, textcolor=color.white)
+    label.new(bar_index + 8, level6, "6870 📍 ATM", style=label.style_label_left, color=color.yellow, textcolor=color.black, size=size.large)
+    label.new(bar_index + 8, level7, "6865 S1", style=label.style_label_left, color=color.yellow, textcolor=color.black)
+    label.new(bar_index + 8, level8, "6860 S2", style=label.style_label_left, color=color.aqua, textcolor=color.black)
+    label.new(bar_index + 8, level9, "6850 S3", style=label.style_label_left, color=color.aqua, textcolor=color.black)
+    label.new(bar_index + 8, level10, "6845 S4 🧊", style=label.style_label_left, color=color.aqua, textcolor=color.black)
     
     // Key Technical Level Labels
-    label.new(bar_index + 5, level_upside1, "6991 Target", style=label.style_label_left, color=color.lime, textcolor=color.black)
-    label.new(bar_index + 5, level_upside2, "6920 Target", style=label.style_label_left, color=color.lime, textcolor=color.black)
-    label.new(bar_index + 5, level_downside1, "6799 Stop", style=label.style_label_left, color=color.red, textcolor=color.white)
-    label.new(bar_index + 5, level_downside2, "6770 Buyers", style=label.style_label_left, color=color.green, textcolor=color.white)
+    label.new(bar_index + 8, level_upside1, "6991 Target", style=label.style_label_left, color=color.lime, textcolor=color.black)
+    label.new(bar_index + 8, level_upside2, "6920 Target", style=label.style_label_left, color=color.lime, textcolor=color.black)
+    label.new(bar_index + 8, level_downside1, "6799 Stop", style=label.style_label_left, color=color.red, textcolor=color.white)
+    label.new(bar_index + 8, level_downside2, "6770 Buyers", style=label.style_label_left, color=color.green, textcolor=color.white)
 
 // === POSITION DETECTION ===
 above6900 = close > level1
