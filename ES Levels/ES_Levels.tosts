@@ -1,43 +1,46 @@
 
-# === ES Daily Update - December 12, 2025 ===
+# === ES Daily Update - December 15, 2025 ===
 # BIG PICTURE OVERVIEW - Macro structures for context
 # (For detailed daily setups/intraday levels: tradecompanionsubstack.com)
 #
 # STRUCTURES TO NOTE:
-# - Below 6847 was 6838, then 6815
-# - Hit 6815 *EXACT*
-# - Bulls must recover 6838 now!
+# - PWH LAAF (Look Above And Failed) at 6893
+# - Multiple FBD (Failed Break Down) levels: 6836, 6817
+# - FOMC High at 6908
+# - PWL (Prior Week Low) at 6802
 #
 # TODAY'S PLAN:
-# - Recover 6838 → 6847 → 6857 → 6868+
-# - If 6815 fails: next leg down 6805, 6796
+# - Hold FBD levels for bounce
+# - Reclaim 6866 -> 6893 LAAF -> 6908 FOMC
+# - If FBD fails: watch PWL 6802, then 6796
 #
-# SIGNALS:
-# - Failed breakdown 6857: B
-# - Gamma Short 6912: C
+# KEY CONCEPTS:
+# - FBD = Failed Break Down (bullish)
+# - LAAF = Look Above And Failed (bearish)
+# - FOMC = Fed meeting high
+# - PWL = Prior Week Low
 #
 # NOTE: We don't predict - we REACT and follow price level to level.
-#
-# Key Areas:
-# Recovery: 6838 → 6847 → 6857 → 6868+
-# Current: 6815 (hit exact)
-# Below 15: 6805, 6796
 
 # === KEY LEVELS ===
-input level1 = 6868;  # Rally Target
-input level1_thickness = 1;
-input level2 = 6857;  # FB / Trigger
-input level2_thickness = 1;
-input level3 = 6847;  # Magnet
+input level1 = 6939;  # Megaphone Resistance
+input level1_thickness = 2;
+input level2 = 6908;  # FOMC High
+input level2_thickness = 2;
+input level3 = 6893;  # PWH LAAF
 input level3_thickness = 2;
-input level4 = 6838;  # MUST recover
-input level4_thickness = 2;
-input level5 = 6815;  # Hit exact
-input level5_thickness = 2;
-input level6 = 6805;  # Next leg down
+input level4 = 6866;  # 66 Reclaim
+input level4_thickness = 1;
+input level5 = 6845;  # 45 Trap
+input level5_thickness = 1;
+input level6 = 6836;  # 36/41 FBD
 input level6_thickness = 1;
-input level7 = 6796;  # Deep target
-input level7_thickness = 1;
+input level7 = 6817;  # 17 FBD
+input level7_thickness = 2;
+input level8 = 6802;  # PWL 11/30
+input level8_thickness = 2;
+input level9 = 6796;  # Deep Support
+input level9_thickness = 1;
 
 # Alert Settings
 input enableAlerts = yes;
@@ -50,94 +53,121 @@ def isLastBar1 = IsNaN(close[-1]) and !IsNaN(close);
 def isLastBar = isLastBar1[-bubblesBeforeLast];
 
 # Position detection
-def above6868 = close > level1;
-def at6868 = close >= level1 - 2 and close <= level1 + 2;
-def above6857 = close > level2;
-def at6857 = close >= level2 - 2 and close <= level2 + 2;
-def above6847 = close > level3;
-def at6847 = close >= level3 - 2 and close <= level3 + 2;
-def above6838 = close > level4;
-def at6838 = close >= level4 - 2 and close <= level4 + 2;
-def above6815 = close > level5;
-def at6815 = close >= level5 - 2 and close <= level5 + 2;
-def above6805 = close > level6;
-def at6805 = close >= level6 - 2 and close <= level6 + 2;
-def above6796 = close > level7;
-def at6796 = close >= level7 - 2 and close <= level7 + 2;
-def below6796 = close < level7;
+def above6939 = close > level1;
+def at6939 = close >= level1 - 2 and close <= level1 + 2;
+def above6908 = close > level2;
+def at6908 = close >= level2 - 2 and close <= level2 + 2;
+def above6893 = close > level3;
+def at6893 = close >= level3 - 2 and close <= level3 + 2;
+def above6866 = close > level4;
+def at6866 = close >= level4 - 2 and close <= level4 + 2;
+def above6845 = close > level5;
+def at6845 = close >= level5 - 2 and close <= level5 + 2;
+def above6836 = close > level6;
+def at6836 = close >= level6 - 2 and close <= level6 + 2;
+def above6817 = close > level7;
+def at6817 = close >= level7 - 2 and close <= level7 + 2;
+def above6802 = close > level8;
+def at6802 = close >= level8 - 2 and close <= level8 + 2;
+def above6796 = close > level9;
+def at6796 = close >= level9 - 2 and close <= level9 + 2;
+def below6796 = close < level9;
 
 # === LEVEL PLOTS ===
 plot L1 = level1;
-L1.SetDefaultColor(Color.CYAN);
+L1.SetDefaultColor(Color.MAGENTA);
 L1.SetLineWeight(level1_thickness);
 L1.SetStyle(Curve.FIRM);
 
 plot L2 = level2;
-L2.SetDefaultColor(Color.YELLOW);
+L2.SetDefaultColor(Color.MAGENTA);
 L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
 
 plot L3 = level3;
-L3.SetDefaultColor(Color.MAGENTA);
+L3.SetDefaultColor(CreateColor(255, 107, 107));
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
 plot L4 = level4;
-L4.SetDefaultColor(Color.GREEN);
+L4.SetDefaultColor(Color.CYAN);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
 plot L5 = level5;
-L5.SetDefaultColor(Color.WHITE);
+L5.SetDefaultColor(Color.YELLOW);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
 
 plot L6 = level6;
-L6.SetDefaultColor(Color.ORANGE);
+L6.SetDefaultColor(Color.GREEN);
 L6.SetLineWeight(level6_thickness);
 L6.SetStyle(Curve.FIRM);
 
 plot L7 = level7;
-L7.SetDefaultColor(Color.RED);
+L7.SetDefaultColor(Color.GREEN);
 L7.SetLineWeight(level7_thickness);
 L7.SetStyle(Curve.FIRM);
 
+plot L8 = level8;
+L8.SetDefaultColor(Color.ORANGE);
+L8.SetLineWeight(level8_thickness);
+L8.SetStyle(Curve.FIRM);
+
+plot L9 = level9;
+L9.SetDefaultColor(Color.RED);
+L9.SetLineWeight(level9_thickness);
+L9.SetStyle(Curve.FIRM);
+
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, "68", Color.CYAN, yes);
-AddChartBubble(isLastBar, level2, "57 FB", Color.YELLOW, yes);
-AddChartBubble(isLastBar, level3, "47 🧲", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level4, "38 ⬆️", Color.GREEN, no);
-AddChartBubble(isLastBar, level5, "15 [x]", Color.WHITE, no);
-AddChartBubble(isLastBar, level6, "05", Color.ORANGE, no);
-AddChartBubble(isLastBar, level7, "96", Color.RED, no);
+AddChartBubble(isLastBar, level1, "39 📐", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level2, "08 FOMC", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level3, "93 LAAF", CreateColor(255, 107, 107), yes);
+AddChartBubble(isLastBar, level4, "66", Color.CYAN, yes);
+AddChartBubble(isLastBar, level5, "45 trap", Color.YELLOW, no);
+AddChartBubble(isLastBar, level6, "36 FBD", Color.GREEN, no);
+AddChartBubble(isLastBar, level7, "17 FBD", Color.GREEN, no);
+AddChartBubble(isLastBar, level8, "02 PWL", Color.ORANGE, no);
+AddChartBubble(isLastBar, level9, "96", Color.RED, no);
 
 # === ALERT SYSTEM ===
 
-# RALLY TARGETS
-Alert(enableAlerts and close crosses above level1, "ES >> 6868!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6868, "ES @ 6868", Alert.BAR, Sound.Chimes);
+# MEGAPHONE RESISTANCE
+Alert(enableAlerts and close crosses above level1, "ES >> 6939 - MEGAPHONE RESISTANCE!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6939, "ES @ 6939 - Megaphone Top", Alert.BAR, Sound.Chimes);
 
-# TRIGGER / FAILED BREAKDOWN
-Alert(enableAlerts and close crosses above level2, "ES >> 6857 - TRIGGER UP!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6857, "ES @ 6857 - FB / Trigger", Alert.BAR, Sound.Chimes);
+# FOMC HIGH
+Alert(enableAlerts and close crosses above level2, "ES >> 6908 - FOMC HIGH!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6908, "ES @ 6908 - FOMC level", Alert.BAR, Sound.Chimes);
 
-# MAGNET LEVEL
-Alert(enableAlerts and close crosses above level3, "ES >> 6847 - MAGNET RECOVERY!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6847, "ES @ 6847 - MAGNET!", Alert.BAR, Sound.Chimes);
+# PWH LAAF
+Alert(enableAlerts and close crosses above level3, "ES >> 6893 - Above LAAF!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level3, "ES << 6893 - LAAF triggered!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6893, "ES @ 6893 - PWH LAAF", Alert.BAR, Sound.Chimes);
 
-# MUST RECOVER
-Alert(enableAlerts and close crosses above level4, "ES >> 6838 - RECOVERY!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level4, "ES << 6838 - Lost recovery level", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6838, "ES @ 6838 - Must recover!", Alert.BAR, Sound.Chimes);
+# 66 RECLAIM
+Alert(enableAlerts and close crosses above level4, "ES >> 6866 - Reclaim!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6866, "ES @ 6866", Alert.BAR, Sound.Chimes);
 
-# HIT EXACT
-Alert(enableAlerts and close crosses below level5, "ES << 6815 - BREAKDOWN!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses above level5, "ES >> 6815 - BOUNCE!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6815, "ES @ 6815 - Hit exact", Alert.BAR, Sound.Chimes);
+# 45 TRAP
+Alert(enableAlerts and close crosses above level5, "ES >> 6845 - Above trap!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level5, "ES << 6845 - Trap level", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6845, "ES @ 6845 - Trap", Alert.BAR, Sound.Chimes);
 
-# NEXT LEG DOWN
-Alert(enableAlerts and at6805, "ES @ 6805", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close crosses below level6, "ES << 6805", Alert.BAR, Sound.Bell);
+# 36 FBD
+Alert(enableAlerts and close crosses below level6, "ES << 6836 - FBD test", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses above level6, "ES >> 6836 - FBD reclaim!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6836, "ES @ 6836 - FBD", Alert.BAR, Sound.Chimes);
 
-Alert(enableAlerts and at6796, "ES @ 6796 - Deep target", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and close crosses below level7, "ES << 6796 - Below deep target", Alert.BAR, Sound.Bell);
+# 17 FBD
+Alert(enableAlerts and close crosses below level7, "ES << 6817 - FBD level!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses above level7, "ES >> 6817 - FBD reclaim!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6817, "ES @ 6817 - FBD", Alert.BAR, Sound.Chimes);
+
+# PWL
+Alert(enableAlerts and close crosses below level8, "ES << 6802 - Below PWL!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6802, "ES @ 6802 - PWL", Alert.BAR, Sound.Chimes);
+
+# DEEP TARGET
+Alert(enableAlerts and close crosses below level9, "ES << 6796 - DEEP TARGET!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6796, "ES @ 6796", Alert.BAR, Sound.Chimes);
