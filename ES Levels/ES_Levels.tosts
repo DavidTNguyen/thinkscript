@@ -1,32 +1,38 @@
 
-# === ES Daily Update - December 17, 2025 ===
+# === ES Daily Update - December 18, 2025 ===
 # BIG PICTURE OVERVIEW - Macro structures for context
 # (For detailed daily setups/intraday levels: tradecompanionsubstack.com)
 #
 # STATUS:
-# - Bears in control as posted
-# - 6789 support, holding 45 mins
-# - 6818-22 tested 3x, rejected each time
+# - 6818-22 = ATM MACHINE - held 3rd time from above
+#   (9:45am precise backtest, trap after, another backtest just now)
+# - 6870 final target HIT = high of day
+# - HOLD RUNNER, 6886, 6900+ next
+# - SELL < 6818
 #
 # TODAY'S PLAN:
-# - Bulls: recover 6806 to start a push, 6818-22 to retake control
-# - Bears: 6781, 6767 next down
+# - Bulls: 6886, 6900+ next
+# - Bears: Sell < 6818
 #
 # NOTE: We don't predict - we REACT and follow price level to level.
 
 # === KEY LEVELS ===
-input level1 = 6822;  # Key reclaim (tested 3x)
-input level1_thickness = 2;
-input level2 = 6818;  # Key reclaim zone (tested 3x)
-input level2_thickness = 2;
-input level3 = 6806;  # First recovery target
-input level3_thickness = 2;
-input level4 = 6789;  # Current support
-input level4_thickness = 2;
-input level5 = 6781;  # Support 1
-input level5_thickness = 2;
-input level6 = 6767;  # Deep support
-input level6_thickness = 2;
+input level1 = 6900;  # Next target
+input level1_thickness = 1;
+input level2 = 6886;  # Next target
+input level2_thickness = 1;
+input level3 = 6870;  # Final target HIT = HOD
+input level3_thickness = 1;
+input level4 = 6853;  # Hit
+input level4_thickness = 1;
+input level5 = 6842;  # Hit
+input level5_thickness = 1;
+input level6 = 6822;  # ATM - held 3x
+input level6_thickness = 1;
+input level7 = 6818;  # ATM - held 3x / SELL BELOW
+input level7_thickness = 1;
+input level8 = 6796;  # Below
+input level8_thickness = 1;
 
 # Alert Settings
 input enableAlerts = yes;
@@ -39,78 +45,104 @@ def isLastBar1 = IsNaN(close[-1]) and !IsNaN(close);
 def isLastBar = isLastBar1[-bubblesBeforeLast];
 
 # Position detection
-def at6822 = close >= level1 - 2 and close <= level1 + 2;
-def at6818 = close >= level2 - 2 and close <= level2 + 2;
-def at6806 = close >= level3 - 2 and close <= level3 + 2;
-def at6789 = close >= level4 - 2 and close <= level4 + 2;
-def at6781 = close >= level5 - 2 and close <= level5 + 2;
-def at6767 = close >= level6 - 2 and close <= level6 + 2;
+def at6900 = close >= level1 - 2 and close <= level1 + 2;
+def at6886 = close >= level2 - 2 and close <= level2 + 2;
+def at6870 = close >= level3 - 2 and close <= level3 + 2;
+def at6853 = close >= level4 - 2 and close <= level4 + 2;
+def at6842 = close >= level5 - 2 and close <= level5 + 2;
+def at6822 = close >= level6 - 2 and close <= level6 + 2;
+def at6818 = close >= level7 - 2 and close <= level7 + 2;
+def at6796 = close >= level8 - 2 and close <= level8 + 2;
 
 # === LEVEL PLOTS ===
 plot L1 = level1;
-L1.SetDefaultColor(Color.CYAN);
+L1.SetDefaultColor(Color.MAGENTA);
 L1.SetLineWeight(level1_thickness);
 L1.SetStyle(Curve.FIRM);
 
 plot L2 = level2;
-L2.SetDefaultColor(Color.CYAN);
+L2.SetDefaultColor(Color.MAGENTA);
 L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
 
 plot L3 = level3;
-L3.SetDefaultColor(Color.GREEN);
+L3.SetDefaultColor(Color.CYAN);
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
 plot L4 = level4;
-L4.SetDefaultColor(Color.YELLOW);
+L4.SetDefaultColor(Color.CYAN);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
 plot L5 = level5;
-L5.SetDefaultColor(Color.ORANGE);
+L5.SetDefaultColor(Color.CYAN);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
 
 plot L6 = level6;
-L6.SetDefaultColor(Color.RED);
+L6.SetDefaultColor(Color.GREEN);
 L6.SetLineWeight(level6_thickness);
 L6.SetStyle(Curve.FIRM);
 
+plot L7 = level7;
+L7.SetDefaultColor(Color.GREEN);
+L7.SetLineWeight(level7_thickness);
+L7.SetStyle(Curve.FIRM);
+
+plot L8 = level8;
+L8.SetDefaultColor(Color.RED);
+L8.SetLineWeight(level8_thickness);
+L8.SetStyle(Curve.FIRM);
+
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, "22 reclaim", Color.CYAN, yes);
-AddChartBubble(isLastBar, level2, "18 reclaim", Color.CYAN, yes);
-AddChartBubble(isLastBar, level3, "06 recover", Color.GREEN, yes);
-AddChartBubble(isLastBar, level4, "89 support", Color.YELLOW, no);
-AddChartBubble(isLastBar, level5, "81", Color.ORANGE, no);
-AddChartBubble(isLastBar, level6, "67", Color.RED, no);
+AddChartBubble(isLastBar, level1, "00", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level2, "86", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level3, "70 HOD", Color.CYAN, yes);
+AddChartBubble(isLastBar, level4, "53 hit", Color.CYAN, yes);
+AddChartBubble(isLastBar, level5, "42 hit", Color.CYAN, yes);
+AddChartBubble(isLastBar, level6, "22 ATM", Color.GREEN, no);
+AddChartBubble(isLastBar, level7, "18 SELL<", Color.GREEN, no);
+AddChartBubble(isLastBar, level8, "96", Color.RED, no);
 
 # === ALERT SYSTEM ===
 
-# KEY RECLAIM - 6822
-Alert(enableAlerts and close crosses above level1, "ES >> 6822 - RECLAIM!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level1, "ES << 6822 - Lost", Alert.BAR, Sound.Bell);
+# NEXT TARGET - 6900
+Alert(enableAlerts and close crosses above level1, "ES >> 6900!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level1, "ES << 6900", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6900, "ES @ 6900", Alert.BAR, Sound.Chimes);
+
+# NEXT TARGET - 6886
+Alert(enableAlerts and close crosses above level2, "ES >> 6886!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level2, "ES << 6886", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6886, "ES @ 6886", Alert.BAR, Sound.Chimes);
+
+# HOD - 6870
+Alert(enableAlerts and close crosses above level3, "ES >> 6870!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level3, "ES << 6870", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6870, "ES @ 6870", Alert.BAR, Sound.Chimes);
+
+# HIT - 6853
+Alert(enableAlerts and close crosses above level4, "ES >> 6853!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level4, "ES << 6853", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6853, "ES @ 6853", Alert.BAR, Sound.Chimes);
+
+# HIT - 6842
+Alert(enableAlerts and close crosses above level5, "ES >> 6842!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level5, "ES << 6842", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6842, "ES @ 6842", Alert.BAR, Sound.Chimes);
+
+# ATM - 6822
+Alert(enableAlerts and close crosses above level6, "ES >> 6822!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level6, "ES << 6822!", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and at6822, "ES @ 6822", Alert.BAR, Sound.Chimes);
 
-# KEY RECLAIM ZONE - 6818
-Alert(enableAlerts and close crosses above level2, "ES >> 6818!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level2, "ES << 6818", Alert.BAR, Sound.Bell);
+# ATM / SELL BELOW - 6818
+Alert(enableAlerts and close crosses above level7, "ES >> 6818!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level7, "ES << 6818 - SELL!", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and at6818, "ES @ 6818", Alert.BAR, Sound.Chimes);
 
-# FIRST RECOVERY - 6806
-Alert(enableAlerts and close crosses above level3, "ES >> 6806 - Recovery started!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level3, "ES << 6806", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6806, "ES @ 6806", Alert.BAR, Sound.Chimes);
-
-# CURRENT SUPPORT - 6789
-Alert(enableAlerts and close crosses below level4, "ES << 6789 - Support lost!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses above level4, "ES >> 6789", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6789, "ES @ 6789", Alert.BAR, Sound.Chimes);
-
-# SUPPORT 1 - 6781
-Alert(enableAlerts and close crosses below level5, "ES << 6781!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6781, "ES @ 6781", Alert.BAR, Sound.Chimes);
-
-# DEEP SUPPORT - 6767
-Alert(enableAlerts and close crosses below level6, "ES << 6767 - DEEP!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6767, "ES @ 6767", Alert.BAR, Sound.Chimes);
+# BELOW - 6796
+Alert(enableAlerts and close crosses below level8, "ES << 6796!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses above level8, "ES >> 6796", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6796, "ES @ 6796", Alert.BAR, Sound.Chimes);
