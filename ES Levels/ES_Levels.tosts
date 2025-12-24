@@ -16,7 +16,7 @@
 # - FBD Trigger: 6925
 #
 # KEY CONCEPTS:
-# - FBD = Failed Break Down (bullish)
+# - FBD = Failed Break Down (bullish) - *every* sharp sell ends with squeeze on FBD
 # - Runner = continuation of momentum trade
 #
 # NOTE: We don't predict - we REACT and follow price level to level.
@@ -76,7 +76,7 @@ def below6822 = close < level9;
 plot L1 = level1;
 L1.SetDefaultColor(Color.MAGENTA);
 L1.SetLineWeight(level1_thickness);
-L1.SetStyle(Curve.FIRM);
+L1.SetStyle(Curve.SHORT_DASH);
 
 plot L2 = level2;
 L2.SetDefaultColor(Color.MAGENTA);
@@ -84,7 +84,7 @@ L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.FIRM);
 
 plot L3 = level3;
-L3.SetDefaultColor(Color.CYAN);
+L3.SetDefaultColor(Color.MAGENTA);
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
@@ -99,19 +99,34 @@ L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
 
 plot L6 = level6;
-L6.SetDefaultColor(Color.GREEN);
+L6.SetDefaultColor(Color.CYAN);
 L6.SetLineWeight(level6_thickness);
 L6.SetStyle(Curve.FIRM);
 
 plot L7 = level7;
-L7.SetDefaultColor(Color.GREEN);
+L7.SetDefaultColor(Color.YELLOW);
 L7.SetLineWeight(level7_thickness);
 L7.SetStyle(Curve.FIRM);
 
 plot L8 = level8;
-L8.SetDefaultColor(Color.RED);
+L8.SetDefaultColor(Color.CYAN);
 L8.SetLineWeight(level8_thickness);
 L8.SetStyle(Curve.FIRM);
+
+plot L9 = level9;
+L9.SetDefaultColor(Color.GREEN);
+L9.SetLineWeight(level9_thickness);
+L9.SetStyle(Curve.FIRM);
+
+plot L10 = level10;
+L10.SetDefaultColor(Color.GREEN);
+L10.SetLineWeight(level10_thickness);
+L10.SetStyle(Curve.FIRM);
+
+plot L11 = level11;
+L11.SetDefaultColor(Color.GREEN);
+L11.SetLineWeight(level11_thickness);
+L11.SetStyle(Curve.FIRM);
 
 # === CHART BUBBLES ===
 AddChartBubble(isLastBar, level1, "89 🎯", Color.MAGENTA, yes);

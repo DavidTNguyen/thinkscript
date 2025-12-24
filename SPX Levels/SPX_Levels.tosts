@@ -1,54 +1,69 @@
-# === SPX DEC 22 - Holiday Week IC Whale Setup ===
+# === SPX DEC 23 - Tuesday GDP/PCE/Confidence Day ===
 # 
 # MARKET CONTEXT:
-# Friday close: 6835 (~1% below ATH)
-# Holiday-shortened week, LOW VOLUME
-# VIX/VVIX at yearly lows
-# VIX9D implies ~43-45 pt daily move
-# Theta burn = primary theme this 3.5-day week
+# 🎅 Santa Rally mode - SPX +0.6% to close near 6878 after weekend gap
+# Light holiday tape, steady bids, participation improving
+# Small/mid caps and cyclicals (Materials, Energy, Financials) lifting
 #
-# 🐋 IC WHALE POSITIONING (15k contracts, may go 50k by Wed):
-# CALL CREDIT SPREAD: 6860/6865 CCS (short calls)
-# PUT CREDIT SPREAD: 6795/6800 PCS (short puts)
-# THE TRAP: If price pushes through strikes, whale doubles/triples size Tue
-# INFLECTION: Wednesday = critical pin day (could reach 50k contracts)
+# 🧊 VOL IS THE TELL:
+# VIX ~14, VIX9D ~10.5, VIX1D ~7
+# Front-day vol priced quieter = sub ±30pt day expected
+# Bigger moves priced into next 1-4 weeks
 #
-# CHOP ZONE: 6835-6875
+# 🐋 IC WHALE WATCH (Capt. Condor got harpooned, back with 40K+ contracts):
+# PUT CREDIT SPREAD: 6850/6855 PCS (short puts)
+# CALL CREDIT SPREAD: 6900/6905 CCS (short calls)
+# If tape behaves today, it'll behave around the rails
 #
-# UPSIDE SCENARIOS:
-# Above 6850 -> Stall at 6860 (IC Whale short call / sticky GEX)
-# Above 6865 -> Push to 6875 (top of chop)
-# Above 6885 -> BREAKOUT - Battle for 6900 ATH begins
-# Thin liquidity = algos can weaponize gamma for quick ramp
+# 📦 CHOP ZONE: 6855-6900 (Whale edges)
 #
-# DOWNSIDE SCENARIOS:
-# Below 6850 -> Retest 6835 Friday close
-# Below 6835 -> Reaction zone 6820
-# Below 6815 -> THE FLOOR - Watch for 6800
-# 6800 = Major gamma glob / IC Whale short put / V-BOUNCE zone 🔄
+# UPSIDE SCENARIOS (ABOVE CHOP):
+# Above 6875 -> 6885 reaction stall
+# Above 6885 -> 6895 decision area, can get sticky into close
+# Above 6900 -> Stall 6910
+# Above 6910 -> 6920 intraday ATH marker
+# Note: 6895-6905 is STICKY ZONE, above 6905 = overhead supply, can pin & mean revert
+#
+# DOWNSIDE SCENARIOS (BELOW CHOP):
+# Below 6870 -> Stall 6860
+# Below 6860 -> Watch for stall/reverse near 6855 late day
+# Below 6855 -> 6840 reaction area
+# Below 6840 -> 6830 reaction
+# Below 6830 -> 6815 opens
+#
+# 📌 RANGE & EM:
+# Two day range: 6790-6880
+# Fri close to Mon high: 6835-6880
+# EM ~23 points (ref near 6880)
+# Bot of Chop & EM bot: 6855 | Top of Chop & EM top: 6900
 #
 # ECONOMIC CALENDAR:
-# Mon 8:30 AM - PCE Price Index (Fed's preferred inflation metric)
-# Tue 8:30 AM - GDP Final, Durable Goods; 10 AM - Consumer Confidence
-# Wed - HALF DAY (close 1 PM ET)
-# Thu - CLOSED (Christmas)
+# 8:30 AM - GDP Q3 delayed report / Durable Goods
+# 9:15 AM - Industrial Production / Capacity Utilization
+# 10:00 AM - Consumer Confidence
+# 🧾 HON down on lawsuit writedown (company specific, not sector-wide)
 
 # === KEY LEVELS ===
-input level1 = 6900;  # ATH Target 🎯
-input level2 = 6885;  # Breakout Trigger
-input level3 = 6875;  # Chop Zone Top
-input level4 = 6865;  # IC Whale CCS Short Call 🐋
-input level5 = 6860;  # Sticky GEX / Stall
-input level6 = 6850;  # Pivot
-input level7 = 6835;  # Friday Close
-input level8 = 6820;  # Reaction Zone
-input level9 = 6815;  # The Floor
-input level10 = 6800; # Major Gamma Glob / IC Whale PCS 🐋 V-Bounce
+input level1 = 6920;  # Intraday ATH Marker 🎯
+input level2 = 6910;  # Stall above 6900
+input level3 = 6905;  # IC Whale CCS Long / Top Sticky Zone
+input level4 = 6900;  # Chop Zone Top / IC Whale CCS Short 🐋
+input level5 = 6895;  # Sticky Zone Bottom
+input level6 = 6885;  # Reaction Stall
+input level7 = 6875;  # Intraday Pivot
+input level8 = 6870;  # Pivot Inflection
+input level9 = 6860;  # Stall if below 6870
+input level10 = 6855; # IC Whale PCS Short 🐋 / Chop Zone Bottom
+input level11 = 6850; # IC Whale PCS Long
+input level12 = 6840; # Reaction Area
+input level13 = 6830; # Reaction
+input level14 = 6815; # Lower Lane Open
 
 # IC Whale Spread Strikes
-input level_whale_call = 6865;  # CCS Short Strike
-input level_whale_put = 6800;   # PCS Short Strike
-input level_whale_put_long = 6795; # PCS Long Strike
+input level_whale_call = 6900;   # CCS Short Strike
+input level_whale_call_long = 6905; # CCS Long Strike
+input level_whale_put = 6855;    # PCS Short Strike
+input level_whale_put_long = 6850;  # PCS Long Strike
 
 # Alert Settings
 input enableAlerts = yes;
@@ -63,44 +78,44 @@ input showLines = yes;
 
 # === LEVEL PLOTS ===
 plot L1 = level1;
-L1.SetDefaultColor(Color.MAGENTA);
-L1.SetLineWeight(1);
+L1.SetDefaultColor(Color.GREEN);
+L1.SetLineWeight(2);
 L1.SetStyle(Curve.SHORT_DASH);
 L1.SetHiding(!showLines);
 
 plot L2 = level2;
-L2.SetDefaultColor(Color.MAGENTA);
+L2.SetDefaultColor(Color.GREEN);
 L2.SetLineWeight(1);
 L2.SetStyle(Curve.FIRM);
 L2.SetHiding(!showLines);
 
 plot L3 = level3;
-L3.SetDefaultColor(Color.ORANGE);
+L3.SetDefaultColor(Color.MAGENTA);
 L3.SetLineWeight(1);
-L3.SetStyle(Curve.FIRM);
+L3.SetStyle(Curve.SHORT_DASH);
 L3.SetHiding(!showLines);
 
 plot L4 = level4;
-L4.SetDefaultColor(Color.YELLOW);
-L4.SetLineWeight(1);
+L4.SetDefaultColor(Color.MAGENTA);
+L4.SetLineWeight(3);
 L4.SetStyle(Curve.FIRM);
 L4.SetHiding(!showLines);
 
 plot L5 = level5;
-L5.SetDefaultColor(Color.PLUM);
+L5.SetDefaultColor(Color.YELLOW);
 L5.SetLineWeight(1);
 L5.SetStyle(Curve.FIRM);
 L5.SetHiding(!showLines);
 
 plot L6 = level6;
-L6.SetDefaultColor(Color.PLUM);
+L6.SetDefaultColor(Color.ORANGE);
 L6.SetLineWeight(1);
 L6.SetStyle(Curve.FIRM);
 L6.SetHiding(!showLines);
 
 plot L7 = level7;
-L7.SetDefaultColor(Color.YELLOW);
-L7.SetLineWeight(1);
+L7.SetDefaultColor(Color.CYAN);
+L7.SetLineWeight(2);
 L7.SetStyle(Curve.FIRM);
 L7.SetHiding(!showLines);
 
@@ -111,18 +126,42 @@ L8.SetStyle(Curve.FIRM);
 L8.SetHiding(!showLines);
 
 plot L9 = level9;
-L9.SetDefaultColor(Color.CYAN);
+L9.SetDefaultColor(Color.ORANGE);
 L9.SetLineWeight(1);
 L9.SetStyle(Curve.FIRM);
 L9.SetHiding(!showLines);
 
 plot L10 = level10;
-L10.SetDefaultColor(Color.CYAN);
-L10.SetLineWeight(1);
+L10.SetDefaultColor(Color.MAGENTA);
+L10.SetLineWeight(3);
 L10.SetStyle(Curve.FIRM);
 L10.SetHiding(!showLines);
 
-# IC Whale Levels
+plot L11 = level11;
+L11.SetDefaultColor(Color.MAGENTA);
+L11.SetLineWeight(1);
+L11.SetStyle(Curve.SHORT_DASH);
+L11.SetHiding(!showLines);
+
+plot L12 = level12;
+L12.SetDefaultColor(Color.ORANGE);
+L12.SetLineWeight(1);
+L12.SetStyle(Curve.FIRM);
+L12.SetHiding(!showLines);
+
+plot L13 = level13;
+L13.SetDefaultColor(Color.ORANGE);
+L13.SetLineWeight(1);
+L13.SetStyle(Curve.FIRM);
+L13.SetHiding(!showLines);
+
+plot L14 = level14;
+L14.SetDefaultColor(Color.RED);
+L14.SetLineWeight(2);
+L14.SetStyle(Curve.FIRM);
+L14.SetHiding(!showLines);
+
+# IC Whale Levels (already plotted above, just highlighting)
 plot L_WHALE_CALL = level_whale_call;
 L_WHALE_CALL.SetDefaultColor(Color.MAGENTA);
 L_WHALE_CALL.SetLineWeight(3);
@@ -135,23 +174,21 @@ L_WHALE_PUT.SetLineWeight(3);
 L_WHALE_PUT.SetStyle(Curve.FIRM);
 L_WHALE_PUT.SetHiding(!showLines);
 
-plot L_WHALE_PUT_LONG = level_whale_put_long;
-L_WHALE_PUT_LONG.SetDefaultColor(Color.DARK_RED);
-L_WHALE_PUT_LONG.SetLineWeight(1);
-L_WHALE_PUT_LONG.SetStyle(Curve.SHORT_DASH);
-L_WHALE_PUT_LONG.SetHiding(!showLines);
-
 # === OPTIONAL CLOUDS ===
-# Chop Zone cloud (6835-6875)
-AddCloud(if showClouds then L3 else Double.NaN, if showClouds then L7 else Double.NaN, CreateColor(100, 100, 150), CreateColor(100, 100, 150));
+# Chop Zone cloud (6855-6900) - Whale edges
+AddCloud(if showClouds then L4 else Double.NaN, if showClouds then L10 else Double.NaN, CreateColor(100, 100, 150), CreateColor(100, 100, 150));
 
-# IC Whale danger zone (6800-6865)
-AddCloud(if showClouds then L4 else Double.NaN, if showClouds then L10 else Double.NaN, CreateColor(150, 50, 150), CreateColor(150, 50, 150));
+# Sticky Zone cloud (6895-6905)
+AddCloud(if showClouds then L3 else Double.NaN, if showClouds then L5 else Double.NaN, CreateColor(150, 150, 50), CreateColor(150, 150, 50));
 
-# Key level highlights
+# IC Whale CCS zone (6900-6905)
+AddCloud(if showClouds then L3 else Double.NaN, if showClouds then L4 else Double.NaN, CreateColor(150, 50, 150), CreateColor(150, 50, 150));
+
+# IC Whale PCS zone (6850-6855)
+AddCloud(if showClouds then L10 else Double.NaN, if showClouds then L11 else Double.NaN, CreateColor(150, 50, 150), CreateColor(150, 50, 150));
+
+# ATH marker highlight
 AddCloud(if showClouds then L1 else Double.NaN, if showClouds then L1 + 0.5 else Double.NaN, Color.GREEN, Color.GREEN);
-AddCloud(if showClouds then L4 else Double.NaN, if showClouds then L4 + 0.5 else Double.NaN, Color.MAGENTA, Color.MAGENTA);
-AddCloud(if showClouds then L10 else Double.NaN, if showClouds then L10 + 0.5 else Double.NaN, Color.MAGENTA, Color.MAGENTA);
 
 # Fixed bubble logic - show only on last bar
 input bubblesBeforeLast = -8;  # number of candles AFTER the last one
@@ -161,124 +198,160 @@ def isLastBar = isLastBar1[-bubblesBeforeLast];
 
 
 # Position detection
-def above6900 = close > level1;  # ATH Target
-def at6900 = close >= level1 - 5 and close <= level1 + 5;
-def above6885 = close > level2;  # BREAKOUT TRIGGER
-def at6885 = close >= level2 - 5 and close <= level2 + 5;
-def above6875 = close > level3;  # Chop Zone Top
-def at6875 = close >= level3 - 5 and close <= level3 + 5;
-def above6865 = close > level4;  # IC WHALE CCS
-def at6865 = close >= level4 - 5 and close <= level4 + 5;
-def above6860 = close > level5;  # Sticky GEX
-def at6860 = close >= level5 - 5 and close <= level5 + 5;
-def above6850 = close > level6;  # Pivot
-def at6850 = close >= level6 - 5 and close <= level6 + 5;
-def above6835 = close > level7;  # Friday Close
-def at6835 = close >= level7 - 5 and close <= level7 + 5;
-def below6835 = close < level7;
-def above6820 = close > level8;  # Reaction Zone
-def at6820 = close >= level8 - 5 and close <= level8 + 5;
-def above6815 = close > level9;  # The Floor
-def at6815 = close >= level9 - 5 and close <= level9 + 5;
-def above6800 = close > level10; # Gamma Glob / IC Whale PCS
-def at6800 = close >= level10 - 5 and close <= level10 + 5;
-def below6800 = close < level10;
-def inChopZone = close >= level7 and close <= level3;  # 6835-6875 chop zone
-def inWhaleZone = close >= level10 and close <= level4;  # 6800-6865 IC Whale range
+def above6920 = close > level1;  # Intraday ATH
+def at6920 = close >= level1 - 5 and close <= level1 + 5;
+def above6910 = close > level2;  # Stall
+def at6910 = close >= level2 - 5 and close <= level2 + 5;
+def above6905 = close > level3;  # CCS Long / Top Sticky
+def at6905 = close >= level3 - 5 and close <= level3 + 5;
+def above6900 = close > level4;  # Chop Top / CCS Short
+def at6900 = close >= level4 - 5 and close <= level4 + 5;
+def above6895 = close > level5;  # Sticky Zone Bottom
+def at6895 = close >= level5 - 5 and close <= level5 + 5;
+def above6885 = close > level6;  # Reaction Stall
+def at6885 = close >= level6 - 5 and close <= level6 + 5;
+def above6875 = close > level7;  # Intraday Pivot
+def at6875 = close >= level7 - 5 and close <= level7 + 5;
+def above6870 = close > level8;  # Pivot Inflection
+def at6870 = close >= level8 - 5 and close <= level8 + 5;
+def above6860 = close > level9;  # Stall
+def at6860 = close >= level9 - 5 and close <= level9 + 5;
+def above6855 = close > level10; # PCS Short / Chop Bottom
+def at6855 = close >= level10 - 5 and close <= level10 + 5;
+def below6855 = close < level10;
+def above6850 = close > level11; # PCS Long
+def at6850 = close >= level11 - 5 and close <= level11 + 5;
+def above6840 = close > level12; # Reaction Area
+def at6840 = close >= level12 - 5 and close <= level12 + 5;
+def above6830 = close > level13; # Reaction
+def at6830 = close >= level13 - 5 and close <= level13 + 5;
+def above6815 = close > level14; # Lower Lane
+def at6815 = close >= level14 - 5 and close <= level14 + 5;
+def below6815 = close < level14;
+
+def inChopZone = close >= level10 and close <= level4;  # 6855-6900 chop zone
+def inStickyZone = close >= level5 and close <= level3;  # 6895-6905 sticky zone
+def inWhaleZone = close >= level11 and close <= level3;  # 6850-6905 IC Whale range
 
 
 
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar and showLabels, level1, "6900 ATH 🎯", Color.GREEN, yes);
-AddChartBubble(isLastBar and showLabels, level2, "6885 BO", Color.GREEN, yes);
-AddChartBubble(isLastBar and showLabels, level3, "6875 Chop Top", Color.CYAN, yes);
-AddChartBubble(isLastBar and showLabels, level4, "6865 🐋 CCS", Color.MAGENTA, yes);
-AddChartBubble(isLastBar and showLabels, level5, "6860 GEX", Color.YELLOW, yes);
-AddChartBubble(isLastBar and showLabels, level6, "6850 Pivot", Color.CYAN, no);
-AddChartBubble(isLastBar and showLabels, level7, "6835 Fri Close", Color.YELLOW, no);
-AddChartBubble(isLastBar and showLabels, level8, "6820 React", Color.ORANGE, no);
-AddChartBubble(isLastBar and showLabels, level9, "6815 Floor", Color.ORANGE, no);
-AddChartBubble(isLastBar and showLabels, level10, "6800 🐋 PCS V-Bounce", Color.MAGENTA, no);
-
-# IC Whale Spread Bubbles
-AddChartBubble(isLastBar and showLabels, level_whale_put_long, "6795 🐋 PCS Long", Color.DARK_RED, no);
+AddChartBubble(isLastBar and showLabels, level1, "6920 ATH 🎯", Color.GREEN, yes);
+AddChartBubble(isLastBar and showLabels, level2, "6910 Stall", Color.GREEN, yes);
+AddChartBubble(isLastBar and showLabels, level3, "6905 🐋 CCS Long", Color.MAGENTA, yes);
+AddChartBubble(isLastBar and showLabels, level4, "6900 🐋 CCS / Chop Top", Color.MAGENTA, yes);
+AddChartBubble(isLastBar and showLabels, level5, "6895 Sticky Bot", Color.YELLOW, yes);
+AddChartBubble(isLastBar and showLabels, level6, "6885 Stall", Color.ORANGE, yes);
+AddChartBubble(isLastBar and showLabels, level7, "6875 Pivot", Color.CYAN, yes);
+AddChartBubble(isLastBar and showLabels, level8, "6870 Inflection", Color.CYAN, no);
+AddChartBubble(isLastBar and showLabels, level9, "6860 Stall", Color.ORANGE, no);
+AddChartBubble(isLastBar and showLabels, level10, "6855 🐋 PCS / Chop Bot", Color.MAGENTA, no);
+AddChartBubble(isLastBar and showLabels, level11, "6850 🐋 PCS Long", Color.MAGENTA, no);
+AddChartBubble(isLastBar and showLabels, level12, "6840 React", Color.ORANGE, no);
+AddChartBubble(isLastBar and showLabels, level13, "6830 React", Color.ORANGE, no);
+AddChartBubble(isLastBar and showLabels, level14, "6815 Lower Lane", Color.RED, no);
 
 # === TOUCH LOGIC ===
-def touch6900 = low <= level1 and high >= level1;
-def firstTouch6900 = touch6900 and !touch6900[1];
+def touch6920 = low <= level1 and high >= level1;
+def firstTouch6920 = touch6920 and !touch6920[1];
 
-def touch6885 = low <= level2 and high >= level2;
-def firstTouch6885Up = touch6885 and close > level2 and !touch6885[1];
-def firstTouch6885Down = touch6885 and close < level2 and !touch6885[1];
+def touch6910 = low <= level2 and high >= level2;
+def firstTouch6910Up = touch6910 and close > level2 and !touch6910[1];
+def firstTouch6910Down = touch6910 and close < level2 and !touch6910[1];
 
-def touch6875 = low <= level3 and high >= level3;
+def touch6905 = low <= level3 and high >= level3;
+def firstTouch6905Up = touch6905 and close > level3 and !touch6905[1];
+def firstTouch6905Down = touch6905 and close < level3 and !touch6905[1];
+
+def touch6900 = low <= level4 and high >= level4;
+def firstTouch6900Up = touch6900 and close > level4 and !touch6900[1];
+def firstTouch6900Down = touch6900 and close < level4 and !touch6900[1];
+
+def touch6895 = low <= level5 and high >= level5;
+def firstTouch6895 = touch6895 and !touch6895[1];
+
+def touch6885 = low <= level6 and high >= level6;
+def firstTouch6885 = touch6885 and !touch6885[1];
+
+def touch6875 = low <= level7 and high >= level7;
 def firstTouch6875 = touch6875 and !touch6875[1];
 
-def touch6865 = low <= level4 and high >= level4;
-def firstTouch6865Up = touch6865 and close > level4 and !touch6865[1];
-def firstTouch6865Down = touch6865 and close < level4 and !touch6865[1];
+def touch6870 = low <= level8 and high >= level8;
+def firstTouch6870Up = touch6870 and close > level8 and !touch6870[1];
+def firstTouch6870Down = touch6870 and close < level8 and !touch6870[1];
 
-def touch6860 = low <= level5 and high >= level5;
+def touch6860 = low <= level9 and high >= level9;
 def firstTouch6860 = touch6860 and !touch6860[1];
 
-def touch6850 = low <= level6 and high >= level6;
+def touch6855 = low <= level10 and high >= level10;
+def firstTouch6855Up = touch6855 and close > level10 and !touch6855[1];
+def firstTouch6855Down = touch6855 and close < level10 and !touch6855[1];
+
+def touch6850 = low <= level11 and high >= level11;
 def firstTouch6850 = touch6850 and !touch6850[1];
 
-def touch6835 = low <= level7 and high >= level7;
-def firstTouch6835Up = touch6835 and close > level7 and !touch6835[1];
-def firstTouch6835Down = touch6835 and close < level7 and !touch6835[1];
+def touch6840 = low <= level12 and high >= level12;
+def firstTouch6840 = touch6840 and !touch6840[1];
 
-def touch6820 = low <= level8 and high >= level8;
-def firstTouch6820 = touch6820 and !touch6820[1];
+def touch6830 = low <= level13 and high >= level13;
+def firstTouch6830 = touch6830 and !touch6830[1];
 
-def touch6815 = low <= level9 and high >= level9;
+def touch6815 = low <= level14 and high >= level14;
 def firstTouch6815 = touch6815 and !touch6815[1];
 
-def touch6800 = low <= level10 and high >= level10;
-def firstTouch6800Up = touch6800 and close > level10 and !touch6800[1];
-def firstTouch6800Down = touch6800 and close < level10 and !touch6800[1];
-
 # === ALERTS ===
-# ATH TARGET
-Alert(enableAlerts and firstTouch6900, "SPX >> 6900 🎯 ATH TARGET!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6900, "SPX at 6900 - All-Time High battle!", Alert.BAR, Sound.Chimes);
+# INTRADAY ATH (6920)
+Alert(enableAlerts and firstTouch6920, "SPX >> 6920 🎯 INTRADAY ATH MARKER!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6920, "SPX at 6920 - Intraday ATH!", Alert.BAR, Sound.Chimes);
 
-# BREAKOUT TRIGGER
-Alert(enableAlerts and firstTouch6885Up, "SPX UP 6885 ▲ BREAKOUT! Battle for 6900 ATH begins!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6885Down, "SPX DOWN 6885 - Breakout rejected!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6885, "SPX at 6885 - Breakout trigger!", Alert.BAR, Sound.Chimes);
+# STALL ABOVE 6900 (6910)
+Alert(enableAlerts and firstTouch6910Up, "SPX UP 6910 ▲ Pushing toward 6920 ATH!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6910Down, "SPX DOWN 6910 - Stall/rejection!", Alert.BAR, Sound.Bell);
 
-# CHOP ZONE TOP
-Alert(enableAlerts and firstTouch6875, "SPX >> 6875 - Chop zone top!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and inChopZone, "SPX in CHOP ZONE (6835-6875) - Range bound!", Alert.BAR, Sound.Chimes);
+# IC WHALE CCS LONG (6905) - Top of Sticky Zone
+Alert(enableAlerts and firstTouch6905Up, "SPX UP 6905 🐋 Above CCS spread - overhead supply!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6905Down, "SPX DOWN 6905 🐋 Back into sticky zone!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and inStickyZone, "SPX in STICKY ZONE (6895-6905) - Can pin & mean revert!", Alert.BAR, Sound.Chimes);
 
-# IC WHALE CCS (6865)
-Alert(enableAlerts and firstTouch6865Up, "SPX UP 6865 🐋 Above IC Whale CCS strike!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6865Down, "SPX DOWN 6865 🐋 IC Whale CCS strike - Expect stall!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6865, "SPX at 6865 🐋 IC Whale short call strike!", Alert.BAR, Sound.Chimes);
+# IC WHALE CCS SHORT / CHOP TOP (6900)
+Alert(enableAlerts and firstTouch6900Up, "SPX UP 6900 🐋 ABOVE CHOP! Watch 6910 stall!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6900Down, "SPX DOWN 6900 🐋 Back into chop zone!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6900, "SPX at 6900 🐋 Chop Top / IC Whale CCS strike!", Alert.BAR, Sound.Chimes);
 
-# STICKY GEX
-Alert(enableAlerts and firstTouch6860, "SPX >> 6860 - Sticky GEX / Stall area!", Alert.BAR, Sound.Chimes);
+# STICKY ZONE BOTTOM (6895)
+Alert(enableAlerts and firstTouch6895, "SPX >> 6895 - Entering sticky zone!", Alert.BAR, Sound.Chimes);
 
-# PIVOT
-Alert(enableAlerts and firstTouch6850, "SPX >> 6850 - Pivot level!", Alert.BAR, Sound.Chimes);
+# REACTION STALL (6885)
+Alert(enableAlerts and firstTouch6885, "SPX >> 6885 - Reaction stall area!", Alert.BAR, Sound.Bell);
 
-# FRIDAY CLOSE
-Alert(enableAlerts and firstTouch6835Up, "SPX UP 6835 - Reclaiming Friday close!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6835Down, "SPX DOWN 6835 - Below Friday close!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6835, "SPX at 6835 - Friday close!", Alert.BAR, Sound.Chimes);
+# INTRADAY PIVOT (6875)
+Alert(enableAlerts and firstTouch6875, "SPX >> 6875 - Intraday Pivot!", Alert.BAR, Sound.Chimes);
 
-# REACTION ZONE
-Alert(enableAlerts and firstTouch6820, "SPX >> 6820 - Reaction zone!", Alert.BAR, Sound.Bell);
+# PIVOT INFLECTION (6870)
+Alert(enableAlerts and firstTouch6870Up, "SPX UP 6870 - Above pivot inflection!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and firstTouch6870Down, "SPX DOWN 6870 - Below pivot, watch 6860 stall!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and inChopZone, "SPX in CHOP ZONE (6855-6900) - Whale rails active!", Alert.BAR, Sound.Chimes);
 
-# THE FLOOR
-Alert(enableAlerts and firstTouch6815, "SPX >> 6815 ⚠️ THE FLOOR - Watch for 6800!", Alert.BAR, Sound.Bell);
+# STALL (6860)
+Alert(enableAlerts and firstTouch6860, "SPX >> 6860 - Stall area!", Alert.BAR, Sound.Chimes);
 
-# IC WHALE PCS / GAMMA GLOB (6800)
-Alert(enableAlerts and firstTouch6800Up, "SPX UP 6800 🐋 V-BOUNCE from IC Whale PCS / Gamma Glob!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6800Down, "SPX DOWN 6800 🐋 IC Whale PCS strike breached!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6800, "SPX at 6800 🐋 Major Gamma Glob / IC Whale short put!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and below6800, "SPX < 6800 - Below IC Whale range!", Alert.BAR, Sound.Bell);
+# IC WHALE PCS SHORT / CHOP BOTTOM (6855)
+Alert(enableAlerts and firstTouch6855Up, "SPX UP 6855 🐋 Holding chop bottom / PCS strike!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6855Down, "SPX DOWN 6855 🐋 BELOW CHOP! Watch 6840!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6855, "SPX at 6855 🐋 Chop Bottom / IC Whale PCS strike!", Alert.BAR, Sound.Chimes);
+
+# IC WHALE PCS LONG (6850)
+Alert(enableAlerts and firstTouch6850, "SPX >> 6850 🐋 PCS Long strike!", Alert.BAR, Sound.Bell);
+
+# REACTION AREA (6840)
+Alert(enableAlerts and firstTouch6840, "SPX >> 6840 - Reaction area!", Alert.BAR, Sound.Bell);
+
+# REACTION (6830)
+Alert(enableAlerts and firstTouch6830, "SPX >> 6830 - Reaction! Watch for 6815!", Alert.BAR, Sound.Bell);
+
+# LOWER LANE (6815)
+Alert(enableAlerts and firstTouch6815, "SPX >> 6815 ⚠️ Lower lane opens!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and below6815, "SPX < 6815 - Below lower lane!", Alert.BAR, Sound.Bell);
 
 # IC WHALE ZONE ALERT
-Alert(enableAlerts and inWhaleZone, "SPX in IC WHALE ZONE (6800-6865) - Watch for pin!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and inWhaleZone, "SPX in IC WHALE ZONE (6850-6905) - Watch for pin!", Alert.BAR, Sound.Chimes);
