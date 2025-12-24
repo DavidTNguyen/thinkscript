@@ -4,15 +4,15 @@
 # (For detailed daily setups/intraday levels: tradecompanionsubstack.com)
 #
 # STRUCTURES TO NOTE:
-# - Santa Rally in FULL SWING 🎅
-# - ALL targets hit: 6963 ✓, 6967 ✓, 6973 ✓
-# - Still long from 6925 FBD (yesterday) & last Wed
+# - Santa Rally came RIGHT ON CUE 🎅🎄
+# - ALL targets hit: 6963 [x], 6967 [x], 6973 [x], 6982 [x]
+# - Long trigger was 6925 FBD (given live & in advance yesterday)
 # - Clean price action - doesn't get much better
 #
 # TODAY'S PLAN:
 # - Ride runner long
-# - Targets: 6963 ✓ -> 6967 ✓ -> 6973 ✓ -> 6982 -> 6989
-# - Support: 6973 (prior target), 6954
+# - Targets: 6963 [x] -> 6967 [x] -> 6973 [x] -> 6982 [x] -> 6989 -> 7002
+# - Support: 6982 (prior target), 6973, 6954
 # - FBD Trigger: 6925
 #
 # KEY CONCEPTS:
@@ -22,24 +22,26 @@
 # NOTE: We don't predict - we REACT and follow price level to level.
 
 # === KEY LEVELS ===
-input level1 = 6989;  # Target 2
+input level1 = 7002;  # Target 3
 input level1_thickness = 2;
-input level2 = 6982;  # Target 1
+input level2 = 6989;  # Target 2
 input level2_thickness = 2;
-input level3 = 6973;  # Prior Target HIT ✓
+input level3 = 6982;  # Target 1 HIT [x]
 input level3_thickness = 2;
-input level4 = 6967;  # Prior Target HIT ✓
+input level4 = 6973;  # Prior Target HIT [x]
 input level4_thickness = 1;
-input level5 = 6963;  # Prior Target HIT ✓
+input level5 = 6967;  # Prior Target HIT [x]
 input level5_thickness = 1;
-input level6 = 6954;  # Support
+input level6 = 6963;  # Prior Target HIT [x]
 input level6_thickness = 1;
-input level7 = 6925;  # FBD Long Trigger
-input level7_thickness = 2;
-input level8 = 6900;  # Prior Support
-input level8_thickness = 1;
-input level9 = 6822;  # Institutional Support
-input level9_thickness = 2;
+input level7 = 6954;  # Support
+input level7_thickness = 1;
+input level8 = 6925;  # FBD Long Trigger
+input level8_thickness = 2;
+input level9 = 6900;  # Prior Support
+input level9_thickness = 1;
+input level10 = 6822;  # Institutional Support
+input level10_thickness = 2;
 
 # Alert Settings
 input enableAlerts = yes;
@@ -52,25 +54,27 @@ def isLastBar1 = IsNaN(close[-1]) and !IsNaN(close);
 def isLastBar = isLastBar1[-bubblesBeforeLast];
 
 # Position detection
-def above6989 = close > level1;
-def at6989 = close >= level1 - 2 and close <= level1 + 2;
-def above6982 = close > level2;
-def at6982 = close >= level2 - 2 and close <= level2 + 2;
-def above6973 = close > level3;
-def at6973 = close >= level3 - 2 and close <= level3 + 2;
-def above6967 = close > level4;
-def at6967 = close >= level4 - 2 and close <= level4 + 2;
-def above6963 = close > level5;
-def at6963 = close >= level5 - 2 and close <= level5 + 2;
-def above6954 = close > level6;
-def at6954 = close >= level6 - 2 and close <= level6 + 2;
-def above6925 = close > level7;
-def at6925 = close >= level7 - 2 and close <= level7 + 2;
-def above6900 = close > level8;
-def at6900 = close >= level8 - 2 and close <= level8 + 2;
-def above6822 = close > level9;
-def at6822 = close >= level9 - 2 and close <= level9 + 2;
-def below6822 = close < level9;
+def above7002 = close > level1;
+def at7002 = close >= level1 - 2 and close <= level1 + 2;
+def above6989 = close > level2;
+def at6989 = close >= level2 - 2 and close <= level2 + 2;
+def above6982 = close > level3;
+def at6982 = close >= level3 - 2 and close <= level3 + 2;
+def above6973 = close > level4;
+def at6973 = close >= level4 - 2 and close <= level4 + 2;
+def above6967 = close > level5;
+def at6967 = close >= level5 - 2 and close <= level5 + 2;
+def above6963 = close > level6;
+def at6963 = close >= level6 - 2 and close <= level6 + 2;
+def above6954 = close > level7;
+def at6954 = close >= level7 - 2 and close <= level7 + 2;
+def above6925 = close > level8;
+def at6925 = close >= level8 - 2 and close <= level8 + 2;
+def above6900 = close > level9;
+def at6900 = close >= level9 - 2 and close <= level9 + 2;
+def above6822 = close > level10;
+def at6822 = close >= level10 - 2 and close <= level10 + 2;
+def below6822 = close < level10;
 
 # === LEVEL PLOTS ===
 plot L1 = level1;
@@ -81,7 +85,7 @@ L1.SetStyle(Curve.SHORT_DASH);
 plot L2 = level2;
 L2.SetDefaultColor(Color.MAGENTA);
 L2.SetLineWeight(level2_thickness);
-L2.SetStyle(Curve.FIRM);
+L2.SetStyle(Curve.SHORT_DASH);
 
 plot L3 = level3;
 L3.SetDefaultColor(Color.MAGENTA);
@@ -104,17 +108,17 @@ L6.SetLineWeight(level6_thickness);
 L6.SetStyle(Curve.FIRM);
 
 plot L7 = level7;
-L7.SetDefaultColor(Color.YELLOW);
+L7.SetDefaultColor(Color.CYAN);
 L7.SetLineWeight(level7_thickness);
 L7.SetStyle(Curve.FIRM);
 
 plot L8 = level8;
-L8.SetDefaultColor(Color.CYAN);
+L8.SetDefaultColor(Color.YELLOW);
 L8.SetLineWeight(level8_thickness);
 L8.SetStyle(Curve.FIRM);
 
 plot L9 = level9;
-L9.SetDefaultColor(Color.GREEN);
+L9.SetDefaultColor(Color.CYAN);
 L9.SetLineWeight(level9_thickness);
 L9.SetStyle(Curve.FIRM);
 
@@ -123,61 +127,61 @@ L10.SetDefaultColor(Color.GREEN);
 L10.SetLineWeight(level10_thickness);
 L10.SetStyle(Curve.FIRM);
 
-plot L11 = level11;
-L11.SetDefaultColor(Color.GREEN);
-L11.SetLineWeight(level11_thickness);
-L11.SetStyle(Curve.FIRM);
-
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, "89 🎯", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level2, "82 🎯", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level3, "73 ✓", CreateColor(255, 107, 107), yes);
-AddChartBubble(isLastBar, level4, "67 ✓", Color.CYAN, yes);
-AddChartBubble(isLastBar, level5, "63 ✓", Color.CYAN, yes);
-AddChartBubble(isLastBar, level6, "54", Color.YELLOW, no);
-AddChartBubble(isLastBar, level7, "25 FBD", Color.GREEN, no);
-AddChartBubble(isLastBar, level8, "00", Color.CYAN, no);
-AddChartBubble(isLastBar, level9, "22 🏦", Color.GREEN, no);
+AddChartBubble(isLastBar, level1, "02 🎯", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level2, "89 🎯", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level3, "82 [x]", CreateColor(255, 107, 107), yes);
+AddChartBubble(isLastBar, level4, "73 [x]", Color.CYAN, yes);
+AddChartBubble(isLastBar, level5, "67 [x]", Color.CYAN, yes);
+AddChartBubble(isLastBar, level6, "63 [x]", Color.CYAN, yes);
+AddChartBubble(isLastBar, level7, "54", Color.CYAN, no);
+AddChartBubble(isLastBar, level8, "25 FBD", Color.YELLOW, no);
+AddChartBubble(isLastBar, level9, "00", Color.CYAN, no);
+AddChartBubble(isLastBar, level10, "22 🏦", Color.GREEN, no);
 
 # === ALERT SYSTEM ===
 
+# TARGET 3
+Alert(enableAlerts and close crosses above level1, "ES >> 7002 - TARGET 3!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at7002, "ES @ 7002 - Target 3", Alert.BAR, Sound.Chimes);
+
 # TARGET 2
-Alert(enableAlerts and close crosses above level1, "ES >> 6989 - TARGET 2!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses above level2, "ES >> 6989 - TARGET 2!", Alert.BAR, Sound.Ring);
 Alert(enableAlerts and at6989, "ES @ 6989 - Target 2", Alert.BAR, Sound.Chimes);
 
-# TARGET 1
-Alert(enableAlerts and close crosses above level2, "ES >> 6982 - TARGET 1!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6982, "ES @ 6982 - Target 1", Alert.BAR, Sound.Chimes);
+# TARGET 1 HIT
+Alert(enableAlerts and close crosses above level3, "ES >> 6982 - Above prior target!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level3, "ES << 6982 - Below prior target", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6982, "ES @ 6982", Alert.BAR, Sound.Chimes);
 
 # PRIOR TARGET HIT
-Alert(enableAlerts and close crosses above level3, "ES >> 6973 - Above prior target!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level3, "ES << 6973 - Below prior target", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level4, "ES << 6973 - Below prior target", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and at6973, "ES @ 6973", Alert.BAR, Sound.Chimes);
 
 # PRIOR TARGET HIT
-Alert(enableAlerts and close crosses below level4, "ES << 6967 - Below prior target", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level5, "ES << 6967 - Below prior target", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and at6967, "ES @ 6967", Alert.BAR, Sound.Chimes);
 
 # PRIOR TARGET HIT
-Alert(enableAlerts and close crosses below level5, "ES << 6963 - Below prior target", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses below level6, "ES << 6963 - Below prior target", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and at6963, "ES @ 6963", Alert.BAR, Sound.Chimes);
 
 # SUPPORT
-Alert(enableAlerts and close crosses above level6, "ES >> 6954 - Above support!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level6, "ES << 6954 - Below support!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses above level7, "ES >> 6954 - Above support!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level7, "ES << 6954 - Below support!", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and at6954, "ES @ 6954 - Support", Alert.BAR, Sound.Chimes);
 
 # FBD LONG TRIGGER
-Alert(enableAlerts and close crosses below level7, "ES << 6925 - Below FBD trigger!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses above level7, "ES >> 6925 - Above FBD!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level8, "ES << 6925 - Below FBD trigger!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses above level8, "ES >> 6925 - Above FBD!", Alert.BAR, Sound.Ring);
 Alert(enableAlerts and at6925, "ES @ 6925 - FBD trigger", Alert.BAR, Sound.Chimes);
 
 # PRIOR SUPPORT
-Alert(enableAlerts and close crosses below level8, "ES << 6900 - Below prior support", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses above level8, "ES >> 6900 - Reclaim!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level9, "ES << 6900 - Below prior support", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses above level9, "ES >> 6900 - Reclaim!", Alert.BAR, Sound.Ring);
 Alert(enableAlerts and at6900, "ES @ 6900", Alert.BAR, Sound.Chimes);
 
 # INSTITUTIONAL SUPPORT
-Alert(enableAlerts and close crosses below level9, "ES << 6822 - Into institutional zone!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses above level9, "ES >> 6822 - Reclaim institutional!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level10, "ES << 6822 - Into institutional zone!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses above level10, "ES >> 6822 - Reclaim institutional!", Alert.BAR, Sound.Ring);
 Alert(enableAlerts and at6822, "ES @ 6822 - Institutional", Alert.BAR, Sound.Chimes);
