@@ -31,12 +31,14 @@ input level5 = 6938;  # Support Below
 input level5_thickness = 1;
 input level6 = 6935;  # Support Zone
 input level6_thickness = 1;
-input level7 = 6925;  # FBD Long Trigger
-input level7_thickness = 2;
-input level8 = 6900;  # Prior Support
-input level8_thickness = 1;
-input level9 = 6822;  # Institutional Support
-input level9_thickness = 2;
+input level7 = 6954;  # Support
+input level7_thickness = 1;
+input level8 = 6925;  # FBD Long Trigger
+input level8_thickness = 2;
+input level9 = 6900;  # Prior Support
+input level9_thickness = 1;
+input level10 = 6822;  # Institutional Support
+input level10_thickness = 2;
 
 # Alert Settings
 input enableAlerts = yes;
@@ -78,7 +80,7 @@ L1.SetStyle(Curve.SHORT_DASH);
 plot L2 = level2;
 L2.SetDefaultColor(Color.MAGENTA);
 L2.SetLineWeight(level2_thickness);
-L2.SetStyle(Curve.FIRM);
+L2.SetStyle(Curve.SHORT_DASH);
 
 plot L3 = level3;
 L3.SetDefaultColor(Color.YELLOW);
@@ -106,12 +108,12 @@ L7.SetLineWeight(level7_thickness);
 L7.SetStyle(Curve.FIRM);
 
 plot L8 = level8;
-L8.SetDefaultColor(Color.CYAN);
+L8.SetDefaultColor(Color.YELLOW);
 L8.SetLineWeight(level8_thickness);
 L8.SetStyle(Curve.FIRM);
 
 plot L9 = level9;
-L9.SetDefaultColor(Color.GREEN);
+L9.SetDefaultColor(Color.CYAN);
 L9.SetLineWeight(level9_thickness);
 L9.SetStyle(Curve.FIRM);
 
@@ -127,6 +129,10 @@ AddChartBubble(isLastBar, level8, "00", Color.CYAN, no);
 AddChartBubble(isLastBar, level9, "22 🏦", Color.GREEN, no);
 
 # === ALERT SYSTEM ===
+
+# TARGET 3
+Alert(enableAlerts and close crosses above level1, "ES >> 7002 - TARGET 3!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at7002, "ES @ 7002 - Target 3", Alert.BAR, Sound.Chimes);
 
 # BIG TEST / TARGET
 Alert(enableAlerts and close crosses above level1, "ES >> 6975 - BIG TEST!", Alert.BAR, Sound.Ring);
@@ -156,16 +162,16 @@ Alert(enableAlerts and close crosses below level6, "ES << 6935 - Below support z
 Alert(enableAlerts and at6935, "ES @ 6935", Alert.BAR, Sound.Chimes);
 
 # FBD LONG TRIGGER
-Alert(enableAlerts and close crosses below level7, "ES << 6925 - Below FBD trigger!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses above level7, "ES >> 6925 - Above FBD!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level8, "ES << 6925 - Below FBD trigger!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses above level8, "ES >> 6925 - Above FBD!", Alert.BAR, Sound.Ring);
 Alert(enableAlerts and at6925, "ES @ 6925 - FBD trigger", Alert.BAR, Sound.Chimes);
 
 # PRIOR SUPPORT
-Alert(enableAlerts and close crosses below level8, "ES << 6900 - Below prior support", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses above level8, "ES >> 6900 - Reclaim!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level9, "ES << 6900 - Below prior support", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses above level9, "ES >> 6900 - Reclaim!", Alert.BAR, Sound.Ring);
 Alert(enableAlerts and at6900, "ES @ 6900", Alert.BAR, Sound.Chimes);
 
 # INSTITUTIONAL SUPPORT
-Alert(enableAlerts and close crosses below level9, "ES << 6822 - Into institutional zone!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses above level9, "ES >> 6822 - Reclaim institutional!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level10, "ES << 6822 - Into institutional zone!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses above level10, "ES >> 6822 - Reclaim institutional!", Alert.BAR, Sound.Ring);
 Alert(enableAlerts and at6822, "ES @ 6822 - Institutional", Alert.BAR, Sound.Chimes);
