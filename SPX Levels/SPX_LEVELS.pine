@@ -95,7 +95,7 @@ alertSensitivity = input.float(5.0, "Alert Sensitivity", minval=0.1, maxval=10.0
 // Label Visibility
 showLabels = input.bool(true, "Show Labels", group="📊 Display Settings")
 showLines = input.bool(true, "Show Level Lines", group="📊 Display Settings")
-showTable = input.bool(true, "Show Status Table", group="📊 Display Settings")
+showTable = input.bool(false, "Show Status Table", group="📊 Display Settings")
 
 // === LEVEL LINES ===
 var line l1 = na
