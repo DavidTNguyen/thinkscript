@@ -1,72 +1,92 @@
 //@version=6
-indicator("SPX DEC 22 - IC WHALE WEEK", overlay=true, max_lines_count=500, max_labels_count=500)
+indicator("SPX DEC 29 - Year-End Flow Week", overlay=true, max_lines_count=500, max_labels_count=500)
 
-// === SPX DEC 22 - Holiday Week IC Whale Setup ===
+// === SPX DEC 29 - Year-End Flow Week ===
 // 
 // MARKET CONTEXT:
-// Friday close: 6835 (~1% below ATH)
-// Holiday-shortened week, LOW VOLUME
-// VIX/VVIX at yearly lows
-// VIX9D implies ~43-45 pt daily move
-// Theta burn = primary theme this 3.5-day week
+// 🎯 JPM COLLAR RESTRIKE - Massive gamma/vega reset at 7,000 strike
+//    Typically 2:00-3:00PM on Dec 31 - Dealer positioning chess
+//    Flows over fundamentals into year-end
 //
-// 🐋 IC WHALE POSITIONING (15k contracts, may go 50k by Wed):
-// CALL CREDIT SPREAD: 6860/6865 CCS (short calls)
-// PUT CREDIT SPREAD: 6795/6800 PCS (short puts)
-// THE TRAP: If price pushes through strikes, whale doubles/triples size Tue
-// INFLECTION: Wednesday = critical pin day (could reach 50k contracts)
+// 🧊 VOL STRUCTURE:
+// VIX 14.8, light volume, systematic flows dominate
+// Market mechanical in chop zone - dealer hedging behavior
 //
-// CHOP ZONE: 6835-6875
+// 📊 EXPECTED MOVES (EM expands into collar restrike):
+// Monday: EM 25pts → 6890-6940 (ref 6915)
+// Tuesday: EM 35pts → 6880-6950 (FOMC Minutes - wiggles not conviction)
+// Wednesday: EM 50pts → 6865-6965 (JPM COLLAR RESTRIKE - MAIN EVENT)
+// Friday: EM 60pts → 6855-6975
 //
-// UPSIDE SCENARIOS:
-// Above 6850 -> Stall at 6860 (IC Whale short call / sticky GEX)
-// Above 6865 -> Push to 6875 (top of chop)
-// Above 6885 -> BREAKOUT - Battle for 6900 ATH begins
-// Thin liquidity = algos can weaponize gamma for quick ramp
+// 🐋 CTA/VOL CONTROL POSITIONING:
+// CTAs projected BUYERS even in down tape - floor effect
+// VOL control strategies adding systematic bid underneath
+// Descent gets cushioned by mechanical flows
 //
-// DOWNSIDE SCENARIOS:
-// Below 6850 -> Retest 6835 Friday close
-// Below 6835 -> Reaction zone 6820
-// Below 6815 -> THE FLOOR - Watch for 6800
-// 6800 = Major gamma glob / IC Whale short put / V-BOUNCE zone 🔄
+// 📦 UPDATED STRUCTURE:
+// Resistance: 6925/6930
+// Support: 6885-6870 zone
 //
-// ECONOMIC CALENDAR:
-// Mon 8:30 AM - PCE Price Index (Fed's preferred inflation metric)
-// Tue 8:30 AM - GDP Final, Durable Goods; 10 AM - Consumer Confidence
-// Wed - HALF DAY (close 1 PM ET)
-// Thu - CLOSED (Christmas)
+// 🔑 CROSS-ASSET: Gold/silver making moves - algo signal flashing
+//
+// UPSIDE SCENARIOS (ABOVE RESISTANCE):
+// Above 6930 -> 6945-6950 decision area
+// Above 6950 -> 6960 negative GEX, sticky battleground
+// Above 6960 -> 6975 outside resistance
+//
+// DOWNSIDE SCENARIOS (BELOW SUPPORT):
+// Below 6870 -> 6855-6850 GEX support / gap fill convergence
+// Below 6850 -> 6840 extended
+//
+// 📌 BOTTOM LINE:
+// 6925/30 = resistance zone
+// 6885-6870 = support zone
+// Wednesday JPM collar restrike = THE systematic event
 
 // === INPUTS ===
 // Upside Targets
-level1 = input.float(6900, "ATH Target 🎯", group="🎯 Upside Targets")
-level1_thickness = input.int(2, "6900 Line Thickness", minval=1, maxval=10, group="🎯 Upside Targets")
-level2 = input.float(6885, "Breakout Trigger", group="🎯 Upside Targets")
-level2_thickness = input.int(3, "6885 Line Thickness", minval=1, maxval=10, group="🎯 Upside Targets")
-level3 = input.float(6875, "Chop Zone Top", group="🎯 Upside Targets")
-level3_thickness = input.int(2, "6875 Line Thickness", minval=1, maxval=10, group="🎯 Upside Targets")
+level1 = input.float(6975, "Outside Resistance", group="🎯 Upside Targets")
+level1_thickness = input.int(2, "6975 Line Thickness", minval=1, maxval=10, group="🎯 Upside Targets")
+level2 = input.float(6960, "Negative GEX / Sticky Battleground", group="🎯 Upside Targets")
+level2_thickness = input.int(2, "6960 Line Thickness", minval=1, maxval=10, group="🎯 Upside Targets")
+level3 = input.float(6950, "Round Number / Top of EM", group="🎯 Upside Targets")
+level3_thickness = input.int(2, "6950 Line Thickness", minval=1, maxval=10, group="🎯 Upside Targets")
 
-// IC Whale Zone
-level4 = input.float(6865, "🐋 IC Whale CCS Short Call", group="🐋 IC Whale Zone")
-level4_thickness = input.int(4, "6865 Line Thickness", minval=1, maxval=10, group="🐋 IC Whale Zone")
-level5 = input.float(6860, "Sticky GEX / Stall", group="🐋 IC Whale Zone")
-level5_thickness = input.int(2, "6860 Line Thickness", minval=1, maxval=10, group="🐋 IC Whale Zone")
-level6 = input.float(6850, "Pivot", group="🐋 IC Whale Zone")
-level6_thickness = input.int(2, "6850 Line Thickness", minval=1, maxval=10, group="🐋 IC Whale Zone")
+// Decision Area
+level4 = input.float(6945, "Decision Area", group="📊 Decision Area")
+level4_thickness = input.int(1, "6945 Line Thickness", minval=1, maxval=10, group="📊 Decision Area")
 
-// Chop Zone / Support
-level7 = input.float(6835, "Friday Close", group="⚡ Chop Zone (6835-6875)")
-level7_thickness = input.int(3, "6835 Line Thickness", minval=1, maxval=10, group="⚡ Chop Zone (6835-6875)")
-level8 = input.float(6820, "Reaction Zone", group="⚡ Chop Zone (6835-6875)")
-level8_thickness = input.int(2, "6820 Line Thickness", minval=1, maxval=10, group="⚡ Chop Zone (6835-6875)")
-level9 = input.float(6815, "The Floor ⚠️", group="⚡ Chop Zone (6835-6875)")
-level9_thickness = input.int(2, "6815 Line Thickness", minval=1, maxval=10, group="⚡ Chop Zone (6835-6875)")
-level10 = input.float(6800, "🐋 IC Whale PCS / V-Bounce 🔄", group="⚡ Chop Zone (6835-6875)")
-level10_thickness = input.int(4, "6800 Line Thickness", minval=1, maxval=10, group="⚡ Chop Zone (6835-6875)")
+// Resistance Zone (RED)
+level5 = input.float(6930, "🔴 Resistance Zone Top", group="🔴 Resistance Zone")
+level5_thickness = input.int(3, "6930 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Zone")
+level6 = input.float(6925, "🔴 Resistance Zone Bottom", group="🔴 Resistance Zone")
+level6_thickness = input.int(3, "6925 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Zone")
 
-// IC Whale Spread Strikes
-level_whale_call = input.float(6865, "CCS Short Strike", group="🐋 IC Whale Spreads")
-level_whale_put = input.float(6800, "PCS Short Strike", group="🐋 IC Whale Spreads")
-level_whale_put_long = input.float(6795, "PCS Long Strike", group="🐋 IC Whale Spreads")
+// Round Number
+level7 = input.float(6900, "Round Number", group="📍 Key Levels")
+level7_thickness = input.int(2, "6900 Line Thickness", minval=1, maxval=10, group="📍 Key Levels")
+
+// Support Zone (GREEN)
+level8 = input.float(6885, "🟢 Support Zone Top", group="🟢 Support Zone")
+level8_thickness = input.int(3, "6885 Line Thickness", minval=1, maxval=10, group="🟢 Support Zone")
+level9 = input.float(6880, "🟢 Support Zone", group="🟢 Support Zone")
+level9_thickness = input.int(2, "6880 Line Thickness", minval=1, maxval=10, group="🟢 Support Zone")
+level10 = input.float(6870, "🟢 Support Zone Bottom", group="🟢 Support Zone")
+level10_thickness = input.int(3, "6870 Line Thickness", minval=1, maxval=10, group="🟢 Support Zone")
+
+// Gap / Extended Support
+level11 = input.float(6855, "Gap Hold", group="⚡ Extended Levels")
+level11_thickness = input.int(1, "6855 Line Thickness", minval=1, maxval=10, group="⚡ Extended Levels")
+level12 = input.float(6850, "Gap Fill / GEX Support", group="⚡ Extended Levels")
+level12_thickness = input.int(2, "6850 Line Thickness", minval=1, maxval=10, group="⚡ Extended Levels")
+level13 = input.float(6840, "Below Gap", group="⚡ Extended Levels")
+level13_thickness = input.int(1, "6840 Line Thickness", minval=1, maxval=10, group="⚡ Extended Levels")
+level14 = input.float(6820, "Extended Support", group="⚡ Extended Levels")
+level14_thickness = input.int(2, "6820 Line Thickness", minval=1, maxval=10, group="⚡ Extended Levels")
+
+// JPM Collar / Key Strikes
+level_collar_strike = input.float(7000, "🎯 JPM Collar Restrike (Dec 31)", group="🎯 JPM Collar")
+level_gex_support = input.float(6850, "GEX Support Zone", group="🎯 JPM Collar")
 
 // Alert Settings
 enableAlerts = input.bool(true, "Enable Alerts", group="🔔 Alert Settings")
@@ -88,194 +108,247 @@ var line l7 = na
 var line l8 = na
 var line l9 = na
 var line l10 = na
-var line l_whale_call = na
-var line l_whale_put = na
-var line l_whale_put_long = na
+var line l11 = na
+var line l12 = na
+var line l13 = na
+var line l14 = na
+var line l_collar_strike = na
 
 if showLines and barstate.islast
-    // ATH Target - 6900 (Green)
-    l1 := line.new(bar_index - 100, level1, bar_index + 20, level1, color=color.lime, width=level1_thickness, style=line.style_solid)
+    // Outside Resistance - 6975 (Red)
+    l1 := line.new(bar_index - 100, level1, bar_index + 20, level1, color=color.red, width=level1_thickness, style=line.style_dashed)
     
-    // Breakout Trigger - 6885 (Green)
-    l2 := line.new(bar_index - 100, level2, bar_index + 20, level2, color=color.lime, width=level2_thickness, style=line.style_solid)
+    // Negative GEX - 6960 (Red)
+    l2 := line.new(bar_index - 100, level2, bar_index + 20, level2, color=color.red, width=level2_thickness, style=line.style_solid)
     
-    // Chop Zone Top - 6875 (Cyan)
-    l3 := line.new(bar_index - 100, level3, bar_index + 20, level3, color=color.aqua, width=level3_thickness, style=line.style_solid)
+    // Round Number Top of EM - 6950 (Magenta)
+    l3 := line.new(bar_index - 100, level3, bar_index + 20, level3, color=color.fuchsia, width=level3_thickness, style=line.style_solid)
     
-    // IC Whale CCS - 6865 (Magenta, thick)
-    l4 := line.new(bar_index - 100, level4, bar_index + 20, level4, color=color.fuchsia, width=level4_thickness, style=line.style_solid)
+    // Decision Area - 6945 (Orange)
+    l4 := line.new(bar_index - 100, level4, bar_index + 20, level4, color=color.orange, width=level4_thickness, style=line.style_solid)
     
-    // Sticky GEX - 6860 (Yellow)
-    l5 := line.new(bar_index - 100, level5, bar_index + 20, level5, color=color.yellow, width=level5_thickness, style=line.style_solid)
+    // Resistance Zone Top - 6930 (Red, thick)
+    l5 := line.new(bar_index - 100, level5, bar_index + 20, level5, color=color.red, width=level5_thickness, style=line.style_solid)
     
-    // Pivot - 6850 (Cyan)
-    l6 := line.new(bar_index - 100, level6, bar_index + 20, level6, color=color.aqua, width=level6_thickness, style=line.style_solid)
+    // Resistance Zone Bottom - 6925 (Red, thick)
+    l6 := line.new(bar_index - 100, level6, bar_index + 20, level6, color=color.red, width=level6_thickness, style=line.style_solid)
     
-    // Friday Close - 6835 (Yellow, thick)
-    l7 := line.new(bar_index - 100, level7, bar_index + 20, level7, color=color.yellow, width=level7_thickness, style=line.style_solid)
+    // Round Number - 6900 (Cyan)
+    l7 := line.new(bar_index - 100, level7, bar_index + 20, level7, color=color.aqua, width=level7_thickness, style=line.style_solid)
     
-    // Reaction Zone - 6820 (Orange)
-    l8 := line.new(bar_index - 100, level8, bar_index + 20, level8, color=color.orange, width=level8_thickness, style=line.style_solid)
+    // Support Zone Top - 6885 (Green, thick)
+    l8 := line.new(bar_index - 100, level8, bar_index + 20, level8, color=color.lime, width=level8_thickness, style=line.style_solid)
     
-    // The Floor - 6815 (Orange)
-    l9 := line.new(bar_index - 100, level9, bar_index + 20, level9, color=color.orange, width=level9_thickness, style=line.style_solid)
+    // Support Zone - 6880 (Green)
+    l9 := line.new(bar_index - 100, level9, bar_index + 20, level9, color=color.lime, width=level9_thickness, style=line.style_solid)
     
-    // IC Whale PCS - 6800 (Magenta, thick)
-    l10 := line.new(bar_index - 100, level10, bar_index + 20, level10, color=color.fuchsia, width=level10_thickness, style=line.style_solid)
+    // Support Zone Bottom - 6870 (Green, thick)
+    l10 := line.new(bar_index - 100, level10, bar_index + 20, level10, color=color.lime, width=level10_thickness, style=line.style_solid)
     
-    // IC Whale Spread Strikes
-    l_whale_put_long := line.new(bar_index - 100, level_whale_put_long, bar_index + 20, level_whale_put_long, color=color.maroon, width=1, style=line.style_dashed)
+    // Gap Hold - 6855 (Cyan)
+    l11 := line.new(bar_index - 100, level11, bar_index + 20, level11, color=color.aqua, width=level11_thickness, style=line.style_solid)
+    
+    // Gap Fill / GEX Support - 6850 (Green)
+    l12 := line.new(bar_index - 100, level12, bar_index + 20, level12, color=color.lime, width=level12_thickness, style=line.style_solid)
+    
+    // Below Gap - 6840 (Green)
+    l13 := line.new(bar_index - 100, level13, bar_index + 20, level13, color=color.lime, width=level13_thickness, style=line.style_solid)
+    
+    // Extended Support - 6820 (Green)
+    l14 := line.new(bar_index - 100, level14, bar_index + 20, level14, color=color.lime, width=level14_thickness, style=line.style_solid)
+    
+    // JPM Collar Strike - 7000 (Magenta, dashed)
+    l_collar_strike := line.new(bar_index - 100, level_collar_strike, bar_index + 20, level_collar_strike, color=color.fuchsia, width=3, style=line.style_dashed)
 
 // === LABELS ===
 if barstate.islast and showLabels
-    label.new(bar_index + 8, level1, "6900 ATH 🎯", style=label.style_label_left, color=color.lime, textcolor=color.black)
-    label.new(bar_index + 8, level2, "6885 BO", style=label.style_label_left, color=color.lime, textcolor=color.black)
-    label.new(bar_index + 8, level3, "6875 Chop Top", style=label.style_label_left, color=color.aqua, textcolor=color.black)
-    label.new(bar_index + 8, level4, "6865 🐋 CCS", style=label.style_label_left, color=color.fuchsia, textcolor=color.white, size=size.large)
-    label.new(bar_index + 8, level5, "6860 GEX", style=label.style_label_left, color=color.yellow, textcolor=color.black)
-    label.new(bar_index + 8, level6, "6850 Pivot", style=label.style_label_left, color=color.aqua, textcolor=color.black)
-    label.new(bar_index + 8, level7, "6835 Fri Close", style=label.style_label_left, color=color.yellow, textcolor=color.black, size=size.large)
-    label.new(bar_index + 8, level8, "6820 React", style=label.style_label_left, color=color.orange, textcolor=color.white)
-    label.new(bar_index + 8, level9, "6815 Floor ⚠️", style=label.style_label_left, color=color.orange, textcolor=color.white)
-    label.new(bar_index + 8, level10, "6800 🐋 PCS V-Bounce", style=label.style_label_left, color=color.fuchsia, textcolor=color.white, size=size.large)
-    
-    // IC Whale Spread Labels
-    label.new(bar_index + 8, level_whale_put_long, "6795 🐋 PCS Long", style=label.style_label_left, color=color.maroon, textcolor=color.white)
+    label.new(bar_index + 8, level_collar_strike, "7000 🎯 JPM Collar", style=label.style_label_left, color=color.fuchsia, textcolor=color.white, size=size.large)
+    label.new(bar_index + 8, level1, "6975 Outside Res", style=label.style_label_left, color=color.red, textcolor=color.white)
+    label.new(bar_index + 8, level2, "6960 Neg GEX", style=label.style_label_left, color=color.red, textcolor=color.white)
+    label.new(bar_index + 8, level3, "6950 Top EM", style=label.style_label_left, color=color.fuchsia, textcolor=color.white)
+    label.new(bar_index + 8, level4, "6945 Decision", style=label.style_label_left, color=color.orange, textcolor=color.white)
+    label.new(bar_index + 8, level5, "6930 🔴 Res Top", style=label.style_label_left, color=color.red, textcolor=color.white, size=size.large)
+    label.new(bar_index + 8, level6, "6925 🔴 Res Bot", style=label.style_label_left, color=color.red, textcolor=color.white, size=size.large)
+    label.new(bar_index + 8, level7, "6900 Round", style=label.style_label_left, color=color.aqua, textcolor=color.black)
+    label.new(bar_index + 8, level8, "6885 🟢 Sup Top", style=label.style_label_left, color=color.lime, textcolor=color.black, size=size.large)
+    label.new(bar_index + 8, level9, "6880 🟢 Support", style=label.style_label_left, color=color.lime, textcolor=color.black)
+    label.new(bar_index + 8, level10, "6870 🟢 Sup Bot", style=label.style_label_left, color=color.lime, textcolor=color.black, size=size.large)
+    label.new(bar_index + 8, level11, "6855 Gap Hold", style=label.style_label_left, color=color.aqua, textcolor=color.black)
+    label.new(bar_index + 8, level12, "6850 Gap/GEX", style=label.style_label_left, color=color.lime, textcolor=color.black)
+    label.new(bar_index + 8, level13, "6840 Below Gap", style=label.style_label_left, color=color.lime, textcolor=color.black)
+    label.new(bar_index + 8, level14, "6820 Extended", style=label.style_label_left, color=color.lime, textcolor=color.black)
 
 // === POSITION DETECTION ===
-above6900 = close > level1  // ATH Target
-at6900 = close >= level1 - 5 and close <= level1 + 5
-above6885 = close > level2  // BREAKOUT TRIGGER
-at6885 = close >= level2 - 5 and close <= level2 + 5
-above6875 = close > level3  // Chop Zone Top
-at6875 = close >= level3 - 5 and close <= level3 + 5
-above6865 = close > level4  // IC WHALE CCS
-at6865 = close >= level4 - 5 and close <= level4 + 5
-above6860 = close > level5  // Sticky GEX
-at6860 = close >= level5 - 5 and close <= level5 + 5
-above6850 = close > level6  // Pivot
-at6850 = close >= level6 - 5 and close <= level6 + 5
-above6835 = close > level7  // Friday Close
-at6835 = close >= level7 - 5 and close <= level7 + 5
-below6835 = close < level7
-above6820 = close > level8  // Reaction Zone
-at6820 = close >= level8 - 5 and close <= level8 + 5
-above6815 = close > level9  // The Floor
-at6815 = close >= level9 - 5 and close <= level9 + 5
-above6800 = close > level10 // Gamma Glob / IC Whale PCS
-at6800 = close >= level10 - 5 and close <= level10 + 5
-below6800 = close < level10
-inChopZone = close >= level7 and close <= level3  // 6835-6875 chop zone
-inWhaleZone = close >= level10 and close <= level4  // 6800-6865 IC Whale range
+above7000 = close > level_collar_strike  // Above JPM Collar
+at7000 = close >= level_collar_strike - 5 and close <= level_collar_strike + 5
+above6975 = close > level1  // Outside Resistance
+at6975 = close >= level1 - 5 and close <= level1 + 5
+above6960 = close > level2  // Negative GEX
+at6960 = close >= level2 - 5 and close <= level2 + 5
+above6950 = close > level3  // Top of EM
+at6950 = close >= level3 - 5 and close <= level3 + 5
+above6945 = close > level4  // Decision Area
+at6945 = close >= level4 - 5 and close <= level4 + 5
+above6930 = close > level5  // Resistance Top
+at6930 = close >= level5 - 5 and close <= level5 + 5
+above6925 = close > level6  // Resistance Bottom
+at6925 = close >= level6 - 5 and close <= level6 + 5
+above6900 = close > level7  // Round Number
+at6900 = close >= level7 - 5 and close <= level7 + 5
+above6885 = close > level8  // Support Top
+at6885 = close >= level8 - 5 and close <= level8 + 5
+above6880 = close > level9  // Support
+at6880 = close >= level9 - 5 and close <= level9 + 5
+above6870 = close > level10 // Support Bottom
+at6870 = close >= level10 - 5 and close <= level10 + 5
+below6870 = close < level10
+above6855 = close > level11 // Gap Hold
+at6855 = close >= level11 - 5 and close <= level11 + 5
+above6850 = close > level12 // Gap Fill / GEX Support
+at6850 = close >= level12 - 5 and close <= level12 + 5
+above6840 = close > level13 // Below Gap
+at6840 = close >= level13 - 5 and close <= level13 + 5
+above6820 = close > level14 // Extended Support
+at6820 = close >= level14 - 5 and close <= level14 + 5
+below6820 = close < level14
+
+// Zone detection
+inResistanceZone = close >= level6 and close <= level5  // 6925-6930 resistance zone
+inSupportZone = close >= level10 and close <= level8    // 6870-6885 support zone
+inChopZone = close >= level10 and close <= level5       // 6870-6930 chop zone
 
 // Volume spike detection
 volSpike = volume > ta.sma(volume, 20) * 1.5
 
 // === ALERT CONDITIONS ===
 
-// ATH TARGET
-alertcondition(ta.crossover(close, level1), "6900 ATH TARGET", "SPX >> 6900 🎯 ATH TARGET!")
-alertcondition(at6900, "At 6900", "SPX at 6900 - All-Time High battle!")
+// JPM COLLAR STRIKE
+alertcondition(ta.crossover(close, level_collar_strike), "7000 JPM COLLAR", "SPX >> 7000 🎯 JPM COLLAR STRIKE!")
+alertcondition(at7000, "At 7000", "SPX at 7000 - JPM Collar Restrike Level!")
 
-// BREAKOUT TRIGGER
-alertcondition(ta.crossover(close, level2), "6885 BREAKOUT", "SPX UP 6885 ▲ BREAKOUT! Battle for 6900 ATH begins!")
-alertcondition(ta.crossunder(close, level2), "6885 REJECT", "SPX DOWN 6885 - Breakout rejected!")
-alertcondition(at6885, "At 6885", "SPX at 6885 - Breakout trigger!")
+// OUTSIDE RESISTANCE
+alertcondition(ta.crossover(close, level1), "6975 OUTSIDE RES", "SPX >> 6975 - Outside Resistance!")
+alertcondition(at6975, "At 6975", "SPX at 6975 - Outside Resistance!")
 
-// CHOP ZONE TOP
-alertcondition(ta.crossover(close, level3), "6875 CHOP TOP", "SPX >> 6875 - Chop zone top!")
-alertcondition(inChopZone, "In Chop Zone", "SPX in CHOP ZONE (6835-6875) - Range bound!")
+// NEGATIVE GEX
+alertcondition(ta.crossover(close, level2), "6960 NEG GEX UP", "SPX UP 6960 - Negative GEX / Sticky Battleground!")
+alertcondition(ta.crossunder(close, level2), "6960 NEG GEX DOWN", "SPX DOWN 6960 - Below Negative GEX!")
+alertcondition(at6960, "At 6960", "SPX at 6960 - Negative GEX!")
 
-// IC WHALE CCS (6865)
-alertcondition(ta.crossover(close, level4), "6865 WHALE CCS UP", "SPX UP 6865 🐋 Above IC Whale CCS strike!")
-alertcondition(ta.crossunder(close, level4), "6865 WHALE CCS DOWN", "SPX DOWN 6865 🐋 IC Whale CCS strike - Expect stall!")
-alertcondition(at6865, "At 6865 Whale", "SPX at 6865 🐋 IC Whale short call strike!")
+// TOP OF EM
+alertcondition(ta.crossover(close, level3), "6950 TOP EM", "SPX >> 6950 - Top of Expected Move!")
+alertcondition(at6950, "At 6950", "SPX at 6950 - Round Number / Top of EM!")
 
-// STICKY GEX
-alertcondition(ta.crossover(close, level5), "6860 GEX", "SPX >> 6860 - Sticky GEX / Stall area!")
-alertcondition(ta.crossunder(close, level5), "6860 GEX DOWN", "SPX << 6860 - Below sticky GEX!")
+// DECISION AREA
+alertcondition(ta.crossover(close, level4), "6945 DECISION UP", "SPX >> 6945 - Decision Area!")
+alertcondition(ta.crossunder(close, level4), "6945 DECISION DOWN", "SPX << 6945 - Below Decision Area!")
 
-// PIVOT
-alertcondition(ta.crossover(close, level6), "6850 PIVOT UP", "SPX >> 6850 - Pivot level!")
-alertcondition(ta.crossunder(close, level6), "6850 PIVOT DOWN", "SPX << 6850 - Below pivot!")
+// RESISTANCE ZONE TOP (6930)
+alertcondition(ta.crossover(close, level5), "6930 RES TOP UP", "SPX UP 6930 🔴 Above Resistance Zone!")
+alertcondition(ta.crossunder(close, level5), "6930 RES TOP DOWN", "SPX DOWN 6930 🔴 Entering Resistance Zone!")
+alertcondition(at6930, "At 6930 Res", "SPX at 6930 🔴 Resistance Zone Top!")
 
-// FRIDAY CLOSE
-alertcondition(ta.crossover(close, level7), "6835 RECLAIM", "SPX UP 6835 - Reclaiming Friday close!")
-alertcondition(ta.crossunder(close, level7), "6835 LOST", "SPX DOWN 6835 - Below Friday close!")
-alertcondition(at6835, "At 6835", "SPX at 6835 - Friday close!")
+// RESISTANCE ZONE BOTTOM (6925)
+alertcondition(ta.crossover(close, level6), "6925 RES BOT UP", "SPX UP 6925 🔴 Entering Resistance Zone!")
+alertcondition(ta.crossunder(close, level6), "6925 RES BOT DOWN", "SPX DOWN 6925 - Below Resistance Zone!")
+alertcondition(at6925, "At 6925 Res", "SPX at 6925 🔴 Resistance Zone Bottom!")
 
-// REACTION ZONE
-alertcondition(ta.crossunder(close, level8), "6820 REACTION", "SPX >> 6820 - Reaction zone!")
+// ROUND NUMBER
+alertcondition(ta.crossover(close, level7), "6900 RECLAIM", "SPX UP 6900 - Reclaiming Round Number!")
+alertcondition(ta.crossunder(close, level7), "6900 LOST", "SPX DOWN 6900 - Below Round Number!")
+alertcondition(at6900, "At 6900", "SPX at 6900 - Round Number!")
 
-// THE FLOOR
-alertcondition(ta.crossunder(close, level9), "6815 FLOOR", "SPX >> 6815 ⚠️ THE FLOOR - Watch for 6800!")
+// SUPPORT ZONE TOP (6885)
+alertcondition(ta.crossover(close, level8), "6885 SUP TOP UP", "SPX UP 6885 - Above Support Zone!")
+alertcondition(ta.crossunder(close, level8), "6885 SUP TOP DOWN", "SPX DOWN 6885 🟢 Entering Support Zone!")
+alertcondition(at6885, "At 6885 Sup", "SPX at 6885 🟢 Support Zone Top!")
 
-// IC WHALE PCS / GAMMA GLOB (6800)
-alertcondition(ta.crossover(close, level10), "6800 V-BOUNCE", "SPX UP 6800 🐋 V-BOUNCE from IC Whale PCS / Gamma Glob!")
-alertcondition(ta.crossunder(close, level10), "6800 BREACH", "SPX DOWN 6800 🐋 IC Whale PCS strike breached!")
-alertcondition(at6800, "At 6800 Whale", "SPX at 6800 🐋 Major Gamma Glob / IC Whale short put!")
-alertcondition(below6800, "Below 6800", "SPX < 6800 - Below IC Whale range!")
+// SUPPORT ZONE (6880)
+alertcondition(ta.crossover(close, level9), "6880 SUPPORT UP", "SPX >> 6880 🟢 Support holding!")
+alertcondition(ta.crossunder(close, level9), "6880 SUPPORT DOWN", "SPX << 6880 - Below Support!")
 
-// IC WHALE ZONE ALERT
-alertcondition(inWhaleZone, "In Whale Zone", "SPX in IC WHALE ZONE (6800-6865) - Watch for pin!")
+// SUPPORT ZONE BOTTOM (6870)
+alertcondition(ta.crossover(close, level10), "6870 SUP BOT UP", "SPX UP 6870 🟢 Bouncing from Support Zone Bottom!")
+alertcondition(ta.crossunder(close, level10), "6870 SUP BOT DOWN", "SPX DOWN 6870 🟢 Support Zone Breached!")
+alertcondition(at6870, "At 6870 Sup", "SPX at 6870 🟢 Support Zone Bottom!")
+
+// GAP HOLD (6855)
+alertcondition(ta.crossunder(close, level11), "6855 GAP HOLD", "SPX >> 6855 - Gap Hold level!")
+
+// GAP FILL / GEX SUPPORT (6850)
+alertcondition(ta.crossover(close, level12), "6850 GEX BOUNCE", "SPX UP 6850 - Bounce from GEX Support!")
+alertcondition(ta.crossunder(close, level12), "6850 GEX BREACH", "SPX DOWN 6850 - GEX Support Breached!")
+alertcondition(at6850, "At 6850 GEX", "SPX at 6850 - Gap Fill / GEX Support!")
+
+// BELOW GAP (6840)
+alertcondition(ta.crossunder(close, level13), "6840 BELOW GAP", "SPX >> 6840 - Below Gap!")
+
+// EXTENDED SUPPORT (6820)
+alertcondition(ta.crossunder(close, level14), "6820 EXTENDED", "SPX >> 6820 - Extended Support!")
+alertcondition(at6820, "At 6820", "SPX at 6820 - Extended Support!")
+alertcondition(below6820, "Below 6820", "SPX < 6820 - Below Extended Support!")
+
+// ZONE ALERTS
+alertcondition(inResistanceZone, "In Resistance Zone", "SPX in RESISTANCE ZONE (6925-6930) 🔴!")
+alertcondition(inSupportZone, "In Support Zone", "SPX in SUPPORT ZONE (6870-6885) 🟢!")
 
 // === STATUS TABLE ===
 var table statusTable = table.new(position.top_right, 2, 20, border_width=1)
 
 if barstate.islast and showLabels and showTable
     // Header
-    table.cell(statusTable, 0, 0, "SPX DEC 22 🐋", bgcolor=color.new(color.fuchsia, 70), text_color=color.white)
+    table.cell(statusTable, 0, 0, "SPX DEC 29 🎯", bgcolor=color.new(color.fuchsia, 70), text_color=color.white)
     table.cell(statusTable, 1, 0, str.tostring(close, "#.##"), bgcolor=color.new(color.fuchsia, 70), text_color=color.white)
     
     // Alert Status
     table.cell(statusTable, 0, 1, "Alerts", text_color=color.white)
     table.cell(statusTable, 1, 1, enableAlerts ? "ON" : "OFF", bgcolor=enableAlerts ? color.green : color.red, text_color=color.white)
     
-    // Bias based on IC Whale positioning
-    bias = above6885 ? "📈 BREAKOUT" : inChopZone ? "⚡ CHOP ZONE" : inWhaleZone ? "🐋 WHALE ZONE" : below6800 ? "📉 BREAKDOWN" : "📍 NEUTRAL"
-    biasColor = above6885 ? color.green : inChopZone ? color.purple : inWhaleZone ? color.fuchsia : below6800 ? color.red : color.yellow
+    // Bias based on positioning
+    bias = above6930 ? "📈 ABOVE RES" : inResistanceZone ? "🔴 RES ZONE" : inSupportZone ? "🟢 SUP ZONE" : inChopZone ? "⚡ CHOP" : below6870 ? "📉 BREAKDOWN" : "📍 NEUTRAL"
+    biasColor = above6930 ? color.green : inResistanceZone ? color.red : inSupportZone ? color.lime : inChopZone ? color.purple : below6870 ? color.red : color.yellow
     table.cell(statusTable, 0, 2, "Bias", text_color=color.white)
     table.cell(statusTable, 1, 2, bias, bgcolor=color.new(biasColor, 70), text_color=color.white)
     
     // Position Status
-    position = above6900 ? "↑ ATH!" : above6885 ? "Above BO" : above6875 ? "Chop Top" : above6865 ? "Above 🐋CCS" : above6860 ? "At GEX" : above6850 ? "Pivot" : above6835 ? "Above Fri" : above6820 ? "Below Fri" : above6815 ? "React Zone" : above6800 ? "At Floor" : "Below 🐋PCS"
-    posColor = above6900 ? color.lime : above6885 ? color.lime : above6865 ? color.fuchsia : above6835 ? color.yellow : above6800 ? color.orange : color.red
+    position = above7000 ? "↑ Above Collar!" : above6975 ? "Outside Res" : above6960 ? "Neg GEX" : above6950 ? "Top EM" : above6930 ? "Above Res" : inResistanceZone ? "🔴 Res Zone" : above6900 ? "Above 6900" : inSupportZone ? "🟢 Sup Zone" : above6850 ? "Gap Hold" : above6820 ? "Below Gap" : "Extended"
+    posColor = above6975 ? color.lime : above6930 ? color.lime : inResistanceZone ? color.red : above6900 ? color.aqua : inSupportZone ? color.lime : above6850 ? color.yellow : color.orange
     table.cell(statusTable, 0, 3, "Position", text_color=color.white)
     table.cell(statusTable, 1, 3, position, bgcolor=color.new(posColor, 70), text_color=color.white)
     
     // Strategy
-    strategy = above6885 ? "Battle for 6900 ATH" : inChopZone ? "Range 6835-6875" : above6800 ? "Watch 6800 V-bounce" : "Below IC Whale range"
+    strategy = above6930 ? "Watch 6945-6950 decision" : inResistanceZone ? "Fade or Break?" : inSupportZone ? "Hold for bounce" : above6850 ? "Watch gap fill" : "Extended - caution"
     table.cell(statusTable, 0, 4, "Strategy", text_color=color.white)
     table.cell(statusTable, 1, 4, strategy, bgcolor=color.new(color.blue, 80), text_color=color.white)
     
-    // IC Whale Levels
-    table.cell(statusTable, 0, 5, "🐋 CCS Strike", text_color=color.white)
-    table.cell(statusTable, 1, 5, "6865", bgcolor=color.new(color.fuchsia, 80), text_color=color.white)
+    // Key Levels
+    table.cell(statusTable, 0, 5, "🔴 Resistance", text_color=color.white)
+    table.cell(statusTable, 1, 5, "6925-6930", bgcolor=color.new(color.red, 80), text_color=color.white)
     
-    table.cell(statusTable, 0, 6, "🐋 PCS Strike", text_color=color.white)
-    table.cell(statusTable, 1, 6, "6800", bgcolor=color.new(color.fuchsia, 80), text_color=color.white)
+    table.cell(statusTable, 0, 6, "🟢 Support", text_color=color.white)
+    table.cell(statusTable, 1, 6, "6870-6885", bgcolor=color.new(color.lime, 80), text_color=color.black)
     
-    table.cell(statusTable, 0, 7, "Chop Zone", text_color=color.white)
-    table.cell(statusTable, 1, 7, "6835-6875", bgcolor=color.new(color.purple, 80), text_color=color.white)
+    table.cell(statusTable, 0, 7, "🎯 JPM Collar", text_color=color.white)
+    table.cell(statusTable, 1, 7, "7000 (Dec 31)", bgcolor=color.new(color.fuchsia, 80), text_color=color.white)
     
-    table.cell(statusTable, 0, 8, "Breakout", text_color=color.white)
-    table.cell(statusTable, 1, 8, "6885 ▲", bgcolor=color.new(color.lime, 80), text_color=color.black)
+    table.cell(statusTable, 0, 8, "GEX Support", text_color=color.white)
+    table.cell(statusTable, 1, 8, "6850", bgcolor=color.new(color.lime, 80), text_color=color.black)
     
     // Distance to key levels
-    distTo6865 = level4 - close
-    distTo6865Str = distTo6865 > 0 ? "-" + str.tostring(math.abs(distTo6865), "#.#") : "+" + str.tostring(math.abs(distTo6865), "#.#")
-    table.cell(statusTable, 0, 9, "To 🐋CCS 6865", text_color=color.white)
-    table.cell(statusTable, 1, 9, distTo6865Str, bgcolor=color.new(color.fuchsia, 80), text_color=color.white)
+    distTo6930 = level5 - close
+    distTo6930Str = distTo6930 > 0 ? "-" + str.tostring(math.abs(distTo6930), "#.#") : "+" + str.tostring(math.abs(distTo6930), "#.#")
+    table.cell(statusTable, 0, 9, "To 🔴Res 6930", text_color=color.white)
+    table.cell(statusTable, 1, 9, distTo6930Str, bgcolor=color.new(color.red, 80), text_color=color.white)
     
-    distTo6835 = level7 - close
-    distTo6835Str = distTo6835 > 0 ? "-" + str.tostring(math.abs(distTo6835), "#.#") : "+" + str.tostring(math.abs(distTo6835), "#.#")
-    table.cell(statusTable, 0, 10, "To Fri Close", text_color=color.white)
-    table.cell(statusTable, 1, 10, distTo6835Str, bgcolor=color.new(color.yellow, 80), text_color=color.black)
+    distTo6885 = level8 - close
+    distTo6885Str = distTo6885 > 0 ? "-" + str.tostring(math.abs(distTo6885), "#.#") : "+" + str.tostring(math.abs(distTo6885), "#.#")
+    table.cell(statusTable, 0, 10, "To 🟢Sup 6885", text_color=color.white)
+    table.cell(statusTable, 1, 10, distTo6885Str, bgcolor=color.new(color.lime, 80), text_color=color.black)
     
-    distTo6800 = level10 - close
-    distTo6800Str = distTo6800 > 0 ? "-" + str.tostring(math.abs(distTo6800), "#.#") : "+" + str.tostring(math.abs(distTo6800), "#.#")
-    table.cell(statusTable, 0, 11, "To 🐋PCS 6800", text_color=color.white)
-    table.cell(statusTable, 1, 11, distTo6800Str, bgcolor=color.new(color.fuchsia, 80), text_color=color.white)
+    distTo7000 = level_collar_strike - close
+    distTo7000Str = distTo7000 > 0 ? "-" + str.tostring(math.abs(distTo7000), "#.#") : "+" + str.tostring(math.abs(distTo7000), "#.#")
+    table.cell(statusTable, 0, 11, "To 🎯Collar 7000", text_color=color.white)
+    table.cell(statusTable, 1, 11, distTo7000Str, bgcolor=color.new(color.fuchsia, 80), text_color=color.white)
     
     // Volume Status
     volStatus = volSpike ? "🔥 SPIKE" : "Normal"
@@ -285,29 +358,33 @@ if barstate.islast and showLabels and showTable
     
     // Market Context
     table.cell(statusTable, 0, 13, "Context", text_color=color.white)
-    table.cell(statusTable, 1, 13, "🐋 IC Whale Week", bgcolor=color.new(color.fuchsia, 80), text_color=color.white)
+    table.cell(statusTable, 1, 13, "🎯 Year-End Flow", bgcolor=color.new(color.fuchsia, 80), text_color=color.white)
     
-    table.cell(statusTable, 0, 14, "Whale Size", text_color=color.white)
-    table.cell(statusTable, 1, 14, "15k->50k Wed", bgcolor=color.new(color.fuchsia, 80), text_color=color.white)
+    table.cell(statusTable, 0, 14, "Main Event", text_color=color.white)
+    table.cell(statusTable, 1, 14, "JPM Dec 31 2-3PM", bgcolor=color.new(color.fuchsia, 80), text_color=color.white)
     
     table.cell(statusTable, 0, 15, "Upside", text_color=color.white)
-    table.cell(statusTable, 1, 15, "6865->6885->6900", bgcolor=color.new(color.gray, 80), text_color=color.white)
+    table.cell(statusTable, 1, 15, "6930->6945->6960->6975", bgcolor=color.new(color.gray, 80), text_color=color.white)
     
     table.cell(statusTable, 0, 16, "Downside", text_color=color.white)
-    table.cell(statusTable, 1, 16, "6835->6820->6815->6800", bgcolor=color.new(color.gray, 80), text_color=color.white)
+    table.cell(statusTable, 1, 16, "6870->6855->6850->6840", bgcolor=color.new(color.gray, 80), text_color=color.white)
     
-    table.cell(statusTable, 0, 17, "V-Bounce", text_color=color.white)
-    table.cell(statusTable, 1, 17, "6800 🔄", bgcolor=color.new(color.fuchsia, 80), text_color=color.white)
+    table.cell(statusTable, 0, 17, "CTA Flow", text_color=color.white)
+    table.cell(statusTable, 1, 17, "Buyers in down tape", bgcolor=color.new(color.lime, 80), text_color=color.black)
 
 // === PLOT INVISIBLE LINES FOR ALERT TRIGGERS ===
-plot(level1, "6900 ATH", color=color.new(color.lime, 100))
-plot(level2, "6885 BO", color=color.new(color.lime, 100))
-plot(level3, "6875 Chop Top", color=color.new(color.aqua, 100))
-plot(level4, "6865 🐋CCS", color=color.new(color.fuchsia, 100))
-plot(level5, "6860 GEX", color=color.new(color.yellow, 100))
-plot(level6, "6850 Pivot", color=color.new(color.aqua, 100))
-plot(level7, "6835 Fri Close", color=color.new(color.yellow, 100))
-plot(level8, "6820 React", color=color.new(color.orange, 100))
-plot(level9, "6815 Floor", color=color.new(color.orange, 100))
-plot(level10, "6800 🐋PCS", color=color.new(color.fuchsia, 100))
-plot(level_whale_put_long, "6795 🐋PCS Long", color=color.new(color.maroon, 100))
+plot(level_collar_strike, "7000 JPM Collar", color=color.new(color.fuchsia, 100))
+plot(level1, "6975 Outside Res", color=color.new(color.red, 100))
+plot(level2, "6960 Neg GEX", color=color.new(color.red, 100))
+plot(level3, "6950 Top EM", color=color.new(color.fuchsia, 100))
+plot(level4, "6945 Decision", color=color.new(color.orange, 100))
+plot(level5, "6930 Res Top", color=color.new(color.red, 100))
+plot(level6, "6925 Res Bot", color=color.new(color.red, 100))
+plot(level7, "6900 Round", color=color.new(color.aqua, 100))
+plot(level8, "6885 Sup Top", color=color.new(color.lime, 100))
+plot(level9, "6880 Support", color=color.new(color.lime, 100))
+plot(level10, "6870 Sup Bot", color=color.new(color.lime, 100))
+plot(level11, "6855 Gap Hold", color=color.new(color.aqua, 100))
+plot(level12, "6850 Gap/GEX", color=color.new(color.lime, 100))
+plot(level13, "6840 Below Gap", color=color.new(color.lime, 100))
+plot(level14, "6820 Extended", color=color.new(color.lime, 100))
