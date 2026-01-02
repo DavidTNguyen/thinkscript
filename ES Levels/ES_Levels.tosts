@@ -1,37 +1,37 @@
 
-# === ES Daily Update - January 2, 2026 (Update 5) ===
+# === ES Daily Update - January 2, 2026 (Update 6) ===
 # BIG PICTURE OVERVIEW - Macro structures for context
 # (For detailed daily setups/intraday levels: tradecompanionsubstack.com)
 #
-# MID-DAY CHOP after volatile open:
-# - 6872 support held (hit 6873, bounced)
-# - 6896 backtested exact and REJECTED
+# LEVELS RESPECTING PRECISELY:
+# - 6872 support: Held 6873 at 11:10AM, rallied to 6896 resistance
+# - Just tested 6871.50, bounced again
 #
 # CURRENT PLAN:
-# - Bulls must recover 6896 to rally → 6905 → 6913 → 6925+
-# - 6886, 6872 remain supports below
+# - Bulls need > 6896 to pop → 6905 → 6913 → 6925+
+# - If 6872 fails → 6854 → 6838 next leg lower
 #
 # NOTE: We don't predict - we REACT and follow price level to level.
 
 # === KEY LEVELS ===
 input level1 = 6938;  # Resistance
-input level1_thickness = 2;
+input level1_thickness = 1;
 input level2 = 6925;  # Resistance
-input level2_thickness = 2;
+input level2_thickness = 1;
 input level3 = 6913;  # Resistance
-input level3_thickness = 2;
+input level3_thickness = 1;
 input level3b = 6905;  # Resistance (Rally Target)
-input level3b_thickness = 2;
+input level3b_thickness = 1;
 input level4 = 6896;  # KEY - Must Reclaim to Rally (Rejected)
-input level4_thickness = 3;
+input level4_thickness = 2;
 input level5 = 6886;  # Support
-input level5_thickness = 3;
-input level6 = 6872;  # Support (Held - hit 6873)
-input level6_thickness = 3;
-input level7 = 6869;  # Support
-input level7_thickness = 2;
-input level8 = 6854;  # Support Below
-input level8_thickness = 2;
+input level5_thickness = 1;
+input level6 = 6872;  # Support (Holding - tested 6871.50)
+input level6_thickness = 2;
+input level7 = 6854;  # Support (if 6872 fails)
+input level7_thickness = 1;
+input level8 = 6838;  # Support (next leg lower)
+input level8_thickness = 1;
 input level9 = 0;  # Unused
 input level9_thickness = 1;
 input level10 = 0;  # Unused
@@ -60,11 +60,11 @@ def above6886 = close > level5;
 def at6886 = close >= level5 - 2 and close <= level5 + 2;
 def above6872 = close > level6;
 def at6872 = close >= level6 - 2 and close <= level6 + 2;
-def above6869 = close > level7;
-def at6869 = close >= level7 - 2 and close <= level7 + 2;
-def above6854 = close > level8;
-def at6854 = close >= level8 - 2 and close <= level8 + 2;
-def below6854 = close < level8;
+def above6854 = close > level7;
+def at6854 = close >= level7 - 2 and close <= level7 + 2;
+def above6838 = close > level8;
+def at6838 = close >= level8 - 2 and close <= level8 + 2;
+def below6838 = close < level8;
 
 # === LEVEL PLOTS ===
 plot L1 = level1;
@@ -129,9 +129,9 @@ AddChartBubble(isLastBar, level3, "13 R", Color.ORANGE, yes);
 AddChartBubble(isLastBar, level3b, "05 R", Color.ORANGE, yes);
 AddChartBubble(isLastBar, level4, "96 *", Color.YELLOW, no);
 AddChartBubble(isLastBar, level5, "86 S", Color.GREEN, no);
-AddChartBubble(isLastBar, level6, "72 S", Color.GREEN, no);
-AddChartBubble(isLastBar and level7 > 0, level7, "69 S", Color.GREEN, no);
-AddChartBubble(isLastBar and level8 > 0, level8, "54 S", Color.CYAN, no);
+AddChartBubble(isLastBar, level6, "72 S*", Color.GREEN, no);
+AddChartBubble(isLastBar and level7 > 0, level7, "54 S", Color.GREEN, no);
+AddChartBubble(isLastBar and level8 > 0, level8, "38 S", Color.CYAN, no);
 
 # === ALERT SYSTEM ===
 
@@ -166,17 +166,17 @@ Alert(enableAlerts and close crosses above level5, "ES >> 6886 - Above support",
 Alert(enableAlerts and close crosses below level5, "ES << 6886 - BELOW SUPPORT!", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and at6886, "ES @ 6886 - Support", Alert.BAR, Sound.Chimes);
 
-# SUPPORT ZONE 6872
+# SUPPORT 6872 (Holding)
 Alert(enableAlerts and close crosses above level6, "ES >> 6872 - Reclaim", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level6, "ES << 6872 - Into support zone", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6872, "ES @ 6872 - Support Zone", Alert.BAR, Sound.Chimes);
-
-# SUPPORT ZONE 6869
-Alert(enableAlerts and close crosses above level7, "ES >> 6869 - Above zone", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level7, "ES << 6869 - Below zone", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6869, "ES @ 6869 - Support Zone", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and close crosses below level6, "ES << 6872 - BREAKDOWN! Next 6854, 6838", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6872, "ES @ 6872 - Key Support", Alert.BAR, Sound.Chimes);
 
 # SUPPORT 6854
-Alert(enableAlerts and close crosses above level8, "ES >> 6854 - Above support", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level8, "ES << 6854 - BELOW SUPPORT!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and close crosses above level7, "ES >> 6854 - Reclaim", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level7, "ES << 6854 - Below support", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and at6854, "ES @ 6854 - Support", Alert.BAR, Sound.Chimes);
+
+# SUPPORT 6838 (Next Leg Lower)
+Alert(enableAlerts and close crosses above level8, "ES >> 6838 - Above support", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level8, "ES << 6838 - BELOW SUPPORT!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6838, "ES @ 6838 - Support", Alert.BAR, Sound.Chimes);
