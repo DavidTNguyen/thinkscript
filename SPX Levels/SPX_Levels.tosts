@@ -1,64 +1,59 @@
-# === SPX DEC 29 - Year-End Flow Week ===
+# === SPX JAN 2 - New Year Session ===
 # 
-# MARKET CONTEXT:
-# 🎯 JPM COLLAR RESTRIKE - Massive gamma/vega reset at 7,000 strike
-#    Typically 2:00-3:00PM on Dec 31 - Dealer positioning chess
-#    Flows over fundamentals into year-end
+# 📊 BIAS:
+# Bullish-to-neutral above 6823
+# Squeeze setup above 6895
 #
-# 🧊 VOL STRUCTURE:
-# VIX 14.8, light volume, systematic flows dominate
-# Market mechanical in chop zone - dealer hedging behavior
+# 🔑 KEY LEVELS:
+# Resistance / Squeeze Trigger: 6895 → 6921 → 6945
+# Support: 6823
+# Max Risk Line: 6802
+# Failure Targets (only if 6823 breaks): 6759 → 6719
 #
-# 📊 EXPECTED MOVES (EM expands into collar restrike):
-# Monday: EM 25pts → 6890-6940 (ref 6915)
-# Tuesday: EM 35pts → 6880-6950 (FOMC Minutes - wiggles not conviction)
-# Wednesday: EM 50pts → 6865-6965 (JPM COLLAR RESTRIKE - MAIN EVENT)
-# Friday: EM 60pts → 6855-6975
+# 📈 TRADE SETUPS:
 #
-# 🐋 CTA/VOL CONTROL POSITIONING:
-# CTAs projected BUYERS even in down tape - floor effect
-# VOL control strategies adding systematic bid underneath
-# Descent gets cushioned by mechanical flows
+# 1️⃣ BREAK & HOLD > 6895
+#    Buy ATM–+10C
+#    Targets: 6921 / 6945
+#    Stop: Loss of 6895
 #
-# 📦 UPDATED STRUCTURE:
-# Resistance: 6925/6930
-# Support: 6885-6870 zone
+# 2️⃣ RANGE BOUNCE 6823–6895
+#    Calls near 6825–6850
+#    Scalp to mid-range / VWAP
+#    Tight stop below 6823
 #
-# 🔑 CROSS-ASSET: Gold/silver making moves - algo signal flashing
+# 3️⃣ BREAKDOWN < 6823 (Invalidates Bull Case)
+#    Buy ATM–-10P
+#    Targets: 6759 / 6719
+#    Stop: Reclaim of 6823
 #
-# UPSIDE SCENARIOS (ABOVE RESISTANCE):
-# Above 6930 -> 6945-6950 decision area
-# Above 6950 -> 6960 negative GEX, sticky battleground
-# Above 6960 -> 6975 outside resistance
+# ⚠️ OPTIONS RULES:
+# Size small (0DTE = fast decay)
+# Cut losers fast, no averaging
+# Trade level confirmation, not prediction
 #
-# DOWNSIDE SCENARIOS (BELOW SUPPORT):
-# Below 6870 -> 6855-6850 GEX support / gap fill convergence
-# Below 6850 -> 6840 extended
-#
-# 📌 BOTTOM LINE:
-# 6925/30 = resistance zone
-# 6885-6870 = support zone
-# Wednesday JPM collar restrike = THE systematic event
+# ❌ INVALIDATION:
+# Sustained trade below 6802 = no longs
 
 # === KEY LEVELS ===
-input level1 = 6975;  # Outside Resistance
-input level2 = 6960;  # Negative GEX / Sticky Battleground
-input level3 = 6950;  # Round Number / Top of EM
-input level4 = 6945;  # Decision Area
-input level5 = 6930;  # Resistance Zone Top 🔴
-input level6 = 6925;  # Resistance Zone Bottom 🔴
-input level7 = 6900;  # Round Number
-input level8 = 6885;  # Support Zone Top 🟢
-input level9 = 6880;  # Support Zone
-input level10 = 6870; # Support Zone Bottom 🟢
-input level11 = 6855; # Gap Hold
-input level12 = 6850; # Gap Fill / GEX Support
-input level13 = 6840; # Below Gap
-input level14 = 6820; # Extended Support
+input level1 = 6945;  # Upside Target 3
+input level2 = 6921;  # Upside Target 2
+input level3 = 6895;  # Squeeze Trigger / Resistance
+input level4 = 6850;  # Mid-Range
+input level5 = 6823;  # Key Support
+input level6 = 6802;  # Max Risk Line
+input level7 = 6759;  # Failure Target 1
+input level8 = 6719;  # Failure Target 2
+input level9 = 6700;  # Round Number
+input level10 = 6680; # Extended Support
+input level11 = 6660; # Deep Support
+input level12 = 6640; # Deep Support 2
+input level13 = 6620; # Extreme Support
+input level14 = 6600; # Round Number Extended
 
-# IC Whale Spread Strikes - NOW JPM COLLAR FOCUS
-input level_collar_strike = 7000;   # JPM Collar Restrike (Dec 31)
-input level_gex_support = 6850;     # GEX Support Zone
+# Range boundaries for cloud visualization
+input level_squeeze_trigger = 6895;  # Squeeze Trigger
+input level_key_support = 6823;      # Key Support
 
 # Alert Settings
 input enableAlerts = yes;
@@ -156,22 +151,22 @@ L14.SetLineWeight(1);
 L14.SetStyle(Curve.SHORT_DASH);
 L14.SetHiding(!showLines);
 
-# GEX Support Level
-plot L_GEX = level_gex_support;
-L_GEX.SetDefaultColor(Color.GREEN);
-L_GEX.SetLineWeight(2);
-L_GEX.SetStyle(Curve.FIRM);
-L_GEX.SetHiding(!showLines);
+# GEX Support Level - Now Max Risk Line
+plot L_MaxRisk = level6;
+L_MaxRisk.SetDefaultColor(Color.YELLOW);
+L_MaxRisk.SetLineWeight(3);
+L_MaxRisk.SetStyle(Curve.FIRM);
+L_MaxRisk.SetHiding(!showLines);
 
 # === OPTIONAL CLOUDS ===
-# Resistance Zone cloud (6925-6930)
-AddCloud(if showClouds then L5 else Double.NaN, if showClouds then L6 else Double.NaN, CreateColor(150, 50, 50), CreateColor(150, 50, 50));
+# Squeeze Range cloud (6823-6895) - Trading Range
+AddCloud(if showClouds then L3 else Double.NaN, if showClouds then L5 else Double.NaN, CreateColor(50, 100, 150), CreateColor(50, 100, 150));
 
-# Support Zone cloud (6870-6885)
-AddCloud(if showClouds then L8 else Double.NaN, if showClouds then L10 else Double.NaN, CreateColor(50, 150, 50), CreateColor(50, 150, 50));
+# Max Risk Zone cloud (6802-6823)
+AddCloud(if showClouds then L5 else Double.NaN, if showClouds then L6 else Double.NaN, CreateColor(150, 100, 50), CreateColor(150, 100, 50));
 
-# GEX Support Zone cloud (6850-6855)
-AddCloud(if showClouds then L11 else Double.NaN, if showClouds then L12 else Double.NaN, CreateColor(50, 100, 50), CreateColor(50, 100, 50));
+# Failure Zone cloud (6719-6759)
+AddCloud(if showClouds then L7 else Double.NaN, if showClouds then L8 else Double.NaN, CreateColor(150, 50, 50), CreateColor(150, 50, 50));
 
 # Fixed bubble logic - show only on last bar
 input bubblesBeforeLast = -8;  # number of candles AFTER the last one
@@ -181,165 +176,165 @@ def isLastBar = isLastBar1[-bubblesBeforeLast];
 
 
 # Position detection
-def above6975 = close > level1;  # Outside Resistance
-def at6975 = close >= level1 - 5 and close <= level1 + 5;
-def above6960 = close > level2;  # Negative GEX
-def at6960 = close >= level2 - 5 and close <= level2 + 5;
-def above6950 = close > level3;  # Round Number / Top EM
-def at6950 = close >= level3 - 5 and close <= level3 + 5;
-def above6945 = close > level4;  # Decision Area
-def at6945 = close >= level4 - 5 and close <= level4 + 5;
-def above6930 = close > level5;  # Resistance Zone Top
-def at6930 = close >= level5 - 5 and close <= level5 + 5;
-def above6925 = close > level6;  # Resistance Zone Bottom
-def at6925 = close >= level6 - 5 and close <= level6 + 5;
-def above6900 = close > level7;  # Round Number
-def at6900 = close >= level7 - 5 and close <= level7 + 5;
-def above6885 = close > level8;  # Support Zone Top
-def at6885 = close >= level8 - 5 and close <= level8 + 5;
-def above6880 = close > level9;  # Support Zone
-def at6880 = close >= level9 - 5 and close <= level9 + 5;
-def above6870 = close > level10; # Support Zone Bottom
-def at6870 = close >= level10 - 5 and close <= level10 + 5;
-def below6870 = close < level10;
-def above6855 = close > level11; # Gap Hold
-def at6855 = close >= level11 - 5 and close <= level11 + 5;
-def above6850 = close > level12; # Gap Fill / GEX Support
-def at6850 = close >= level12 - 5 and close <= level12 + 5;
-def above6840 = close > level13; # Below Gap
-def at6840 = close >= level13 - 5 and close <= level13 + 5;
-def above6820 = close > level14; # Extended Support
-def at6820 = close >= level14 - 5 and close <= level14 + 5;
-def below6820 = close < level14;
+def above6945 = close > level1;  # Upside Target 3
+def at6945 = close >= level1 - 5 and close <= level1 + 5;
+def above6921 = close > level2;  # Upside Target 2
+def at6921 = close >= level2 - 5 and close <= level2 + 5;
+def above6895 = close > level3;  # Squeeze Trigger
+def at6895 = close >= level3 - 5 and close <= level3 + 5;
+def above6850 = close > level4;  # Mid-Range
+def at6850 = close >= level4 - 5 and close <= level4 + 5;
+def above6823 = close > level5;  # Key Support
+def at6823 = close >= level5 - 5 and close <= level5 + 5;
+def above6802 = close > level6;  # Max Risk Line
+def at6802 = close >= level6 - 5 and close <= level6 + 5;
+def below6802 = close < level6;
+def above6759 = close > level7;  # Failure Target 1
+def at6759 = close >= level7 - 5 and close <= level7 + 5;
+def above6719 = close > level8;  # Failure Target 2
+def at6719 = close >= level8 - 5 and close <= level8 + 5;
+def above6700 = close > level9;  # Round Number
+def at6700 = close >= level9 - 5 and close <= level9 + 5;
+def above6680 = close > level10; # Extended Support
+def at6680 = close >= level10 - 5 and close <= level10 + 5;
+def below6680 = close < level10;
+def above6660 = close > level11; # Deep Support
+def at6660 = close >= level11 - 5 and close <= level11 + 5;
+def above6640 = close > level12; # Deep Support 2
+def at6640 = close >= level12 - 5 and close <= level12 + 5;
+def above6620 = close > level13; # Extreme Support
+def at6620 = close >= level13 - 5 and close <= level13 + 5;
+def above6600 = close > level14; # Round Number Extended
+def at6600 = close >= level14 - 5 and close <= level14 + 5;
+def below6600 = close < level14;
 
-def inResistanceZone = close >= level6 and close <= level5;  # 6925-6930 resistance
-def inSupportZone = close >= level10 and close <= level8;  # 6870-6885 support
-def aboveResistance = close > level5;  # Above 6930
-def belowSupport = close < level10;  # Below 6870
+def inSqueezeRange = close >= level5 and close <= level3;  # 6823-6895 trading range
+def inMaxRiskZone = close >= level6 and close <= level5;   # 6802-6823 caution zone
+def aboveSqueezeTrigger = close > level3;                  # Above 6895
+def belowMaxRisk = close < level6;                         # Below 6802
 
 
 
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar and showLabels, level1, "6975 Resistance", Color.RED, yes);
-AddChartBubble(isLastBar and showLabels, level2, "6960 -GEX Sticky", Color.RED, yes);
-AddChartBubble(isLastBar and showLabels, level3, "6950 Top EM", Color.MAGENTA, yes);
-AddChartBubble(isLastBar and showLabels, level4, "6945 Decision", Color.ORANGE, yes);
-AddChartBubble(isLastBar and showLabels, level5, "6930 Resist 🔴", Color.RED, yes);
-AddChartBubble(isLastBar and showLabels, level6, "6925 Resist 🔴", Color.RED, yes);
-AddChartBubble(isLastBar and showLabels, level7, "6900", Color.CYAN, no);
-AddChartBubble(isLastBar and showLabels, level8, "6885 Support 🟢", Color.GREEN, no);
-AddChartBubble(isLastBar and showLabels, level9, "6880 Support", Color.GREEN, no);
-AddChartBubble(isLastBar and showLabels, level10, "6870 Support 🟢", Color.GREEN, no);
-AddChartBubble(isLastBar and showLabels, level11, "6855 Gap Hold", Color.CYAN, no);
-AddChartBubble(isLastBar and showLabels, level12, "6850 GEX", Color.CYAN, no);
-AddChartBubble(isLastBar and showLabels, level13, "6840 Below Gap", Color.CYAN, no);
-AddChartBubble(isLastBar and showLabels, level14, "6820 Extended", Color.CYAN, no);
+AddChartBubble(isLastBar and showLabels, level1, "6945 Target *", Color.MAGENTA, yes);
+AddChartBubble(isLastBar and showLabels, level2, "6921 Target *", Color.MAGENTA, yes);
+AddChartBubble(isLastBar and showLabels, level3, "6895 Squeeze", Color.RED, yes);
+AddChartBubble(isLastBar and showLabels, level4, "6850 Mid", Color.CYAN, no);
+AddChartBubble(isLastBar and showLabels, level5, "6823 Support", Color.GREEN, no);
+AddChartBubble(isLastBar and showLabels, level6, "6802 MAX RISK", Color.YELLOW, no);
+AddChartBubble(isLastBar and showLabels, level7, "6759 Fail 1 v", Color.RED, no);
+AddChartBubble(isLastBar and showLabels, level8, "6719 Fail 2 v", Color.RED, no);
+AddChartBubble(isLastBar and showLabels, level9, "6700", Color.CYAN, no);
+AddChartBubble(isLastBar and showLabels, level10, "6680 Extended", Color.CYAN, no);
+AddChartBubble(isLastBar and showLabels, level11, "6660 Deep", Color.CYAN, no);
+AddChartBubble(isLastBar and showLabels, level12, "6640 Deep 2", Color.CYAN, no);
+AddChartBubble(isLastBar and showLabels, level13, "6620 Extreme", Color.CYAN, no);
+AddChartBubble(isLastBar and showLabels, level14, "6600", Color.CYAN, no);
 
 # === TOUCH LOGIC ===
-def touch6975 = low <= level1 and high >= level1;
-def firstTouch6975 = touch6975 and !touch6975[1];
-
-def touch6960 = low <= level2 and high >= level2;
-def firstTouch6960Up = touch6960 and close > level2 and !touch6960[1];
-def firstTouch6960Down = touch6960 and close < level2 and !touch6960[1];
-
-def touch6950 = low <= level3 and high >= level3;
-def firstTouch6950Up = touch6950 and close > level3 and !touch6950[1];
-def firstTouch6950Down = touch6950 and close < level3 and !touch6950[1];
-
-def touch6945 = low <= level4 and high >= level4;
+def touch6945 = low <= level1 and high >= level1;
 def firstTouch6945 = touch6945 and !touch6945[1];
 
-def touch6930 = low <= level5 and high >= level5;
-def firstTouch6930Up = touch6930 and close > level5 and !touch6930[1];
-def firstTouch6930Down = touch6930 and close < level5 and !touch6930[1];
+def touch6921 = low <= level2 and high >= level2;
+def firstTouch6921Up = touch6921 and close > level2 and !touch6921[1];
+def firstTouch6921Down = touch6921 and close < level2 and !touch6921[1];
 
-def touch6925 = low <= level6 and high >= level6;
-def firstTouch6925Up = touch6925 and close > level6 and !touch6925[1];
-def firstTouch6925Down = touch6925 and close < level6 and !touch6925[1];
+def touch6895 = low <= level3 and high >= level3;
+def firstTouch6895Up = touch6895 and close > level3 and !touch6895[1];
+def firstTouch6895Down = touch6895 and close < level3 and !touch6895[1];
 
-def touch6900 = low <= level7 and high >= level7;
-def firstTouch6900 = touch6900 and !touch6900[1];
-
-def touch6885 = low <= level8 and high >= level8;
-def firstTouch6885Up = touch6885 and close > level8 and !touch6885[1];
-def firstTouch6885Down = touch6885 and close < level8 and !touch6885[1];
-
-def touch6880 = low <= level9 and high >= level9;
-def firstTouch6880 = touch6880 and !touch6880[1];
-
-def touch6870 = low <= level10 and high >= level10;
-def firstTouch6870Up = touch6870 and close > level10 and !touch6870[1];
-def firstTouch6870Down = touch6870 and close < level10 and !touch6870[1];
-
-def touch6855 = low <= level11 and high >= level11;
-def firstTouch6855 = touch6855 and !touch6855[1];
-
-def touch6850 = low <= level12 and high >= level12;
+def touch6850 = low <= level4 and high >= level4;
 def firstTouch6850 = touch6850 and !touch6850[1];
 
-def touch6840 = low <= level13 and high >= level13;
-def firstTouch6840 = touch6840 and !touch6840[1];
+def touch6823 = low <= level5 and high >= level5;
+def firstTouch6823Up = touch6823 and close > level5 and !touch6823[1];
+def firstTouch6823Down = touch6823 and close < level5 and !touch6823[1];
 
-def touch6820 = low <= level14 and high >= level14;
-def firstTouch6820 = touch6820 and !touch6820[1];
+def touch6802 = low <= level6 and high >= level6;
+def firstTouch6802Up = touch6802 and close > level6 and !touch6802[1];
+def firstTouch6802Down = touch6802 and close < level6 and !touch6802[1];
+
+def touch6759 = low <= level7 and high >= level7;
+def firstTouch6759 = touch6759 and !touch6759[1];
+
+def touch6719 = low <= level8 and high >= level8;
+def firstTouch6719 = touch6719 and !touch6719[1];
+
+def touch6700 = low <= level9 and high >= level9;
+def firstTouch6700 = touch6700 and !touch6700[1];
+
+def touch6680 = low <= level10 and high >= level10;
+def firstTouch6680Up = touch6680 and close > level10 and !touch6680[1];
+def firstTouch6680Down = touch6680 and close < level10 and !touch6680[1];
+
+def touch6660 = low <= level11 and high >= level11;
+def firstTouch6660 = touch6660 and !touch6660[1];
+
+def touch6640 = low <= level12 and high >= level12;
+def firstTouch6640 = touch6640 and !touch6640[1];
+
+def touch6620 = low <= level13 and high >= level13;
+def firstTouch6620 = touch6620 and !touch6620[1];
+
+def touch6600 = low <= level14 and high >= level14;
+def firstTouch6600 = touch6600 and !touch6600[1];
 
 # === ALERTS ===
-# OUTSIDE RESISTANCE (6975)
-Alert(enableAlerts and firstTouch6975, "SPX >> 6975 - OUTSIDE RESISTANCE!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6975, "SPX at 6975 - Outside resistance!", Alert.BAR, Sound.Chimes);
+# UPSIDE TARGET 3 (6945)
+Alert(enableAlerts and firstTouch6945, "SPX >> 6945 - TARGET 3 HIT!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6945, "SPX at 6945 - Final target!", Alert.BAR, Sound.Chimes);
 
-# NEGATIVE GEX / STICKY (6960)
-Alert(enableAlerts and firstTouch6960Up, "SPX UP 6960 ▲ Into negative GEX - sticky battleground!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6960Down, "SPX DOWN 6960 - Back below negative GEX!", Alert.BAR, Sound.Bell);
+# UPSIDE TARGET 2 (6921)
+Alert(enableAlerts and firstTouch6921Up, "SPX UP 6921 - TARGET 2 HIT!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6921Down, "SPX DOWN 6921 - Back below target 2!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6921, "SPX at 6921 - Target 2!", Alert.BAR, Sound.Chimes);
 
-# TOP OF EM (6950)
-Alert(enableAlerts and firstTouch6950Up, "SPX UP 6950 ▲ Above top of expected move!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6950Down, "SPX DOWN 6950 - Back into expected move!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6950, "SPX at 6950 - Round number / Top of EM!", Alert.BAR, Sound.Chimes);
+# SQUEEZE TRIGGER (6895)
+Alert(enableAlerts and firstTouch6895Up, "SPX UP 6895 SQUEEZE TRIGGER! BREAKOUT LONG!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6895Down, "SPX DOWN 6895 Lost squeeze trigger!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6895, "SPX at 6895 Squeeze trigger level!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and aboveSqueezeTrigger, "SPX > 6895 - SQUEEZE MODE! Target 6921/6945!", Alert.BAR, Sound.Chimes);
 
-# DECISION AREA (6945)
-Alert(enableAlerts and firstTouch6945, "SPX >> 6945 - Decision area!", Alert.BAR, Sound.Chimes);
+# MID-RANGE (6850)
+Alert(enableAlerts and firstTouch6850, "SPX >> 6850 - Mid-range / VWAP area!", Alert.BAR, Sound.Chimes);
 
-# RESISTANCE ZONE TOP (6930)
-Alert(enableAlerts and firstTouch6930Up, "SPX UP 6930 🔴 ABOVE RESISTANCE! Breakout!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6930Down, "SPX DOWN 6930 🔴 Back into resistance zone!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6930, "SPX at 6930 🔴 Resistance zone top!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and inResistanceZone, "SPX in RESISTANCE ZONE (6925-6930)!", Alert.BAR, Sound.Chimes);
+# KEY SUPPORT (6823)
+Alert(enableAlerts and firstTouch6823Up, "SPX UP 6823 Holding key support!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6823Down, "SPX DOWN 6823 LOST SUPPORT! BULL CASE INVALID!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6823, "SPX at 6823 Key support!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and inSqueezeRange, "SPX in RANGE (6823-6895) - Calls near support!", Alert.BAR, Sound.Chimes);
 
-# RESISTANCE ZONE BOTTOM (6925)
-Alert(enableAlerts and firstTouch6925Up, "SPX UP 6925 🔴 Into resistance zone!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and firstTouch6925Down, "SPX DOWN 6925 🔴 Below resistance - watch 6900!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6925, "SPX at 6925 🔴 Resistance zone bottom!", Alert.BAR, Sound.Chimes);
+# MAX RISK LINE (6802)
+Alert(enableAlerts and firstTouch6802Up, "SPX UP 6802 Back above max risk!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6802Down, "SPX DOWN 6802 MAX RISK LINE! NO LONGS!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6802, "SPX at 6802 Max risk line!", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and inMaxRiskZone, "SPX in CAUTION ZONE (6802-6823)!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and belowMaxRisk, "SPX < 6802 BELOW MAX RISK - NO LONGS!", Alert.BAR, Sound.Bell);
 
-# ROUND NUMBER (6900)
-Alert(enableAlerts and firstTouch6900, "SPX >> 6900 - Round number!", Alert.BAR, Sound.Chimes);
+# FAILURE TARGET 1 (6759)
+Alert(enableAlerts and firstTouch6759, "SPX >> 6759 FAILURE TARGET 1!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6759, "SPX at 6759 - Put target 1!", Alert.BAR, Sound.Chimes);
 
-# SUPPORT ZONE TOP (6885)
-Alert(enableAlerts and firstTouch6885Up, "SPX UP 6885 🟢 Above support zone!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6885Down, "SPX DOWN 6885 🟢 Into support zone!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and at6885, "SPX at 6885 🟢 Support zone top!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and inSupportZone, "SPX in SUPPORT ZONE (6870-6885)!", Alert.BAR, Sound.Chimes);
+# FAILURE TARGET 2 (6719)
+Alert(enableAlerts and firstTouch6719, "SPX >> 6719 FAILURE TARGET 2!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6719, "SPX at 6719 - Put target 2!", Alert.BAR, Sound.Chimes);
 
-# SUPPORT (6880)
-Alert(enableAlerts and firstTouch6880, "SPX >> 6880 - Support zone!", Alert.BAR, Sound.Chimes);
+# ROUND NUMBER (6700)
+Alert(enableAlerts and firstTouch6700, "SPX >> 6700 - Round number!", Alert.BAR, Sound.Chimes);
 
-# SUPPORT ZONE BOTTOM (6870)
-Alert(enableAlerts and firstTouch6870Up, "SPX UP 6870 🟢 Holding support zone bottom!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and firstTouch6870Down, "SPX DOWN 6870 🟢 BELOW SUPPORT! Watch 6855-6850!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6870, "SPX at 6870 🟢 Support zone bottom!", Alert.BAR, Sound.Chimes);
-Alert(enableAlerts and belowSupport, "SPX < 6870 - Below support zone!", Alert.BAR, Sound.Bell);
+# EXTENDED SUPPORT (6680)
+Alert(enableAlerts and firstTouch6680Up, "SPX UP 6680 - Bounce from extended!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6680Down, "SPX DOWN 6680 - Below extended support!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6680, "SPX at 6680 - Extended support!", Alert.BAR, Sound.Chimes);
 
-# GAP HOLD (6855)
-Alert(enableAlerts and firstTouch6855, "SPX >> 6855 - Gap hold level!", Alert.BAR, Sound.Bell);
+# DEEP SUPPORT (6660)
+Alert(enableAlerts and firstTouch6660, "SPX >> 6660 - Deep support!", Alert.BAR, Sound.Bell);
 
-# GEX SUPPORT (6850)
-Alert(enableAlerts and firstTouch6850, "SPX >> 6850 - GEX SUPPORT / Gap fill!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6850, "SPX at 6850 - GEX support zone!", Alert.BAR, Sound.Chimes);
+# DEEP SUPPORT 2 (6640)
+Alert(enableAlerts and firstTouch6640, "SPX >> 6640 - Deep support 2!", Alert.BAR, Sound.Bell);
 
-# BELOW GAP (6840)
-Alert(enableAlerts and firstTouch6840, "SPX >> 6840 ⚠️ Below gap fill!", Alert.BAR, Sound.Bell);
+# EXTREME SUPPORT (6620)
+Alert(enableAlerts and firstTouch6620, "SPX >> 6620 - Extreme support!", Alert.BAR, Sound.Bell);
 
-# EXTENDED SUPPORT (6820)
-Alert(enableAlerts and firstTouch6820, "SPX >> 6820 ⚠️ Extended support!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and below6820, "SPX < 6820 - Below extended support!", Alert.BAR, Sound.Bell);
+# ROUND NUMBER EXTENDED (6600)
+Alert(enableAlerts and firstTouch6600, "SPX >> 6600 - Round number extended!", Alert.BAR, Sound.Bell);

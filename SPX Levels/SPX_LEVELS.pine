@@ -1,101 +1,96 @@
 //@version=6
-indicator("SPX DEC 29 - Year-End Flow Week", overlay=true, max_lines_count=500, max_labels_count=500)
+indicator("SPX JAN 2 - New Year Session", overlay=true, max_lines_count=500, max_labels_count=500)
 
-// === SPX DEC 29 - Year-End Flow Week ===
+// === SPX JAN 2 - New Year Session ===
 // 
-// MARKET CONTEXT:
-// 🎯 JPM COLLAR RESTRIKE - Massive gamma/vega reset at 7,000 strike
-//    Typically 2:00-3:00PM on Dec 31 - Dealer positioning chess
-//    Flows over fundamentals into year-end
+// BIAS:
+// Bullish-to-neutral above 6823
+// Squeeze setup above 6895
 //
-// 🧊 VOL STRUCTURE:
-// VIX 14.8, light volume, systematic flows dominate
-// Market mechanical in chop zone - dealer hedging behavior
+// KEY LEVELS:
+// Resistance / Squeeze Trigger: 6895 -> 6921 -> 6945
+// Support: 6823
+// Max Risk Line: 6802
+// Failure Targets (only if 6823 breaks): 6759 -> 6719
 //
-// 📊 EXPECTED MOVES (EM expands into collar restrike):
-// Monday: EM 25pts → 6890-6940 (ref 6915)
-// Tuesday: EM 35pts → 6880-6950 (FOMC Minutes - wiggles not conviction)
-// Wednesday: EM 50pts → 6865-6965 (JPM COLLAR RESTRIKE - MAIN EVENT)
-// Friday: EM 60pts → 6855-6975
+// TRADE SETUPS:
 //
-// 🐋 CTA/VOL CONTROL POSITIONING:
-// CTAs projected BUYERS even in down tape - floor effect
-// VOL control strategies adding systematic bid underneath
-// Descent gets cushioned by mechanical flows
+// 1. BREAK & HOLD > 6895
+//    Buy ATM-+10C
+//    Targets: 6921 / 6945
+//    Stop: Loss of 6895
 //
-// 📦 UPDATED STRUCTURE:
-// Resistance: 6925/6930
-// Support: 6885-6870 zone
+// 2. RANGE BOUNCE 6823-6895
+//    Calls near 6825-6850
+//    Scalp to mid-range / VWAP
+//    Tight stop below 6823
 //
-// 🔑 CROSS-ASSET: Gold/silver making moves - algo signal flashing
+// 3. BREAKDOWN < 6823 (Invalidates Bull Case)
+//    Buy ATM--10P
+//    Targets: 6759 / 6719
+//    Stop: Reclaim of 6823
 //
-// UPSIDE SCENARIOS (ABOVE RESISTANCE):
-// Above 6930 -> 6945-6950 decision area
-// Above 6950 -> 6960 negative GEX, sticky battleground
-// Above 6960 -> 6975 outside resistance
+// OPTIONS RULES:
+// Size small (0DTE = fast decay)
+// Cut losers fast, no averaging
+// Trade level confirmation, not prediction
 //
-// DOWNSIDE SCENARIOS (BELOW SUPPORT):
-// Below 6870 -> 6855-6850 GEX support / gap fill convergence
-// Below 6850 -> 6840 extended
-//
-// 📌 BOTTOM LINE:
-// 6925/30 = resistance zone
-// 6885-6870 = support zone
-// Wednesday JPM collar restrike = THE systematic event
+// INVALIDATION:
+// Sustained trade below 6802 = no longs
 
 // === INPUTS ===
 // Upside Targets
-level1 = input.float(6975, "Outside Resistance", group="🎯 Upside Targets")
-level1_thickness = input.int(2, "6975 Line Thickness", minval=1, maxval=10, group="🎯 Upside Targets")
-level2 = input.float(6960, "Negative GEX / Sticky Battleground", group="🎯 Upside Targets")
-level2_thickness = input.int(2, "6960 Line Thickness", minval=1, maxval=10, group="🎯 Upside Targets")
-level3 = input.float(6950, "Round Number / Top of EM", group="🎯 Upside Targets")
-level3_thickness = input.int(2, "6950 Line Thickness", minval=1, maxval=10, group="🎯 Upside Targets")
+level1 = input.float(6945, "Upside Target 3", group="Upside Targets")
+level1_thickness = input.int(2, "6945 Line Thickness", minval=1, maxval=10, group="Upside Targets")
+level2 = input.float(6921, "Upside Target 2", group="Upside Targets")
+level2_thickness = input.int(2, "6921 Line Thickness", minval=1, maxval=10, group="Upside Targets")
+level3 = input.float(6895, "Squeeze Trigger / Resistance", group="Upside Targets")
+level3_thickness = input.int(3, "6895 Line Thickness", minval=1, maxval=10, group="Upside Targets")
 
-// Decision Area
-level4 = input.float(6945, "Decision Area", group="📊 Decision Area")
-level4_thickness = input.int(1, "6945 Line Thickness", minval=1, maxval=10, group="📊 Decision Area")
+// Mid-Range
+level4 = input.float(6850, "Mid-Range", group="Mid-Range")
+level4_thickness = input.int(1, "6850 Line Thickness", minval=1, maxval=10, group="Mid-Range")
 
-// Resistance Zone (RED)
-level5 = input.float(6930, "🔴 Resistance Zone Top", group="🔴 Resistance Zone")
-level5_thickness = input.int(3, "6930 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Zone")
-level6 = input.float(6925, "🔴 Resistance Zone Bottom", group="🔴 Resistance Zone")
-level6_thickness = input.int(3, "6925 Line Thickness", minval=1, maxval=10, group="🔴 Resistance Zone")
+// Key Support
+level5 = input.float(6823, "Key Support", group="Support Zone")
+level5_thickness = input.int(3, "6823 Line Thickness", minval=1, maxval=10, group="Support Zone")
 
-// Round Number
-level7 = input.float(6900, "Round Number", group="📍 Key Levels")
-level7_thickness = input.int(2, "6900 Line Thickness", minval=1, maxval=10, group="📍 Key Levels")
+// Max Risk Line
+level6 = input.float(6802, "Max Risk Line", group="Risk Zone")
+level6_thickness = input.int(3, "6802 Line Thickness", minval=1, maxval=10, group="Risk Zone")
 
-// Support Zone (GREEN)
-level8 = input.float(6885, "🟢 Support Zone Top", group="🟢 Support Zone")
-level8_thickness = input.int(3, "6885 Line Thickness", minval=1, maxval=10, group="🟢 Support Zone")
-level9 = input.float(6880, "🟢 Support Zone", group="🟢 Support Zone")
-level9_thickness = input.int(2, "6880 Line Thickness", minval=1, maxval=10, group="🟢 Support Zone")
-level10 = input.float(6870, "🟢 Support Zone Bottom", group="🟢 Support Zone")
-level10_thickness = input.int(3, "6870 Line Thickness", minval=1, maxval=10, group="🟢 Support Zone")
+// Failure Targets
+level7 = input.float(6759, "Failure Target 1", group="Failure Targets")
+level7_thickness = input.int(2, "6759 Line Thickness", minval=1, maxval=10, group="Failure Targets")
+level8 = input.float(6719, "Failure Target 2", group="Failure Targets")
+level8_thickness = input.int(2, "6719 Line Thickness", minval=1, maxval=10, group="Failure Targets")
 
-// Gap / Extended Support
-level11 = input.float(6855, "Gap Hold", group="⚡ Extended Levels")
-level11_thickness = input.int(1, "6855 Line Thickness", minval=1, maxval=10, group="⚡ Extended Levels")
-level12 = input.float(6850, "Gap Fill / GEX Support", group="⚡ Extended Levels")
-level12_thickness = input.int(2, "6850 Line Thickness", minval=1, maxval=10, group="⚡ Extended Levels")
-level13 = input.float(6840, "Below Gap", group="⚡ Extended Levels")
-level13_thickness = input.int(1, "6840 Line Thickness", minval=1, maxval=10, group="⚡ Extended Levels")
-level14 = input.float(6820, "Extended Support", group="⚡ Extended Levels")
-level14_thickness = input.int(2, "6820 Line Thickness", minval=1, maxval=10, group="⚡ Extended Levels")
+// Extended Levels
+level9 = input.float(6700, "Round Number", group="Extended Levels")
+level9_thickness = input.int(1, "6700 Line Thickness", minval=1, maxval=10, group="Extended Levels")
+level10 = input.float(6680, "Extended Support", group="Extended Levels")
+level10_thickness = input.int(1, "6680 Line Thickness", minval=1, maxval=10, group="Extended Levels")
+level11 = input.float(6660, "Deep Support", group="Extended Levels")
+level11_thickness = input.int(1, "6660 Line Thickness", minval=1, maxval=10, group="Extended Levels")
+level12 = input.float(6640, "Deep Support 2", group="Extended Levels")
+level12_thickness = input.int(1, "6640 Line Thickness", minval=1, maxval=10, group="Extended Levels")
+level13 = input.float(6620, "Extreme Support", group="Extended Levels")
+level13_thickness = input.int(1, "6620 Line Thickness", minval=1, maxval=10, group="Extended Levels")
+level14 = input.float(6600, "Round Number Extended", group="Extended Levels")
+level14_thickness = input.int(1, "6600 Line Thickness", minval=1, maxval=10, group="Extended Levels")
 
-// JPM Collar / Key Strikes
-level_collar_strike = input.float(7000, "🎯 JPM Collar Restrike (Dec 31)", group="🎯 JPM Collar")
-level_gex_support = input.float(6850, "GEX Support Zone", group="🎯 JPM Collar")
+// Key Boundaries
+level_squeeze_trigger = input.float(6895, "Squeeze Trigger", group="Key Boundaries")
+level_key_support = input.float(6823, "Key Support", group="Key Boundaries")
 
 // Alert Settings
-enableAlerts = input.bool(true, "Enable Alerts", group="🔔 Alert Settings")
-alertSensitivity = input.float(5.0, "Alert Sensitivity", minval=0.1, maxval=10.0, group="🔔 Alert Settings")
+enableAlerts = input.bool(true, "Enable Alerts", group="Alert Settings")
+alertSensitivity = input.float(5.0, "Alert Sensitivity", minval=0.1, maxval=10.0, group="Alert Settings")
 
 // Label Visibility
-showLabels = input.bool(true, "Show Labels", group="📊 Display Settings")
-showLines = input.bool(true, "Show Level Lines", group="📊 Display Settings")
-showTable = input.bool(false, "Show Status Table", group="📊 Display Settings")
+showLabels = input.bool(true, "Show Labels", group="Display Settings")
+showLines = input.bool(true, "Show Level Lines", group="Display Settings")
+showTable = input.bool(false, "Show Status Table", group="Display Settings")
 
 // === LEVEL LINES ===
 var line l1 = na
@@ -112,192 +107,179 @@ var line l11 = na
 var line l12 = na
 var line l13 = na
 var line l14 = na
-var line l_collar_strike = na
 
 if showLines and barstate.islast
-    // Outside Resistance - 6975 (Red)
-    l1 := line.new(bar_index - 100, level1, bar_index + 20, level1, color=color.red, width=level1_thickness, style=line.style_dashed)
+    // Upside Target 3 - 6945 (Magenta)
+    l1 := line.new(bar_index - 100, level1, bar_index + 20, level1, color=color.fuchsia, width=level1_thickness, style=line.style_dashed)
     
-    // Negative GEX - 6960 (Red)
-    l2 := line.new(bar_index - 100, level2, bar_index + 20, level2, color=color.red, width=level2_thickness, style=line.style_solid)
+    // Upside Target 2 - 6921 (Magenta)
+    l2 := line.new(bar_index - 100, level2, bar_index + 20, level2, color=color.fuchsia, width=level2_thickness, style=line.style_solid)
     
-    // Round Number Top of EM - 6950 (Magenta)
-    l3 := line.new(bar_index - 100, level3, bar_index + 20, level3, color=color.fuchsia, width=level3_thickness, style=line.style_solid)
+    // Squeeze Trigger - 6895 (Red, thick)
+    l3 := line.new(bar_index - 100, level3, bar_index + 20, level3, color=color.red, width=level3_thickness, style=line.style_solid)
     
-    // Decision Area - 6945 (Orange)
-    l4 := line.new(bar_index - 100, level4, bar_index + 20, level4, color=color.orange, width=level4_thickness, style=line.style_solid)
+    // Mid-Range - 6850 (Cyan)
+    l4 := line.new(bar_index - 100, level4, bar_index + 20, level4, color=color.aqua, width=level4_thickness, style=line.style_solid)
     
-    // Resistance Zone Top - 6930 (Red, thick)
-    l5 := line.new(bar_index - 100, level5, bar_index + 20, level5, color=color.red, width=level5_thickness, style=line.style_solid)
+    // Key Support - 6823 (Green, thick)
+    l5 := line.new(bar_index - 100, level5, bar_index + 20, level5, color=color.lime, width=level5_thickness, style=line.style_solid)
     
-    // Resistance Zone Bottom - 6925 (Red, thick)
-    l6 := line.new(bar_index - 100, level6, bar_index + 20, level6, color=color.red, width=level6_thickness, style=line.style_solid)
+    // Max Risk Line - 6802 (Yellow, thick)
+    l6 := line.new(bar_index - 100, level6, bar_index + 20, level6, color=color.yellow, width=level6_thickness, style=line.style_solid)
     
-    // Round Number - 6900 (Cyan)
-    l7 := line.new(bar_index - 100, level7, bar_index + 20, level7, color=color.aqua, width=level7_thickness, style=line.style_solid)
+    // Failure Target 1 - 6759 (Red)
+    l7 := line.new(bar_index - 100, level7, bar_index + 20, level7, color=color.red, width=level7_thickness, style=line.style_solid)
     
-    // Support Zone Top - 6885 (Green, thick)
-    l8 := line.new(bar_index - 100, level8, bar_index + 20, level8, color=color.lime, width=level8_thickness, style=line.style_solid)
+    // Failure Target 2 - 6719 (Red)
+    l8 := line.new(bar_index - 100, level8, bar_index + 20, level8, color=color.red, width=level8_thickness, style=line.style_solid)
     
-    // Support Zone - 6880 (Green)
-    l9 := line.new(bar_index - 100, level9, bar_index + 20, level9, color=color.lime, width=level9_thickness, style=line.style_solid)
+    // Round Number - 6700 (Cyan)
+    l9 := line.new(bar_index - 100, level9, bar_index + 20, level9, color=color.aqua, width=level9_thickness, style=line.style_solid)
     
-    // Support Zone Bottom - 6870 (Green, thick)
-    l10 := line.new(bar_index - 100, level10, bar_index + 20, level10, color=color.lime, width=level10_thickness, style=line.style_solid)
+    // Extended Support - 6680 (Cyan)
+    l10 := line.new(bar_index - 100, level10, bar_index + 20, level10, color=color.aqua, width=level10_thickness, style=line.style_solid)
     
-    // Gap Hold - 6855 (Cyan)
+    // Deep Support - 6660 (Cyan)
     l11 := line.new(bar_index - 100, level11, bar_index + 20, level11, color=color.aqua, width=level11_thickness, style=line.style_solid)
     
-    // Gap Fill / GEX Support - 6850 (Green)
-    l12 := line.new(bar_index - 100, level12, bar_index + 20, level12, color=color.lime, width=level12_thickness, style=line.style_solid)
+    // Deep Support 2 - 6640 (Cyan)
+    l12 := line.new(bar_index - 100, level12, bar_index + 20, level12, color=color.aqua, width=level12_thickness, style=line.style_solid)
     
-    // Below Gap - 6840 (Green)
-    l13 := line.new(bar_index - 100, level13, bar_index + 20, level13, color=color.lime, width=level13_thickness, style=line.style_solid)
+    // Extreme Support - 6620 (Cyan)
+    l13 := line.new(bar_index - 100, level13, bar_index + 20, level13, color=color.aqua, width=level13_thickness, style=line.style_solid)
     
-    // Extended Support - 6820 (Green)
-    l14 := line.new(bar_index - 100, level14, bar_index + 20, level14, color=color.lime, width=level14_thickness, style=line.style_solid)
-    
-    // JPM Collar Strike - 7000 (Magenta, dashed)
-    l_collar_strike := line.new(bar_index - 100, level_collar_strike, bar_index + 20, level_collar_strike, color=color.fuchsia, width=3, style=line.style_dashed)
+    // Round Number Extended - 6600 (Cyan)
+    l14 := line.new(bar_index - 100, level14, bar_index + 20, level14, color=color.aqua, width=level14_thickness, style=line.style_dashed)
 
 // === LABELS ===
 if barstate.islast and showLabels
-    label.new(bar_index + 8, level_collar_strike, "7000 🎯 JPM Collar", style=label.style_label_left, color=color.fuchsia, textcolor=color.white, size=size.large)
-    label.new(bar_index + 8, level1, "6975 Outside Res", style=label.style_label_left, color=color.red, textcolor=color.white)
-    label.new(bar_index + 8, level2, "6960 Neg GEX", style=label.style_label_left, color=color.red, textcolor=color.white)
-    label.new(bar_index + 8, level3, "6950 Top EM", style=label.style_label_left, color=color.fuchsia, textcolor=color.white)
-    label.new(bar_index + 8, level4, "6945 Decision", style=label.style_label_left, color=color.orange, textcolor=color.white)
-    label.new(bar_index + 8, level5, "6930 🔴 Res Top", style=label.style_label_left, color=color.red, textcolor=color.white, size=size.large)
-    label.new(bar_index + 8, level6, "6925 🔴 Res Bot", style=label.style_label_left, color=color.red, textcolor=color.white, size=size.large)
-    label.new(bar_index + 8, level7, "6900 Round", style=label.style_label_left, color=color.aqua, textcolor=color.black)
-    label.new(bar_index + 8, level8, "6885 🟢 Sup Top", style=label.style_label_left, color=color.lime, textcolor=color.black, size=size.large)
-    label.new(bar_index + 8, level9, "6880 🟢 Support", style=label.style_label_left, color=color.lime, textcolor=color.black)
-    label.new(bar_index + 8, level10, "6870 🟢 Sup Bot", style=label.style_label_left, color=color.lime, textcolor=color.black, size=size.large)
-    label.new(bar_index + 8, level11, "6855 Gap Hold", style=label.style_label_left, color=color.aqua, textcolor=color.black)
-    label.new(bar_index + 8, level12, "6850 Gap/GEX", style=label.style_label_left, color=color.lime, textcolor=color.black)
-    label.new(bar_index + 8, level13, "6840 Below Gap", style=label.style_label_left, color=color.lime, textcolor=color.black)
-    label.new(bar_index + 8, level14, "6820 Extended", style=label.style_label_left, color=color.lime, textcolor=color.black)
+    label.new(bar_index + 8, level1, "6945 Target *", style=label.style_label_left, color=color.fuchsia, textcolor=color.white, size=size.large)
+    label.new(bar_index + 8, level2, "6921 Target *", style=label.style_label_left, color=color.fuchsia, textcolor=color.white, size=size.large)
+    label.new(bar_index + 8, level3, "6895 Squeeze", style=label.style_label_left, color=color.red, textcolor=color.white, size=size.large)
+    label.new(bar_index + 8, level4, "6850 Mid", style=label.style_label_left, color=color.aqua, textcolor=color.black)
+    label.new(bar_index + 8, level5, "6823 Support", style=label.style_label_left, color=color.lime, textcolor=color.black, size=size.large)
+    label.new(bar_index + 8, level6, "6802 MAX RISK", style=label.style_label_left, color=color.yellow, textcolor=color.black, size=size.large)
+    label.new(bar_index + 8, level7, "6759 Fail 1 v", style=label.style_label_left, color=color.red, textcolor=color.white)
+    label.new(bar_index + 8, level8, "6719 Fail 2 v", style=label.style_label_left, color=color.red, textcolor=color.white)
+    label.new(bar_index + 8, level9, "6700", style=label.style_label_left, color=color.aqua, textcolor=color.black)
+    label.new(bar_index + 8, level10, "6680 Extended", style=label.style_label_left, color=color.aqua, textcolor=color.black)
+    label.new(bar_index + 8, level11, "6660 Deep", style=label.style_label_left, color=color.aqua, textcolor=color.black)
+    label.new(bar_index + 8, level12, "6640 Deep 2", style=label.style_label_left, color=color.aqua, textcolor=color.black)
+    label.new(bar_index + 8, level13, "6620 Extreme", style=label.style_label_left, color=color.aqua, textcolor=color.black)
+    label.new(bar_index + 8, level14, "6600", style=label.style_label_left, color=color.aqua, textcolor=color.black)
 
 // === POSITION DETECTION ===
-above7000 = close > level_collar_strike  // Above JPM Collar
-at7000 = close >= level_collar_strike - 5 and close <= level_collar_strike + 5
-above6975 = close > level1  // Outside Resistance
-at6975 = close >= level1 - 5 and close <= level1 + 5
-above6960 = close > level2  // Negative GEX
-at6960 = close >= level2 - 5 and close <= level2 + 5
-above6950 = close > level3  // Top of EM
-at6950 = close >= level3 - 5 and close <= level3 + 5
-above6945 = close > level4  // Decision Area
-at6945 = close >= level4 - 5 and close <= level4 + 5
-above6930 = close > level5  // Resistance Top
-at6930 = close >= level5 - 5 and close <= level5 + 5
-above6925 = close > level6  // Resistance Bottom
-at6925 = close >= level6 - 5 and close <= level6 + 5
-above6900 = close > level7  // Round Number
-at6900 = close >= level7 - 5 and close <= level7 + 5
-above6885 = close > level8  // Support Top
-at6885 = close >= level8 - 5 and close <= level8 + 5
-above6880 = close > level9  // Support
-at6880 = close >= level9 - 5 and close <= level9 + 5
-above6870 = close > level10 // Support Bottom
-at6870 = close >= level10 - 5 and close <= level10 + 5
-below6870 = close < level10
-above6855 = close > level11 // Gap Hold
-at6855 = close >= level11 - 5 and close <= level11 + 5
-above6850 = close > level12 // Gap Fill / GEX Support
-at6850 = close >= level12 - 5 and close <= level12 + 5
-above6840 = close > level13 // Below Gap
-at6840 = close >= level13 - 5 and close <= level13 + 5
-above6820 = close > level14 // Extended Support
-at6820 = close >= level14 - 5 and close <= level14 + 5
-below6820 = close < level14
+above6945 = close > level1  // Upside Target 3
+at6945 = close >= level1 - 5 and close <= level1 + 5
+above6921 = close > level2  // Upside Target 2
+at6921 = close >= level2 - 5 and close <= level2 + 5
+above6895 = close > level3  // Squeeze Trigger
+at6895 = close >= level3 - 5 and close <= level3 + 5
+above6850 = close > level4  // Mid-Range
+at6850 = close >= level4 - 5 and close <= level4 + 5
+above6823 = close > level5  // Key Support
+at6823 = close >= level5 - 5 and close <= level5 + 5
+above6802 = close > level6  // Max Risk Line
+at6802 = close >= level6 - 5 and close <= level6 + 5
+below6802 = close < level6
+above6759 = close > level7  // Failure Target 1
+at6759 = close >= level7 - 5 and close <= level7 + 5
+above6719 = close > level8  // Failure Target 2
+at6719 = close >= level8 - 5 and close <= level8 + 5
+above6700 = close > level9  // Round Number
+at6700 = close >= level9 - 5 and close <= level9 + 5
+above6680 = close > level10 // Extended Support
+at6680 = close >= level10 - 5 and close <= level10 + 5
+below6680 = close < level10
+above6660 = close > level11 // Deep Support
+at6660 = close >= level11 - 5 and close <= level11 + 5
+above6640 = close > level12 // Deep Support 2
+at6640 = close >= level12 - 5 and close <= level12 + 5
+above6620 = close > level13 // Extreme Support
+at6620 = close >= level13 - 5 and close <= level13 + 5
+above6600 = close > level14 // Round Number Extended
+at6600 = close >= level14 - 5 and close <= level14 + 5
+below6600 = close < level14
 
 // Zone detection
-inResistanceZone = close >= level6 and close <= level5  // 6925-6930 resistance zone
-inSupportZone = close >= level10 and close <= level8    // 6870-6885 support zone
-inChopZone = close >= level10 and close <= level5       // 6870-6930 chop zone
+inSqueezeRange = close >= level5 and close <= level3    // 6823-6895 trading range
+inMaxRiskZone = close >= level6 and close <= level5     // 6802-6823 caution zone
+aboveSqueezeTrigger = close > level3                    // Above 6895
+belowMaxRisk = close < level6                           // Below 6802
 
 // Volume spike detection
 volSpike = volume > ta.sma(volume, 20) * 1.5
 
 // === ALERT CONDITIONS ===
 
-// JPM COLLAR STRIKE
-alertcondition(ta.crossover(close, level_collar_strike), "7000 JPM COLLAR", "SPX >> 7000 🎯 JPM COLLAR STRIKE!")
-alertcondition(at7000, "At 7000", "SPX at 7000 - JPM Collar Restrike Level!")
+// UPSIDE TARGET 3 (6945)
+alertcondition(ta.crossover(close, level1), "6945 TARGET 3", "SPX >> 6945 - TARGET 3 HIT!")
+alertcondition(at6945, "At 6945", "SPX at 6945 - Final target!")
 
-// OUTSIDE RESISTANCE
-alertcondition(ta.crossover(close, level1), "6975 OUTSIDE RES", "SPX >> 6975 - Outside Resistance!")
-alertcondition(at6975, "At 6975", "SPX at 6975 - Outside Resistance!")
+// UPSIDE TARGET 2 (6921)
+alertcondition(ta.crossover(close, level2), "6921 TARGET 2 UP", "SPX UP 6921 - TARGET 2 HIT!")
+alertcondition(ta.crossunder(close, level2), "6921 TARGET 2 DOWN", "SPX DOWN 6921 - Back below target 2!")
+alertcondition(at6921, "At 6921", "SPX at 6921 - Target 2!")
 
-// NEGATIVE GEX
-alertcondition(ta.crossover(close, level2), "6960 NEG GEX UP", "SPX UP 6960 - Negative GEX / Sticky Battleground!")
-alertcondition(ta.crossunder(close, level2), "6960 NEG GEX DOWN", "SPX DOWN 6960 - Below Negative GEX!")
-alertcondition(at6960, "At 6960", "SPX at 6960 - Negative GEX!")
+// SQUEEZE TRIGGER (6895)
+alertcondition(ta.crossover(close, level3), "6895 SQUEEZE UP", "SPX UP 6895 SQUEEZE TRIGGER! BREAKOUT LONG!")
+alertcondition(ta.crossunder(close, level3), "6895 SQUEEZE DOWN", "SPX DOWN 6895 Lost squeeze trigger!")
+alertcondition(at6895, "At 6895", "SPX at 6895 Squeeze trigger level!")
+alertcondition(aboveSqueezeTrigger, "Above Squeeze", "SPX > 6895 - SQUEEZE MODE! Target 6921/6945!")
 
-// TOP OF EM
-alertcondition(ta.crossover(close, level3), "6950 TOP EM", "SPX >> 6950 - Top of Expected Move!")
-alertcondition(at6950, "At 6950", "SPX at 6950 - Round Number / Top of EM!")
+// MID-RANGE (6850)
+alertcondition(ta.crossover(close, level4), "6850 MID UP", "SPX >> 6850 - Mid-range / VWAP area!")
+alertcondition(ta.crossunder(close, level4), "6850 MID DOWN", "SPX << 6850 - Below mid-range!")
 
-// DECISION AREA
-alertcondition(ta.crossover(close, level4), "6945 DECISION UP", "SPX >> 6945 - Decision Area!")
-alertcondition(ta.crossunder(close, level4), "6945 DECISION DOWN", "SPX << 6945 - Below Decision Area!")
+// KEY SUPPORT (6823)
+alertcondition(ta.crossover(close, level5), "6823 SUPPORT UP", "SPX UP 6823 Holding key support!")
+alertcondition(ta.crossunder(close, level5), "6823 SUPPORT DOWN", "SPX DOWN 6823 LOST SUPPORT! BULL CASE INVALID!")
+alertcondition(at6823, "At 6823 Support", "SPX at 6823 Key support!")
+alertcondition(inSqueezeRange, "In Squeeze Range", "SPX in RANGE (6823-6895) - Calls near support!")
 
-// RESISTANCE ZONE TOP (6930)
-alertcondition(ta.crossover(close, level5), "6930 RES TOP UP", "SPX UP 6930 🔴 Above Resistance Zone!")
-alertcondition(ta.crossunder(close, level5), "6930 RES TOP DOWN", "SPX DOWN 6930 🔴 Entering Resistance Zone!")
-alertcondition(at6930, "At 6930 Res", "SPX at 6930 🔴 Resistance Zone Top!")
+// MAX RISK LINE (6802)
+alertcondition(ta.crossover(close, level6), "6802 MAX RISK UP", "SPX UP 6802 Back above max risk!")
+alertcondition(ta.crossunder(close, level6), "6802 MAX RISK DOWN", "SPX DOWN 6802 MAX RISK LINE! NO LONGS!")
+alertcondition(at6802, "At 6802 Max Risk", "SPX at 6802 Max risk line!")
+alertcondition(inMaxRiskZone, "In Max Risk Zone", "SPX in CAUTION ZONE (6802-6823)!")
+alertcondition(belowMaxRisk, "Below Max Risk", "SPX < 6802 BELOW MAX RISK - NO LONGS!")
 
-// RESISTANCE ZONE BOTTOM (6925)
-alertcondition(ta.crossover(close, level6), "6925 RES BOT UP", "SPX UP 6925 🔴 Entering Resistance Zone!")
-alertcondition(ta.crossunder(close, level6), "6925 RES BOT DOWN", "SPX DOWN 6925 - Below Resistance Zone!")
-alertcondition(at6925, "At 6925 Res", "SPX at 6925 🔴 Resistance Zone Bottom!")
+// FAILURE TARGET 1 (6759)
+alertcondition(ta.crossunder(close, level7), "6759 FAIL 1", "SPX >> 6759 FAILURE TARGET 1!")
+alertcondition(at6759, "At 6759", "SPX at 6759 - Put target 1!")
 
-// ROUND NUMBER
-alertcondition(ta.crossover(close, level7), "6900 RECLAIM", "SPX UP 6900 - Reclaiming Round Number!")
-alertcondition(ta.crossunder(close, level7), "6900 LOST", "SPX DOWN 6900 - Below Round Number!")
-alertcondition(at6900, "At 6900", "SPX at 6900 - Round Number!")
+// FAILURE TARGET 2 (6719)
+alertcondition(ta.crossunder(close, level8), "6719 FAIL 2", "SPX >> 6719 FAILURE TARGET 2!")
+alertcondition(at6719, "At 6719", "SPX at 6719 - Put target 2!")
 
-// SUPPORT ZONE TOP (6885)
-alertcondition(ta.crossover(close, level8), "6885 SUP TOP UP", "SPX UP 6885 - Above Support Zone!")
-alertcondition(ta.crossunder(close, level8), "6885 SUP TOP DOWN", "SPX DOWN 6885 🟢 Entering Support Zone!")
-alertcondition(at6885, "At 6885 Sup", "SPX at 6885 🟢 Support Zone Top!")
+// ROUND NUMBER (6700)
+alertcondition(ta.crossunder(close, level9), "6700 ROUND", "SPX >> 6700 - Round number!")
 
-// SUPPORT ZONE (6880)
-alertcondition(ta.crossover(close, level9), "6880 SUPPORT UP", "SPX >> 6880 🟢 Support holding!")
-alertcondition(ta.crossunder(close, level9), "6880 SUPPORT DOWN", "SPX << 6880 - Below Support!")
+// EXTENDED SUPPORT (6680)
+alertcondition(ta.crossover(close, level10), "6680 BOUNCE", "SPX UP 6680 - Bounce from extended!")
+alertcondition(ta.crossunder(close, level10), "6680 BREACH", "SPX DOWN 6680 - Below extended support!")
+alertcondition(at6680, "At 6680", "SPX at 6680 - Extended support!")
 
-// SUPPORT ZONE BOTTOM (6870)
-alertcondition(ta.crossover(close, level10), "6870 SUP BOT UP", "SPX UP 6870 🟢 Bouncing from Support Zone Bottom!")
-alertcondition(ta.crossunder(close, level10), "6870 SUP BOT DOWN", "SPX DOWN 6870 🟢 Support Zone Breached!")
-alertcondition(at6870, "At 6870 Sup", "SPX at 6870 🟢 Support Zone Bottom!")
+// DEEP SUPPORT (6660)
+alertcondition(ta.crossunder(close, level11), "6660 DEEP", "SPX >> 6660 - Deep support!")
 
-// GAP HOLD (6855)
-alertcondition(ta.crossunder(close, level11), "6855 GAP HOLD", "SPX >> 6855 - Gap Hold level!")
+// DEEP SUPPORT 2 (6640)
+alertcondition(ta.crossunder(close, level12), "6640 DEEP 2", "SPX >> 6640 - Deep support 2!")
 
-// GAP FILL / GEX SUPPORT (6850)
-alertcondition(ta.crossover(close, level12), "6850 GEX BOUNCE", "SPX UP 6850 - Bounce from GEX Support!")
-alertcondition(ta.crossunder(close, level12), "6850 GEX BREACH", "SPX DOWN 6850 - GEX Support Breached!")
-alertcondition(at6850, "At 6850 GEX", "SPX at 6850 - Gap Fill / GEX Support!")
+// EXTREME SUPPORT (6620)
+alertcondition(ta.crossunder(close, level13), "6620 EXTREME", "SPX >> 6620 - Extreme support!")
 
-// BELOW GAP (6840)
-alertcondition(ta.crossunder(close, level13), "6840 BELOW GAP", "SPX >> 6840 - Below Gap!")
-
-// EXTENDED SUPPORT (6820)
-alertcondition(ta.crossunder(close, level14), "6820 EXTENDED", "SPX >> 6820 - Extended Support!")
-alertcondition(at6820, "At 6820", "SPX at 6820 - Extended Support!")
-alertcondition(below6820, "Below 6820", "SPX < 6820 - Below Extended Support!")
-
-// ZONE ALERTS
-alertcondition(inResistanceZone, "In Resistance Zone", "SPX in RESISTANCE ZONE (6925-6930) 🔴!")
-alertcondition(inSupportZone, "In Support Zone", "SPX in SUPPORT ZONE (6870-6885) 🟢!")
+// ROUND NUMBER EXTENDED (6600)
+alertcondition(ta.crossunder(close, level14), "6600 EXTENDED", "SPX >> 6600 - Round number extended!")
+alertcondition(at6600, "At 6600", "SPX at 6600 - Round number extended!")
+alertcondition(below6600, "Below 6600", "SPX < 6600 - Below round number extended!")
 
 // === STATUS TABLE ===
 var table statusTable = table.new(position.top_right, 2, 20, border_width=1)
 
 if barstate.islast and showLabels and showTable
     // Header
-    table.cell(statusTable, 0, 0, "SPX DEC 29 🎯", bgcolor=color.new(color.fuchsia, 70), text_color=color.white)
+    table.cell(statusTable, 0, 0, "SPX JAN 2", bgcolor=color.new(color.fuchsia, 70), text_color=color.white)
     table.cell(statusTable, 1, 0, str.tostring(close, "#.##"), bgcolor=color.new(color.fuchsia, 70), text_color=color.white)
     
     // Alert Status
@@ -305,86 +287,82 @@ if barstate.islast and showLabels and showTable
     table.cell(statusTable, 1, 1, enableAlerts ? "ON" : "OFF", bgcolor=enableAlerts ? color.green : color.red, text_color=color.white)
     
     // Bias based on positioning
-    bias = above6930 ? "📈 ABOVE RES" : inResistanceZone ? "🔴 RES ZONE" : inSupportZone ? "🟢 SUP ZONE" : inChopZone ? "⚡ CHOP" : below6870 ? "📉 BREAKDOWN" : "📍 NEUTRAL"
-    biasColor = above6930 ? color.green : inResistanceZone ? color.red : inSupportZone ? color.lime : inChopZone ? color.purple : below6870 ? color.red : color.yellow
+    bias = aboveSqueezeTrigger ? "SQUEEZE MODE" : inSqueezeRange ? "RANGE" : inMaxRiskZone ? "CAUTION" : belowMaxRisk ? "NO LONGS" : "NEUTRAL"
+    biasColor = aboveSqueezeTrigger ? color.green : inSqueezeRange ? color.blue : inMaxRiskZone ? color.orange : belowMaxRisk ? color.red : color.yellow
     table.cell(statusTable, 0, 2, "Bias", text_color=color.white)
     table.cell(statusTable, 1, 2, bias, bgcolor=color.new(biasColor, 70), text_color=color.white)
     
     // Position Status
-    position = above7000 ? "↑ Above Collar!" : above6975 ? "Outside Res" : above6960 ? "Neg GEX" : above6950 ? "Top EM" : above6930 ? "Above Res" : inResistanceZone ? "🔴 Res Zone" : above6900 ? "Above 6900" : inSupportZone ? "🟢 Sup Zone" : above6850 ? "Gap Hold" : above6820 ? "Below Gap" : "Extended"
-    posColor = above6975 ? color.lime : above6930 ? color.lime : inResistanceZone ? color.red : above6900 ? color.aqua : inSupportZone ? color.lime : above6850 ? color.yellow : color.orange
+    position = above6945 ? "Above Target 3" : above6921 ? "Above Target 2" : above6895 ? "Squeeze Mode" : above6823 ? "In Range" : above6802 ? "Caution Zone" : above6759 ? "Below Max Risk" : above6719 ? "Fail Target 1" : "Extended Down"
+    posColor = above6895 ? color.lime : above6823 ? color.blue : above6802 ? color.orange : color.red
     table.cell(statusTable, 0, 3, "Position", text_color=color.white)
     table.cell(statusTable, 1, 3, position, bgcolor=color.new(posColor, 70), text_color=color.white)
     
     // Strategy
-    strategy = above6930 ? "Watch 6945-6950 decision" : inResistanceZone ? "Fade or Break?" : inSupportZone ? "Hold for bounce" : above6850 ? "Watch gap fill" : "Extended - caution"
+    strategy = aboveSqueezeTrigger ? "Long to 6921/6945" : inSqueezeRange ? "Calls near 6823" : inMaxRiskZone ? "Tight stops" : belowMaxRisk ? "Puts to 6759/6719" : "Wait for setup"
     table.cell(statusTable, 0, 4, "Strategy", text_color=color.white)
     table.cell(statusTable, 1, 4, strategy, bgcolor=color.new(color.blue, 80), text_color=color.white)
     
     // Key Levels
-    table.cell(statusTable, 0, 5, "🔴 Resistance", text_color=color.white)
-    table.cell(statusTable, 1, 5, "6925-6930", bgcolor=color.new(color.red, 80), text_color=color.white)
+    table.cell(statusTable, 0, 5, "Squeeze Trigger", text_color=color.white)
+    table.cell(statusTable, 1, 5, "6895", bgcolor=color.new(color.red, 80), text_color=color.white)
     
-    table.cell(statusTable, 0, 6, "🟢 Support", text_color=color.white)
-    table.cell(statusTable, 1, 6, "6870-6885", bgcolor=color.new(color.lime, 80), text_color=color.black)
+    table.cell(statusTable, 0, 6, "Key Support", text_color=color.white)
+    table.cell(statusTable, 1, 6, "6823", bgcolor=color.new(color.lime, 80), text_color=color.black)
     
-    table.cell(statusTable, 0, 7, "🎯 JPM Collar", text_color=color.white)
-    table.cell(statusTable, 1, 7, "7000 (Dec 31)", bgcolor=color.new(color.fuchsia, 80), text_color=color.white)
+    table.cell(statusTable, 0, 7, "Max Risk", text_color=color.white)
+    table.cell(statusTable, 1, 7, "6802", bgcolor=color.new(color.yellow, 80), text_color=color.black)
     
-    table.cell(statusTable, 0, 8, "GEX Support", text_color=color.white)
-    table.cell(statusTable, 1, 8, "6850", bgcolor=color.new(color.lime, 80), text_color=color.black)
+    table.cell(statusTable, 0, 8, "Fail Targets", text_color=color.white)
+    table.cell(statusTable, 1, 8, "6759 / 6719", bgcolor=color.new(color.red, 80), text_color=color.white)
     
     // Distance to key levels
-    distTo6930 = level5 - close
-    distTo6930Str = distTo6930 > 0 ? "-" + str.tostring(math.abs(distTo6930), "#.#") : "+" + str.tostring(math.abs(distTo6930), "#.#")
-    table.cell(statusTable, 0, 9, "To 🔴Res 6930", text_color=color.white)
-    table.cell(statusTable, 1, 9, distTo6930Str, bgcolor=color.new(color.red, 80), text_color=color.white)
+    distToSqueeze = level3 - close
+    distToSqueezeStr = distToSqueeze > 0 ? "-" + str.tostring(math.abs(distToSqueeze), "#.#") : "+" + str.tostring(math.abs(distToSqueeze), "#.#")
+    table.cell(statusTable, 0, 9, "To Squeeze 6895", text_color=color.white)
+    table.cell(statusTable, 1, 9, distToSqueezeStr, bgcolor=color.new(color.red, 80), text_color=color.white)
     
-    distTo6885 = level8 - close
-    distTo6885Str = distTo6885 > 0 ? "-" + str.tostring(math.abs(distTo6885), "#.#") : "+" + str.tostring(math.abs(distTo6885), "#.#")
-    table.cell(statusTable, 0, 10, "To 🟢Sup 6885", text_color=color.white)
-    table.cell(statusTable, 1, 10, distTo6885Str, bgcolor=color.new(color.lime, 80), text_color=color.black)
+    distToSupport = level5 - close
+    distToSupportStr = distToSupport > 0 ? "-" + str.tostring(math.abs(distToSupport), "#.#") : "+" + str.tostring(math.abs(distToSupport), "#.#")
+    table.cell(statusTable, 0, 10, "To Support 6823", text_color=color.white)
+    table.cell(statusTable, 1, 10, distToSupportStr, bgcolor=color.new(color.lime, 80), text_color=color.black)
     
-    distTo7000 = level_collar_strike - close
-    distTo7000Str = distTo7000 > 0 ? "-" + str.tostring(math.abs(distTo7000), "#.#") : "+" + str.tostring(math.abs(distTo7000), "#.#")
-    table.cell(statusTable, 0, 11, "To 🎯Collar 7000", text_color=color.white)
-    table.cell(statusTable, 1, 11, distTo7000Str, bgcolor=color.new(color.fuchsia, 80), text_color=color.white)
+    distToMaxRisk = level6 - close
+    distToMaxRiskStr = distToMaxRisk > 0 ? "-" + str.tostring(math.abs(distToMaxRisk), "#.#") : "+" + str.tostring(math.abs(distToMaxRisk), "#.#")
+    table.cell(statusTable, 0, 11, "To Max Risk 6802", text_color=color.white)
+    table.cell(statusTable, 1, 11, distToMaxRiskStr, bgcolor=color.new(color.yellow, 80), text_color=color.black)
     
     // Volume Status
-    volStatus = volSpike ? "🔥 SPIKE" : "Normal"
+    volStatus = volSpike ? "SPIKE" : "Normal"
     volColor = volSpike ? color.orange : color.gray
     table.cell(statusTable, 0, 12, "Volume", text_color=color.white)
     table.cell(statusTable, 1, 12, volStatus, bgcolor=color.new(volColor, 70), text_color=color.white)
     
-    // Market Context
-    table.cell(statusTable, 0, 13, "Context", text_color=color.white)
-    table.cell(statusTable, 1, 13, "🎯 Year-End Flow", bgcolor=color.new(color.fuchsia, 80), text_color=color.white)
+    // Trade Setups
+    table.cell(statusTable, 0, 13, "Setup 1", text_color=color.white)
+    table.cell(statusTable, 1, 13, ">6895: Long 6921/6945", bgcolor=color.new(color.lime, 80), text_color=color.black)
     
-    table.cell(statusTable, 0, 14, "Main Event", text_color=color.white)
-    table.cell(statusTable, 1, 14, "JPM Dec 31 2-3PM", bgcolor=color.new(color.fuchsia, 80), text_color=color.white)
+    table.cell(statusTable, 0, 14, "Setup 2", text_color=color.white)
+    table.cell(statusTable, 1, 14, "6823-6895: Range", bgcolor=color.new(color.blue, 80), text_color=color.white)
     
-    table.cell(statusTable, 0, 15, "Upside", text_color=color.white)
-    table.cell(statusTable, 1, 15, "6930->6945->6960->6975", bgcolor=color.new(color.gray, 80), text_color=color.white)
+    table.cell(statusTable, 0, 15, "Setup 3", text_color=color.white)
+    table.cell(statusTable, 1, 15, "<6823: Puts 6759/6719", bgcolor=color.new(color.red, 80), text_color=color.white)
     
-    table.cell(statusTable, 0, 16, "Downside", text_color=color.white)
-    table.cell(statusTable, 1, 16, "6870->6855->6850->6840", bgcolor=color.new(color.gray, 80), text_color=color.white)
-    
-    table.cell(statusTable, 0, 17, "CTA Flow", text_color=color.white)
-    table.cell(statusTable, 1, 17, "Buyers in down tape", bgcolor=color.new(color.lime, 80), text_color=color.black)
+    table.cell(statusTable, 0, 16, "Invalidation", text_color=color.white)
+    table.cell(statusTable, 1, 16, "<6802 = NO LONGS", bgcolor=color.new(color.yellow, 80), text_color=color.black)
 
 // === PLOT INVISIBLE LINES FOR ALERT TRIGGERS ===
-plot(level_collar_strike, "7000 JPM Collar", color=color.new(color.fuchsia, 100))
-plot(level1, "6975 Outside Res", color=color.new(color.red, 100))
-plot(level2, "6960 Neg GEX", color=color.new(color.red, 100))
-plot(level3, "6950 Top EM", color=color.new(color.fuchsia, 100))
-plot(level4, "6945 Decision", color=color.new(color.orange, 100))
-plot(level5, "6930 Res Top", color=color.new(color.red, 100))
-plot(level6, "6925 Res Bot", color=color.new(color.red, 100))
-plot(level7, "6900 Round", color=color.new(color.aqua, 100))
-plot(level8, "6885 Sup Top", color=color.new(color.lime, 100))
-plot(level9, "6880 Support", color=color.new(color.lime, 100))
-plot(level10, "6870 Sup Bot", color=color.new(color.lime, 100))
-plot(level11, "6855 Gap Hold", color=color.new(color.aqua, 100))
-plot(level12, "6850 Gap/GEX", color=color.new(color.lime, 100))
-plot(level13, "6840 Below Gap", color=color.new(color.lime, 100))
-plot(level14, "6820 Extended", color=color.new(color.lime, 100))
+plot(level1, "6945 Target 3", color=color.new(color.fuchsia, 100))
+plot(level2, "6921 Target 2", color=color.new(color.fuchsia, 100))
+plot(level3, "6895 Squeeze", color=color.new(color.red, 100))
+plot(level4, "6850 Mid", color=color.new(color.aqua, 100))
+plot(level5, "6823 Support", color=color.new(color.lime, 100))
+plot(level6, "6802 Max Risk", color=color.new(color.yellow, 100))
+plot(level7, "6759 Fail 1", color=color.new(color.red, 100))
+plot(level8, "6719 Fail 2", color=color.new(color.red, 100))
+plot(level9, "6700 Round", color=color.new(color.aqua, 100))
+plot(level10, "6680 Extended", color=color.new(color.aqua, 100))
+plot(level11, "6660 Deep", color=color.new(color.aqua, 100))
+plot(level12, "6640 Deep 2", color=color.new(color.aqua, 100))
+plot(level13, "6620 Extreme", color=color.new(color.aqua, 100))
+plot(level14, "6600 Round Ext", color=color.new(color.aqua, 100))

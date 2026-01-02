@@ -1,39 +1,34 @@
 
-# === ES Daily Update - January 1, 2026 ===
+# === ES Daily Update - January 2, 2026 ===
 # BIG PICTURE OVERVIEW - Macro structures for context
 # (For detailed daily setups/intraday levels: tradecompanionsubstack.com)
 #
-# PRIMARY LONG SETUP (Preferred) - Failed Breakdown Longs:
-# - 6925 FBD: Flush below → reclaim → acceptance | T1: 6935-38, T2: 6947-52, Runner: 6960s | Invalid: Accept below 6913
-# - 6913 FBD: Higher-quality setup if reached, larger squeeze potential
+# YESTERDAY: 6896 reclaim was long trigger (6pm), rallied to 6938 exact target
 #
-# SECONDARY LONG SETUP - Back-Test Long:
-# - If ES reclaims 6935-38 from below and holds with acceptance
-# - Target rotation: 6952 → 6963
-#
-# SHORT SETUP (Lower Priority) - Failed Breakout Shorts:
-# - Only if ES rallies into 6963 or 6985-6995, fails to accept above, rejects
-# - Counter-trend → quick, level-to-level only
+# TODAY'S PLAN:
+# - 6938 = BIG RESISTANCE - Must clear to continue
+# - Above 6938 → 6943, 6948, 6956
+# - 6925, 6913 = Supports (watch for traps/FBD setups)
 #
 # NOTE: We don't predict - we REACT and follow price level to level.
 
 # === KEY LEVELS ===
-input level1 = 6995;  # Major Supply (Recent High Zone Upper)
-input level1_thickness = 1;
-input level2 = 6985;  # Major Supply (Recent High Zone Lower)
-input level2_thickness = 1;
-input level3 = 6963;  # Range High / Prior Value (Upper)
+input level1 = 6956;  # Target 3
+input level1_thickness = 2;
+input level2 = 6948;  # Target 2
+input level2_thickness = 2;
+input level3 = 6943;  # Target 1
 input level3_thickness = 2;
-input level4 = 6960;  # Range High / Prior Value (Lower)
-input level4_thickness = 2;
-input level5 = 6938;  # Lost Range Support (Upper)
-input level5_thickness = 2;
-input level6 = 6935;  # Lost Range Support (Lower)
-input level6_thickness = 2;
-input level7 = 6925;  # Major Structural Shelf
-input level7_thickness = 3;
-input level8 = 6913;  # Dec 23 Swing Low
-input level8_thickness = 3;
+input level4 = 6938;  # BIG RESISTANCE (Must Clear)
+input level4_thickness = 3;
+input level5 = 6925;  # Support (Watch Traps)
+input level5_thickness = 3;
+input level6 = 6913;  # Support (Watch Traps)
+input level6_thickness = 3;
+input level7 = 6896;  # Prior Long Trigger
+input level7_thickness = 1;
+input level8 = 0;  # Unused
+input level8_thickness = 1;
 input level9 = 0;  # Unused
 input level9_thickness = 1;
 input level10 = 0;  # Unused
@@ -50,23 +45,21 @@ def isLastBar1 = IsNaN(close[-1]) and !IsNaN(close);
 def isLastBar = isLastBar1[-bubblesBeforeLast];
 
 # Position detection
-def above6995 = close > level1;
-def at6995 = close >= level1 - 2 and close <= level1 + 2;
-def above6985 = close > level2;
-def at6985 = close >= level2 - 2 and close <= level2 + 2;
-def above6963 = close > level3;
-def at6963 = close >= level3 - 2 and close <= level3 + 2;
-def above6960 = close > level4;
-def at6960 = close >= level4 - 2 and close <= level4 + 2;
-def above6938 = close > level5;
-def at6938 = close >= level5 - 2 and close <= level5 + 2;
-def above6935 = close > level6;
-def at6935 = close >= level6 - 2 and close <= level6 + 2;
-def above6925 = close > level7;
-def at6925 = close >= level7 - 2 and close <= level7 + 2;
-def above6913 = close > level8;
-def at6913 = close >= level8 - 2 and close <= level8 + 2;
-def below6913 = close < level8;
+def above6956 = close > level1;
+def at6956 = close >= level1 - 2 and close <= level1 + 2;
+def above6948 = close > level2;
+def at6948 = close >= level2 - 2 and close <= level2 + 2;
+def above6943 = close > level3;
+def at6943 = close >= level3 - 2 and close <= level3 + 2;
+def above6938 = close > level4;
+def at6938 = close >= level4 - 2 and close <= level4 + 2;
+def above6925 = close > level5;
+def at6925 = close >= level5 - 2 and close <= level5 + 2;
+def above6913 = close > level6;
+def at6913 = close >= level6 - 2 and close <= level6 + 2;
+def above6896 = close > level7;
+def at6896 = close >= level7 - 2 and close <= level7 + 2;
+def below6896 = close < level7;
 
 # === LEVEL PLOTS ===
 plot L1 = level1;
@@ -80,32 +73,32 @@ L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.SHORT_DASH);
 
 plot L3 = level3;
-L3.SetDefaultColor(Color.RED);
+L3.SetDefaultColor(Color.MAGENTA);
 L3.SetLineWeight(level3_thickness);
-L3.SetStyle(Curve.FIRM);
+L3.SetStyle(Curve.SHORT_DASH);
 
 plot L4 = level4;
-L4.SetDefaultColor(Color.RED);
+L4.SetDefaultColor(Color.YELLOW);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
 plot L5 = level5;
-L5.SetDefaultColor(Color.ORANGE);
+L5.SetDefaultColor(Color.GREEN);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
 
 plot L6 = level6;
-L6.SetDefaultColor(Color.ORANGE);
+L6.SetDefaultColor(Color.GREEN);
 L6.SetLineWeight(level6_thickness);
 L6.SetStyle(Curve.FIRM);
 
-plot L7 = level7;
-L7.SetDefaultColor(Color.YELLOW);
+plot L7 = if level7 > 0 then level7 else Double.NaN;
+L7.SetDefaultColor(Color.CYAN);
 L7.SetLineWeight(level7_thickness);
-L7.SetStyle(Curve.FIRM);
+L7.SetStyle(Curve.SHORT_DASH);
 
-plot L8 = level8;
-L8.SetDefaultColor(Color.GREEN);
+plot L8 = if level8 > 0 then level8 else Double.NaN;
+L8.SetDefaultColor(Color.CYAN);
 L8.SetLineWeight(level8_thickness);
 L8.SetStyle(Curve.FIRM);
 
@@ -120,53 +113,47 @@ L10.SetLineWeight(level10_thickness);
 L10.SetStyle(Curve.FIRM);
 
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, "95 R", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level2, "85 R", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level3, "63 R", Color.RED, yes);
-AddChartBubble(isLastBar, level4, "60 R", Color.RED, yes);
-AddChartBubble(isLastBar, level5, "38 S", Color.ORANGE, no);
-AddChartBubble(isLastBar, level6, "35 S", Color.ORANGE, no);
-AddChartBubble(isLastBar, level7, "25 *", Color.YELLOW, no);
-AddChartBubble(isLastBar, level8, "13 *", Color.GREEN, no);
+AddChartBubble(isLastBar, level1, "56 T3", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level2, "48 T2", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level3, "43 T1", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level4, "38 *R*", Color.YELLOW, yes);
+AddChartBubble(isLastBar, level5, "25 S", Color.GREEN, no);
+AddChartBubble(isLastBar, level6, "13 S", Color.GREEN, no);
+AddChartBubble(isLastBar and level7 > 0, level7, "96", Color.CYAN, no);
 
 # === ALERT SYSTEM ===
 
-# MAJOR SUPPLY 6995
-Alert(enableAlerts and close crosses above level1, "ES >> 6995 - Above major supply!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level1, "ES << 6995 - Below major supply", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6995, "ES @ 6995 - Major Supply", Alert.BAR, Sound.Chimes);
+# TARGET 3 - 6956
+Alert(enableAlerts and close crosses above level1, "ES >> 6956 - TARGET 3!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level1, "ES << 6956 - Below T3", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6956, "ES @ 6956 - Target 3", Alert.BAR, Sound.Chimes);
 
-# MAJOR SUPPLY 6985
-Alert(enableAlerts and close crosses above level2, "ES >> 6985 - Above supply zone!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level2, "ES << 6985 - Rejection zone", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6985, "ES @ 6985 - Supply Zone", Alert.BAR, Sound.Chimes);
+# TARGET 2 - 6948
+Alert(enableAlerts and close crosses above level2, "ES >> 6948 - TARGET 2!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level2, "ES << 6948 - Below T2", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6948, "ES @ 6948 - Target 2", Alert.BAR, Sound.Chimes);
 
-# RANGE HIGH 6963
-Alert(enableAlerts and close crosses above level3, "ES >> 6963 - Above range high!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level3, "ES << 6963 - Failed breakout?", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6963, "ES @ 6963 - Range High", Alert.BAR, Sound.Chimes);
+# TARGET 1 - 6943
+Alert(enableAlerts and close crosses above level3, "ES >> 6943 - TARGET 1!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level3, "ES << 6943 - Below T1", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6943, "ES @ 6943 - Target 1", Alert.BAR, Sound.Chimes);
 
-# RANGE HIGH 6960
-Alert(enableAlerts and close crosses above level4, "ES >> 6960 - Entering resistance zone", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level4, "ES << 6960 - Below range high", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6960, "ES @ 6960 - Range High", Alert.BAR, Sound.Chimes);
+# BIG RESISTANCE 6938
+Alert(enableAlerts and close crosses above level4, "ES >> 6938 - CLEARED BIG RES!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level4, "ES << 6938 - Below resistance", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6938, "ES @ 6938 - BIG RESISTANCE", Alert.BAR, Sound.Chimes);
 
-# LOST RANGE SUPPORT 6938
-Alert(enableAlerts and close crosses above level5, "ES >> 6938 - Reclaimed upper range!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level5, "ES << 6938 - Below range support", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6938, "ES @ 6938 - Range Support", Alert.BAR, Sound.Chimes);
+# SUPPORT 6925 (Watch Traps)
+Alert(enableAlerts and close crosses above level5, "ES >> 6925 - Reclaim!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level5, "ES << 6925 - TRAP WATCH!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6925, "ES @ 6925 - Support", Alert.BAR, Sound.Chimes);
 
-# LOST RANGE SUPPORT 6935
-Alert(enableAlerts and close crosses above level6, "ES >> 6935 - Back-test long zone!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level6, "ES << 6935 - Lost range support", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6935, "ES @ 6935 - Range Support", Alert.BAR, Sound.Chimes);
+# SUPPORT 6913 (Watch Traps)
+Alert(enableAlerts and close crosses above level6, "ES >> 6913 - Reclaim!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level6, "ES << 6913 - TRAP WATCH!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6913, "ES @ 6913 - Support", Alert.BAR, Sound.Chimes);
 
-# MAJOR STRUCTURAL SHELF 6925
-Alert(enableAlerts and close crosses above level7, "ES >> 6925 - RECLAIMED SHELF!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level7, "ES << 6925 - FBD SETUP WATCH!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6925, "ES @ 6925 - MAJOR SHELF", Alert.BAR, Sound.Chimes);
-
-# DEC 23 SWING LOW 6913
-Alert(enableAlerts and close crosses below level8, "ES << 6913 - Below swing low! INVALIDATION", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and close crosses above level8, "ES >> 6913 - HIGH QUALITY FBD!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and at6913, "ES @ 6913 - Swing Low", Alert.BAR, Sound.Chimes);
+# PRIOR LONG TRIGGER 6896
+Alert(enableAlerts and close crosses above level7, "ES >> 6896 - Above prior trigger", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level7, "ES << 6896 - Below prior trigger", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6896, "ES @ 6896", Alert.BAR, Sound.Chimes);
