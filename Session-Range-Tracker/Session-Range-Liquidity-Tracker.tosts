@@ -208,16 +208,16 @@ AddChartBubble(showLondonBubble, londonLowVal, "LL", Color.YELLOW, no);
 AddChartBubble(showNYBubble, nyHighVal, "NYH", Color.GREEN, yes);
 AddChartBubble(showNYBubble, nyLowVal, "NYL", Color.GREEN, no);
 # === Fixed bubble logic ===
-input bubblesOffset = -12;  # number of candles to the right of last bar (more negative = further right)
+input bubblesOffset = 8;  # number of candles to the right of last bar (positive = further right)
 def isLastBar1 = IsNaN(close[-1]) and !IsNaN(close);
-def isLastBar = isLastBar1[bubblesOffset];
 
-# Staggered positions for different timeframes to avoid overlap
+# All labels vertically aligned at the same position (8 candles right of current bar)
+def isLastBar = isLastBar1[bubblesOffset];
 def isLastBar_4H = isLastBar1[bubblesOffset];
-def isLastBar_Daily = isLastBar1[bubblesOffset - 3];
-def isLastBar_Monday = isLastBar1[bubblesOffset - 6];
-def isLastBar_Weekly = isLastBar1[bubblesOffset - 9];
-def isLastBar_Monthly = isLastBar1[bubblesOffset - 12];
+def isLastBar_Daily = isLastBar1[bubblesOffset];
+def isLastBar_Monday = isLastBar1[bubblesOffset];
+def isLastBar_Weekly = isLastBar1[bubblesOffset];
+def isLastBar_Monthly = isLastBar1[bubblesOffset];
 
 # === 4H Levels ===
 def fourH_Open = open(period = "4 HOURS");
