@@ -1,15 +1,15 @@
 
-# === ES Daily Update - January 2, 2026 (Update 4) ===
+# === ES Daily Update - January 2, 2026 (Update 5) ===
 # BIG PICTURE OVERVIEW - Macro structures for context
 # (For detailed daily setups/intraday levels: tradecompanionsubstack.com)
 #
-# VOLATILITY BACK - Setup after setup:
-# - 6886 support held exact → 6896 reclaim triggered long → 6913 target hit
-# - Back to 6886 now
+# MID-DAY CHOP after volatile open:
+# - 6872 support held (hit 6873, bounced)
+# - 6896 backtested exact and REJECTED
 #
 # CURRENT PLAN:
-# - 6896 must reclaim to rally again
-# - 6872-69, 6854 = Supports below
+# - Bulls must recover 6896 to rally → 6905 → 6913 → 6925+
+# - 6886, 6872 remain supports below
 #
 # NOTE: We don't predict - we REACT and follow price level to level.
 
@@ -18,15 +18,17 @@ input level1 = 6938;  # Resistance
 input level1_thickness = 2;
 input level2 = 6925;  # Resistance
 input level2_thickness = 2;
-input level3 = 6913;  # Resistance (Prior Target)
+input level3 = 6913;  # Resistance
 input level3_thickness = 2;
-input level4 = 6896;  # KEY - Must Reclaim to Rally
+input level3b = 6905;  # Resistance (Rally Target)
+input level3b_thickness = 2;
+input level4 = 6896;  # KEY - Must Reclaim to Rally (Rejected)
 input level4_thickness = 3;
-input level5 = 6886;  # Support (Held Exact)
+input level5 = 6886;  # Support
 input level5_thickness = 3;
-input level6 = 6872;  # Support Zone Upper
-input level6_thickness = 2;
-input level7 = 6869;  # Support Zone Lower
+input level6 = 6872;  # Support (Held - hit 6873)
+input level6_thickness = 3;
+input level7 = 6869;  # Support
 input level7_thickness = 2;
 input level8 = 6854;  # Support Below
 input level8_thickness = 2;
@@ -80,6 +82,11 @@ L3.SetDefaultColor(Color.ORANGE);
 L3.SetLineWeight(level3_thickness);
 L3.SetStyle(Curve.FIRM);
 
+plot L3b = level3b;
+L3b.SetDefaultColor(Color.ORANGE);
+L3b.SetLineWeight(level3b_thickness);
+L3b.SetStyle(Curve.SHORT_DASH);
+
 plot L4 = level4;
 L4.SetDefaultColor(Color.YELLOW);
 L4.SetLineWeight(level4_thickness);
@@ -119,6 +126,7 @@ L10.SetStyle(Curve.FIRM);
 AddChartBubble(isLastBar, level1, "38 R", Color.MAGENTA, yes);
 AddChartBubble(isLastBar, level2, "25 R", Color.MAGENTA, yes);
 AddChartBubble(isLastBar, level3, "13 R", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level3b, "05 R", Color.ORANGE, yes);
 AddChartBubble(isLastBar, level4, "96 *", Color.YELLOW, no);
 AddChartBubble(isLastBar, level5, "86 S", Color.GREEN, no);
 AddChartBubble(isLastBar, level6, "72 S", Color.GREEN, no);
@@ -137,10 +145,16 @@ Alert(enableAlerts and close crosses above level2, "ES >> 6925 - Above resistanc
 Alert(enableAlerts and close crosses below level2, "ES << 6925 - Below resistance", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and at6925, "ES @ 6925 - Resistance", Alert.BAR, Sound.Chimes);
 
-# RESISTANCE 6913 (Prior Target)
+# RESISTANCE 6913
 Alert(enableAlerts and close crosses above level3, "ES >> 6913 - Reclaim!", Alert.BAR, Sound.Ring);
 Alert(enableAlerts and close crosses below level3, "ES << 6913 - Below", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and at6913, "ES @ 6913", Alert.BAR, Sound.Chimes);
+
+# RESISTANCE 6905 (Rally Target)
+def at6905 = close >= level3b - 2 and close <= level3b + 2;
+Alert(enableAlerts and close crosses above level3b, "ES >> 6905 - Above!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level3b, "ES << 6905 - Below", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6905, "ES @ 6905", Alert.BAR, Sound.Chimes);
 
 # KEY LEVEL 6896 (Must Reclaim)
 Alert(enableAlerts and close crosses above level4, "ES >> 6896 - RECLAIM! RALLY TRIGGER", Alert.BAR, Sound.Ring);
