@@ -1,0 +1,373 @@
+
+declare lower;
+
+#============================================================
+#              GAMMA DELTA OSCILLATOR - ENHANCED
+#============================================================
+# Measures divergence between IV change (Gamma proxy) and 
+# Price change (Delta proxy) to identify hedging pressure
+# and potential volatility expansion/contraction zones.
+#============================================================
+
+#------------------ Core Oscillator Settings ------------------
+input priceLength       = 3;     # lookback for price ROC (Delta proxy)
+input ivLength          = 3;     # lookback for IV ROC (Gamma proxy)
+input smooth            = 2;     # smoothing of divergence
+input extremeLookback   = 12;    # window for "extreme" pivots
+
+#------------------ Band & Threshold Settings ------------------
+input bandMult          = 2.0;   # threshold band multiplier (std dev)
+input squeezeThreshold  = 0.3;   # low volatility squeeze detection
+
+#------------------ Moving Average Settings ------------------
+input maLength          = 20;    # moving average for price action
+input tradeSignalMA     = 5;     # MA for trade signal integration
+input fastMALength      = 5;     # fast MA for trend
+input slowMALength      = 15;    # slow MA for trend
+
+#------------------ Momentum Confirmation ------------------
+input rsiLength         = 9;     # RSI period for momentum filter
+input rsiOverbought     = 70;    # RSI overbought level
+input rsiOversold       = 30;    # RSI oversold level
+input useRSIFilter      = yes;   # enable RSI confirmation
+
+#------------------ Divergence Detection ------------------
+input divergenceLookback = 10;   # bars to look for divergences
+input showDivergences    = no;   # show divergence signals
+
+#------------------ Visual Settings ------------------
+input showBubbles       = no;    # value bubbles at extremes
+input showArrows        = no;    # arrows at extremes
+input showCloud         = no;    # show band cloud fill
+input showHistogram     = no;    # show histogram
+input showSignalStrength = no;   # show signal strength meter
+input showStrongSignals  = yes;  # show strong long/short arrows only
+input showSqueeze        = no;   # show squeeze dots and bubbles
+
+#============================================================
+#                    CORE CALCULATIONS
+#============================================================
+
+#------------------ Manual ROC Definitions ------------------
+def priceROC = if close[priceLength] != 0
+               then (close - close[priceLength]) / close[priceLength] * 100
+               else 0;
+
+def iv = imp_volatility();
+def ivValid = !IsNaN(iv) and iv > 0;
+def ivROC = if ivValid and iv[ivLength] != 0
+            then (iv - iv[ivLength]) / iv[ivLength] * 100
+            else 0;
+
+#------------------ Divergence Oscillator ------------------
+def rawDiv   = ivROC - priceROC;
+def osc      = Average(rawDiv, smooth);
+def oscEMA   = ExpAverage(osc, smooth);  # EMA for smoother signals
+
+#------------------ Momentum (Rate of Change of Oscillator) ------------------
+def oscMomentum = osc - osc[3];
+def oscAccel    = oscMomentum - oscMomentum[2];
+
+#------------------ Threshold Bands ------------------
+def oscMean  = Average(osc, extremeLookback);
+def oscStd   = StDev(osc, extremeLookback);
+def upperBandVal = oscMean + bandMult * oscStd;
+def lowerBandVal = oscMean - bandMult * oscStd;
+def midBandVal   = oscMean;
+
+#------------------ Squeeze Detection (Low Volatility) ------------------
+def bandWidth = (upperBandVal - lowerBandVal);
+def avgBandWidth = Average(bandWidth, extremeLookback);
+def inSqueeze = bandWidth < avgBandWidth * squeezeThreshold;
+def squeezeFiring = inSqueeze[1] and !inSqueeze;
+
+#============================================================
+#                    RSI MOMENTUM FILTER
+#============================================================
+def rsi = RSI(rsiLength);
+def rsiOB = rsi > rsiOverbought;
+def rsiOS = rsi < rsiOversold;
+def rsiBullish = rsi > 50;
+def rsiBearish = rsi < 50;
+
+#============================================================
+#                    DIVERGENCE DETECTION
+#============================================================
+# Price making higher highs but oscillator making lower highs = Bearish Divergence
+# Price making lower lows but oscillator making higher lows = Bullish Divergence
+
+def priceHH = close > Highest(close[1], divergenceLookback);
+def priceLL = close < Lowest(close[1], divergenceLookback);
+def oscLH   = osc < Highest(osc[1], divergenceLookback) and osc[1] == Highest(osc[1], divergenceLookback);
+def oscHL   = osc > Lowest(osc[1], divergenceLookback) and osc[1] == Lowest(osc[1], divergenceLookback);
+
+def bearishDiv = showDivergences and priceHH and oscLH;
+def bullishDiv = showDivergences and priceLL and oscHL;
+
+#============================================================
+#                    SIGNAL STRENGTH CALCULATION
+#============================================================
+# Combine multiple factors for signal strength (0-100)
+def trendStrength = AbsValue(osc) / (oscStd + 0.001) * 20;
+def momentumStrength = if rsiBullish and osc > 0 then 25 
+                       else if rsiBearish and osc < 0 then 25 
+                       else 0;
+def bandStrength = if osc > upperBandVal then 25 
+                   else if osc < lowerBandVal then 25 
+                   else if AbsValue(osc) > AbsValue(midBandVal) then 15 
+                   else 0;
+def accelStrength = if (oscAccel > 0 and osc > 0) or (oscAccel < 0 and osc < 0) then 25 else 0;
+
+def rawSignalStrength = Min(100, trendStrength + momentumStrength + bandStrength + accelStrength);
+def signalStrength = Round(rawSignalStrength, 0);
+
+#============================================================
+#                       PLOTS
+#============================================================
+
+#------------------ Band Plots ------------------
+plot UpperBand = upperBandVal;
+UpperBand.SetDefaultColor(Color.LIGHT_GRAY);
+UpperBand.SetStyle(Curve.SHORT_DASH);
+UpperBand.SetLineWeight(1);
+
+plot LowerBand = lowerBandVal;
+LowerBand.SetDefaultColor(Color.LIGHT_GRAY);
+LowerBand.SetStyle(Curve.SHORT_DASH);
+LowerBand.SetLineWeight(1);
+
+plot MidBand = midBandVal;
+MidBand.SetDefaultColor(Color.DARK_GRAY);
+MidBand.SetStyle(Curve.MEDIUM_DASH);
+MidBand.SetLineWeight(1);
+
+#------------------ Cloud Fill Between Bands ------------------
+AddCloud(if showCloud then upperBandVal else Double.NaN, 
+         if showCloud then lowerBandVal else Double.NaN, 
+         Color.DARK_GRAY, Color.DARK_GRAY);
+
+#------------------ Zero Line ------------------
+plot ZeroLine = 0;
+ZeroLine.SetDefaultColor(Color.WHITE);
+ZeroLine.SetLineWeight(1);
+
+#------------------ Main Oscillator Line ------------------
+plot Oscillator = osc;
+Oscillator.AssignValueColor(
+    if inSqueeze then Color.YELLOW
+    else if osc > upperBandVal then Color.CYAN
+    else if osc < lowerBandVal then Color.MAGENTA
+    else if osc > 0 and oscMomentum > 0 then Color.GREEN
+    else if osc > 0 then Color.DARK_GREEN
+    else if osc < 0 and oscMomentum < 0 then Color.RED
+    else Color.DARK_RED);
+Oscillator.SetLineWeight(2);
+
+#------------------ EMA Signal Line ------------------
+plot SignalLine = oscEMA;
+SignalLine.SetDefaultColor(Color.ORANGE);
+SignalLine.SetLineWeight(1);
+SignalLine.SetStyle(Curve.SHORT_DASH);
+
+#------------------ Histogram ------------------
+plot Hist = if showHistogram then osc else Double.NaN;
+Hist.SetPaintingStrategy(PaintingStrategy.HISTOGRAM);
+Hist.AssignValueColor(
+    if inSqueeze then Color.DARK_ORANGE
+    else if osc > upperBandVal then Color.CYAN
+    else if osc < lowerBandVal then Color.MAGENTA
+    else if osc > 0 and oscMomentum > 0 then Color.GREEN
+    else if osc > 0 then Color.DARK_GREEN
+    else if osc < 0 and oscMomentum < 0 then Color.RED
+    else Color.DARK_RED);
+Hist.SetLineWeight(3);
+
+#------------------ Momentum Dots (acceleration) - Hidden by default ------------------
+plot AccelDots = Double.NaN;
+AccelDots.SetPaintingStrategy(PaintingStrategy.POINTS);
+AccelDots.SetLineWeight(4);
+AccelDots.AssignValueColor(
+    if oscAccel > 0 and osc > 0 then Color.GREEN
+    else if oscAccel < 0 and osc < 0 then Color.RED
+    else if oscAccel > 0 then Color.LIGHT_GREEN
+    else Color.LIGHT_RED);
+
+#============================================================
+#                    EXTREME PIVOTS
+#============================================================
+def hiN = Highest(osc, extremeLookback);
+def loN = Lowest(osc, extremeLookback);
+
+def newHigh = osc == hiN and osc[1] < hiN[1];
+def newLow  = osc == loN and osc[1] > loN[1];
+
+plot HighArrow = if showArrows and newHigh then osc else Double.NaN;
+HighArrow.SetPaintingStrategy(PaintingStrategy.ARROW_DOWN);
+HighArrow.SetLineWeight(3);
+HighArrow.SetDefaultColor(Color.RED);
+
+plot LowArrow = if showArrows and newLow then osc else Double.NaN;
+LowArrow.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
+LowArrow.SetLineWeight(3);
+LowArrow.SetDefaultColor(Color.GREEN);
+
+AddChartBubble(showBubbles and newHigh, osc,
+               "EXTREME HIGH\n" + Round(osc, 2) + "\nRSI: " + Round(rsi, 0),
+               Color.RED, yes);
+
+AddChartBubble(showBubbles and newLow, osc,
+               "EXTREME LOW\n" + Round(osc, 2) + "\nRSI: " + Round(rsi, 0),
+               Color.GREEN, no);
+
+#============================================================
+#                    DIVERGENCE SIGNALS
+#============================================================
+plot BearishDivSignal = if bearishDiv then osc else Double.NaN;
+BearishDivSignal.SetPaintingStrategy(PaintingStrategy.BOOLEAN_WEDGE_DOWN);
+BearishDivSignal.SetDefaultColor(Color.RED);
+BearishDivSignal.SetLineWeight(3);
+
+plot BullishDivSignal = if bullishDiv then osc else Double.NaN;
+BullishDivSignal.SetPaintingStrategy(PaintingStrategy.BOOLEAN_WEDGE_UP);
+BullishDivSignal.SetDefaultColor(Color.GREEN);
+BullishDivSignal.SetLineWeight(3);
+
+AddChartBubble(bearishDiv, osc + oscStd * 0.5, "BEAR DIV", Color.RED, yes);
+AddChartBubble(bullishDiv, osc - oscStd * 0.5, "BULL DIV", Color.GREEN, no);
+
+#============================================================
+#                    SQUEEZE SIGNALS
+#============================================================
+plot SqueezeDots = if showSqueeze and inSqueeze then 0 else Double.NaN;
+SqueezeDots.SetPaintingStrategy(PaintingStrategy.POINTS);
+SqueezeDots.SetDefaultColor(Color.YELLOW);
+SqueezeDots.SetLineWeight(5);
+
+# Determine squeeze direction based on oscillator and momentum
+def squeezeLong = squeezeFiring and osc > 0;
+def squeezeShort = squeezeFiring and osc < 0;
+def squeezeLongStrong = squeezeLong and oscMomentum > 0;
+def squeezeShortStrong = squeezeShort and oscMomentum < 0;
+
+# Squeeze fired bubbles with clear direction
+AddChartBubble(showSqueeze and squeezeLongStrong, osc, 
+    "SQUEEZE LONG!\nMomentum UP", Color.GREEN, yes);
+AddChartBubble(showSqueeze and squeezeLong and !squeezeLongStrong, osc, 
+    "SQUEEZE LONG\n(weak)", Color.DARK_GREEN, yes);
+AddChartBubble(showSqueeze and squeezeShortStrong, osc, 
+    "SQUEEZE SHORT!\nMomentum DOWN", Color.RED, no);
+AddChartBubble(showSqueeze and squeezeShort and !squeezeShortStrong, osc, 
+    "SQUEEZE SHORT\n(weak)", Color.DARK_RED, no);
+
+# Plot squeeze fire arrows for clarity
+plot SqueezeFireLong = if showSqueeze and squeezeLong then osc else Double.NaN;
+SqueezeFireLong.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
+SqueezeFireLong.SetDefaultColor(Color.GREEN);
+SqueezeFireLong.SetLineWeight(5);
+
+plot SqueezeFireShort = if showSqueeze and squeezeShort then osc else Double.NaN;
+SqueezeFireShort.SetPaintingStrategy(PaintingStrategy.ARROW_DOWN);
+SqueezeFireShort.SetDefaultColor(Color.RED);
+SqueezeFireShort.SetLineWeight(5);
+
+#============================================================
+#                    ALERTS
+#============================================================
+Alert(osc crosses above 0, "Oscillator crossed above zero", Alert.BAR, Sound.Ring);
+Alert(osc crosses below 0, "Oscillator crossed below zero", Alert.BAR, Sound.Bell);
+Alert(osc crosses above upperBandVal, "Oscillator crossed above upper band", Alert.BAR, Sound.Chimes);
+Alert(osc crosses below lowerBandVal, "Oscillator crossed below lower band", Alert.BAR, Sound.Ding);
+Alert(bearishDiv, "Bearish Divergence Detected", Alert.BAR, Sound.Chimes);
+Alert(bullishDiv, "Bullish Divergence Detected", Alert.BAR, Sound.Chimes);
+Alert(squeezeLong, "Squeeze Fired LONG!", Alert.BAR, Sound.Ring);
+Alert(squeezeShort, "Squeeze Fired SHORT!", Alert.BAR, Sound.Bell);
+
+#============================================================
+#              ENHANCED TRADE SIGNALS
+#============================================================
+def priceMA = Average(close, tradeSignalMA);
+def fastMA = Average(close, fastMALength);
+def slowMA = Average(close, slowMALength);
+def trendUp = fastMA > slowMA;
+def trendDown = fastMA < slowMA;
+def mainMA = Average(close, maLength);
+
+# Multi-factor long signal
+def baseLongCross = osc crosses above 0;
+def trendLongOK = close > priceMA and trendUp;
+def rsiLongOK = if useRSIFilter then rsiBullish and !rsiOB else yes;
+def momentumLongOK = oscMomentum > 0;
+
+def tradeLongStrong = baseLongCross and trendLongOK and rsiLongOK and momentumLongOK;
+def tradeLongWeak   = baseLongCross and (trendLongOK or rsiLongOK);
+
+# Multi-factor short signal  
+def baseShortCross = osc crosses below 0;
+def trendShortOK = close < priceMA and trendDown;
+def rsiShortOK = if useRSIFilter then rsiBearish and !rsiOS else yes;
+def momentumShortOK = oscMomentum < 0;
+
+def tradeShortStrong = baseShortCross and trendShortOK and rsiShortOK and momentumShortOK;
+def tradeShortWeak   = baseShortCross and (trendShortOK or rsiShortOK);
+
+# Plot strong signals
+plot TradeLongSignal = if showStrongSignals and tradeLongStrong then osc else Double.NaN;
+TradeLongSignal.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
+TradeLongSignal.SetDefaultColor(Color.CYAN);
+TradeLongSignal.SetLineWeight(5);
+
+plot TradeShortSignal = if showStrongSignals and tradeShortStrong then osc else Double.NaN;
+TradeShortSignal.SetPaintingStrategy(PaintingStrategy.ARROW_DOWN);
+TradeShortSignal.SetDefaultColor(Color.MAGENTA);
+TradeShortSignal.SetLineWeight(5);
+
+# Plot weak signals (smaller) - disabled by default
+plot WeakLongSignal = if !showStrongSignals and tradeLongWeak and !tradeLongStrong then osc else Double.NaN;
+WeakLongSignal.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
+WeakLongSignal.SetDefaultColor(Color.DARK_GREEN);
+WeakLongSignal.SetLineWeight(3);
+
+plot WeakShortSignal = if !showStrongSignals and tradeShortWeak and !tradeShortStrong then osc else Double.NaN;
+WeakShortSignal.SetPaintingStrategy(PaintingStrategy.ARROW_DOWN);
+WeakShortSignal.SetDefaultColor(Color.DARK_RED);
+WeakShortSignal.SetLineWeight(3);
+
+#============================================================
+#                      LABELS (Consolidated)
+#============================================================
+
+#------------------ Primary Status Label (All-in-One) ------------------
+def newHighPrice = close == Highest(close, extremeLookback);
+def newLowPrice  = close == Lowest(close, extremeLookback);
+def pctAboveZero = 100 * Average(if osc > 0 then 1 else 0, extremeLookback);
+
+def oscState = if osc > upperBandVal then 2 
+               else if osc < lowerBandVal then -2 
+               else if inSqueeze then 0 
+               else if osc > 0 then 1 
+               else -1;
+
+AddLabel(yes,
+    Round(osc, 2) + 
+    (if oscState == 2 then " [EXTREME+]" 
+     else if oscState == -2 then " [EXTREME-]"
+     else if oscState == 0 then " [SQUEEZE]"
+     else if oscState == 1 then " [+]" 
+     else " [-]") +
+    " | " + (if trendUp then "Bull" else if trendDown then "Bear" else "Flat") +
+    " | RSI:" + Round(rsi, 0) +
+    (if rsiOB then " OB" else if rsiOS then " OS" else ""),
+    if oscState == 2 then Color.CYAN
+    else if oscState == -2 then Color.MAGENTA
+    else if oscState == 0 then Color.YELLOW
+    else if osc > 0 and trendUp then Color.GREEN
+    else if osc < 0 and trendDown then Color.RED
+    else Color.GRAY);
+
+#------------------ Trade Signal Label (only shows when signal active) ------------------
+AddLabel(tradeLongStrong or tradeShortStrong, 
+    if tradeLongStrong then "** LONG **" else "** SHORT **",
+    if tradeLongStrong then Color.CYAN else Color.MAGENTA);
+
+#------------------ IV Data Warning ------------------
+AddLabel(!ivValid, "⚠ NO IV", Color.ORANGE);
