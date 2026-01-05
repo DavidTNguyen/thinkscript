@@ -1,41 +1,44 @@
-
-# === ES Daily Update - January 2, 2026 (Update 6) ===
+# === ES Weekly Plan - January 6, 2026 ===
 # BIG PICTURE OVERVIEW - Macro structures for context
-# (For detailed daily setups/intraday levels: tradecompanionsubstack.com)
 #
-# LEVELS RESPECTING PRECISELY:
-# - 6872 support: Held 6873 at 11:10AM, rallied to 6896 resistance
-# - Just tested 6871.50, bounced again
+# CONTEXT:
+# - Wed: Lost key 2-day shelf at 6935 → sell bounces cycle
+# - Thu 2pm: BIG FBD of morning shelf at 6872 → squeeze started
+# - Core uptrend from Nov low at 6880 (Monday)
 #
-# CURRENT PLAN:
-# - Bulls need > 6896 to pop → 6905 → 6913 → 6925+
-# - If 6872 fails → 6854 → 6838 next leg lower
+# WEEKLY PLAN:
+# - 6885, 6864 = Supports (must hold to keep 6925-35 live)
+# - Lean: Dip → then breakout to 6964, 6989, 7020
+# - Backtesting: 6913, 6925, 6935/42 (must recover for larger rally)
+# - If 6864 fails → sell to 6822, 6796
 #
 # NOTE: We don't predict - we REACT and follow price level to level.
 
 # === KEY LEVELS ===
-input level1 = 6938;  # Resistance
+input level1 = 7020;  # Breakout Target 3
 input level1_thickness = 1;
-input level2 = 6925;  # Resistance
+input level2 = 6989;  # Breakout Target 2
 input level2_thickness = 1;
-input level3 = 6913;  # Resistance
+input level3 = 6964;  # Breakout Target 1
 input level3_thickness = 1;
-input level3b = 6905;  # Resistance (Rally Target)
-input level3b_thickness = 1;
-input level4 = 6896;  # KEY - Must Reclaim to Rally (Rejected)
+input level4 = 6942;  # Must Recover (Upper)
 input level4_thickness = 2;
-input level5 = 6886;  # Support
-input level5_thickness = 1;
-input level6 = 6872;  # Support (Holding - tested 6871.50)
-input level6_thickness = 2;
-input level7 = 6854;  # Support (if 6872 fails)
+input level5 = 6935;  # Must Recover (Lower)
+input level5_thickness = 2;
+input level6 = 6925;  # Backtest Target
+input level6_thickness = 1;
+input level7 = 6913;  # Backtest Target
 input level7_thickness = 1;
-input level8 = 6838;  # Support (next leg lower)
-input level8_thickness = 1;
-input level9 = 0;  # Unused
-input level9_thickness = 1;
-input level10 = 0;  # Unused
-input level10_thickness = 1;
+input level8 = 6885;  # Support
+input level8_thickness = 2;
+input level9 = 6880;  # Core Uptrend (Nov Low)
+input level9_thickness = 2;
+input level10 = 6864;  # KEY Support (Must Hold)
+input level10_thickness = 2;
+input level11 = 6822;  # If 6864 Fails
+input level11_thickness = 1;
+input level12 = 6796;  # If 6864 Fails
+input level12_thickness = 1;
 
 # Alert Settings
 input enableAlerts = yes;
@@ -48,23 +51,31 @@ def isLastBar1 = IsNaN(close[-1]) and !IsNaN(close);
 def isLastBar = isLastBar1[-bubblesBeforeLast];
 
 # Position detection
-def above6938 = close > level1;
-def at6938 = close >= level1 - 2 and close <= level1 + 2;
-def above6925 = close > level2;
-def at6925 = close >= level2 - 2 and close <= level2 + 2;
-def above6913 = close > level3;
-def at6913 = close >= level3 - 2 and close <= level3 + 2;
-def above6896 = close > level4;
-def at6896 = close >= level4 - 2 and close <= level4 + 2;
-def above6886 = close > level5;
-def at6886 = close >= level5 - 2 and close <= level5 + 2;
-def above6872 = close > level6;
-def at6872 = close >= level6 - 2 and close <= level6 + 2;
-def above6854 = close > level7;
-def at6854 = close >= level7 - 2 and close <= level7 + 2;
-def above6838 = close > level8;
-def at6838 = close >= level8 - 2 and close <= level8 + 2;
-def below6838 = close < level8;
+def above7020 = close > level1;
+def at7020 = close >= level1 - 2 and close <= level1 + 2;
+def above6989 = close > level2;
+def at6989 = close >= level2 - 2 and close <= level2 + 2;
+def above6964 = close > level3;
+def at6964 = close >= level3 - 2 and close <= level3 + 2;
+def above6942 = close > level4;
+def at6942 = close >= level4 - 2 and close <= level4 + 2;
+def above6935 = close > level5;
+def at6935 = close >= level5 - 2 and close <= level5 + 2;
+def above6925 = close > level6;
+def at6925 = close >= level6 - 2 and close <= level6 + 2;
+def above6913 = close > level7;
+def at6913 = close >= level7 - 2 and close <= level7 + 2;
+def above6885 = close > level8;
+def at6885 = close >= level8 - 2 and close <= level8 + 2;
+def above6880 = close > level9;
+def at6880 = close >= level9 - 2 and close <= level9 + 2;
+def above6864 = close > level10;
+def at6864 = close >= level10 - 2 and close <= level10 + 2;
+def above6822 = close > level11;
+def at6822 = close >= level11 - 2 and close <= level11 + 2;
+def above6796 = close > level12;
+def at6796 = close >= level12 - 2 and close <= level12 + 2;
+def below6796 = close < level12;
 
 # === LEVEL PLOTS ===
 plot L1 = level1;
@@ -78,105 +89,127 @@ L2.SetLineWeight(level2_thickness);
 L2.SetStyle(Curve.SHORT_DASH);
 
 plot L3 = level3;
-L3.SetDefaultColor(Color.ORANGE);
+L3.SetDefaultColor(Color.MAGENTA);
 L3.SetLineWeight(level3_thickness);
-L3.SetStyle(Curve.FIRM);
-
-plot L3b = level3b;
-L3b.SetDefaultColor(Color.ORANGE);
-L3b.SetLineWeight(level3b_thickness);
-L3b.SetStyle(Curve.SHORT_DASH);
+L3.SetStyle(Curve.SHORT_DASH);
 
 plot L4 = level4;
-L4.SetDefaultColor(Color.YELLOW);
+L4.SetDefaultColor(Color.ORANGE);
 L4.SetLineWeight(level4_thickness);
 L4.SetStyle(Curve.FIRM);
 
 plot L5 = level5;
-L5.SetDefaultColor(Color.GREEN);
+L5.SetDefaultColor(Color.ORANGE);
 L5.SetLineWeight(level5_thickness);
 L5.SetStyle(Curve.FIRM);
 
 plot L6 = level6;
-L6.SetDefaultColor(Color.GREEN);
+L6.SetDefaultColor(Color.YELLOW);
 L6.SetLineWeight(level6_thickness);
-L6.SetStyle(Curve.FIRM);
+L6.SetStyle(Curve.SHORT_DASH);
 
-plot L7 = if level7 > 0 then level7 else Double.NaN;
-L7.SetDefaultColor(Color.GREEN);
+plot L7 = level7;
+L7.SetDefaultColor(Color.YELLOW);
 L7.SetLineWeight(level7_thickness);
-L7.SetStyle(Curve.FIRM);
+L7.SetStyle(Curve.SHORT_DASH);
 
-plot L8 = if level8 > 0 then level8 else Double.NaN;
-L8.SetDefaultColor(Color.CYAN);
+plot L8 = level8;
+L8.SetDefaultColor(Color.GREEN);
 L8.SetLineWeight(level8_thickness);
 L8.SetStyle(Curve.FIRM);
 
-plot L9 = if level9 > 0 then level9 else Double.NaN;
-L9.SetDefaultColor(Color.CYAN);
+plot L9 = level9;
+L9.SetDefaultColor(Color.GREEN);
 L9.SetLineWeight(level9_thickness);
 L9.SetStyle(Curve.FIRM);
 
-plot L10 = if level10 > 0 then level10 else Double.NaN;
-L10.SetDefaultColor(Color.CYAN);
+plot L10 = level10;
+L10.SetDefaultColor(Color.GREEN);
 L10.SetLineWeight(level10_thickness);
 L10.SetStyle(Curve.FIRM);
 
+plot L11 = if level11 > 0 then level11 else Double.NaN;
+L11.SetDefaultColor(Color.CYAN);
+L11.SetLineWeight(level11_thickness);
+L11.SetStyle(Curve.SHORT_DASH);
+
+plot L12 = if level12 > 0 then level12 else Double.NaN;
+L12.SetDefaultColor(Color.CYAN);
+L12.SetLineWeight(level12_thickness);
+L12.SetStyle(Curve.SHORT_DASH);
+
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, "38 R", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level2, "25 R", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level3, "13 R", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level3b, "05 R", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level4, "96 *", Color.YELLOW, no);
-AddChartBubble(isLastBar, level5, "86 S", Color.GREEN, no);
-AddChartBubble(isLastBar, level6, "72 S*", Color.GREEN, no);
-AddChartBubble(isLastBar and level7 > 0, level7, "54 S", Color.GREEN, no);
-AddChartBubble(isLastBar and level8 > 0, level8, "38 S", Color.CYAN, no);
+AddChartBubble(isLastBar, level1, "20 T", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level2, "89 T", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level3, "64 T", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level4, "42 R", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level5, "35 R", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level6, "25", Color.YELLOW, no);
+AddChartBubble(isLastBar, level7, "13", Color.YELLOW, no);
+AddChartBubble(isLastBar, level8, "85 S", Color.GREEN, no);
+AddChartBubble(isLastBar, level9, "80 S", Color.GREEN, no);
+AddChartBubble(isLastBar, level10, "64 S*", Color.GREEN, no);
+AddChartBubble(isLastBar and level11 > 0, level11, "22", Color.CYAN, no);
+AddChartBubble(isLastBar and level12 > 0, level12, "96", Color.CYAN, no);
 
 # === ALERT SYSTEM ===
 
-# RESISTANCE 6938
-Alert(enableAlerts and close crosses above level1, "ES >> 6938 - Above resistance!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level1, "ES << 6938 - Below resistance", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6938, "ES @ 6938 - Resistance", Alert.BAR, Sound.Chimes);
+# BREAKOUT TARGET 7020
+Alert(enableAlerts and close crosses above level1, "ES >> 7020 - TARGET 3!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level1, "ES << 7020 - Below", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at7020, "ES @ 7020", Alert.BAR, Sound.Chimes);
 
-# RESISTANCE 6925
-Alert(enableAlerts and close crosses above level2, "ES >> 6925 - Above resistance", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level2, "ES << 6925 - Below resistance", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6925, "ES @ 6925 - Resistance", Alert.BAR, Sound.Chimes);
+# BREAKOUT TARGET 6989
+Alert(enableAlerts and close crosses above level2, "ES >> 6989 - TARGET 2!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level2, "ES << 6989 - Below", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6989, "ES @ 6989", Alert.BAR, Sound.Chimes);
 
-# RESISTANCE 6913
-Alert(enableAlerts and close crosses above level3, "ES >> 6913 - Reclaim!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level3, "ES << 6913 - Below", Alert.BAR, Sound.Bell);
+# BREAKOUT TARGET 6964
+Alert(enableAlerts and close crosses above level3, "ES >> 6964 - TARGET 1!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level3, "ES << 6964 - Below", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6964, "ES @ 6964", Alert.BAR, Sound.Chimes);
+
+# MUST RECOVER 6942
+Alert(enableAlerts and close crosses above level4, "ES >> 6942 - RECOVERED!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level4, "ES << 6942 - Below", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6942, "ES @ 6942", Alert.BAR, Sound.Chimes);
+
+# MUST RECOVER 6935
+Alert(enableAlerts and close crosses above level5, "ES >> 6935 - RECOVERED!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level5, "ES << 6935 - Below", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6935, "ES @ 6935", Alert.BAR, Sound.Chimes);
+
+# BACKTEST 6925
+Alert(enableAlerts and close crosses above level6, "ES >> 6925 - Above", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level6, "ES << 6925 - Below", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6925, "ES @ 6925", Alert.BAR, Sound.Chimes);
+
+# BACKTEST 6913
+Alert(enableAlerts and close crosses above level7, "ES >> 6913 - Above", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level7, "ES << 6913 - Below", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and at6913, "ES @ 6913", Alert.BAR, Sound.Chimes);
 
-# RESISTANCE 6905 (Rally Target)
-def at6905 = close >= level3b - 2 and close <= level3b + 2;
-Alert(enableAlerts and close crosses above level3b, "ES >> 6905 - Above!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level3b, "ES << 6905 - Below", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6905, "ES @ 6905", Alert.BAR, Sound.Chimes);
+# SUPPORT 6885
+Alert(enableAlerts and close crosses above level8, "ES >> 6885 - Above support", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level8, "ES << 6885 - Below support", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6885, "ES @ 6885", Alert.BAR, Sound.Chimes);
 
-# KEY LEVEL 6896 (Must Reclaim)
-Alert(enableAlerts and close crosses above level4, "ES >> 6896 - RECLAIM! RALLY TRIGGER", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level4, "ES << 6896 - Lost reclaim level", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6896, "ES @ 6896 - KEY LEVEL", Alert.BAR, Sound.Chimes);
+# CORE UPTREND 6880
+Alert(enableAlerts and close crosses above level9, "ES >> 6880 - Above uptrend", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level9, "ES << 6880 - BELOW UPTREND!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6880, "ES @ 6880 - Core Uptrend", Alert.BAR, Sound.Chimes);
 
-# SUPPORT 6886 (Held Exact)
-Alert(enableAlerts and close crosses above level5, "ES >> 6886 - Above support", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level5, "ES << 6886 - BELOW SUPPORT!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6886, "ES @ 6886 - Support", Alert.BAR, Sound.Chimes);
+# KEY SUPPORT 6864
+Alert(enableAlerts and close crosses above level10, "ES >> 6864 - Above key support", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level10, "ES << 6864 - BREAKDOWN! 6822, 6796 next", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6864, "ES @ 6864 - KEY SUPPORT", Alert.BAR, Sound.Chimes);
 
-# SUPPORT 6872 (Holding)
-Alert(enableAlerts and close crosses above level6, "ES >> 6872 - Reclaim", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level6, "ES << 6872 - BREAKDOWN! Next 6854, 6838", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6872, "ES @ 6872 - Key Support", Alert.BAR, Sound.Chimes);
+# IF 6864 FAILS - 6822
+Alert(enableAlerts and close crosses above level11, "ES >> 6822 - Reclaim", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level11, "ES << 6822 - Below", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6822, "ES @ 6822", Alert.BAR, Sound.Chimes);
 
-# SUPPORT 6854
-Alert(enableAlerts and close crosses above level7, "ES >> 6854 - Reclaim", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level7, "ES << 6854 - Below support", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6854, "ES @ 6854 - Support", Alert.BAR, Sound.Chimes);
-
-# SUPPORT 6838 (Next Leg Lower)
-Alert(enableAlerts and close crosses above level8, "ES >> 6838 - Above support", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level8, "ES << 6838 - BELOW SUPPORT!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and at6838, "ES @ 6838 - Support", Alert.BAR, Sound.Chimes);
+# IF 6864 FAILS - 6796
+Alert(enableAlerts and close crosses above level12, "ES >> 6796 - Reclaim", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level12, "ES << 6796 - BELOW!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and at6796, "ES @ 6796", Alert.BAR, Sound.Chimes);
