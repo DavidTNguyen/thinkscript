@@ -1,18 +1,26 @@
 # Fair Value Gap (FVG) Multi-Timeframe
 # Rebuilt to show standard Fair Value Gaps
-# Supports 3 Timeframes: Hour, Day, Week (Configurable)
+# Supports Current Timeframe + 3 Higher Timeframes (Configurable)
+# Note: The Chart Timeframe must be lower than or equal to the smallest selected higher timeframe.
 
 declare upper;
 
-input show_1 = yes;
-input agg_1 = AggregationPeriod.HOUR;
-input show_2 = yes;
-input agg_2 = AggregationPeriod.DAY;
-input show_3 = yes;
-input agg_3 = AggregationPeriod.WEEK;
+input show_current = yes;
+input highlight_formation = yes;
+input show_start_markers = yes;
+
+input show_htf_1 = yes;
+input agg_htf_1 = AggregationPeriod.FIFTEEN_MIN;
+
+input show_htf_2 = yes;
+input agg_htf_2 = AggregationPeriod.HOUR;
+
+input show_htf_3 = yes;
+input agg_htf_3 = AggregationPeriod.FOUR_HOURS;
 
 input hide_filled = yes;
-input show_midline = yes;
+input show_midline = no;
+input hide_overlapping = yes;
 
 # Colors
 DefineGlobalColor("Bullish", CreateColor(0, 255, 0));
@@ -20,24 +28,143 @@ DefineGlobalColor("Bearish", CreateColor(255, 0, 0));
 DefineGlobalColor("MidLine", Color.WHITE);
 
 # ==========================================
-# Timeframe 1
+# Current Timeframe
 # ==========================================
-def h1 = high(period = agg_1);
-def l1 = low(period = agg_1);
+def h1 = high;
+def l1 = low;
+def h1_2 = high[2];
+def l1_2 = low[2];
 
-# Bullish FVG 1
-# Gap between High of 2 bars ago and Low of current bar
-def isBull1 = l1 > h1[2];
+# Bullish FVG Current
+def isBull1 = l1 > h1_2;
 
 rec rBullTop1 = if isBull1 then l1 else rBullTop1[1];
-rec rBullBot1 = if isBull1 then h1[2] else rBullBot1[1];
+rec rBullBot1 = if isBull1 then h1_2 else rBullBot1[1];
 rec rBullActive1 = if isBull1 then 1 
                    else if hide_filled and low < rBullBot1[1] then 0 
                    else rBullActive1[1];
 
-plot BullTop1 = if show_1 and rBullActive1 then rBullTop1 else Double.NaN;
-plot BullBot1 = if show_1 and rBullActive1 then rBullBot1 else Double.NaN;
-plot BullMid1 = if show_1 and show_midline and rBullActive1 then (rBullTop1 + rBullBot1) / 2 else Double.NaN;
+# Bearish FVG Current
+def isBear1 = h1 < l1_2;
+
+rec rBearTop1 = if isBear1 then l1_2 else rBearTop1[1];
+rec rBearBot1 = if isBear1 then h1 else rBearBot1[1];
+rec rBearActive1 = if isBear1 then 1 
+                   else if hide_filled and high > rBearTop1[1] then 0 
+                   else rBearActive1[1];
+
+# ==========================================
+# Higher Timeframe 1
+# ==========================================
+def h2 = high(period = agg_htf_1);
+def l2 = low(period = agg_htf_1);
+def h2_2 = high(period = agg_htf_1)[2];
+def l2_2 = low(period = agg_htf_1)[2];
+
+# Bullish FVG HTF 1
+def isBull2 = l2 > h2_2;
+
+rec rBullTop2 = if isBull2 then l2 else rBullTop2[1];
+rec rBullBot2 = if isBull2 then h2_2 else rBullBot2[1];
+rec rBullActive2 = if isBull2 then 1 
+                   else if hide_filled and low < rBullBot2[1] then 0 
+                   else rBullActive2[1];
+
+# Bearish FVG HTF 1
+def isBear2 = h2 < l2_2;
+
+rec rBearTop2 = if isBear2 then l2_2 else rBearTop2[1];
+rec rBearBot2 = if isBear2 then h2 else rBearBot2[1];
+rec rBearActive2 = if isBear2 then 1 
+                   else if hide_filled and high > rBearTop2[1] then 0 
+                   else rBearActive2[1];
+
+# ==========================================
+# Higher Timeframe 2
+# ==========================================
+def h3 = high(period = agg_htf_2);
+def l3 = low(period = agg_htf_2);
+def h3_2 = high(period = agg_htf_2)[2];
+def l3_2 = low(period = agg_htf_2)[2];
+
+# Bullish FVG HTF 2
+def isBull3 = l3 > h3_2;
+
+rec rBullTop3 = if isBull3 then l3 else rBullTop3[1];
+rec rBullBot3 = if isBull3 then h3_2 else rBullBot3[1];
+rec rBullActive3 = if isBull3 then 1 
+                   else if hide_filled and low < rBullBot3[1] then 0 
+                   else rBullActive3[1];
+
+# Bearish FVG HTF 2
+def isBear3 = h3 < l3_2;
+
+rec rBearTop3 = if isBear3 then l3_2 else rBearTop3[1];
+rec rBearBot3 = if isBear3 then h3 else rBearBot3[1];
+rec rBearActive3 = if isBear3 then 1 
+                   else if hide_filled and high > rBearTop3[1] then 0 
+                   else rBearActive3[1];
+
+# ==========================================
+# Higher Timeframe 3
+# ==========================================
+def h4 = high(period = agg_htf_3);
+def l4 = low(period = agg_htf_3);
+def h4_2 = high(period = agg_htf_3)[2];
+def l4_2 = low(period = agg_htf_3)[2];
+
+# Bullish FVG HTF 3
+def isBull4 = l4 > h4_2;
+
+rec rBullTop4 = if isBull4 then l4 else rBullTop4[1];
+rec rBullBot4 = if isBull4 then h4_2 else rBullBot4[1];
+rec rBullActive4 = if isBull4 then 1 
+                   else if hide_filled and low < rBullBot4[1] then 0 
+                   else rBullActive4[1];
+
+# Bearish FVG HTF 3
+def isBear4 = h4 < l4_2;
+
+rec rBearTop4 = if isBear4 then l4_2 else rBearTop4[1];
+rec rBearBot4 = if isBear4 then h4 else rBearBot4[1];
+rec rBearActive4 = if isBear4 then 1 
+                   else if hide_filled and high > rBearTop4[1] then 0 
+                   else rBearActive4[1];
+
+# ==========================================
+# Overlap Logic
+# ==========================================
+# Check if Lower Timeframe overlaps with Higher Timeframe of SAME sentiment
+# Overlap condition: Range1 overlaps Range2 if Bot1 < Top2 AND Bot2 < Top1
+
+def overlapBull1_2 = rBullActive2 and rBullBot1 < rBullTop2 and rBullBot2 < rBullTop1;
+def overlapBull1_3 = rBullActive3 and rBullBot1 < rBullTop3 and rBullBot3 < rBullTop1;
+def overlapBull1_4 = rBullActive4 and rBullBot1 < rBullTop4 and rBullBot4 < rBullTop1;
+
+def overlapBear1_2 = rBearActive2 and rBearBot1 < rBearTop2 and rBearBot2 < rBearTop1;
+def overlapBear1_3 = rBearActive3 and rBearBot1 < rBearTop3 and rBearBot3 < rBearTop1;
+def overlapBear1_4 = rBearActive4 and rBearBot1 < rBearTop4 and rBearBot4 < rBearTop1;
+
+def overlapBull2_3 = rBullActive3 and rBullBot2 < rBullTop3 and rBullBot3 < rBullTop2;
+def overlapBull2_4 = rBullActive4 and rBullBot2 < rBullTop4 and rBullBot4 < rBullTop2;
+
+def overlapBear2_3 = rBearActive3 and rBearBot2 < rBearTop3 and rBearBot3 < rBearTop2;
+def overlapBear2_4 = rBearActive4 and rBearBot2 < rBearTop4 and rBearBot4 < rBearTop2;
+
+def overlapBull3_4 = rBullActive4 and rBullBot3 < rBullTop4 and rBullBot4 < rBullTop3;
+def overlapBear3_4 = rBearActive4 and rBearBot3 < rBearTop4 and rBearBot4 < rBearTop3;
+
+# ==========================================
+# Plots
+# ==========================================
+
+# --- Current Timeframe ---
+def hideBull1 = hide_overlapping and (overlapBull1_2 or overlapBull1_3 or overlapBull1_4);
+def hideBear1 = hide_overlapping and (overlapBear1_2 or overlapBear1_3 or overlapBear1_4);
+
+plot BullTop1 = if show_current and rBullActive1 and !hideBull1 then rBullTop1 else Double.NaN;
+plot BullBot1 = if show_current and rBullActive1 and !hideBull1 then rBullBot1 else Double.NaN;
+plot BullMid1 = if show_current and show_midline and rBullActive1 and !hideBull1 then (rBullTop1 + rBullBot1) / 2 else Double.NaN;
 
 BullTop1.SetDefaultColor(GlobalColor("Bullish"));
 BullBot1.SetDefaultColor(GlobalColor("Bullish"));
@@ -45,19 +172,9 @@ BullMid1.SetDefaultColor(GlobalColor("MidLine"));
 BullMid1.SetStyle(Curve.SHORT_DASH);
 AddCloud(BullTop1, BullBot1, GlobalColor("Bullish"), GlobalColor("Bullish"));
 
-# Bearish FVG 1
-# Gap between Low of 2 bars ago and High of current bar
-def isBear1 = h1 < l1[2];
-
-rec rBearTop1 = if isBear1 then l1[2] else rBearTop1[1];
-rec rBearBot1 = if isBear1 then h1 else rBearBot1[1];
-rec rBearActive1 = if isBear1 then 1 
-                   else if hide_filled and high > rBearTop1[1] then 0 
-                   else rBearActive1[1];
-
-plot BearTop1 = if show_1 and rBearActive1 then rBearTop1 else Double.NaN;
-plot BearBot1 = if show_1 and rBearActive1 then rBearBot1 else Double.NaN;
-plot BearMid1 = if show_1 and show_midline and rBearActive1 then (rBearTop1 + rBearBot1) / 2 else Double.NaN;
+plot BearTop1 = if show_current and rBearActive1 and !hideBear1 then rBearTop1 else Double.NaN;
+plot BearBot1 = if show_current and rBearActive1 and !hideBear1 then rBearBot1 else Double.NaN;
+plot BearMid1 = if show_current and show_midline and rBearActive1 and !hideBear1 then (rBearTop1 + rBearBot1) / 2 else Double.NaN;
 
 BearTop1.SetDefaultColor(GlobalColor("Bearish"));
 BearBot1.SetDefaultColor(GlobalColor("Bearish"));
@@ -65,24 +182,36 @@ BearMid1.SetDefaultColor(GlobalColor("MidLine"));
 BearMid1.SetStyle(Curve.SHORT_DASH);
 AddCloud(BearBot1, BearTop1, GlobalColor("Bearish"), GlobalColor("Bearish"));
 
-# ==========================================
-# Timeframe 2
-# ==========================================
-def h2 = high(period = agg_2);
-def l2 = low(period = agg_2);
+# Visual Enhancements for Current Timeframe
+def isBullFormation = isBull1 or isBull1[-1] or isBull1[-2];
+def isBearFormation = isBear1 or isBear1[-1] or isBear1[-2];
 
-# Bullish FVG 2
-def isBull2 = l2 > h2[2];
+AssignPriceColor(if !highlight_formation then Color.CURRENT 
+                 else if isBullFormation then GlobalColor("Bullish") 
+                 else if isBearFormation then GlobalColor("Bearish") 
+                 else Color.CURRENT);
 
-rec rBullTop2 = if isBull2 then l2 else rBullTop2[1];
-rec rBullBot2 = if isBull2 then h2[2] else rBullBot2[1];
-rec rBullActive2 = if isBull2 then 1 
-                   else if hide_filled and low < rBullBot2[1] then 0 
-                   else rBullActive2[1];
+plot BullStartTop = if show_start_markers and isBull1 then l1 else Double.NaN;
+plot BullStartBot = if show_start_markers and isBull1 then h1_2 else Double.NaN;
+BullStartTop.SetPaintingStrategy(PaintingStrategy.SQUARES);
+BullStartTop.SetDefaultColor(GlobalColor("Bullish"));
+BullStartBot.SetPaintingStrategy(PaintingStrategy.SQUARES);
+BullStartBot.SetDefaultColor(GlobalColor("Bullish"));
 
-plot BullTop2 = if show_2 and rBullActive2 then rBullTop2 else Double.NaN;
-plot BullBot2 = if show_2 and rBullActive2 then rBullBot2 else Double.NaN;
-plot BullMid2 = if show_2 and show_midline and rBullActive2 then (rBullTop2 + rBullBot2) / 2 else Double.NaN;
+plot BearStartTop = if show_start_markers and isBear1 then l1_2 else Double.NaN;
+plot BearStartBot = if show_start_markers and isBear1 then h1 else Double.NaN;
+BearStartTop.SetPaintingStrategy(PaintingStrategy.SQUARES);
+BearStartTop.SetDefaultColor(GlobalColor("Bearish"));
+BearStartBot.SetPaintingStrategy(PaintingStrategy.SQUARES);
+BearStartBot.SetDefaultColor(GlobalColor("Bearish"));
+
+# --- HTF 1 ---
+def hideBull2 = hide_overlapping and (overlapBull2_3 or overlapBull2_4);
+def hideBear2 = hide_overlapping and (overlapBear2_3 or overlapBear2_4);
+
+plot BullTop2 = if show_htf_1 and rBullActive2 and !hideBull2 then rBullTop2 else Double.NaN;
+plot BullBot2 = if show_htf_1 and rBullActive2 and !hideBull2 then rBullBot2 else Double.NaN;
+plot BullMid2 = if show_htf_1 and show_midline and rBullActive2 and !hideBull2 then (rBullTop2 + rBullBot2) / 2 else Double.NaN;
 
 BullTop2.SetDefaultColor(GlobalColor("Bullish"));
 BullBot2.SetDefaultColor(GlobalColor("Bullish"));
@@ -90,18 +219,9 @@ BullMid2.SetDefaultColor(GlobalColor("MidLine"));
 BullMid2.SetStyle(Curve.SHORT_DASH);
 AddCloud(BullTop2, BullBot2, GlobalColor("Bullish"), GlobalColor("Bullish"));
 
-# Bearish FVG 2
-def isBear2 = h2 < l2[2];
-
-rec rBearTop2 = if isBear2 then l2[2] else rBearTop2[1];
-rec rBearBot2 = if isBear2 then h2 else rBearBot2[1];
-rec rBearActive2 = if isBear2 then 1 
-                   else if hide_filled and high > rBearTop2[1] then 0 
-                   else rBearActive2[1];
-
-plot BearTop2 = if show_2 and rBearActive2 then rBearTop2 else Double.NaN;
-plot BearBot2 = if show_2 and rBearActive2 then rBearBot2 else Double.NaN;
-plot BearMid2 = if show_2 and show_midline and rBearActive2 then (rBearTop2 + rBearBot2) / 2 else Double.NaN;
+plot BearTop2 = if show_htf_1 and rBearActive2 and !hideBear2 then rBearTop2 else Double.NaN;
+plot BearBot2 = if show_htf_1 and rBearActive2 and !hideBear2 then rBearBot2 else Double.NaN;
+plot BearMid2 = if show_htf_1 and show_midline and rBearActive2 and !hideBear2 then (rBearTop2 + rBearBot2) / 2 else Double.NaN;
 
 BearTop2.SetDefaultColor(GlobalColor("Bearish"));
 BearBot2.SetDefaultColor(GlobalColor("Bearish"));
@@ -109,24 +229,13 @@ BearMid2.SetDefaultColor(GlobalColor("MidLine"));
 BearMid2.SetStyle(Curve.SHORT_DASH);
 AddCloud(BearBot2, BearTop2, GlobalColor("Bearish"), GlobalColor("Bearish"));
 
-# ==========================================
-# Timeframe 3
-# ==========================================
-def h3 = high(period = agg_3);
-def l3 = low(period = agg_3);
+# --- HTF 2 ---
+def hideBull3 = hide_overlapping and (overlapBull3_4);
+def hideBear3 = hide_overlapping and (overlapBear3_4);
 
-# Bullish FVG 3
-def isBull3 = l3 > h3[2];
-
-rec rBullTop3 = if isBull3 then l3 else rBullTop3[1];
-rec rBullBot3 = if isBull3 then h3[2] else rBullBot3[1];
-rec rBullActive3 = if isBull3 then 1 
-                   else if hide_filled and low < rBullBot3[1] then 0 
-                   else rBullActive3[1];
-
-plot BullTop3 = if show_3 and rBullActive3 then rBullTop3 else Double.NaN;
-plot BullBot3 = if show_3 and rBullActive3 then rBullBot3 else Double.NaN;
-plot BullMid3 = if show_3 and show_midline and rBullActive3 then (rBullTop3 + rBullBot3) / 2 else Double.NaN;
+plot BullTop3 = if show_htf_2 and rBullActive3 and !hideBull3 then rBullTop3 else Double.NaN;
+plot BullBot3 = if show_htf_2 and rBullActive3 and !hideBull3 then rBullBot3 else Double.NaN;
+plot BullMid3 = if show_htf_2 and show_midline and rBullActive3 and !hideBull3 then (rBullTop3 + rBullBot3) / 2 else Double.NaN;
 
 BullTop3.SetDefaultColor(GlobalColor("Bullish"));
 BullBot3.SetDefaultColor(GlobalColor("Bullish"));
@@ -134,21 +243,35 @@ BullMid3.SetDefaultColor(GlobalColor("MidLine"));
 BullMid3.SetStyle(Curve.SHORT_DASH);
 AddCloud(BullTop3, BullBot3, GlobalColor("Bullish"), GlobalColor("Bullish"));
 
-# Bearish FVG 3
-def isBear3 = h3 < l3[2];
-
-rec rBearTop3 = if isBear3 then l3[2] else rBearTop3[1];
-rec rBearBot3 = if isBear3 then h3 else rBearBot3[1];
-rec rBearActive3 = if isBear3 then 1 
-                   else if hide_filled and high > rBearTop3[1] then 0 
-                   else rBearActive3[1];
-
-plot BearTop3 = if show_3 and rBearActive3 then rBearTop3 else Double.NaN;
-plot BearBot3 = if show_3 and rBearActive3 then rBearBot3 else Double.NaN;
-plot BearMid3 = if show_3 and show_midline and rBearActive3 then (rBearTop3 + rBearBot3) / 2 else Double.NaN;
+plot BearTop3 = if show_htf_2 and rBearActive3 and !hideBear3 then rBearTop3 else Double.NaN;
+plot BearBot3 = if show_htf_2 and rBearActive3 and !hideBear3 then rBearBot3 else Double.NaN;
+plot BearMid3 = if show_htf_2 and show_midline and rBearActive3 and !hideBear3 then (rBearTop3 + rBearBot3) / 2 else Double.NaN;
 
 BearTop3.SetDefaultColor(GlobalColor("Bearish"));
 BearBot3.SetDefaultColor(GlobalColor("Bearish"));
 BearMid3.SetDefaultColor(GlobalColor("MidLine"));
 BearMid3.SetStyle(Curve.SHORT_DASH);
 AddCloud(BearBot3, BearTop3, GlobalColor("Bearish"), GlobalColor("Bearish"));
+
+# --- HTF 3 ---
+# No higher timeframe to overlap with
+
+plot BullTop4 = if show_htf_3 and rBullActive4 then rBullTop4 else Double.NaN;
+plot BullBot4 = if show_htf_3 and rBullActive4 then rBullBot4 else Double.NaN;
+plot BullMid4 = if show_htf_3 and show_midline and rBullActive4 then (rBullTop4 + rBullBot4) / 2 else Double.NaN;
+
+BullTop4.SetDefaultColor(GlobalColor("Bullish"));
+BullBot4.SetDefaultColor(GlobalColor("Bullish"));
+BullMid4.SetDefaultColor(GlobalColor("MidLine"));
+BullMid4.SetStyle(Curve.SHORT_DASH);
+AddCloud(BullTop4, BullBot4, GlobalColor("Bullish"), GlobalColor("Bullish"));
+
+plot BearTop4 = if show_htf_3 and rBearActive4 then rBearTop4 else Double.NaN;
+plot BearBot4 = if show_htf_3 and rBearActive4 then rBearBot4 else Double.NaN;
+plot BearMid4 = if show_htf_3 and show_midline and rBearActive4 then (rBearTop4 + rBearBot4) / 2 else Double.NaN;
+
+BearTop4.SetDefaultColor(GlobalColor("Bearish"));
+BearBot4.SetDefaultColor(GlobalColor("Bearish"));
+BearMid4.SetDefaultColor(GlobalColor("MidLine"));
+BearMid4.SetStyle(Curve.SHORT_DASH);
+AddCloud(BearBot4, BearTop4, GlobalColor("Bearish"), GlobalColor("Bearish"));

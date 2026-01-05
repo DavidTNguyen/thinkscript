@@ -1,37 +1,38 @@
-# === ES Plan - January 5, 2026 (Mid-Day Update) ===
+# === ES Plan - January 5, 2026 (Bonus Update) ===
 # BIG PICTURE OVERVIEW - Macro structures for context
 #
 # CONTEXT:
-# - One way traffic to start the day.
-# - 6913-15 Support held perfectly on the dip.
-# - Targets hit: 6935, 6942. 6956 pending.
+# - One way traffic. 6964 1st Bonus tagged.
+# - Morning support 6913-15 held perfectly.
+# - Targets hit: 6935, 6942, 6956, 6964 (Bonus).
 #
 # PLAN UPDATE:
-# - If ES wants more: 6964, 6973-76.
-# - New Supports: 6935, 6925-28.
+# - Next Bonus: 6973-76.
+# - If it wants more: 6993, 7002.
+# - Support: 6935.
 #
 # NOTE: We don't predict - we REACT and follow price level to level.
 
 # === KEY LEVELS ===
-input level1 = 6976;  # Target Next (Upper)
+input level1 = 7002;  # Target Next
 input level1_thickness = 1;
-input level2 = 6973;  # Target Next (Lower)
+input level2 = 6993;  # Target Next
 input level2_thickness = 1;
-input level3 = 6964;  # Target Next
+input level3 = 6976;  # Bonus Target
 input level3_thickness = 1;
-input level4 = 6956;  # Current Target
+input level4 = 6973;  # Bonus Target
 input level4_thickness = 1;
-input level5 = 6942;  # Target Hit
+input level5 = 6964;  # Bonus Hit
 input level5_thickness = 1;
-input level6 = 6935;  # New Support
-input level6_thickness = 2;
-input level7 = 6928;  # New Support (Upper)
-input level7_thickness = 2;
-input level8 = 6925;  # New Support (Lower)
+input level6 = 6956;  # Target Hit
+input level6_thickness = 1;
+input level7 = 6942;  # Target Hit
+input level7_thickness = 1;
+input level8 = 6935;  # Support
 input level8_thickness = 2;
-input level9 = 6915;  # Morning Support Held
+input level9 = 6915;  # Morning Support
 input level9_thickness = 2;
-input level10 = 6913;  # Morning Support Held
+input level10 = 6913;  # Morning Support
 input level10_thickness = 2;
 input level11 = 6872;  # Friday Key
 input level11_thickness = 1;
@@ -164,14 +165,14 @@ pNWOG_Mid.SetLineWeight(1);
 pNWOG_Mid.SetStyle(Curve.SHORT_DASH);
 
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, "76 T", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level2, "73 T", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level3, "64 T", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level4, "56 T", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level5, "42", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level6, "35 S", Color.YELLOW, no);
-AddChartBubble(isLastBar, level7, "28 S", Color.YELLOW, no);
-AddChartBubble(isLastBar, level8, "25 S", Color.GREEN, no);
+AddChartBubble(isLastBar, level1, "02 T", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level2, "93 T", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level3, "76 B", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level4, "73 B", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level5, "64 Hit", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level6, "56 Hit", Color.YELLOW, no);
+AddChartBubble(isLastBar, level7, "42 Hit", Color.YELLOW, no);
+AddChartBubble(isLastBar, level8, "35 S", Color.GREEN, no);
 AddChartBubble(isLastBar, level9, "15 S", Color.GREEN, no);
 AddChartBubble(isLastBar, level10, "13 S", Color.GREEN, no);
 AddChartBubble(isLastBar and level11 > 0, level11, "72 K", Color.CYAN, no);
@@ -182,45 +183,45 @@ AddChartBubble(isLastBar and showNWOG, nwog_mid, "NWOG 50%", Color.VIOLET, yes);
 
 # === ALERT SYSTEM ===
 
-# LEVEL 1 - 6976
-Alert(enableAlerts and close crosses above level1, "ES >> 6976 - TARGET!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level1, "ES << 6976 - Below", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and atLevel1, "ES @ 6976", Alert.BAR, Sound.Chimes);
+# LEVEL 1 - 7002
+Alert(enableAlerts and close crosses above level1, "ES >> 7002 - TARGET!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level1, "ES << 7002 - Below", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and atLevel1, "ES @ 7002", Alert.BAR, Sound.Chimes);
 
-# LEVEL 2 - 6973
-Alert(enableAlerts and close crosses above level2, "ES >> 6973 - TARGET!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level2, "ES << 6973 - Below", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and atLevel2, "ES @ 6973", Alert.BAR, Sound.Chimes);
+# LEVEL 2 - 6993
+Alert(enableAlerts and close crosses above level2, "ES >> 6993 - TARGET!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level2, "ES << 6993 - Below", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and atLevel2, "ES @ 6993", Alert.BAR, Sound.Chimes);
 
-# LEVEL 3 - 6964
-Alert(enableAlerts and close crosses above level3, "ES >> 6964 - TARGET!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level3, "ES << 6964 - Below", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and atLevel3, "ES @ 6964", Alert.BAR, Sound.Chimes);
+# LEVEL 3 - 6976
+Alert(enableAlerts and close crosses above level3, "ES >> 6976 - BONUS!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level3, "ES << 6976 - Below", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and atLevel3, "ES @ 6976", Alert.BAR, Sound.Chimes);
 
-# LEVEL 4 - 6956
-Alert(enableAlerts and close crosses above level4, "ES >> 6956 - TARGET!", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level4, "ES << 6956 - Below", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and atLevel4, "ES @ 6956", Alert.BAR, Sound.Chimes);
+# LEVEL 4 - 6973
+Alert(enableAlerts and close crosses above level4, "ES >> 6973 - BONUS!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level4, "ES << 6973 - Below", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and atLevel4, "ES @ 6973", Alert.BAR, Sound.Chimes);
 
-# LEVEL 5 - 6942
-Alert(enableAlerts and close crosses above level5, "ES >> 6942 - Above", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level5, "ES << 6942 - Below", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and atLevel5, "ES @ 6942", Alert.BAR, Sound.Chimes);
+# LEVEL 5 - 6964
+Alert(enableAlerts and close crosses above level5, "ES >> 6964 - BONUS HIT!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level5, "ES << 6964 - Below", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and atLevel5, "ES @ 6964", Alert.BAR, Sound.Chimes);
 
-# LEVEL 6 - 6935
-Alert(enableAlerts and close crosses above level6, "ES >> 6935 - Support", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level6, "ES << 6935 - Below Support", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and atLevel6, "ES @ 6935", Alert.BAR, Sound.Chimes);
+# LEVEL 6 - 6956
+Alert(enableAlerts and close crosses above level6, "ES >> 6956 - HIT!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level6, "ES << 6956 - Below", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and atLevel6, "ES @ 6956", Alert.BAR, Sound.Chimes);
 
-# LEVEL 7 - 6928
-Alert(enableAlerts and close crosses above level7, "ES >> 6928 - Support", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level7, "ES << 6928 - Below Support", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and atLevel7, "ES @ 6928", Alert.BAR, Sound.Chimes);
+# LEVEL 7 - 6942
+Alert(enableAlerts and close crosses above level7, "ES >> 6942 - HIT!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level7, "ES << 6942 - Below", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and atLevel7, "ES @ 6942", Alert.BAR, Sound.Chimes);
 
-# LEVEL 8 - 6925
-Alert(enableAlerts and close crosses above level8, "ES >> 6925 - Support", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level8, "ES << 6925 - Below Support", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and atLevel8, "ES @ 6925", Alert.BAR, Sound.Chimes);
+# LEVEL 8 - 6935
+Alert(enableAlerts and close crosses above level8, "ES >> 6935 - Support", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level8, "ES << 6935 - Below Support", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and atLevel8, "ES @ 6935", Alert.BAR, Sound.Chimes);
 
 # LEVEL 9 - 6915
 Alert(enableAlerts and close crosses above level9, "ES >> 6915 - Morning Support", Alert.BAR, Sound.Ring);
