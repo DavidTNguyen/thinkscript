@@ -77,6 +77,18 @@ def above6796 = close > level12;
 def at6796 = close >= level12 - 2 and close <= level12 + 2;
 def below6796 = close < level12;
 
+# === NWOG (New Week Opening Gap) ===
+input showNWOG = yes;
+def nwog_open = open(period = AggregationPeriod.WEEK);
+def nwog_close = close(period = AggregationPeriod.WEEK)[1];
+def nwog_high = Max(nwog_open, nwog_close);
+def nwog_low = Min(nwog_open, nwog_close);
+def nwog_mid = (nwog_high + nwog_low) / 2;
+
+def current_nwog_open = HighestAll(if IsNaN(close[-1]) and !IsNaN(close) then nwog_open else Double.NaN);
+def current_nwog_close = HighestAll(if IsNaN(close[-1]) and !IsNaN(close) then nwog_close else Double.NaN);
+def isCurrentGap = nwog_open == current_nwog_open and nwog_close == current_nwog_close;
+
 # === LEVEL PLOTS ===
 plot L1 = level1;
 L1.SetDefaultColor(Color.MAGENTA);
@@ -138,6 +150,22 @@ L12.SetDefaultColor(Color.CYAN);
 L12.SetLineWeight(level12_thickness);
 L12.SetStyle(Curve.SHORT_DASH);
 
+# === NWOG PLOTS ===
+plot pNWOG_High = if showNWOG and isCurrentGap then nwog_high else Double.NaN;
+pNWOG_High.SetDefaultColor(Color.VIOLET);
+pNWOG_High.SetLineWeight(1);
+pNWOG_High.SetStyle(Curve.LONG_DASH);
+
+plot pNWOG_Low = if showNWOG and isCurrentGap then nwog_low else Double.NaN;
+pNWOG_Low.SetDefaultColor(Color.VIOLET);
+pNWOG_Low.SetLineWeight(1);
+pNWOG_Low.SetStyle(Curve.LONG_DASH);
+
+plot pNWOG_Mid = if showNWOG and isCurrentGap then nwog_mid else Double.NaN;
+pNWOG_Mid.SetDefaultColor(Color.VIOLET);
+pNWOG_Mid.SetLineWeight(1);
+pNWOG_Mid.SetStyle(Curve.SHORT_DASH);
+
 # === CHART BUBBLES ===
 AddChartBubble(isLastBar, level1, "20 T", Color.MAGENTA, yes);
 AddChartBubble(isLastBar, level2, "89 T", Color.MAGENTA, yes);
@@ -151,6 +179,9 @@ AddChartBubble(isLastBar, level9, "80 S", Color.GREEN, no);
 AddChartBubble(isLastBar, level10, "64 S*", Color.GREEN, no);
 AddChartBubble(isLastBar and level11 > 0, level11, "22", Color.CYAN, no);
 AddChartBubble(isLastBar and level12 > 0, level12, "96", Color.CYAN, no);
+AddChartBubble(isLastBar and showNWOG, nwog_high, "NWOG H", Color.VIOLET, yes);
+AddChartBubble(isLastBar and showNWOG, nwog_low, "NWOG L", Color.VIOLET, no);
+AddChartBubble(isLastBar and showNWOG, nwog_mid, "NWOG 50%", Color.VIOLET, yes);
 
 # === ALERT SYSTEM ===
 
