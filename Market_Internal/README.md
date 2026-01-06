@@ -1,6 +1,10 @@
-# Market Internals Dashboard v3.0
+# Market Internals Dashboard v3.2
 
-A comprehensive ThinkScript indicator for monitoring market-wide internals with smart scoring, divergence detection, and dynamic VIX-based thresholds.
+A comprehensive market internals indicator for monitoring market-wide internals with smart scoring, divergence detection, and dynamic VIX-based thresholds.
+
+**Available for:**
+- **ThinkOrSwim** (ThinkScript) - `MARKET_INTERNAL.tosts`
+- **TradingView** (Pine Script v6) - `MARKET_INTERNAL.pine`
 
 ## Overview
 
@@ -115,8 +119,6 @@ This dashboard aggregates 7 key market internal metrics into a single normalized
 **Intraday use**:
 - TRIN < 0.7 in first hour = strong open, likely trend day up
 - TRIN > 1.5 in first hour = weak open, likely trend day down
-- **TRIN > 2.5** = capitulation, look for reversal longs (V-bottom setup)
-- **TRIN < 0.4** = euphoric buying, potential exhaustion topn
 - **TRIN > 2.5** = capitulation, look for reversal longs (V-bottom setup)
 - **TRIN < 0.4** = euphoric buying, potential exhaustion top
 
@@ -244,6 +246,10 @@ TREND: UP | ADD:+ TICK:+ TRIN:+ VIX:+
 ### Label 3: METRICS (Raw Values)
 ```
 UVOL%: 62.5 | ADD: 850 | TICK: 620! | TRIN: 0.78 | NH/NL: 4.2x | VIX: 14.50 (-0.32)
+```
+- Raw values for each metric
+- `!` indicates extreme reading
+
 ### Label 4: SCORES BREAKDOWN
 ```
 Scores: VOL:0.50 ADD:0.25 TICK:-0.25 TRIN:0.25 NH/NL:0.00 CUMTICK:0.00 = 0.75
@@ -251,11 +257,7 @@ Scores: VOL:0.50 ADD:0.25 TICK:-0.25 TRIN:0.25 NH/NL:0.00 CUMTICK:0.00 = 0.75
 - Individual normalized scores (-1 to +1 per metric)
 - Displayed to 2 decimal places for precision
 - Total composite score shown at end
-- **Note**: VIX is NOT included in the score (shown in METRICS only)
-Scores: VOL:1 ADD:1 TICK:0.5 TRIN:0.5 NH/NL:0.5 VIX:1 = 4.5
-```
-- Individual normalized scores (-1 to +1 per metric)
-- Total composite score shown at end
+- **Note**: VIX is NOT included in the composite score (shown in METRICS only)
 
 ---
 
@@ -267,6 +269,12 @@ Each metric is scored from **-1 to +1**:
 | ----- | ---------------- |
 | +1    | Strongly bullish |
 | +0.5  | Mildly bullish   |
+| +0.25 | Slightly bullish |
+| 0     | Neutral          |
+| -0.25 | Slightly bearish |
+| -0.5  | Mildly bearish   |
+| -1    | Strongly bearish |
+
 **Total Score Range**: -6 to +6 (VIX excluded from composite score)
 
 **Components**: VOL + ADD + TICK + TRIN + NH/NL + CUMTICK
@@ -276,10 +284,6 @@ Each metric is scored from **-1 to +1**:
 | ≥ 3         | STRONG BULLISH |
 | ≥ 1.5       | BULLISH        |
 | ≥ 0.5       | lean bull      |
-| -0.5 to 0.5 | NEUTRAL        |
-| ≤ -0.5      | lean bear      |
-| ≤ -1.5      | BEARISH        |
-| ≤ -3        | STRONG BEARISH |
 | -0.5 to 0.5 | NEUTRAL        |
 | ≤ -0.5      | lean bear      |
 | ≤ -1.5      | BEARISH        |
@@ -377,10 +381,6 @@ This prevents false signals during high volatility periods.
   - Wait for TICK to pull back to +400-600, then long
 - **Bearish reversal**: "REVERSAL DOWN?" alert + TICK < -1000 (extreme)
   - Wait for TICK to pull back to -400 to -600, then short
-- **Bullish reversal**: "REVERSAL UP?" alert + TICK > +1000 (extreme)
-  - Wait for TICK to pull back to +300-500, then long
-- **Bearish reversal**: "REVERSAL DOWN?" alert + TICK < -1000 (extreme)
-  - Wait for TICK to pull back to -300 to -500, then short
 
 **AVOID TRADING WHEN**:
 - Scenario: NEUTRAL or "lean" (low conviction)
@@ -506,12 +506,35 @@ This prevents false signals during high volatility periods.
 
 ## Installation
 
+### ThinkOrSwim (ThinkScript)
 1. Open ThinkOrSwim
 2. Go to **Studies** → **Edit Studies**
 3. Click **Create** → **thinkScript Editor**
 4. Paste the entire `MARKET_INTERNAL.tosts` code
 5. Name it "Market Internals Dashboard"
 6. Click **OK** and apply to your chart
+
+### TradingView (Pine Script)
+1. Open TradingView and go to your chart
+2. Click **Pine Editor** at the bottom
+3. Delete any existing code and paste the entire `MARKET_INTERNAL.pine` code
+4. Click **Add to Chart**
+5. Configure settings via the gear icon:
+   - **Show Labels**: Toggle label visibility
+   - **Show Compact Row**: Single-row overview mode
+   - **Show Ultra Row**: Minimal compact display
+   - **Show Debug Row**: Component score breakdown
+   - **Dashboard Position**: Top Right, Top Center, Bottom Left, or Bottom Right
+   - **Symbol inputs**: Customize data feeds (default: USI:TICK, USI:ADD, etc.)
+
+**Note**: TradingView uses different symbol prefixes. Default symbols:
+- VIX: `CBOE:VIX`
+- TICK: `USI:TICK`
+- ADD: `USI:ADD`
+- TRIN: `USI:TRIN`
+- UVOL/DVOL: `USI:UVOL`, `USI:DVOL`
+- VOLD: `USI:VOLD`
+- NH/NL: Optional (leave blank if unavailable)
 
 ---
 
@@ -522,6 +545,19 @@ This prevents false signals during high volatility periods.
 3. **Watch for divergences** at key support/resistance levels
 4. **Adjust thresholds** based on your trading style
 ## Changelog
+
+### v3.2 (January 6, 2026)
+- **Added TradingView Pine Script v6 version** (`MARKET_INTERNAL.pine`)
+  - Full table-based dashboard with 12 columns
+  - Configurable position (Top Right, Top Center, Bottom Left, Bottom Right)
+  - Multiple display modes: Full, Compact, Ultra, and Debug rows
+- **Improved text contrast for readability**:
+  - Added `f_scoreTextColorContrast()` helper function
+  - Black text on bright green backgrounds (scores ≥ 0.5)
+  - White text on red/orange/gray backgrounds (scores ≤ 0.5)
+  - Automatic contrast selection based on background brightness
+- **Dashboard columns**: SECTION, VALUE, EXTRA, VOL, BREADTH, TICK, TRIN, VIX, NHNL, NHNL Sc, Bias, CumTick
+- **Net Bias indicator**: Combined ADD + TICK/5 + VOLD metric
 
 ### v3.1 (December 5, 2025)
 - **Updated thresholds for intraday scalping**:
@@ -544,10 +580,6 @@ This prevents false signals during high volatility periods.
 - Added true UVOL/DVOL from market data
 - Added dynamic VIX-based thresholds
 - Added normalized scoring system (-1 to +1)
-- Added SPY divergence detection
-- Added scores breakdown label
-- Improved signal confirmation logic
-- Better alert system with confirmationo +1)
 - Added SPY divergence detection
 - Added scores breakdown label
 - Improved signal confirmation logic
