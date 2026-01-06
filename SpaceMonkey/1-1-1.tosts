@@ -1,0 +1,88 @@
+# Monkey Move (1-1-1) Indicator for TOS
+# Improved Version based on SpaceMonkey concept
+# Detects 1-1-1 Continuation Patterns:
+# 1. Impulse (Large, Vol)
+# 2. Pullback (Small, Lower Vol, Opposite)
+# 3. Continuation (Large, Vol, Breakout)
+
+declare upper;
+
+input avgLength = 20;          
+input largeMultiplier = 1.2;   # Min body size for large candles (x avg)
+input smallMultiplier = 0.8;   # Max body size for pullback candle (x avg)
+input volMultiplier = 1.0;     # Min volume multiplier for impulse (x avg)
+input showStopLines = yes;     
+input showSignals = yes;
+input useCandleColoring = yes;
+
+# Averages
+def avgBody = SimpleMovingAvg(BodyHeight(), avgLength);
+def avgVol = SimpleMovingAvg(volume, avgLength);
+
+# Candle Definitions
+def isGreen = close > open;
+def isRed = close < open;
+def isLarge = BodyHeight() >= (largeMultiplier * avgBody);
+def isSmall = BodyHeight() <= (smallMultiplier * avgBody);
+def isHighVol = volume >= (volMultiplier * avgVol);
+
+# --- Bullish 1-1-1 Pattern ---
+# Candle 1 [2]: Large Green, High Volume
+def bullImpulse = isGreen[2] and isLarge[2] and isHighVol[2];
+
+# Candle 2 [1]: Small Red (Resting), Logic suggests lower volume than impulse, but mainly Small Body.
+def bullPullback = isRed[1] and isSmall[1];
+
+# Candle 3 [0]: Large Green, High Volume, Breaks High of Pullback
+def bullTrigger = isGreen and isLarge and isHighVol and close > high[1]; 
+
+plot BullishMonkey = bullImpulse and bullPullback and bullTrigger;
+
+# --- Bearish 1-1-1 Pattern ---
+# Candle 1 [2]: Large Red, High Volume
+def bearImpulse = isRed[2] and isLarge[2] and isHighVol[2];
+
+# Candle 2 [1]: Small Green (Resting)
+def bearPullback = isGreen[1] and isSmall[1];
+
+# Candle 3 [0]: Large Red, High Volume, Breaks Low of Pullback
+def bearTrigger = isRed and isLarge and isHighVol and close < low[1];
+
+plot BearishMonkey = bearImpulse and bearPullback and bearTrigger;
+
+# --- Plotting & Visuals ---
+
+# Arrows
+BullishMonkey.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+BullishMonkey.SetDefaultColor(Color.CYAN);
+BullishMonkey.SetLineWeight(3);
+
+BearishMonkey.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+BearishMonkey.SetDefaultColor(Color.MAGENTA);
+BearishMonkey.SetLineWeight(3);
+
+# Candle Coloring
+AssignPriceColor(if !useCandleColoring then Color.CURRENT 
+                 else if BullishMonkey then Color.CYAN 
+                 else if BearishMonkey then Color.MAGENTA 
+                 else Color.CURRENT);
+
+# Stop Loss Lines (Visual)
+# Suggested SL is under the Low of the Pullback (Bull) or above High of Pullback (Bear)
+plot BullSL = if showStopLines and BullishMonkey then low[1] else Double.NaN;
+BullSL.SetDefaultColor(Color.LIGHT_RED);
+BullSL.SetStyle(Curve.POINTS);
+BullSL.SetLineWeight(3);
+
+plot BearSL = if showStopLines and BearishMonkey then high[1] else Double.NaN;
+BearSL.SetDefaultColor(Color.LIGHT_GREEN);
+BearSL.SetStyle(Curve.POINTS);
+BearSL.SetLineWeight(3);
+
+# Bubbles
+AddChartBubble(showSignals and BullishMonkey, low, "1-1-1 Bull\nEntry: " + close, Color.CYAN, no);
+AddChartBubble(showSignals and BearishMonkey, high, "1-1-1 Bear\nEntry: " + close, Color.MAGENTA, yes);
+
+# Alerts
+Alert(BullishMonkey, " Bullish 1-1-1 Monkey Move Detected!", Alert.BAR, Sound.Ding);
+Alert(BearishMonkey, " Bearish 1-1-1 Monkey Move Detected!", Alert.BAR, Sound.Ding);
