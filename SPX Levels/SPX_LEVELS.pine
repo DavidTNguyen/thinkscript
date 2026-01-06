@@ -40,6 +40,7 @@ indicator("SPX JAN 2 - New Year Session", overlay=true, max_lines_count=500, max
 
 // === INPUTS ===
 // Upside Targets
+level_max = input.float(6999.9, "Double Star Target", group="Upside Targets")
 level1 = input.float(6945, "Upside Target 3", group="Upside Targets")
 level1_thickness = input.int(2, "6945 Line Thickness", minval=1, maxval=10, group="Upside Targets")
 level2 = input.float(6921, "Upside Target 2", group="Upside Targets")
@@ -93,6 +94,7 @@ showLines = input.bool(true, "Show Level Lines", group="Display Settings")
 showTable = input.bool(false, "Show Status Table", group="Display Settings")
 
 // === LEVEL LINES ===
+var line l_max = na
 var line l1 = na
 var line l2 = na
 var line l3 = na
@@ -109,6 +111,9 @@ var line l13 = na
 var line l14 = na
 
 if showLines and barstate.islast
+    // Double Star Target - 6999.9 (Magenta, thick)
+    l_max := line.new(bar_index - 100, level_max, bar_index + 20, level_max, color=color.fuchsia, width=3, style=line.style_solid)
+
     // Upside Target 3 - 6945 (Magenta)
     l1 := line.new(bar_index - 100, level1, bar_index + 20, level1, color=color.fuchsia, width=level1_thickness, style=line.style_dashed)
     
@@ -153,6 +158,7 @@ if showLines and barstate.islast
 
 // === LABELS ===
 if barstate.islast and showLabels
+    label.new(bar_index + 8, level_max, "6999.9 **", style=label.style_label_left, color=color.fuchsia, textcolor=color.white, size=size.large)
     label.new(bar_index + 8, level1, "6945 Target *", style=label.style_label_left, color=color.fuchsia, textcolor=color.white, size=size.large)
     label.new(bar_index + 8, level2, "6921 Target *", style=label.style_label_left, color=color.fuchsia, textcolor=color.white, size=size.large)
     label.new(bar_index + 8, level3, "6895 Squeeze", style=label.style_label_left, color=color.red, textcolor=color.white, size=size.large)
@@ -169,6 +175,8 @@ if barstate.islast and showLabels
     label.new(bar_index + 8, level14, "6600", style=label.style_label_left, color=color.aqua, textcolor=color.black)
 
 // === POSITION DETECTION ===
+aboveMax = close > level_max
+atMax = close >= level_max - 5 and close <= level_max + 5
 above6945 = close > level1  // Upside Target 3
 at6945 = close >= level1 - 5 and close <= level1 + 5
 above6921 = close > level2  // Upside Target 2
@@ -211,6 +219,10 @@ belowMaxRisk = close < level6                           // Below 6802
 volSpike = volume > ta.sma(volume, 20) * 1.5
 
 // === ALERT CONDITIONS ===
+
+// DOUBLE STAR (6999.9)
+alertcondition(ta.crossover(close, level_max), "6999.9 DOUBLE STAR", "SPX >> 6999.9 - DOUBLE STAR HIT!")
+alertcondition(atMax, "At 6999.9", "SPX at 6999.9 - Double Star!")
 
 // UPSIDE TARGET 3 (6945)
 alertcondition(ta.crossover(close, level1), "6945 TARGET 3", "SPX >> 6945 - TARGET 3 HIT!")
@@ -352,6 +364,7 @@ if barstate.islast and showLabels and showTable
     table.cell(statusTable, 1, 16, "<6802 = NO LONGS", bgcolor=color.new(color.yellow, 80), text_color=color.black)
 
 // === PLOT INVISIBLE LINES FOR ALERT TRIGGERS ===
+plot(level_max, "6999.9 Double Star", color=color.new(color.fuchsia, 100))
 plot(level1, "6945 Target 3", color=color.new(color.fuchsia, 100))
 plot(level2, "6921 Target 2", color=color.new(color.fuchsia, 100))
 plot(level3, "6895 Squeeze", color=color.new(color.red, 100))

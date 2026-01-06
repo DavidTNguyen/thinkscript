@@ -11,20 +11,34 @@ input show_start_markers = yes;
 
 input show_htf_1 = yes;
 input agg_htf_1 = AggregationPeriod.FIFTEEN_MIN;
+input label_htf_1 = "15m";
 
 input show_htf_2 = yes;
 input agg_htf_2 = AggregationPeriod.HOUR;
+input label_htf_2 = "1h";
 
 input show_htf_3 = yes;
 input agg_htf_3 = AggregationPeriod.FOUR_HOURS;
+input label_htf_3 = "4h";
 
 input hide_filled = yes;
 input show_midline = no;
 input hide_overlapping = yes;
+input show_labels = yes;
 
 # Colors
-DefineGlobalColor("Bullish", CreateColor(0, 255, 0));
-DefineGlobalColor("Bearish", CreateColor(255, 0, 0));
+DefineGlobalColor("Bullish_Cur", CreateColor(0, 255, 0));
+DefineGlobalColor("Bearish_Cur", CreateColor(255, 0, 0));
+
+DefineGlobalColor("Bullish_HTF1", CreateColor(50, 205, 50));
+DefineGlobalColor("Bearish_HTF1", CreateColor(220, 20, 60));
+
+DefineGlobalColor("Bullish_HTF2", CreateColor(34, 139, 34));
+DefineGlobalColor("Bearish_HTF2", CreateColor(178, 34, 34));
+
+DefineGlobalColor("Bullish_HTF3", CreateColor(0, 100, 0));
+DefineGlobalColor("Bearish_HTF3", CreateColor(139, 0, 0));
+
 DefineGlobalColor("MidLine", Color.WHITE);
 
 # ==========================================
@@ -166,44 +180,47 @@ plot BullTop1 = if show_current and rBullActive1 and !hideBull1 then rBullTop1 e
 plot BullBot1 = if show_current and rBullActive1 and !hideBull1 then rBullBot1 else Double.NaN;
 plot BullMid1 = if show_current and show_midline and rBullActive1 and !hideBull1 then (rBullTop1 + rBullBot1) / 2 else Double.NaN;
 
-BullTop1.SetDefaultColor(GlobalColor("Bullish"));
-BullBot1.SetDefaultColor(GlobalColor("Bullish"));
+BullTop1.SetDefaultColor(GlobalColor("Bullish_Cur"));
+BullBot1.SetDefaultColor(GlobalColor("Bullish_Cur"));
 BullMid1.SetDefaultColor(GlobalColor("MidLine"));
 BullMid1.SetStyle(Curve.SHORT_DASH);
-AddCloud(BullTop1, BullBot1, GlobalColor("Bullish"), GlobalColor("Bullish"));
+AddCloud(BullTop1, BullBot1, GlobalColor("Bullish_Cur"), GlobalColor("Bullish_Cur"));
 
 plot BearTop1 = if show_current and rBearActive1 and !hideBear1 then rBearTop1 else Double.NaN;
 plot BearBot1 = if show_current and rBearActive1 and !hideBear1 then rBearBot1 else Double.NaN;
 plot BearMid1 = if show_current and show_midline and rBearActive1 and !hideBear1 then (rBearTop1 + rBearBot1) / 2 else Double.NaN;
 
-BearTop1.SetDefaultColor(GlobalColor("Bearish"));
-BearBot1.SetDefaultColor(GlobalColor("Bearish"));
+BearTop1.SetDefaultColor(GlobalColor("Bearish_Cur"));
+BearBot1.SetDefaultColor(GlobalColor("Bearish_Cur"));
 BearMid1.SetDefaultColor(GlobalColor("MidLine"));
 BearMid1.SetStyle(Curve.SHORT_DASH);
-AddCloud(BearBot1, BearTop1, GlobalColor("Bearish"), GlobalColor("Bearish"));
+AddCloud(BearBot1, BearTop1, GlobalColor("Bearish_Cur"), GlobalColor("Bearish_Cur"));
 
 # Visual Enhancements for Current Timeframe
 def isBullFormation = isBull1 or isBull1[-1] or isBull1[-2];
 def isBearFormation = isBear1 or isBear1[-1] or isBear1[-2];
 
 AssignPriceColor(if !highlight_formation then Color.CURRENT 
-                 else if isBullFormation then GlobalColor("Bullish") 
-                 else if isBearFormation then GlobalColor("Bearish") 
+                 else if isBullFormation then GlobalColor("Bullish_Cur") 
+                 else if isBearFormation then GlobalColor("Bearish_Cur") 
                  else Color.CURRENT);
 
 plot BullStartTop = if show_start_markers and isBull1 then l1 else Double.NaN;
 plot BullStartBot = if show_start_markers and isBull1 then h1_2 else Double.NaN;
 BullStartTop.SetPaintingStrategy(PaintingStrategy.SQUARES);
-BullStartTop.SetDefaultColor(GlobalColor("Bullish"));
+BullStartTop.SetDefaultColor(GlobalColor("Bullish_Cur"));
 BullStartBot.SetPaintingStrategy(PaintingStrategy.SQUARES);
-BullStartBot.SetDefaultColor(GlobalColor("Bullish"));
+BullStartBot.SetDefaultColor(GlobalColor("Bullish_Cur"));
 
 plot BearStartTop = if show_start_markers and isBear1 then l1_2 else Double.NaN;
 plot BearStartBot = if show_start_markers and isBear1 then h1 else Double.NaN;
 BearStartTop.SetPaintingStrategy(PaintingStrategy.SQUARES);
-BearStartTop.SetDefaultColor(GlobalColor("Bearish"));
+BearStartTop.SetDefaultColor(GlobalColor("Bearish_Cur"));
 BearStartBot.SetPaintingStrategy(PaintingStrategy.SQUARES);
-BearStartBot.SetDefaultColor(GlobalColor("Bearish"));
+BearStartBot.SetDefaultColor(GlobalColor("Bearish_Cur"));
+
+AddChartBubble(show_labels and isBull1, l1, "Cur", GlobalColor("Bullish_Cur"), no);
+AddChartBubble(show_labels and isBear1, l1_2, "Cur", GlobalColor("Bearish_Cur"), yes);
 
 # --- HTF 1 ---
 def hideBull2 = hide_overlapping and (overlapBull2_3 or overlapBull2_4);
@@ -213,21 +230,26 @@ plot BullTop2 = if show_htf_1 and rBullActive2 and !hideBull2 then rBullTop2 els
 plot BullBot2 = if show_htf_1 and rBullActive2 and !hideBull2 then rBullBot2 else Double.NaN;
 plot BullMid2 = if show_htf_1 and show_midline and rBullActive2 and !hideBull2 then (rBullTop2 + rBullBot2) / 2 else Double.NaN;
 
-BullTop2.SetDefaultColor(GlobalColor("Bullish"));
-BullBot2.SetDefaultColor(GlobalColor("Bullish"));
+BullTop2.SetDefaultColor(GlobalColor("Bullish_HTF1"));
+BullBot2.SetDefaultColor(GlobalColor("Bullish_HTF1"));
 BullMid2.SetDefaultColor(GlobalColor("MidLine"));
 BullMid2.SetStyle(Curve.SHORT_DASH);
-AddCloud(BullTop2, BullBot2, GlobalColor("Bullish"), GlobalColor("Bullish"));
+AddCloud(BullTop2, BullBot2, GlobalColor("Bullish_HTF1"), GlobalColor("Bullish_HTF1"));
 
 plot BearTop2 = if show_htf_1 and rBearActive2 and !hideBear2 then rBearTop2 else Double.NaN;
 plot BearBot2 = if show_htf_1 and rBearActive2 and !hideBear2 then rBearBot2 else Double.NaN;
 plot BearMid2 = if show_htf_1 and show_midline and rBearActive2 and !hideBear2 then (rBearTop2 + rBearBot2) / 2 else Double.NaN;
 
-BearTop2.SetDefaultColor(GlobalColor("Bearish"));
-BearBot2.SetDefaultColor(GlobalColor("Bearish"));
+BearTop2.SetDefaultColor(GlobalColor("Bearish_HTF1"));
+BearBot2.SetDefaultColor(GlobalColor("Bearish_HTF1"));
 BearMid2.SetDefaultColor(GlobalColor("MidLine"));
 BearMid2.SetStyle(Curve.SHORT_DASH);
-AddCloud(BearBot2, BearTop2, GlobalColor("Bearish"), GlobalColor("Bearish"));
+AddCloud(BearBot2, BearTop2, GlobalColor("Bearish_HTF1"), GlobalColor("Bearish_HTF1"));
+
+def isNewBull2 = isBull2 and !isBull2[1];
+def isNewBear2 = isBear2 and !isBear2[1];
+AddChartBubble(show_labels and isNewBull2, l2, label_htf_1, GlobalColor("Bullish_HTF1"), no);
+AddChartBubble(show_labels and isNewBear2, l2_2, label_htf_1, GlobalColor("Bearish_HTF1"), yes);
 
 # --- HTF 2 ---
 def hideBull3 = hide_overlapping and (overlapBull3_4);
@@ -237,21 +259,26 @@ plot BullTop3 = if show_htf_2 and rBullActive3 and !hideBull3 then rBullTop3 els
 plot BullBot3 = if show_htf_2 and rBullActive3 and !hideBull3 then rBullBot3 else Double.NaN;
 plot BullMid3 = if show_htf_2 and show_midline and rBullActive3 and !hideBull3 then (rBullTop3 + rBullBot3) / 2 else Double.NaN;
 
-BullTop3.SetDefaultColor(GlobalColor("Bullish"));
-BullBot3.SetDefaultColor(GlobalColor("Bullish"));
+BullTop3.SetDefaultColor(GlobalColor("Bullish_HTF2"));
+BullBot3.SetDefaultColor(GlobalColor("Bullish_HTF2"));
 BullMid3.SetDefaultColor(GlobalColor("MidLine"));
 BullMid3.SetStyle(Curve.SHORT_DASH);
-AddCloud(BullTop3, BullBot3, GlobalColor("Bullish"), GlobalColor("Bullish"));
+AddCloud(BullTop3, BullBot3, GlobalColor("Bullish_HTF2"), GlobalColor("Bullish_HTF2"));
 
 plot BearTop3 = if show_htf_2 and rBearActive3 and !hideBear3 then rBearTop3 else Double.NaN;
 plot BearBot3 = if show_htf_2 and rBearActive3 and !hideBear3 then rBearBot3 else Double.NaN;
 plot BearMid3 = if show_htf_2 and show_midline and rBearActive3 and !hideBear3 then (rBearTop3 + rBearBot3) / 2 else Double.NaN;
 
-BearTop3.SetDefaultColor(GlobalColor("Bearish"));
-BearBot3.SetDefaultColor(GlobalColor("Bearish"));
+BearTop3.SetDefaultColor(GlobalColor("Bearish_HTF2"));
+BearBot3.SetDefaultColor(GlobalColor("Bearish_HTF2"));
 BearMid3.SetDefaultColor(GlobalColor("MidLine"));
 BearMid3.SetStyle(Curve.SHORT_DASH);
-AddCloud(BearBot3, BearTop3, GlobalColor("Bearish"), GlobalColor("Bearish"));
+AddCloud(BearBot3, BearTop3, GlobalColor("Bearish_HTF2"), GlobalColor("Bearish_HTF2"));
+
+def isNewBull3 = isBull3 and !isBull3[1];
+def isNewBear3 = isBear3 and !isBear3[1];
+AddChartBubble(show_labels and isNewBull3, l3, label_htf_2, GlobalColor("Bullish_HTF2"), no);
+AddChartBubble(show_labels and isNewBear3, l3_2, label_htf_2, GlobalColor("Bearish_HTF2"), yes);
 
 # --- HTF 3 ---
 # No higher timeframe to overlap with
@@ -260,18 +287,23 @@ plot BullTop4 = if show_htf_3 and rBullActive4 then rBullTop4 else Double.NaN;
 plot BullBot4 = if show_htf_3 and rBullActive4 then rBullBot4 else Double.NaN;
 plot BullMid4 = if show_htf_3 and show_midline and rBullActive4 then (rBullTop4 + rBullBot4) / 2 else Double.NaN;
 
-BullTop4.SetDefaultColor(GlobalColor("Bullish"));
-BullBot4.SetDefaultColor(GlobalColor("Bullish"));
+BullTop4.SetDefaultColor(GlobalColor("Bullish_HTF3"));
+BullBot4.SetDefaultColor(GlobalColor("Bullish_HTF3"));
 BullMid4.SetDefaultColor(GlobalColor("MidLine"));
 BullMid4.SetStyle(Curve.SHORT_DASH);
-AddCloud(BullTop4, BullBot4, GlobalColor("Bullish"), GlobalColor("Bullish"));
+AddCloud(BullTop4, BullBot4, GlobalColor("Bullish_HTF3"), GlobalColor("Bullish_HTF3"));
 
 plot BearTop4 = if show_htf_3 and rBearActive4 then rBearTop4 else Double.NaN;
 plot BearBot4 = if show_htf_3 and rBearActive4 then rBearBot4 else Double.NaN;
 plot BearMid4 = if show_htf_3 and show_midline and rBearActive4 then (rBearTop4 + rBearBot4) / 2 else Double.NaN;
 
-BearTop4.SetDefaultColor(GlobalColor("Bearish"));
-BearBot4.SetDefaultColor(GlobalColor("Bearish"));
+BearTop4.SetDefaultColor(GlobalColor("Bearish_HTF3"));
+BearBot4.SetDefaultColor(GlobalColor("Bearish_HTF3"));
 BearMid4.SetDefaultColor(GlobalColor("MidLine"));
 BearMid4.SetStyle(Curve.SHORT_DASH);
-AddCloud(BearBot4, BearTop4, GlobalColor("Bearish"), GlobalColor("Bearish"));
+AddCloud(BearBot4, BearTop4, GlobalColor("Bearish_HTF3"), GlobalColor("Bearish_HTF3"));
+
+def isNewBull4 = isBull4 and !isBull4[1];
+def isNewBear4 = isBear4 and !isBear4[1];
+AddChartBubble(show_labels and isNewBull4, l4, label_htf_3, GlobalColor("Bullish_HTF3"), no);
+AddChartBubble(show_labels and isNewBear4, l4_2, label_htf_3, GlobalColor("Bearish_HTF3"), yes);

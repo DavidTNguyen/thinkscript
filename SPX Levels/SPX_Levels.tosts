@@ -36,6 +36,7 @@
 # Sustained trade below 6802 = no longs
 
 # === KEY LEVELS ===
+input level_max = 6999.9; # Double Star Target
 input level1 = 6945;  # Upside Target 3
 input level2 = 6921;  # Upside Target 2
 input level3 = 6895;  # Squeeze Trigger / Resistance
@@ -67,6 +68,12 @@ input showLines = yes;
 # === REMOVE old cloud definitions - replace with cleaner approach ===
 
 # === LEVEL PLOTS ===
+plot L_Max = level_max;
+L_Max.SetDefaultColor(Color.MAGENTA);
+L_Max.SetLineWeight(3);
+L_Max.SetStyle(Curve.FIRM);
+L_Max.SetHiding(!showLines);
+
 plot L1 = level1;
 L1.SetDefaultColor(Color.RED);
 L1.SetLineWeight(2);
@@ -176,6 +183,8 @@ def isLastBar = isLastBar1[-bubblesBeforeLast];
 
 
 # Position detection
+def aboveMax = close > level_max;
+def atMax = close >= level_max - 5 and close <= level_max + 5;
 def above6945 = close > level1;  # Upside Target 3
 def at6945 = close >= level1 - 5 and close <= level1 + 5;
 def above6921 = close > level2;  # Upside Target 2
@@ -216,6 +225,7 @@ def belowMaxRisk = close < level6;                         # Below 6802
 
 
 # === CHART BUBBLES ===
+AddChartBubble(isLastBar and showLabels, level_max, "6999.9 **", Color.MAGENTA, yes);
 AddChartBubble(isLastBar and showLabels, level1, "6945 Target *", Color.MAGENTA, yes);
 AddChartBubble(isLastBar and showLabels, level2, "6921 Target *", Color.MAGENTA, yes);
 AddChartBubble(isLastBar and showLabels, level3, "6895 Squeeze", Color.RED, yes);
@@ -232,6 +242,9 @@ AddChartBubble(isLastBar and showLabels, level13, "6620 Extreme", Color.CYAN, no
 AddChartBubble(isLastBar and showLabels, level14, "6600", Color.CYAN, no);
 
 # === TOUCH LOGIC ===
+def touchMax = low <= level_max and high >= level_max;
+def firstTouchMax = touchMax and !touchMax[1];
+
 def touch6945 = low <= level1 and high >= level1;
 def firstTouch6945 = touch6945 and !touch6945[1];
 
@@ -280,6 +293,10 @@ def touch6600 = low <= level14 and high >= level14;
 def firstTouch6600 = touch6600 and !touch6600[1];
 
 # === ALERTS ===
+# DOUBLE STAR (6999.9)
+Alert(enableAlerts and firstTouchMax, "SPX >> 6999.9 - DOUBLE STAR HIT!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and atMax, "SPX at 6999.9 - Double Star!", Alert.BAR, Sound.Chimes);
+
 # UPSIDE TARGET 3 (6945)
 Alert(enableAlerts and firstTouch6945, "SPX >> 6945 - TARGET 3 HIT!", Alert.BAR, Sound.Ring);
 Alert(enableAlerts and at6945, "SPX at 6945 - Final target!", Alert.BAR, Sound.Chimes);
