@@ -27,9 +27,9 @@ input targetCrossSource = {default Close, HighsLows}; # Source to determine when
 input numTargetsToShow = 5; # Maximum number of targets to display
 
 # Colors
-input bullColor = Color.GREEN;
-input bearColor = Color.RED;
-input orLevelColor = Color.GRAY;
+DefineGlobalColor("BullColor", Color.GREEN);
+DefineGlobalColor("BearColor", Color.RED);
+DefineGlobalColor("ORLevelColor", Color.GRAY);
 input showCloud = yes;
 
 #---------------------------------------------------------------------------------------------------------------------
@@ -150,28 +150,31 @@ else no;
 def showLevels = !inORSession and orValid;
 
 plot ORHighLine = if showLevels then orHigh else Double.NaN;
-ORHighLine.SetDefaultColor(orLevelColor);
+ORHighLine.SetDefaultColor(GlobalColor("ORLevelColor"));
 ORHighLine.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 ORHighLine.SetLineWeight(2);
 ORHighLine.HideBubble();
 
 plot ORLowLine = if showLevels then orLow else Double.NaN;
-ORLowLine.SetDefaultColor(orLevelColor);
+ORLowLine.SetDefaultColor(GlobalColor("ORLevelColor"));
 ORLowLine.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 ORLowLine.SetLineWeight(2);
 ORLowLine.HideBubble();
 
 plot ORMidLine = if showLevels then orMidpoint else Double.NaN;
-ORMidLine.SetDefaultColor(orLevelColor);
+ORMidLine.SetDefaultColor(GlobalColor("ORLevelColor"));
 ORMidLine.SetPaintingStrategy(PaintingStrategy.DASHES);
 ORMidLine.SetLineWeight(1);
 ORMidLine.HideBubble();
 
 # Cloud between OR High and Low
-AddCloud(if showCloud and showLevels then orHigh else Double.NaN, 
-         if showCloud and showLevels then orLow else Double.NaN, 
-         if dayDir >= 0 then bullColor else bearColor,
-         if dayDir >= 0 then bullColor else bearColor);
+def cloudHighBull = if showCloud and showLevels and dayDir >= 0 then orHigh else Double.NaN;
+def cloudLowBull = if showCloud and showLevels and dayDir >= 0 then orLow else Double.NaN;
+AddCloud(cloudHighBull, cloudLowBull, GlobalColor("BullColor"), GlobalColor("BullColor"));
+
+def cloudHighBear = if showCloud and showLevels and dayDir < 0 then orHigh else Double.NaN;
+def cloudLowBear = if showCloud and showLevels and dayDir < 0 then orLow else Double.NaN;
+AddCloud(cloudHighBear, cloudLowBear, GlobalColor("BearColor"), GlobalColor("BearColor"));
 
 #---------------------------------------------------------------------------------------------------------------------
 # PLOTS - TARGET LEVELS
@@ -184,15 +187,15 @@ plot Target3Up = if showTargets and showLevels and numTargetsToShow >= 3 then or
 plot Target4Up = if showTargets and showLevels and numTargetsToShow >= 4 then orHigh + (orWidth * targetPct * 4) else Double.NaN;
 plot Target5Up = if showTargets and showLevels and numTargetsToShow >= 5 then orHigh + (orWidth * targetPct * 5) else Double.NaN;
 
-Target1Up.SetDefaultColor(bullColor);
+Target1Up.SetDefaultColor(GlobalColor("BullColor"));
 Target1Up.SetPaintingStrategy(PaintingStrategy.DASHES);
-Target2Up.SetDefaultColor(bullColor);
+Target2Up.SetDefaultColor(GlobalColor("BullColor"));
 Target2Up.SetPaintingStrategy(PaintingStrategy.DASHES);
-Target3Up.SetDefaultColor(bullColor);
+Target3Up.SetDefaultColor(GlobalColor("BullColor"));
 Target3Up.SetPaintingStrategy(PaintingStrategy.DASHES);
-Target4Up.SetDefaultColor(bullColor);
+Target4Up.SetDefaultColor(GlobalColor("BullColor"));
 Target4Up.SetPaintingStrategy(PaintingStrategy.DASHES);
-Target5Up.SetDefaultColor(bullColor);
+Target5Up.SetDefaultColor(GlobalColor("BullColor"));
 Target5Up.SetPaintingStrategy(PaintingStrategy.DASHES);
 
 Target1Up.HideBubble();
@@ -208,15 +211,15 @@ plot Target3Down = if showTargets and showLevels and numTargetsToShow >= 3 then 
 plot Target4Down = if showTargets and showLevels and numTargetsToShow >= 4 then orLow - (orWidth * targetPct * 4) else Double.NaN;
 plot Target5Down = if showTargets and showLevels and numTargetsToShow >= 5 then orLow - (orWidth * targetPct * 5) else Double.NaN;
 
-Target1Down.SetDefaultColor(bearColor);
+Target1Down.SetDefaultColor(GlobalColor("BearColor"));
 Target1Down.SetPaintingStrategy(PaintingStrategy.DASHES);
-Target2Down.SetDefaultColor(bearColor);
+Target2Down.SetDefaultColor(GlobalColor("BearColor"));
 Target2Down.SetPaintingStrategy(PaintingStrategy.DASHES);
-Target3Down.SetDefaultColor(bearColor);
+Target3Down.SetDefaultColor(GlobalColor("BearColor"));
 Target3Down.SetPaintingStrategy(PaintingStrategy.DASHES);
-Target4Down.SetDefaultColor(bearColor);
+Target4Down.SetDefaultColor(GlobalColor("BearColor"));
 Target4Down.SetPaintingStrategy(PaintingStrategy.DASHES);
-Target5Down.SetDefaultColor(bearColor);
+Target5Down.SetDefaultColor(GlobalColor("BearColor"));
 Target5Down.SetPaintingStrategy(PaintingStrategy.DASHES);
 
 Target1Down.HideBubble();
@@ -231,29 +234,29 @@ Target5Down.HideBubble();
 
 plot UpSignal = if showBreakoutSignals and upBreakout then low else Double.NaN;
 UpSignal.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
-UpSignal.SetDefaultColor(bullColor);
+UpSignal.SetDefaultColor(GlobalColor("BullColor"));
 UpSignal.SetLineWeight(2);
 
 plot DownSignal = if showBreakoutSignals and downBreakout then high else Double.NaN;
 DownSignal.SetPaintingStrategy(PaintingStrategy.ARROW_DOWN);
-DownSignal.SetDefaultColor(bearColor);
+DownSignal.SetDefaultColor(GlobalColor("BearColor"));
 DownSignal.SetLineWeight(2);
 
 #---------------------------------------------------------------------------------------------------------------------
 # LABELS
 #---------------------------------------------------------------------------------------------------------------------
 
-AddChartBubble(orEnd and orValid, orHigh, "ORH", orLevelColor, yes);
-AddChartBubble(orEnd and orValid, orLow, "ORL", orLevelColor, no);
+AddChartBubble(orEnd and orValid, orHigh, "ORH", GlobalColor("ORLevelColor"), yes);
+AddChartBubble(orEnd and orValid, orLow, "ORL", GlobalColor("ORLevelColor"), no);
 
 # Target Labels at end of OR session
-AddChartBubble(orEnd and orValid and showTargets, orHigh + orWidth * targetPct, "T1", bullColor, yes);
-AddChartBubble(orEnd and orValid and showTargets and numTargetsToShow >= 2, orHigh + orWidth * targetPct * 2, "T2", bullColor, yes);
-AddChartBubble(orEnd and orValid and showTargets and numTargetsToShow >= 3, orHigh + orWidth * targetPct * 3, "T3", bullColor, yes);
+AddChartBubble(orEnd and orValid and showTargets, orHigh + orWidth * targetPct, "T1", GlobalColor("BullColor"), yes);
+AddChartBubble(orEnd and orValid and showTargets and numTargetsToShow >= 2, orHigh + orWidth * targetPct * 2, "T2", GlobalColor("BullColor"), yes);
+AddChartBubble(orEnd and orValid and showTargets and numTargetsToShow >= 3, orHigh + orWidth * targetPct * 3, "T3", GlobalColor("BullColor"), yes);
 
-AddChartBubble(orEnd and orValid and showTargets, orLow - orWidth * targetPct, "T1", bearColor, no);
-AddChartBubble(orEnd and orValid and showTargets and numTargetsToShow >= 2, orLow - orWidth * targetPct * 2, "T2", bearColor, no);
-AddChartBubble(orEnd and orValid and showTargets and numTargetsToShow >= 3, orLow - orWidth * targetPct * 3, "T3", bearColor, no);
+AddChartBubble(orEnd and orValid and showTargets, orLow - orWidth * targetPct, "T1", GlobalColor("BearColor"), no);
+AddChartBubble(orEnd and orValid and showTargets and numTargetsToShow >= 2, orLow - orWidth * targetPct * 2, "T2", GlobalColor("BearColor"), no);
+AddChartBubble(orEnd and orValid and showTargets and numTargetsToShow >= 3, orLow - orWidth * targetPct * 3, "T3", GlobalColor("BearColor"), no);
 
 #---------------------------------------------------------------------------------------------------------------------
 # ALERTS
