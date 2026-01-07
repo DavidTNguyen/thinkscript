@@ -1,0 +1,267 @@
+# Opening Range with Breakouts & Targets
+# VietRoadie 2026
+
+declare upper;
+
+#---------------------------------------------------------------------------------------------------------------------
+# INPUTS
+#---------------------------------------------------------------------------------------------------------------------
+
+input showHistoricalData = yes; # Displays All Data from Previous Sessions
+input openingRangeMinutes = 30; # Length of Time used for determining Opening Range (minutes from market open)
+input marketOpenTime = 0930; # Market Open Time (ET)
+
+# Custom Range
+input useCustomRange = no;
+input customRangeStart = 0930;
+input customRangeEnd = 0945;
+
+# Breakout Signals
+input showBreakoutSignals = yes;
+input useDailyBias = no; # OR Fill Color is directional based on if current ORM is Above/Below Previous ORM
+
+# Targets
+input showTargets = yes;
+input targetPercentOfRange = 50; # Uses this % of OR Width as distance for targets
+input targetCrossSource = {default Close, HighsLows}; # Source to determine when target is hit
+input numTargetsToShow = 5; # Maximum number of targets to display
+
+# Colors
+input bullColor = Color.GREEN;
+input bearColor = Color.RED;
+input orLevelColor = Color.GRAY;
+input showCloud = yes;
+
+#---------------------------------------------------------------------------------------------------------------------
+# TIME CALCULATIONS
+#---------------------------------------------------------------------------------------------------------------------
+
+def targetPct = targetPercentOfRange / 100;
+
+# Calculate Opening Range end time
+def orEndTime = marketOpenTime + Floor(openingRangeMinutes / 60) * 100 + (openingRangeMinutes % 60);
+
+# Determine if we're in the Opening Range session
+def currentTime = SecondsFromTime(0) / 60; # minutes from midnight
+def marketOpenMinutes = Floor(marketOpenTime / 100) * 60 + (marketOpenTime % 100);
+def orEndMinutes = Floor(orEndTime / 100) * 60 + (orEndTime % 100);
+def customStartMinutes = Floor(customRangeStart / 100) * 60 + (customRangeStart % 100);
+def customEndMinutes = Floor(customRangeEnd / 100) * 60 + (customRangeEnd % 100);
+
+def inORSession = if useCustomRange then
+    currentTime >= customStartMinutes and currentTime < customEndMinutes
+else
+    currentTime >= marketOpenMinutes and currentTime < orEndMinutes;
+
+def orStart = inORSession and !inORSession[1];
+def orEnd = !inORSession and inORSession[1];
+
+# New trading day detection
+def newDay = GetDay() != GetDay()[1];
+
+#---------------------------------------------------------------------------------------------------------------------
+# OPENING RANGE CALCULATIONS
+#---------------------------------------------------------------------------------------------------------------------
+
+# Track OR High and Low during OR session
+def orHigh = if newDay or orStart then high
+             else if inORSession then Max(orHigh[1], high)
+             else orHigh[1];
+
+def orLow = if newDay or orStart then low
+            else if inORSession then Min(orLow[1], low)
+            else orLow[1];
+
+# Track if OR session completed (valid range established)
+def orValid = if newDay then no
+              else if orEnd and orHigh != orLow then yes
+              else orValid[1];
+
+# OR Midpoint and Width
+def orMidpoint = (orHigh + orLow) / 2;
+def orWidth = orHigh - orLow;
+
+# Previous day's OR Midpoint for bias
+def prevORM = if orEnd then orMidpoint[1]
+              else prevORM[1];
+
+# Day direction based on ORM vs Previous ORM
+def dayDir = if orEnd then 
+    if orMidpoint > prevORM then 1 
+    else if orMidpoint < prevORM then -1 
+    else 0
+else dayDir[1];
+
+#---------------------------------------------------------------------------------------------------------------------
+# TARGET CALCULATIONS
+#---------------------------------------------------------------------------------------------------------------------
+
+def hSrc = if targetCrossSource == targetCrossSource.Close then close else high;
+def lSrc = if targetCrossSource == targetCrossSource.Close then close else low;
+
+# Track highest/lowest since OR ended
+def highestSinceOR = if orEnd then orHigh
+                     else if !inORSession and orValid then Max(highestSinceOR[1], hSrc)
+                     else highestSinceOR[1];
+
+def lowestSinceOR = if orEnd then orLow
+                    else if !inORSession and orValid then Min(lowestSinceOR[1], lSrc)
+                    else lowestSinceOR[1];
+
+# Calculate how many targets have been hit
+def upTargetsHit = if orWidth > 0 then Ceil((highestSinceOR - orHigh) / (orWidth * targetPct)) else 0;
+def downTargetsHit = if orWidth > 0 then Ceil((orLow - lowestSinceOR) / (orWidth * targetPct)) else 0;
+
+#---------------------------------------------------------------------------------------------------------------------
+# BREAKOUT SIGNAL LOGIC
+#---------------------------------------------------------------------------------------------------------------------
+
+# Track if we can signal (reset when price crosses back through midpoint)
+def canSignalUp = if orEnd then yes
+                  else if close < orMidpoint then yes
+                  else if close crosses above orHigh then no
+                  else canSignalUp[1];
+
+def canSignalDown = if orEnd then yes
+                    else if close > orMidpoint then yes
+                    else if close crosses below orLow then no
+                    else canSignalDown[1];
+
+# Breakout signals
+def upBreakout = if !inORSession and orValid then
+    if useDailyBias then
+        if dayDir != -1 then close crosses above orHigh and canSignalUp[1]
+        else close crosses above (orHigh + orWidth * targetPct) and canSignalUp[1]
+    else close crosses above orHigh and canSignalUp[1]
+else no;
+
+def downBreakout = if !inORSession and orValid then
+    if useDailyBias then
+        if dayDir != 1 then close crosses below orLow and canSignalDown[1]
+        else close crosses below (orLow - orWidth * targetPct) and canSignalDown[1]
+    else close crosses below orLow and canSignalDown[1]
+else no;
+
+#---------------------------------------------------------------------------------------------------------------------
+# PLOTS - OPENING RANGE LEVELS
+#---------------------------------------------------------------------------------------------------------------------
+
+# Only show levels after OR session ends and range is valid
+def showLevels = !inORSession and orValid;
+
+plot ORHighLine = if showLevels then orHigh else Double.NaN;
+ORHighLine.SetDefaultColor(orLevelColor);
+ORHighLine.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+ORHighLine.SetLineWeight(2);
+ORHighLine.HideBubble();
+
+plot ORLowLine = if showLevels then orLow else Double.NaN;
+ORLowLine.SetDefaultColor(orLevelColor);
+ORLowLine.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+ORLowLine.SetLineWeight(2);
+ORLowLine.HideBubble();
+
+plot ORMidLine = if showLevels then orMidpoint else Double.NaN;
+ORMidLine.SetDefaultColor(orLevelColor);
+ORMidLine.SetPaintingStrategy(PaintingStrategy.DASHES);
+ORMidLine.SetLineWeight(1);
+ORMidLine.HideBubble();
+
+# Cloud between OR High and Low
+AddCloud(if showCloud and showLevels then orHigh else Double.NaN, 
+         if showCloud and showLevels then orLow else Double.NaN, 
+         if dayDir >= 0 then bullColor else bearColor,
+         if dayDir >= 0 then bullColor else bearColor);
+
+#---------------------------------------------------------------------------------------------------------------------
+# PLOTS - TARGET LEVELS
+#---------------------------------------------------------------------------------------------------------------------
+
+# Bull Targets (above OR High)
+plot Target1Up = if showTargets and showLevels then orHigh + (orWidth * targetPct * 1) else Double.NaN;
+plot Target2Up = if showTargets and showLevels and numTargetsToShow >= 2 then orHigh + (orWidth * targetPct * 2) else Double.NaN;
+plot Target3Up = if showTargets and showLevels and numTargetsToShow >= 3 then orHigh + (orWidth * targetPct * 3) else Double.NaN;
+plot Target4Up = if showTargets and showLevels and numTargetsToShow >= 4 then orHigh + (orWidth * targetPct * 4) else Double.NaN;
+plot Target5Up = if showTargets and showLevels and numTargetsToShow >= 5 then orHigh + (orWidth * targetPct * 5) else Double.NaN;
+
+Target1Up.SetDefaultColor(bullColor);
+Target1Up.SetPaintingStrategy(PaintingStrategy.DASHES);
+Target2Up.SetDefaultColor(bullColor);
+Target2Up.SetPaintingStrategy(PaintingStrategy.DASHES);
+Target3Up.SetDefaultColor(bullColor);
+Target3Up.SetPaintingStrategy(PaintingStrategy.DASHES);
+Target4Up.SetDefaultColor(bullColor);
+Target4Up.SetPaintingStrategy(PaintingStrategy.DASHES);
+Target5Up.SetDefaultColor(bullColor);
+Target5Up.SetPaintingStrategy(PaintingStrategy.DASHES);
+
+Target1Up.HideBubble();
+Target2Up.HideBubble();
+Target3Up.HideBubble();
+Target4Up.HideBubble();
+Target5Up.HideBubble();
+
+# Bear Targets (below OR Low)
+plot Target1Down = if showTargets and showLevels then orLow - (orWidth * targetPct * 1) else Double.NaN;
+plot Target2Down = if showTargets and showLevels and numTargetsToShow >= 2 then orLow - (orWidth * targetPct * 2) else Double.NaN;
+plot Target3Down = if showTargets and showLevels and numTargetsToShow >= 3 then orLow - (orWidth * targetPct * 3) else Double.NaN;
+plot Target4Down = if showTargets and showLevels and numTargetsToShow >= 4 then orLow - (orWidth * targetPct * 4) else Double.NaN;
+plot Target5Down = if showTargets and showLevels and numTargetsToShow >= 5 then orLow - (orWidth * targetPct * 5) else Double.NaN;
+
+Target1Down.SetDefaultColor(bearColor);
+Target1Down.SetPaintingStrategy(PaintingStrategy.DASHES);
+Target2Down.SetDefaultColor(bearColor);
+Target2Down.SetPaintingStrategy(PaintingStrategy.DASHES);
+Target3Down.SetDefaultColor(bearColor);
+Target3Down.SetPaintingStrategy(PaintingStrategy.DASHES);
+Target4Down.SetDefaultColor(bearColor);
+Target4Down.SetPaintingStrategy(PaintingStrategy.DASHES);
+Target5Down.SetDefaultColor(bearColor);
+Target5Down.SetPaintingStrategy(PaintingStrategy.DASHES);
+
+Target1Down.HideBubble();
+Target2Down.HideBubble();
+Target3Down.HideBubble();
+Target4Down.HideBubble();
+Target5Down.HideBubble();
+
+#---------------------------------------------------------------------------------------------------------------------
+# BREAKOUT SIGNALS
+#---------------------------------------------------------------------------------------------------------------------
+
+plot UpSignal = if showBreakoutSignals and upBreakout then low else Double.NaN;
+UpSignal.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
+UpSignal.SetDefaultColor(bullColor);
+UpSignal.SetLineWeight(2);
+
+plot DownSignal = if showBreakoutSignals and downBreakout then high else Double.NaN;
+DownSignal.SetPaintingStrategy(PaintingStrategy.ARROW_DOWN);
+DownSignal.SetDefaultColor(bearColor);
+DownSignal.SetLineWeight(2);
+
+#---------------------------------------------------------------------------------------------------------------------
+# LABELS
+#---------------------------------------------------------------------------------------------------------------------
+
+AddChartBubble(orEnd and orValid, orHigh, "ORH", orLevelColor, yes);
+AddChartBubble(orEnd and orValid, orLow, "ORL", orLevelColor, no);
+
+# Target Labels at end of OR session
+AddChartBubble(orEnd and orValid and showTargets, orHigh + orWidth * targetPct, "T1", bullColor, yes);
+AddChartBubble(orEnd and orValid and showTargets and numTargetsToShow >= 2, orHigh + orWidth * targetPct * 2, "T2", bullColor, yes);
+AddChartBubble(orEnd and orValid and showTargets and numTargetsToShow >= 3, orHigh + orWidth * targetPct * 3, "T3", bullColor, yes);
+
+AddChartBubble(orEnd and orValid and showTargets, orLow - orWidth * targetPct, "T1", bearColor, no);
+AddChartBubble(orEnd and orValid and showTargets and numTargetsToShow >= 2, orLow - orWidth * targetPct * 2, "T2", bearColor, no);
+AddChartBubble(orEnd and orValid and showTargets and numTargetsToShow >= 3, orLow - orWidth * targetPct * 3, "T3", bearColor, no);
+
+#---------------------------------------------------------------------------------------------------------------------
+# ALERTS
+#---------------------------------------------------------------------------------------------------------------------
+
+Alert(upBreakout, "Bullish Breakout - Price crossed above Opening Range High", Alert.BAR, Sound.Ding);
+Alert(downBreakout, "Bearish Breakout - Price crossed below Opening Range Low", Alert.BAR, Sound.Ding);
+
+#---------------------------------------------------------------------------------------------------------------------
+# END OF SCRIPT
+#---------------------------------------------------------------------------------------------------------------------
