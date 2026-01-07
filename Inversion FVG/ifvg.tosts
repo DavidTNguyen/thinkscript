@@ -1,114 +1,290 @@
-# Inverted Fair Value Gap (IFVG) Indicator
-# Author: GitHub Copilot for DavidTNguyen
-# Identifies FVGs, tracks inversion, and signals retests
+# Inversion Fair Value Gaps (IFVG)
+# Ported from LuxAlgo Pine Script by GitHub Copilot
+# 
+# Logic Matches Pine Script:
+# 1. Identifies FVGs based on 3-candle pattern.
+# 2. Filters by ATR Width.
+# 3. Tracks lifecycle:
+#    - Bull FVG (Support) -> Body closes/dips below -> Inverted (Bear Resistance)
+#    - Bear Resistance -> Body closes/peaks above -> Killed (Invalid)
+# 4. Slots logic: Displays the most recent 5 active inversions of each type.
 
-# --- Inputs ---
-input atrLength = 14;           # ATR period for filtering gaps
-input atrMultiplier = 0.3;      # ATR multiplier to filter small gaps (0.25-0.5)
-input showSeeds = yes;          # Show pre-inversion gaps
-input wickRetest = yes;         # Use wick (high/low) or close for retest
-input maxGaps = 10;             # Only show most recent N inversions
+input disp_num = 5;           # Hint: Show Last N Inversions
+input atr_multi = 0.25;       # Hint: ATR Multiplier for Gap Size
+input atr_length = 200;       # Hint: Length for ATR
+input signal_pref = {default "Close", "Wick"}; # Hint: For Signal triggering
 
-# --- Input Validation ---
-Assert(atrLength > 0, "ATR Length must be positive");
-Assert(atrMultiplier >= 0, "ATR Multiplier must be non-negative");
-Assert(maxGaps > 0, "Max Gaps to Display must be positive");
+# --- Constants & Helpers ---
+def MaxLookback = 100;
+def isWick = signal_pref == signal_pref."Wick";
 
-# --- ATR Calculation ---
-def atr = Average(TrueRange(high, close, low), atrLength);
-def minGapSize = atr * atrMultiplier;
+# Colors from Pine
+DefineGlobalColor("BullColor", CreateColor(8, 153, 129)); # #089981
+DefineGlobalColor("BearColor", CreateColor(242, 54, 69)); # #f23645
+DefineGlobalColor("MidColor", Color.GRAY);
 
-# --- FVG Detection ---
-# Bullish FVG: Low of candle two bars ago > High of current candle
-def bullishFVG = low[2] > high;
-# Bearish FVG: High of candle two bars ago < Low of current candle
-def bearishFVG = high[2] < low;
+# --- Basic Data ---
+def h = high;
+def l = low;
+def c = close;
+def o = open;
+def BodyTop = Max(o, c);
+def BodyBot = Min(o, c);
 
-# --- Define FVG Boundaries ---
-# Bullish FVG: Bottom = high, Top = low[2]
-def gapTop = if bullishFVG then low[2] else if bearishFVG then high[2] else Double.NaN;
-def gapBot = if bullishFVG then high else if bearishFVG then low else Double.NaN;
-def gapMid = (gapTop + gapBot) / 2;
+# ATR Filter
+def atr = Average(TrueRange(h, c, l), atr_length);
+def minSize = atr * atr_multi;
 
-# --- Filter Valid Gaps ---
-def gapSize = AbsValue(gapTop - gapBot);
-def validGap = gapSize > atrMultiplier * atr;
+# --- FVG Detection (Creation Time) ---
+# In Pine: fvg_up = low > high[2] and close[1] > high[2]
+# Time reference: The FVG is formed by candles [2], [1], [0].
+# The "Gap" is between High[2] and Low[0].
+# We index 'i' as the bar where the gap *completes* (bar 0).
+# So at bar `i`, the gap is between High[i+2] and Low[i].
 
-def isGap = (bullishFVG or bearishFVG) and validGap;
+def isBullFVG = (l > h[2]) and (c[1] > h[2]) and (AbsValue(l - h[2]) > minSize);
+def isBearFVG = (h < l[2]) and (c[1] < l[2]) and (AbsValue(l[2] - h) > minSize);
 
-# --- Track Gaps and Inversions ---
-rec gapActive = if isGap then 1 
-    else if gapActive[1] == 1 and !isGap and !IsNaN(gapTop[1]) and (
-        (bullishFVG[1] and close < gapBot[1]) or (bearishFVG[1] and close > gapTop[1])
-    ) then 2 
-    else if gapActive[1] == 2 then 2 
-    else 0;
+# Store Geometric Properties at Creation
+# Note: In ThinkScript, retrieving these dynamically requires offsets.
+# Bull FVG: Top=Low, Bot=High[2]
+def BullTop = l;
+def BullBot = h[2];
 
-rec invTop = if gapActive == 2 then gapTop[1] else invTop[1];
-rec invBot = if gapActive == 2 then gapBot[1] else invBot[1];
-rec invType = if gapActive == 2 then (if bullishFVG[1] then -1 else if bearishFVG[1] then 1 else 0) else invType[1];
-rec invBar = if gapActive == 2 then BarNumber() else invBar[1];
+# Bear FVG: Top=Low[2], Bot=High
+def BearTop = l[2];
+def BearBot = h;
 
-# --- Plot Gaps and Inversions ---
-plot BullGap = if showSeeds and bullishFVG and validGap and gapActive != 2 then gapTop else Double.NaN;
-BullGap.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-BullGap.SetDefaultColor(Color.GREEN);
-BullGap.SetLineWeight(2);
+# --- Lifecycle Logic ---
 
-plot BearGap = if showSeeds and bearishFVG and validGap and gapActive != 2 then gapBot else Double.NaN;
-BearGap.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-BearGap.SetDefaultColor(Color.RED);
-BearGap.SetLineWeight(2);
+# Check if a Bull FVG at offset 'idx' is currently Active & Inverted
+# Returns 1 if Inverted (Resistance), 0 otherwise.
+# We put the specific logic in the fold.
+# Status Codes: 0=Support(Fresh), 1=Resistance(Inverted), 2=Dead
 
-plot MidLine = if isGap and showSeeds then gapMid else Double.NaN;
-MidLine.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-MidLine.SetDefaultColor(Color.LIGHT_GRAY);
-MidLine.SetLineWeight(1);
-MidLine.SetStyle(Curve.SHORT_DASH);
+# --- Find Bullish Inversions (Start Bull -> Break Down -> Become Bear Res) ---
+# We find the indices (offsets) of the matching gaps.
 
-# --- Inversion Zones (Separate Plots for Bullish/Bearish) ---
-plot InvZoneTopBull = if gapActive == 2 and invType == 1 then invTop else Double.NaN;
-InvZoneTopBull.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-InvZoneTopBull.SetDefaultColor(Color.GREEN);
-InvZoneTopBull.SetLineWeight(2);
-
-plot InvZoneBotBull = if gapActive == 2 and invType == 1 then invBot else Double.NaN;
-InvZoneBotBull.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-InvZoneBotBull.SetDefaultColor(Color.GREEN);
-InvZoneBotBull.SetLineWeight(2);
-
-plot InvZoneTopBear = if gapActive == 2 and invType == -1 then invTop else Double.NaN;
-InvZoneTopBear.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-InvZoneTopBear.SetDefaultColor(Color.RED);
-InvZoneTopBear.SetLineWeight(2);
-
-plot InvZoneBotBear = if gapActive == 2 and invType == -1 then invBot else Double.NaN;
-InvZoneBotBear.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-InvZoneBotBear.SetDefaultColor(Color.RED);
-InvZoneBotBear.SetLineWeight(2);
-
-plot InvMid = if gapActive == 2 and invType != 0 then (invTop + invBot) / 2 else Double.NaN;
-InvMid.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
-InvMid.SetDefaultColor(Color.LIGHT_GRAY);
-InvMid.SetLineWeight(1);
-InvMid.SetStyle(Curve.SHORT_DASH);
-
-# --- Inversion Dots ---
-plot InversionDot = if gapActive == 2 and BarNumber() == invBar then (invTop + invBot) / 2 else Double.NaN;
-InversionDot.SetPaintingStrategy(PaintingStrategy.POINTS);
-InversionDot.SetDefaultColor(Color.YELLOW);
-InversionDot.SetLineWeight(3);
-
-# --- Retest Alerts ---
-def retestBull = invType == 1 and (
-    (wickRetest and low <= invTop and low >= invBot) or (!wickRetest and close <= invTop and close >= invBot)
-);
-def retestBear = invType == -1 and (
-    (wickRetest and high >= invBot and high <= invTop) or (!wickRetest and close >= invBot and close <= invTop)
+def bi_idx1 = fold i = 1 to MaxLookback with v = 0 while v == 0 do (
+    if getValue(isBullFVG, i) then (
+        # Get Gap Coords
+        def gTop = getValue(BullTop, i);
+        def gBot = getValue(BullBot, i);
+        
+        # Simulate Lifecycle from i-1 down to 0
+        def status = fold j = 0 to i - 1 with s = 0 while s != 2 do (
+             if s == 0 and getValue(BodyBot, j) < gBot then 1 # Support broken -> Resistance
+             else if s == 1 and getValue(BodyTop, j) > gTop then 2 # Resistance broken -> Dead
+             else s
+        );
+        if status == 1 then i else 0
+    ) else 0
 );
 
-Alert(retestBull, "IFVG Bullish Inversion Retest!", Alert.BAR, Sound.Bell);
-Alert(retestBear, "IFVG Bearish Inversion Retest!", Alert.BAR, Sound.Bell);
+def bi_idx2 = fold i2 = (bi_idx1 + 1) to MaxLookback with v2 = 0 while v2 == 0 and bi_idx1 > 0 do (
+    if getValue(isBullFVG, i2) then (
+        def gTop = getValue(BullTop, i2);
+        def gBot = getValue(BullBot, i2);
+        def status = fold j2 = 0 to i2 - 1 with s2 = 0 while s2 != 2 do (
+             if s2 == 0 and getValue(BodyBot, j2) < gBot then 1
+             else if s2 == 1 and getValue(BodyTop, j2) > gTop then 2
+             else s2
+        );
+        if status == 1 then i2 else 0
+    ) else 0
+);
 
-AddChartBubble(BarNumber() == invBar and invType == 1, invTop, "Bull Inv", Color.GREEN, yes);
-AddChartBubble(BarNumber() == invBar and invType == -1, invBot, "Bear Inv", Color.RED, no);
+def bi_idx3 = fold i3 = (bi_idx2 + 1) to MaxLookback with v3 = 0 while v3 == 0 and bi_idx2 > 0 do (
+    if getValue(isBullFVG, i3) then (
+        def gTop = getValue(BullTop, i3);
+        def gBot = getValue(BullBot, i3);
+        def status = fold j3 = 0 to i3 - 1 with s3 = 0 while s3 != 2 do (
+             if s3 == 0 and getValue(BodyBot, j3) < gBot then 1
+             else if s3 == 1 and getValue(BodyTop, j3) > gTop then 2
+             else s3
+        );
+        if status == 1 then i3 else 0
+    ) else 0
+);
+
+def bi_idx4 = fold i4 = (bi_idx3 + 1) to MaxLookback with v4 = 0 while v4 == 0 and bi_idx3 > 0 do (
+    if getValue(isBullFVG, i4) then (
+        def gTop = getValue(BullTop, i4);
+        def gBot = getValue(BullBot, i4);
+        def status = fold j4 = 0 to i4 - 1 with s4 = 0 while s4 != 2 do (
+             if s4 == 0 and getValue(BodyBot, j4) < gBot then 1
+             else if s4 == 1 and getValue(BodyTop, j4) > gTop then 2
+             else s4
+        );
+        if status == 1 then i4 else 0
+    ) else 0
+);
+
+def bi_idx5 = fold i5 = (bi_idx4 + 1) to MaxLookback with v5 = 0 while v5 == 0 and bi_idx4 > 0 do (
+    if getValue(isBullFVG, i5) then (
+        def gTop = getValue(BullTop, i5);
+        def gBot = getValue(BullBot, i5);
+        def status = fold j5 = 0 to i5 - 1 with s5 = 0 while s5 != 2 do (
+             if s5 == 0 and getValue(BodyBot, j5) < gBot then 1
+             else if s5 == 1 and getValue(BodyTop, j5) > gTop then 2
+             else s5
+        );
+        if status == 1 then i5 else 0
+    ) else 0
+);
+
+
+# --- Find Bearish Inversions (Start Bear -> Break Up -> Become Bull Support) ---
+
+def be_idx1 = fold k = 1 to MaxLookback with u = 0 while u == 0 do (
+    if getValue(isBearFVG, k) then (
+        def gTop = getValue(BearTop, k);
+        def gBot = getValue(BearBot, k);
+        def status = fold m = 0 to k - 1 with q = 0 while q != 2 do (
+             if q == 0 and getValue(BodyTop, m) > gTop then 1 # Res broken -> Support
+             else if q == 1 and getValue(BodyBot, m) < gBot then 2 # Support broken -> Dead
+             else q
+        );
+        if status == 1 then k else 0
+    ) else 0
+);
+
+def be_idx2 = fold k2 = (be_idx1 + 1) to MaxLookback with u2 = 0 while u2 == 0 and be_idx1 > 0 do (
+    if getValue(isBearFVG, k2) then (
+        def gTop = getValue(BearTop, k2);
+        def gBot = getValue(BearBot, k2);
+        def status = fold m2 = 0 to k2 - 1 with q2 = 0 while q2 != 2 do (
+             if q2 == 0 and getValue(BodyTop, m2) > gTop then 1
+             else if q2 == 1 and getValue(BodyBot, m2) < gBot then 2
+             else q2
+        );
+        if status == 1 then k2 else 0
+    ) else 0
+);
+
+def be_idx3 = fold k3 = (be_idx2 + 1) to MaxLookback with u3 = 0 while u3 == 0 and be_idx2 > 0 do (
+    if getValue(isBearFVG, k3) then (
+        def gTop = getValue(BearTop, k3);
+        def gBot = getValue(BearBot, k3);
+        def status = fold m3 = 0 to k3 - 1 with q3 = 0 while q3 != 2 do (
+             if q3 == 0 and getValue(BodyTop, m3) > gTop then 1
+             else if q3 == 1 and getValue(BodyBot, m3) < gBot then 2
+             else q3
+        );
+        if status == 1 then k3 else 0
+    ) else 0
+);
+
+def be_idx4 = fold k4 = (be_idx3 + 1) to MaxLookback with u4 = 0 while u4 == 0 and be_idx3 > 0 do (
+    if getValue(isBearFVG, k4) then (
+        def gTop = getValue(BearTop, k4);
+        def gBot = getValue(BearBot, k4);
+        def status = fold m4 = 0 to k4 - 1 with q4 = 0 while q4 != 2 do (
+             if q4 == 0 and getValue(BodyTop, m4) > gTop then 1
+             else if q4 == 1 and getValue(BodyBot, m4) < gBot then 2
+             else q4
+        );
+        if status == 1 then k4 else 0
+    ) else 0
+);
+
+def be_idx5 = fold k5 = (be_idx4 + 1) to MaxLookback with u5 = 0 while u5 == 0 and be_idx4 > 0 do (
+    if getValue(isBearFVG, k5) then (
+        def gTop = getValue(BearTop, k5);
+        def gBot = getValue(BearBot, k5);
+        def status = fold m5 = 0 to k5 - 1 with q5 = 0 while q5 != 2 do (
+             if q5 == 0 and getValue(BodyTop, m5) > gTop then 1
+             else if q5 == 1 and getValue(BodyBot, m5) < gBot then 2
+             else q5
+        );
+        if status == 1 then k5 else 0
+    ) else 0
+);
+
+# --- Plotting ---
+
+# Bull Inversions (Old Bull FVG -> Now Bear Resistance)
+# Color: BearColor (Red) because they act as resistance.
+# Pine script logic: "dir = -1 => red". The Inv FVG originated as Bull, inverted to Bear.
+
+plot B1Top = if disp_num >= 1 and bi_idx1 > 0 then getValue(BullTop, bi_idx1) else Double.NaN;
+plot B1Bot = if disp_num >= 1 and bi_idx1 > 0 then getValue(BullBot, bi_idx1) else Double.NaN;
+AddCloud(B1Top, B1Bot, GlobalColor("BearColor"), GlobalColor("BearColor"));
+
+plot B2Top = if disp_num >= 2 and bi_idx2 > 0 then getValue(BullTop, bi_idx2) else Double.NaN;
+plot B2Bot = if disp_num >= 2 and bi_idx2 > 0 then getValue(BullBot, bi_idx2) else Double.NaN;
+AddCloud(B2Top, B2Bot, GlobalColor("BearColor"), GlobalColor("BearColor"));
+
+plot B3Top = if disp_num >= 3 and bi_idx3 > 0 then getValue(BullTop, bi_idx3) else Double.NaN;
+plot B3Bot = if disp_num >= 3 and bi_idx3 > 0 then getValue(BullBot, bi_idx3) else Double.NaN;
+AddCloud(B3Top, B3Bot, GlobalColor("BearColor"), GlobalColor("BearColor"));
+
+plot B4Top = if disp_num >= 4 and bi_idx4 > 0 then getValue(BullTop, bi_idx4) else Double.NaN;
+plot B4Bot = if disp_num >= 4 and bi_idx4 > 0 then getValue(BullBot, bi_idx4) else Double.NaN;
+AddCloud(B4Top, B4Bot, GlobalColor("BearColor"), GlobalColor("BearColor"));
+
+plot B5Top = if disp_num >= 5 and bi_idx5 > 0 then getValue(BullTop, bi_idx5) else Double.NaN;
+plot B5Bot = if disp_num >= 5 and bi_idx5 > 0 then getValue(BullBot, bi_idx5) else Double.NaN;
+AddCloud(B5Top, B5Bot, GlobalColor("BearColor"), GlobalColor("BearColor"));
+
+# Bear Inversions (Old Bear FVG -> Now Bull Support)
+# Color: BullColor (Green)
+
+plot S1Top = if disp_num >= 1 and be_idx1 > 0 then getValue(BearTop, be_idx1) else Double.NaN;
+plot S1Bot = if disp_num >= 1 and be_idx1 > 0 then getValue(BearBot, be_idx1) else Double.NaN;
+AddCloud(S1Top, S1Bot, GlobalColor("BullColor"), GlobalColor("BullColor"));
+
+plot S2Top = if disp_num >= 2 and be_idx2 > 0 then getValue(BearTop, be_idx2) else Double.NaN;
+plot S2Bot = if disp_num >= 2 and be_idx2 > 0 then getValue(BearBot, be_idx2) else Double.NaN;
+AddCloud(S2Top, S2Bot, GlobalColor("BullColor"), GlobalColor("BullColor"));
+
+plot S3Top = if disp_num >= 3 and be_idx3 > 0 then getValue(BearTop, be_idx3) else Double.NaN;
+plot S3Bot = if disp_num >= 3 and be_idx3 > 0 then getValue(BearBot, be_idx3) else Double.NaN;
+AddCloud(S3Top, S3Bot, GlobalColor("BullColor"), GlobalColor("BullColor"));
+
+plot S4Top = if disp_num >= 4 and be_idx4 > 0 then getValue(BearTop, be_idx4) else Double.NaN;
+plot S4Bot = if disp_num >= 4 and be_idx4 > 0 then getValue(BearBot, be_idx4) else Double.NaN;
+AddCloud(S4Top, S4Bot, GlobalColor("BullColor"), GlobalColor("BullColor"));
+
+plot S5Top = if disp_num >= 5 and be_idx5 > 0 then getValue(BearTop, be_idx5) else Double.NaN;
+plot S5Bot = if disp_num >= 5 and be_idx5 > 0 then getValue(BearBot, be_idx5) else Double.NaN;
+AddCloud(S5Top, S5Bot, GlobalColor("BullColor"), GlobalColor("BullColor"));
+
+# --- Signals (Retests) ---
+# A Signal occurs when Price *enters* an active zone.
+# Pine: inside zone, and close < bot (for Resistance) ??
+# Pine Logic for Retest Signal:
+# Bear Resistance (Old Bull): 'close < bx_bot' and 'prev_high_or_close >= bx_bot' and 'prev_high_or_close < bx_top'.
+# Essentially: We were inside the zone, now we closed below it (Rejecting resistance).
+
+def tapRef = if isWick then h else c[1];
+def tapRefBear = if isWick then l else c[1];
+
+# Check all 5 Bull Inversions (Resistance)
+def SigB1 = bi_idx1 > 0 and c < B1Bot and tapRef >= B1Bot and tapRef < B1Top;
+def SigB2 = bi_idx2 > 0 and c < B2Bot and tapRef >= B2Bot and tapRef < B2Top;
+def SigB3 = bi_idx3 > 0 and c < B3Bot and tapRef >= B3Bot and tapRef < B3Top;
+def SigB4 = bi_idx4 > 0 and c < B4Bot and tapRef >= B4Bot and tapRef < B4Top;
+def SigB5 = bi_idx5 > 0 and c < B5Bot and tapRef >= B5Bot and tapRef < B5Top;
+
+plot BearSignal = SigB1 or SigB2 or SigB3 or SigB4 or SigB5;
+BearSignal.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+BearSignal.SetDefaultColor(Color.RED);
+BearSignal.SetLineWeight(3);
+
+# Check all 5 Bear Inversions (Support)
+# Pine: close > bx_top and prev_low_or_close <= bx_top and prev_low_or_close > bx_bot
+def SigS1 = be_idx1 > 0 and c > S1Top and tapRefBear <= S1Top and tapRefBear > S1Bot;
+def SigS2 = be_idx2 > 0 and c > S2Top and tapRefBear <= S2Top and tapRefBear > S2Bot;
+def SigS3 = be_idx3 > 0 and c > S3Top and tapRefBear <= S3Top and tapRefBear > S3Bot;
+def SigS4 = be_idx4 > 0 and c > S4Top and tapRefBear <= S4Top and tapRefBear > S4Bot;
+def SigS5 = be_idx5 > 0 and c > S5Top and tapRefBear <= S5Top and tapRefBear > S5Bot;
+
+plot BullSignal = SigS1 or SigS2 or SigS3 or SigS4 or SigS5;
+BullSignal.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+BullSignal.SetDefaultColor(Color.GREEN);
+BullSignal.SetLineWeight(3);
+
+# Alerts
+Alert(BullSignal, "IFVG Bull Signal", Alert.BAR, Sound.Bell);
+Alert(BearSignal, "IFVG Bear Signal", Alert.BAR, Sound.Chimes);
