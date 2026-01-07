@@ -8,60 +8,31 @@ input weeklyHigh = 0.0;
 input weeklyLow = 0.0;
 input bubbleOffset = 10; # bars from current bar
 
-def symbolSPY = GetSymbol() == "SPY";
-def symbolSPX = GetSymbol() == "SPX";
-def symbolXSP = GetSymbol() == "XSP";
-def symbolQQQ = GetSymbol() == "QQQ";
-def symbolIWM = GetSymbol() == "IWM";
-def symbolES = GetSymbol() == "/ES";
-def symbolNQ = GetSymbol() == "/NQ";
-def symbolNDX = GetSymbol() == "NDX";
+# --- Programmable Expected Move Logic ---
+# Calculates dynamic levels based on Implied Volatility (IV)
+# Daily EM = Open * IV * Sqrt(1/252)
+# Weekly EM = WeeklyOpen * IV * Sqrt(5/252)
 
-# Daily Expected Move Ranges - Updated 12/8/2025
-def defaultDailyHigh =
-    if symbolSPY then 689.14
-    else if symbolSPX then 6904.29
-    else if symbolXSP then 690.37
-    else if symbolQQQ then 630.00
-    else if symbolIWM then 252.76
-    else if symbolES then 6907.70
-    else if symbolNQ then 25884.15
-    else if symbolNDX then Double.NaN
-    else Double.NaN;
+def iv = ImpVolatility();
+def openDaily = open(period = AggregationPeriod.DAY);
+def openWeekly = open(period = AggregationPeriod.WEEK);
 
-def defaultDailyLow =
-    if symbolSPY then 682.24
-    else if symbolSPX then 6836.51
-    else if symbolXSP then 683.71
-    else if symbolQQQ then 620.96
-    else if symbolIWM then 248.78
-    else if symbolES then 6851.30
-    else if symbolNQ then 25585.85
-    else if symbolNDX then Double.NaN
-    else Double.NaN;
+# Check for valid IV data, otherwise result is NaN (hides plots)
+def hasIV = !IsNaN(iv);
 
-# Weekly Expected Move Ranges - Updated 12/8/2025 (11/28 close basis)
-def defaultWeeklyHigh =
-    if symbolSPY then 695.81
-    else if symbolSPX then 6970.86
-    else if symbolXSP then 697.00
-    else if symbolQQQ then 637.94
-    else if symbolIWM then 256.72
-    else if symbolES then 6972.76
-    else if symbolNQ then 26203.10
-    else if symbolNDX then Double.NaN
-    else Double.NaN;
+# Calculate Moves
+# Using Sqrt(1/252) for Daily (~0.063) and Sqrt(5/252) for Weekly (~0.141)
+# Some traders use Rule of 16 (IV/16) for daily which is approx Sqrt(1/256). 
+def moveDaily = if hasIV then openDaily * iv * Sqrt(1.0 / 252.0) else Double.NaN;
+def moveWeekly = if hasIV then openWeekly * iv * Sqrt(5.0 / 252.0) else Double.NaN;
 
-def defaultWeeklyLow =
-    if symbolSPY then 675.57
-    else if symbolSPX then 6769.94
-    else if symbolXSP then 677.08
-    else if symbolQQQ then 613.02
-    else if symbolIWM then 244.82
-    else if symbolES then 6786.24
-    else if symbolNQ then 25266.90
-    else if symbolNDX then Double.NaN
-    else Double.NaN;
+# Daily Expected Move Ranges (Dynamic)
+def defaultDailyHigh = if hasIV then openDaily + moveDaily else Double.NaN;
+def defaultDailyLow  = if hasIV then openDaily - moveDaily else Double.NaN;
+
+# Weekly Expected Move Ranges (Dynamic)
+def defaultWeeklyHigh = if hasIV then openWeekly + moveWeekly else Double.NaN;
+def defaultWeeklyLow  = if hasIV then openWeekly - moveWeekly else Double.NaN;
 
 def activeDailyHigh = if dailyHigh != 0 then dailyHigh else defaultDailyHigh;
 def activeDailyLow = if dailyLow != 0 then dailyLow else defaultDailyLow;
