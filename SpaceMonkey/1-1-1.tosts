@@ -26,7 +26,7 @@ def isLarge = BodyHeight() >= (largeMultiplier * avgBody);
 def isSmall = BodyHeight() <= (smallMultiplier * avgBody);
 def isHighVol = volume >= (volMultiplier * avgVol);
 
-# --- Bullish 1-1-1 Pattern ---
+# --- 🐂 1-1-1 Pattern ---
 # Candle 1 [2]: Large Green, High Volume
 def bullImpulse = isGreen[2] and isLarge[2] and isHighVol[2];
 
@@ -38,7 +38,7 @@ def bullTrigger = isGreen and isLarge and isHighVol and close > high[1];
 
 plot BullishMonkey = bullImpulse and bullPullback and bullTrigger;
 
-# --- Bearish 1-1-1 Pattern ---
+# --- 🐻 1-1-1 Pattern ---
 # Candle 1 [2]: Large Red, High Volume
 def bearImpulse = isRed[2] and isLarge[2] and isHighVol[2];
 
@@ -68,7 +68,7 @@ AssignPriceColor(if !useCandleColoring then Color.CURRENT
                  else Color.CURRENT);
 
 # Stop Loss Lines (Visual)
-# Suggested SL is under the Low of the Pullback (Bull) or above High of Pullback (Bear)
+# Suggested SL is under the Low of the Pullback (🐂) or above High of Pullback (🐻)
 plot BullSL = if showStopLines and BullishMonkey then low[1] else Double.NaN;
 BullSL.SetDefaultColor(Color.LIGHT_RED);
 BullSL.SetStyle(Curve.POINTS);
@@ -80,9 +80,9 @@ BearSL.SetStyle(Curve.POINTS);
 BearSL.SetLineWeight(3);
 
 # Bubbles
-AddChartBubble(showSignals and BullishMonkey, low, "1-1-1 Bull\nEntry: " + close, Color.CYAN, no);
-AddChartBubble(showSignals and BearishMonkey, high, "1-1-1 Bear\nEntry: " + close, Color.MAGENTA, yes);
+AddChartBubble(showSignals and BullishMonkey, low, "1-1-1 🐂\nEntry: " + close, Color.LIGHT_GREEN, no);
+AddChartBubble(showSignals and BearishMonkey, high, "1-1-1 🐻\nEntry: " + close, Color.PINK, yes);
 
 # Alerts
-Alert(BullishMonkey, " Bullish 1-1-1 Monkey Move Detected!", Alert.BAR, Sound.Ding);
-Alert(BearishMonkey, " Bearish 1-1-1 Monkey Move Detected!", Alert.BAR, Sound.Ding);
+Alert(BullishMonkey, " 🐂 1-1-1 Monkey Move Detected!", Alert.BAR, Sound.Ding);
+Alert(BearishMonkey, " 🐻 1-1-1 Monkey Move Detected!", Alert.BAR, Sound.Ding);
