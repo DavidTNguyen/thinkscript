@@ -1,4 +1,4 @@
-//@version=5
+//@version=6
 indicator("AMZN Spot Gamma & Tech Levels (Jan 8, 2026)", overlay=true)
 
 // --- Spot Gamma Exposure Levels (Derived from Chart) ---
@@ -40,9 +40,9 @@ p_s1 = plot(s1, title="S1", color=color.green, linewidth=1, style=plot.style_lin
 p_s2 = plot(s2, title="S2", color=color.green, linewidth=1, style=plot.style_linebr)
 
 // Fibonacci
-plot(fib_382, title="Fib 38.2%", color=color.new(color.orange, 30), linewidth=1, style=plot.style_dashed)
-plot(fib_500, title="Fib 50%", color=color.new(color.orange, 30), linewidth=1, style=plot.style_dashed)
-plot(fib_618, title="Fib 61.8%", color=color.new(color.orange, 30), linewidth=1, style=plot.style_dashed)
+plot(fib_382, title="Fib 38.2%", color=color.new(color.orange, 30), linewidth=1)
+plot(fib_500, title="Fib 50%", color=color.new(color.orange, 30), linewidth=1)
+plot(fib_618, title="Fib 61.8%", color=color.new(color.orange, 30), linewidth=1)
 
 // SMAs
 plot(sma_50, title="SMA 50", color=color.blue, linewidth=2)
@@ -51,22 +51,22 @@ plot(sma_200, title="SMA 200", color=color.black, linewidth=2)
 // Labels
 if barstate.islast
     // Gamma
-    label.new(bar_index, gamma_250, "G", style=label.style_label_left, color=color.purple, textcolor=color.white)
-    label.new(bar_index, gamma_245, "G", style=label.style_label_left, color=color.purple, textcolor=color.white)
-    label.new(bar_index, gamma_240, "G", style=label.style_label_left, color=color.purple, textcolor=color.white)
-    label.new(bar_index, gamma_260, "G", style=label.style_label_left, color=color.plum, textcolor=color.white)
+    label.new(bar_index + 5, gamma_250, "G", style=label.style_label_left, color=color.purple, textcolor=color.white)
+    label.new(bar_index + 5, gamma_245, "G", style=label.style_label_left, color=color.purple, textcolor=color.white)
+    label.new(bar_index + 5, gamma_240, "G", style=label.style_label_left, color=color.purple, textcolor=color.white)
+    label.new(bar_index + 5, gamma_260, "G", style=label.style_label_left, color=color.plum, textcolor=color.white)
 
     // Tech
-    label.new(bar_index, r1, "R1", style=label.style_label_left, color=color.red, textcolor=color.white)
-    label.new(bar_index, r2, "R2", style=label.style_label_left, color=color.red, textcolor=color.white)
-    label.new(bar_index, s1, "S1", style=label.style_label_left, color=color.green, textcolor=color.white)
-    label.new(bar_index, s2, "S2", style=label.style_label_left, color=color.green, textcolor=color.white)
+    label.new(bar_index + 5, r1, "R1", style=label.style_label_left, color=color.red, textcolor=color.white)
+    label.new(bar_index + 5, r2, "R2", style=label.style_label_left, color=color.red, textcolor=color.white)
+    label.new(bar_index + 5, s1, "S1", style=label.style_label_left, color=color.green, textcolor=color.white)
+    label.new(bar_index + 5, s2, "S2", style=label.style_label_left, color=color.green, textcolor=color.white)
 
     // Fibs
-    label.new(bar_index, fib_382, "38.2%", style=label.style_label_left, color=color.orange, textcolor=color.white)
-    label.new(bar_index, fib_500, "50%", style=label.style_label_left, color=color.orange, textcolor=color.white)
-    label.new(bar_index, fib_618, "61.8%", style=label.style_label_left, color=color.orange, textcolor=color.white)
+    label.new(bar_index + 5, fib_382, "38.2%", style=label.style_label_left, color=color.orange, textcolor=color.white)
+    label.new(bar_index + 5, fib_500, "50%", style=label.style_label_left, color=color.orange, textcolor=color.white)
+    label.new(bar_index + 5, fib_618, "61.8%", style=label.style_label_left, color=color.orange, textcolor=color.white)
 
     // SMAs
-    label.new(bar_index, sma_50, "SMA50", style=label.style_label_left, color=color.blue, textcolor=color.white)
-    label.new(bar_index, sma_200, "SMA200", style=label.style_label_left, color=color.black, textcolor=color.white)
+    label.new(bar_index + 5, sma_50, "SMA50", style=label.style_label_left, color=color.blue, textcolor=color.white)
+    label.new(bar_index + 5, sma_200, "SMA200", style=label.style_label_left, color=color.black, textcolor=color.white)
