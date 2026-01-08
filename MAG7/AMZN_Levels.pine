@@ -1,0 +1,56 @@
+//@version=5
+indicator("AMZN Spot Gamma & Tech Levels (Jan 8, 2026)", overlay=true)
+
+// --- Spot Gamma Exposure Levels (Derived from Chart) ---
+// Major call walls/gamma spikes observed
+var float gamma_250 = 250.00
+var float gamma_245 = 245.00
+var float gamma_240 = 240.00
+var float gamma_260 = 260.00
+
+// Spot Price Reference
+var float spot_price = 245.28
+
+// --- Technical Analysis Levels ---
+var float r1 = 246.64
+var float r2 = 248.02
+var float s1 = 242.88
+var float s2 = 240.50
+
+var float fib_382 = 242.00
+var float fib_500 = 242.69
+var float fib_618 = 243.39
+
+var float sma_50 = 232.94
+var float sma_200 = 217.88
+
+// --- Plotting Gamma Levels ---
+plot(gamma_250, title="Gamma Level 250", color=color.new(color.purple, 20), linewidth=2, style=plot.style_circles)
+plot(gamma_245, title="Gamma Level 245", color=color.new(color.purple, 20), linewidth=2, style=plot.style_circles)
+plot(gamma_240, title="Gamma Level 240", color=color.new(color.purple, 20), linewidth=2, style=plot.style_circles)
+plot(gamma_260, title="Gamma Level 260", color=color.new(color.purple, 20), linewidth=1, style=plot.style_circles)
+
+// --- Plotting Technical Levels ---
+// Resistance
+p_r1 = plot(r1, title="R1", color=color.red, linewidth=1, style=plot.style_linebr)
+p_r2 = plot(r2, title="R2", color=color.red, linewidth=1, style=plot.style_linebr)
+
+// Support
+p_s1 = plot(s1, title="S1", color=color.green, linewidth=1, style=plot.style_linebr)
+p_s2 = plot(s2, title="S2", color=color.green, linewidth=1, style=plot.style_linebr)
+
+// Fibonacci
+plot(fib_382, title="Fib 38.2%", color=color.new(color.orange, 30), linewidth=1, style=plot.style_dashed)
+plot(fib_500, title="Fib 50%", color=color.new(color.orange, 30), linewidth=1, style=plot.style_dashed)
+plot(fib_618, title="Fib 61.8%", color=color.new(color.orange, 30), linewidth=1, style=plot.style_dashed)
+
+// SMAs
+plot(sma_50, title="SMA 50", color=color.blue, linewidth=2)
+plot(sma_200, title="SMA 200", color=color.black, linewidth=2)
+
+// Labels (Optional, to see what line is what on the chart scale)
+if barstate.islast
+    label.new(bar_index, gamma_250, "Gamma 250", style=label.style_none, textcolor=color.purple)
+    label.new(bar_index, r1, "R1", style=label.style_none, textcolor=color.red)
+    label.new(bar_index, s1, "S1", style=label.style_none, textcolor=color.green)
+    label.new(bar_index, fib_500, "Fib 50%", style=label.style_none, textcolor=color.orange)
