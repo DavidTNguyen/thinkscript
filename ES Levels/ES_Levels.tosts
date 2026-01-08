@@ -2,41 +2,42 @@
 # BIG PICTURE OVERVIEW
 #
 # CONTEXT:
-# - 7000-02 Final Target HIT. 6985 reclaim paid out twice.
-# - Now in BONUS MODE for runners.
+# - Constructively bullish while ES holds above 6940-35.
+# - Below that zone, upside edge degrades quickly.
 #
 # PLAN:
-# - 🐂ish: Runners > 7002. Targets: 7011 -> 7018-22.
-# - Support: 7000 & 6994. Must hold 6985.
-# - Bearish: Sell < 6973 remains the fail condition.
+# - 🐂ish: Above 6940 = Long bias. Dip buy 6945-40. Add > 6960.
+# - Inflection: 6970-75 = Profit zone. Tighten stops.
+# - 🐻ish: Below 6935 = Flip defensive. Target 6925 -> 6910.
 #
+# TACTICS: Best trades = Failed breakdowns & Reclaims. Avoid mid-range chop.
 # NOTE: We don't predict - we REACT and follow price level to level.
 
 # === KEY LEVELS ===
-input level1 = 7022;  # Bonus
+input level1 = 6980;  # Extension Target
 input level1_thickness = 1;
-input level2 = 7018;  # Bonus Zone
-input level2_thickness = 1;
-input level3 = 7011;  # Bonus
-input level3_thickness = 1;
-input level4 = 7002;  # Target Hit
+input level2 = 6975;  # Inflection Zone Upper
+input level2_thickness = 2;
+input level3 = 6970;  # Inflection Zone Lower
+input level3_thickness = 2;
+input level4 = 6960;  # Momentum Add Trigger
 input level4_thickness = 1;
-input level5 = 7000;  # Psych Support
-input level5_thickness = 2;
-input level6 = 6994;  # Old Target
+input level5 = 6955;  # Near-term Resistance
+input level5_thickness = 1;
+input level6 = 6945;  # Bull Control Upper
 input level6_thickness = 1;
-input level7 = 6989;  # Resistance
-input level7_thickness = 1;
-input level8 = 6985;  # Key Trigger
-input level8_thickness = 1;
-input level9 = 6981;  # Support
-input level9_thickness = 1;
-input level10 = 6973; # Sell Trigger
+input level7 = 6940;  # Delta Support / Bull Control
+input level7_thickness = 2;
+input level8 = 6935;  # Structural Failure
+input level8_thickness = 3;
+input level9 = 6925;  # Last Dip-Buy
+input level9_thickness = 2;
+input level10 = 6910; # Lower Support
 input level10_thickness = 2;
-input level11 = 6951; # Old Trigger
+input level11 = 0;    # Unused
 input level11_thickness = 1;
-input level12 = 6943; # Macro Support
-input level12_thickness = 2;
+input level12 = 0;    # Unused
+input level12_thickness = 1;
 
 # Alert Settings
 input enableAlerts = yes;
@@ -164,80 +165,80 @@ pNWOG_Mid.SetLineWeight(1);
 pNWOG_Mid.SetStyle(Curve.SHORT_DASH);
 
 # === CHART BUBBLES ===
-AddChartBubble(isLastBar, level1, "022 Bonus", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level2, "18 Bonus", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level3, "11 Bonus", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level4, "02 Target", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level5, "7000", Color.MAGENTA, yes);
-AddChartBubble(isLastBar, level6, "94 Old Tgt", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level7, "89 Res", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level8, "85 Key", Color.ORANGE, no);
-AddChartBubble(isLastBar, level9, "81 Supp", Color.CYAN, no);
-AddChartBubble(isLastBar, level10, "73 Sell Trig", Color.CYAN, no);
-AddChartBubble(isLastBar and level11 > 0, level11, "51 Old Trig", Color.CYAN, no);
-AddChartBubble(isLastBar and level12 > 0, level12, "43 Macro", Color.YELLOW, no);
+AddChartBubble(isLastBar, level1, "80 Ext Tgt", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level2, "75 Inflect", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level3, "70 Inflect", Color.MAGENTA, yes);
+AddChartBubble(isLastBar, level4, "60 Momo", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level5, "55 Res", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level6, "45 🐂 Ctrl", Color.CYAN, no);
+AddChartBubble(isLastBar, level7, "40 Delta", Color.CYAN, no);
+AddChartBubble(isLastBar, level8, "35 FAIL", Color.YELLOW, no);
+AddChartBubble(isLastBar, level9, "25 Dip Buy", Color.YELLOW, no);
+AddChartBubble(isLastBar, level10, "10 Supp", Color.RED, no);
+AddChartBubble(isLastBar and level11 > 0, level11, "L11", Color.RED, no);
+AddChartBubble(isLastBar and level12 > 0, level12, "L12", Color.GRAY, no);
 AddChartBubble(isLastBar and showNWOG, nwog_high, "NWOG H", Color.VIOLET, yes);
 AddChartBubble(isLastBar and showNWOG, nwog_low, "NWOG L", Color.VIOLET, no);
 AddChartBubble(isLastBar and showNWOG, nwog_mid, "NWOG 50%", Color.VIOLET, yes);
 
 # === ALERT SYSTEM ===
 
-# LEVEL 1
-Alert(enableAlerts and close crosses above level1, "ES >> 7022 - Bonus", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level1, "ES << 7022", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and atLevel1, "ES @ 7022", Alert.BAR, Sound.Chimes);
+# LEVEL 1 - Extension Target
+Alert(enableAlerts and close crosses above level1, "ES >> 6980 - Extension!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level1, "ES << 6980", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and atLevel1, "ES @ 6980", Alert.BAR, Sound.Chimes);
 
-# LEVEL 2
-Alert(enableAlerts and close crosses above level2, "ES >> 7018 - Bonus Zone", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level2, "ES << 7018", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and atLevel2, "ES @ 7018", Alert.BAR, Sound.Chimes);
+# LEVEL 2 - Inflection Upper
+Alert(enableAlerts and close crosses above level2, "ES >> 6975 - PROFIT ZONE", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level2, "ES << 6975", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and atLevel2, "ES @ 6975", Alert.BAR, Sound.Chimes);
 
-# LEVEL 3
-Alert(enableAlerts and close crosses above level3, "ES >> 7011 - Bonus", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level3, "ES << 7011", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and atLevel3, "ES @ 7011", Alert.BAR, Sound.Chimes);
+# LEVEL 3 - Inflection Lower
+Alert(enableAlerts and close crosses above level3, "ES >> 6970 - Inflection", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level3, "ES << 6970", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and atLevel3, "ES @ 6970", Alert.BAR, Sound.Chimes);
 
-# LEVEL 4
-Alert(enableAlerts and close crosses above level4, "ES >> 7002 - Hit", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level4, "ES << 7002", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and atLevel4, "ES @ 7002", Alert.BAR, Sound.Chimes);
+# LEVEL 4 - Momentum Add
+Alert(enableAlerts and close crosses above level4, "ES >> 6960 - MOMENTUM ADD", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level4, "ES << 6960", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and atLevel4, "ES @ 6960", Alert.BAR, Sound.Chimes);
 
-# LEVEL 5
-Alert(enableAlerts and close crosses above level5, "ES >> 7000 - Psych", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level5, "ES << 7000", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and atLevel5, "ES @ 7000", Alert.BAR, Sound.Chimes);
+# LEVEL 5 - Near-term Resistance
+Alert(enableAlerts and close crosses above level5, "ES >> 6955 - Res Break", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level5, "ES << 6955", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and atLevel5, "ES @ 6955", Alert.BAR, Sound.Chimes);
 
-# LEVEL 6
-Alert(enableAlerts and close crosses above level6, "ES >> 6994", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level6, "ES << 6994", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and atLevel6, "ES @ 6994", Alert.BAR, Sound.Chimes);
+# LEVEL 6 - Bull Control Upper
+Alert(enableAlerts and close crosses above level6, "ES >> 6945 - Bull Ctrl", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level6, "ES << 6945", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and atLevel6, "ES @ 6945", Alert.BAR, Sound.Chimes);
 
-# LEVEL 7
-Alert(enableAlerts and close crosses above level7, "ES >> 6989", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level7, "ES << 6989", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and atLevel7, "ES @ 6989", Alert.BAR, Sound.Chimes);
+# LEVEL 7 - Delta Support
+Alert(enableAlerts and close crosses above level7, "ES >> 6940 - Reclaim!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level7, "ES << 6940 - Delta Fail?", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and atLevel7, "ES @ 6940", Alert.BAR, Sound.Chimes);
 
-# LEVEL 8
-Alert(enableAlerts and close crosses above level8, "ES >> 6985 - Key Hold", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level8, "ES << 6985 - Fail?", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and atLevel8, "ES @ 6985", Alert.BAR, Sound.Chimes);
+# LEVEL 8 - Structural Failure
+Alert(enableAlerts and close crosses above level8, "ES >> 6935 - Reclaim", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level8, "ES << 6935 - STRUCT FAIL!", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and atLevel8, "ES @ 6935", Alert.BAR, Sound.Chimes);
 
-# LEVEL 9
-Alert(enableAlerts and close crosses above level9, "ES >> 6981", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level9, "ES << 6981", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and atLevel9, "ES @ 6981", Alert.BAR, Sound.Chimes);
+# LEVEL 9 - Last Dip-Buy
+Alert(enableAlerts and close crosses above level9, "ES >> 6925", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level9, "ES << 6925 - Last Dip", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and atLevel9, "ES @ 6925", Alert.BAR, Sound.Chimes);
 
-# LEVEL 10
-Alert(enableAlerts and close crosses above level10, "ES >> 6973", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and close crosses below level10, "ES << 6973 - SELL TRIGGER!", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and atLevel10, "ES @ 6973", Alert.BAR, Sound.Chimes);
+# LEVEL 10 - Lower Support
+Alert(enableAlerts and close crosses above level10, "ES >> 6910", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and close crosses below level10, "ES << 6910 - Selloff", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and atLevel10, "ES @ 6910", Alert.BAR, Sound.Chimes);
 
 # LEVEL 11
-Alert(enableAlerts and level11 > 0 and close crosses above level11, "ES >> 6951", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and level11 > 0 and close crosses below level11, "ES << 6951", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and level11 > 0 and atLevel11, "ES @ 6951", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and level11 > 0 and close crosses above level11, "ES >> L11", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and level11 > 0 and close crosses below level11, "ES << L11", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and level11 > 0 and atLevel11, "ES @ L11", Alert.BAR, Sound.Chimes);
 
 # LEVEL 12
-Alert(enableAlerts and level12 > 0 and close crosses above level12, "ES >> 6943", Alert.BAR, Sound.Ring);
-Alert(enableAlerts and level12 > 0 and close crosses below level12, "ES << 6943", Alert.BAR, Sound.Bell);
-Alert(enableAlerts and level12 > 0 and atLevel12, "ES @ 6943", Alert.BAR, Sound.Chimes);
+Alert(enableAlerts and level12 > 0 and close crosses above level12, "ES >> L12", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and level12 > 0 and close crosses below level12, "ES << L12", Alert.BAR, Sound.Bell);
+Alert(enableAlerts and level12 > 0 and atLevel12, "ES @ L12", Alert.BAR, Sound.Chimes);

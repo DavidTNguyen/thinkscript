@@ -1,76 +1,69 @@
 //@version=6
-indicator("ES Levels - Dec 23", overlay=true, max_lines_count=500, max_labels_count=500)
+indicator("ES Levels - Jan 7", overlay=true, max_lines_count=500, max_labels_count=500)
 
-// === ES Update - December 23, 2025 (Intraday) ===
-// BIG PICTURE OVERVIEW - Macro structures for context
-// (For detailed daily setups/intraday levels: tradecompanionsubstack.com)
+// === ES Plan - Clean Execution Focus (Level-to-Level) ===
+// BIG PICTURE OVERVIEW
 //
-// STRUCTURES TO NOTE:
-// - 6942 HIT! Picture perfect Failed Breakdown (FBD)
-// - Sharp sell flushed to 6913, ended with squeeze
-// - Posted 9:30AM: 6925 recovery needed for 6930 -> 6934 -> 6942
-// - ALL TARGETS HIT ✓
+// CONTEXT:
+// - Constructively bullish while ES holds above 6940-35.
+// - Below that zone, upside edge degrades quickly.
 //
-// TODAY'S PLAN:
-// - Ride runner long
-// - Targets: 6948 -> 6963 (bonus)
-// - Support: 6942 -> 6934 -> 6930 -> 6925
-// - Strong support: 6918-22 (institutional buying)
+// PLAN:
+// - 🐂ish: Above 6940 = Long bias. Dip buy 6945-40. Add > 6960.
+// - Inflection: 6970-75 = Profit zone. Tighten stops.
+// - 🐻ish: Below 6935 = Flip defensive. Target 6925 -> 6910.
 //
-// KEY CONCEPTS:
-// - FBD = Failed Break Down (bullish) - *every* sharp sell ends with squeeze on FBD
-// - Runner = continuation of momentum trade
-//
+// TACTICS: Best trades = Failed breakdowns & Reclaims. Avoid mid-range chop.
 // NOTE: We don't predict - we REACT and follow price level to level.
 
-// === TARGETS ===
-level1 = input.float(6973, "Extended Target: 6973", group="Targets")
+// === TARGETS / INFLECTION ===
+level1 = input.float(6980, "Extension Target: 6980", group="Targets")
 level1_thickness = input.int(1, "Line Weight", minval=1, maxval=5, group="Targets")
-level2 = input.float(6963, "Target 2 Bonus: 6963", group="Targets")
+level2 = input.float(6975, "Inflection Upper: 6975", group="Targets")
 level2_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="Targets")
-level3 = input.float(6948, "Target 1: 6948", group="Targets")
+level3 = input.float(6970, "Inflection Lower: 6970", group="Targets")
 level3_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="Targets")
 
-// === HIT LEVELS ===
-level4 = input.float(6942, "FBD Squeeze [x]: 6942", group="Hit Levels")
-level4_thickness = input.int(1, "Line Weight", minval=1, maxval=5, group="Hit Levels")
-level5 = input.float(6934, "Support [x]: 6934", group="Hit Levels")
-level5_thickness = input.int(1, "Line Weight", minval=1, maxval=5, group="Hit Levels")
-level6 = input.float(6930, "Support [x]: 6930", group="Hit Levels")
-level6_thickness = input.int(1, "Line Weight", minval=1, maxval=5, group="Hit Levels")
+// === MOMENTUM / RESISTANCE ===
+level4 = input.float(6960, "Momo Add Trigger: 6960", group="Resistance")
+level4_thickness = input.int(1, "Line Weight", minval=1, maxval=5, group="Resistance")
+level5 = input.float(6955, "Near-term Res: 6955", group="Resistance")
+level5_thickness = input.int(1, "Line Weight", minval=1, maxval=5, group="Resistance")
+level6 = input.float(6945, "Bull Control: 6945", group="Resistance")
+level6_thickness = input.int(1, "Line Weight", minval=1, maxval=5, group="Resistance")
 
 // === SUPPORT LEVELS ===
-level7 = input.float(6925, "Recovery Key: 6925", group="Support")
-level7_thickness = input.int(1, "Line Weight", minval=1, maxval=5, group="Support")
-level8 = input.float(6918, "Support: 6918", group="Support")
-level8_thickness = input.int(1, "Line Weight", minval=1, maxval=5, group="Support")
-level9 = input.float(6913, "FBD Flush Low: 6913", group="Support")
+level7 = input.float(6940, "Delta Support: 6940", group="Support")
+level7_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="Support")
+level8 = input.float(6935, "Struct Failure: 6935", group="Support")
+level8_thickness = input.int(3, "Line Weight", minval=1, maxval=5, group="Support")
+level9 = input.float(6925, "Last Dip-Buy: 6925", group="Support")
 level9_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="Support")
 
-// === INSTITUTIONAL ===
-level10 = input.float(6822, "Institutional High: 6822", group="Institutional")
-level10_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="Institutional")
-level11 = input.float(6818, "Institutional Low: 6818", group="Institutional")
-level11_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="Institutional")
+// === LOWER SUPPORT ===
+level10 = input.float(6910, "Lower Support: 6910", group="Lower")
+level10_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="Lower")
+level11 = input.float(0, "Unused", group="Lower")
+level11_thickness = input.int(1, "Line Weight", minval=1, maxval=5, group="Lower")
 
 // Alert Settings
 enableAlerts = input.bool(true, "Enable Alerts", group="Alert Settings")
 alertSensitivity = input.float(0.5, "Alert Sensitivity (pts)", minval=0.1, maxval=5.0, group="Alert Settings")
 showLabels = input.bool(true, "Show Price Labels", group="Display Settings")
-showTable = input.bool(true, "Show Status Table", group="Display Settings")
+showTable = input.bool(fase, "Show Status Table", group="Display Settings")
 
 // === Plot Levels ===
-plot(level1, "6973 Extended", #FF00FF, level1_thickness, style=plot.style_line, trackprice=false)
-plot(level2, "6963 Bonus", #FF00FF, level2_thickness, trackprice=false)
-plot(level3, "6948 Target", #FF00FF, level3_thickness, trackprice=false)
-plot(level4, "6942 FBD", #00FFFF, level4_thickness, trackprice=false)
-plot(level5, "6934 Support", #00FFFF, level5_thickness, trackprice=false)
-plot(level6, "6930 Support", #00FFFF, level6_thickness, trackprice=false)
-plot(level7, "6925 Key", #FFFF00, level7_thickness, trackprice=false)
-plot(level8, "6918 Support", #00FFFF, level8_thickness, trackprice=false)
-plot(level9, "6913 FBD Flush", #00FF00, level9_thickness, trackprice=false)
-plot(level10, "6822 Inst Hi", #00FF00, level10_thickness, trackprice=false)
-plot(level11, "6818 Inst Lo", #00FF00, level11_thickness, trackprice=false)
+plot(level1, "6980 Ext", #FF00FF, level1_thickness, style=plot.style_line, trackprice=false)
+plot(level2, "6975 Inflect", #FF00FF, level2_thickness, trackprice=false)
+plot(level3, "6970 Inflect", #FF00FF, level3_thickness, trackprice=false)
+plot(level4, "6960 Momo", #FFA500, level4_thickness, trackprice=false)
+plot(level5, "6955 Res", #FFA500, level5_thickness, trackprice=false)
+plot(level6, "6945 Bull Ctrl", #00FFFF, level6_thickness, trackprice=false)
+plot(level7, "6940 Delta", #00FFFF, level7_thickness, trackprice=false)
+plot(level8, "6935 FAIL", #FFFF00, level8_thickness, trackprice=false)
+plot(level9, "6925 Dip Buy", #FFFF00, level9_thickness, trackprice=false)
+plot(level10, "6910 Supp", #FF0000, level10_thickness, trackprice=false)
+plot(level11 > 0 ? level11 : na, "L11", #808080, level11_thickness, trackprice=false)
 
 // === Labels on Last Bar ===
 if barstate.islast and showLabels
@@ -98,95 +91,101 @@ if barstate.islast and showLabels
     label.delete(lbl10)
     label.delete(lbl11)
     
-    lbl1 := label.new(bar_index + 5, level1, "73", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF00FF, 80), textcolor=#FF00FF, style=label.style_label_left, size=size.small)
-    lbl2 := label.new(bar_index + 5, level2, "63 🎯 bonus", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF00FF, 80), textcolor=#FF00FF, style=label.style_label_left, size=size.small)
-    lbl3 := label.new(bar_index + 5, level3, "48 🎯", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF00FF, 80), textcolor=#FF00FF, style=label.style_label_left, size=size.small)
-    lbl4 := label.new(bar_index + 5, level4, "42 [x] FBD", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
-    lbl5 := label.new(bar_index + 5, level5, "34 [x]", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
-    lbl6 := label.new(bar_index + 5, level6, "30 [x]", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
-    lbl7 := label.new(bar_index + 5, level7, "25 key", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFFF00, 80), textcolor=#FFFF00, style=label.style_label_left, size=size.small)
-    lbl8 := label.new(bar_index + 5, level8, "18", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
-    lbl9 := label.new(bar_index + 5, level9, "13 FBD flush", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FF00, 80), textcolor=#00FF00, style=label.style_label_left, size=size.small)
-    lbl10 := label.new(bar_index + 5, level10, "22 🏦", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FF00, 80), textcolor=#00FF00, style=label.style_label_left, size=size.small)
-    lbl11 := label.new(bar_index + 5, level11, "18 🏦", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FF00, 80), textcolor=#00FF00, style=label.style_label_left, size=size.small)
+    lbl1 := label.new(bar_index + 5, level1, "80 Ext", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF00FF, 80), textcolor=#FF00FF, style=label.style_label_left, size=size.small)
+    lbl2 := label.new(bar_index + 5, level2, "75 Inflect", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF00FF, 80), textcolor=#FF00FF, style=label.style_label_left, size=size.small)
+    lbl3 := label.new(bar_index + 5, level3, "70 Inflect", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF00FF, 80), textcolor=#FF00FF, style=label.style_label_left, size=size.small)
+    lbl4 := label.new(bar_index + 5, level4, "60 Momo", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFA500, 80), textcolor=#FFA500, style=label.style_label_left, size=size.small)
+    lbl5 := label.new(bar_index + 5, level5, "55 Res", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFA500, 80), textcolor=#FFA500, style=label.style_label_left, size=size.small)
+    lbl6 := label.new(bar_index + 5, level6, "45 🐂 Ctrl", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
+    lbl7 := label.new(bar_index + 5, level7, "40 Delta", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
+    lbl8 := label.new(bar_index + 5, level8, "35 FAIL", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFFF00, 80), textcolor=#FFFF00, style=label.style_label_left, size=size.small)
+    lbl9 := label.new(bar_index + 5, level9, "25 Dip Buy", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFFF00, 80), textcolor=#FFFF00, style=label.style_label_left, size=size.small)
+    lbl10 := label.new(bar_index + 5, level10, "10 Supp", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF0000, 80), textcolor=#FF0000, style=label.style_label_left, size=size.small)
+    lbl11 := level11 > 0 ? label.new(bar_index + 5, level11, "L11", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#808080, 80), textcolor=#808080, style=label.style_label_left, size=size.small) : na
 
 // === Alert Conditions ===
-// Targets
-alertcondition(ta.crossover(close, level1), "ES >> 6973", "ES >> 6973 EXTENDED TARGET!")
-alertcondition(ta.crossover(close, level2), "ES >> 6963", "ES >> 6963 BONUS TARGET!")
-alertcondition(ta.crossover(close, level3), "ES >> 6948", "ES >> 6948 TARGET 1!")
+// Extension Target
+alertcondition(ta.crossover(close, level1), "ES >> 6980", "ES >> 6980 - Extension!")
+alertcondition(ta.crossunder(close, level1), "ES << 6980", "ES << 6980")
 
-// FBD Squeeze Level
-alertcondition(ta.crossover(close, level4), "ES >> 6942", "ES >> 6942 - Above FBD target!")
-alertcondition(ta.crossunder(close, level4), "ES << 6942", "ES << 6942 - Below FBD target")
+// Inflection Zone
+alertcondition(ta.crossover(close, level2), "ES >> 6975", "ES >> 6975 - PROFIT ZONE")
+alertcondition(ta.crossunder(close, level2), "ES << 6975", "ES << 6975")
+alertcondition(ta.crossover(close, level3), "ES >> 6970", "ES >> 6970 - Inflection")
+alertcondition(ta.crossunder(close, level3), "ES << 6970", "ES << 6970")
 
-// Support Levels
-alertcondition(ta.crossunder(close, level5), "ES << 6934", "ES << 6934 - Below support!")
-alertcondition(ta.crossover(close, level5), "ES >> 6934", "ES >> 6934 - Reclaim!")
-alertcondition(ta.crossunder(close, level6), "ES << 6930", "ES << 6930 - Below support!")
-alertcondition(ta.crossover(close, level6), "ES >> 6930", "ES >> 6930 - Reclaim!")
+// Momentum Add
+alertcondition(ta.crossover(close, level4), "ES >> 6960", "ES >> 6960 - MOMO ADD")
+alertcondition(ta.crossunder(close, level4), "ES << 6960", "ES << 6960")
 
-// Recovery Key
-alertcondition(ta.crossunder(close, level7), "ES << 6925", "ES << 6925 - Below recovery key!")
-alertcondition(ta.crossover(close, level7), "ES >> 6925", "ES >> 6925 - Recovery key reclaimed!")
+// Resistance
+alertcondition(ta.crossover(close, level5), "ES >> 6955", "ES >> 6955 - Res Break")
+alertcondition(ta.crossunder(close, level5), "ES << 6955", "ES << 6955")
 
-// Support
-alertcondition(ta.crossunder(close, level8), "ES << 6918", "ES << 6918 - Below support!")
-alertcondition(ta.crossover(close, level8), "ES >> 6918", "ES >> 6918 - Reclaim!")
+// Bull Control
+alertcondition(ta.crossover(close, level6), "ES >> 6945", "ES >> 6945 - Bull Ctrl")
+alertcondition(ta.crossunder(close, level6), "ES << 6945", "ES << 6945")
 
-// FBD Flush
-alertcondition(ta.crossunder(close, level9), "ES << 6913", "ES << 6913 - Below FBD flush!")
-alertcondition(ta.crossover(close, level9), "ES >> 6913", "ES >> 6913 - FBD squeeze trigger!")
+// Delta Support
+alertcondition(ta.crossover(close, level7), "ES >> 6940", "ES >> 6940 - Reclaim!")
+alertcondition(ta.crossunder(close, level7), "ES << 6940", "ES << 6940 - Delta Fail?")
 
-// Institutional
-alertcondition(ta.crossunder(close, level10), "ES << 6822", "ES << 6822 - Into institutional zone!")
-alertcondition(ta.crossover(close, level10), "ES >> 6822", "ES >> 6822 - Reclaim institutional!")
-alertcondition(ta.crossunder(close, level11), "ES << 6818", "ES << 6818 - Below institutional!")
+// Structural Failure
+alertcondition(ta.crossover(close, level8), "ES >> 6935", "ES >> 6935 - Reclaim")
+alertcondition(ta.crossunder(close, level8), "ES << 6935", "ES << 6935 - STRUCT FAIL!")
+
+// Last Dip-Buy
+alertcondition(ta.crossover(close, level9), "ES >> 6925", "ES >> 6925")
+alertcondition(ta.crossunder(close, level9), "ES << 6925", "ES << 6925 - Last Dip")
+
+// Lower Support
+alertcondition(ta.crossover(close, level10), "ES >> 6910", "ES >> 6910")
+alertcondition(ta.crossunder(close, level10), "ES << 6910", "ES << 6910 - Selloff")
 
 // === Market Structure Status Table ===
 var table statusTable = table.new(position.top_right, 2, 10, border_width=1)
 
 if barstate.islast and showTable
-    table.cell(statusTable, 0, 0, "ES - Dec 23", text_color=color.white, bgcolor=color.new(color.blue, 50))
-    table.cell(statusTable, 1, 0, "FBD Squeeze ✓", text_color=color.lime, bgcolor=color.new(color.blue, 50))
+    table.cell(statusTable, 0, 0, "ES - Jan 7", text_color=color.white, bgcolor=color.new(color.blue, 50))
+    table.cell(statusTable, 1, 0, "Level-to-Level", text_color=color.lime, bgcolor=color.new(color.blue, 50))
     
     table.cell(statusTable, 0, 1, "Now", text_color=color.white, bgcolor=color.new(color.gray, 50))
     table.cell(statusTable, 1, 1, str.tostring(close, "#.00"), text_color=color.aqua, bgcolor=color.new(color.gray, 50))
     
     // Position Status
-    posStatus = close >= level2 ? "BONUS ZONE" : close >= level3 ? "TARGET ZONE" : close >= level4 ? "ABOVE FBD" : close >= level9 ? "SUPPORT" : "BELOW FBD"
-    posColor = close >= level2 ? color.fuchsia : close >= level3 ? color.fuchsia : close >= level4 ? color.aqua : close >= level9 ? color.yellow : color.red
+    posStatus = close >= level2 ? "PROFIT ZONE" : close >= level4 ? "MOMO ZONE" : close >= level7 ? "LONG BIAS" : close >= level8 ? "CAUTION" : "DEFENSIVE"
+    posColor = close >= level2 ? color.fuchsia : close >= level4 ? color.orange : close >= level7 ? color.aqua : close >= level8 ? color.yellow : color.red
     
     table.cell(statusTable, 0, 2, "Position", text_color=color.white, bgcolor=color.new(color.gray, 50))
     table.cell(statusTable, 1, 2, posStatus, text_color=posColor, bgcolor=color.new(color.gray, 50))
     
     // Trade Plan
-    tradePlan = close >= level3 ? "RIDE: 6963" : close >= level4 ? "T: 6948" : close >= level9 ? "HOLD SUPPORT" : "WATCH 6913"
-    planColor = close >= level3 ? color.fuchsia : close >= level4 ? color.fuchsia : close >= level9 ? color.yellow : color.red
+    tradePlan = close >= level3 ? "PROTECT: 6970-75" : close >= level4 ? "T: 6970-75" : close >= level7 ? "DIP BUY 45-40" : close >= level8 ? "HOLD 6935" : "T: 6925->6910"
+    planColor = close >= level3 ? color.fuchsia : close >= level4 ? color.orange : close >= level7 ? color.aqua : close >= level8 ? color.yellow : color.red
     
     table.cell(statusTable, 0, 3, "Plan", text_color=color.white, bgcolor=color.new(color.gray, 50))
     table.cell(statusTable, 1, 3, tradePlan, text_color=planColor, bgcolor=color.new(color.gray, 50))
     
     // Key Concepts
-    table.cell(statusTable, 0, 4, "FBD", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 4, "Failed Breakdown", text_color=color.lime, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 0, 4, "Bias", text_color=color.white, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 4, ">6940 = Long", text_color=color.lime, bgcolor=color.new(color.gray, 50))
     
-    table.cell(statusTable, 0, 5, "Flush", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 5, "6913 -> Squeeze", text_color=color.lime, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 0, 5, "Fail", text_color=color.white, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 5, "<6935 Defensive", text_color=color.red, bgcolor=color.new(color.gray, 50))
     
     // Key Levels
-    table.cell(statusTable, 0, 6, "Targets", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 6, "6948, 6963 bonus", text_color=color.fuchsia, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 0, 6, "Inflection", text_color=color.white, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 6, "6970-75", text_color=color.fuchsia, bgcolor=color.new(color.gray, 50))
     
     table.cell(statusTable, 0, 7, "Support", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 7, "6942, 6934, 6930", text_color=color.aqua, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 7, "6945-40, 6935", text_color=color.aqua, bgcolor=color.new(color.gray, 50))
     
     // Distance to key level
     if close < level3
         dist3 = level3 - close
-        table.cell(statusTable, 0, 8, "->6948", text_color=color.white, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 0, 8, "->6970", text_color=color.white, bgcolor=color.new(color.gray, 50))
         table.cell(statusTable, 1, 8, str.tostring(dist3, "#.0") + " pts", text_color=color.fuchsia, bgcolor=color.new(color.gray, 50))
     else
-        dist2 = level2 - close
-        table.cell(statusTable, 0, 8, "->6963 bonus", text_color=color.white, bgcolor=color.new(color.gray, 50))
-        table.cell(statusTable, 1, 8, str.tostring(dist2, "#.0") + " pts", text_color=color.fuchsia, bgcolor=color.new(color.gray, 50))
+        dist1 = level1 - close
+        table.cell(statusTable, 0, 8, "->6980 Ext", text_color=color.white, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 1, 8, str.tostring(dist1, "#.0") + " pts", text_color=color.fuchsia, bgcolor=color.new(color.gray, 50))
