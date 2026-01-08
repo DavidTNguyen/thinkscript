@@ -76,3 +76,27 @@ SMA200.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
 # Add Labels for identifying lines
 AddLabel(showGamma, "Gamma Levels: 240, 245, 250, 260", Color.MAGENTA);
 AddLabel(showTech, "Key S/R: S1(" + S1 + ") R1(" + R1 + ")", Color.GRAY);
+
+# --- Chart Bubbles ---
+def isLastBar = IsNaN(close[-1]) and !IsNaN(close);
+
+# Gamma
+AddChartBubble(isLastBar and showGamma, Gamma250, "G", Color.MAGENTA, yes);
+AddChartBubble(isLastBar and showGamma, Gamma245, "G", Color.MAGENTA, yes);
+AddChartBubble(isLastBar and showGamma, Gamma240, "G", Color.MAGENTA, yes);
+AddChartBubble(isLastBar and showGamma, Gamma260, "G", Color.PLUM, yes);
+
+# Tech
+AddChartBubble(isLastBar and showTech, R1, "R1", Color.RED, no);
+AddChartBubble(isLastBar and showTech, R2, "R2", Color.DARK_RED, no);
+AddChartBubble(isLastBar and showTech, S1, "S1", Color.GREEN, yes);
+AddChartBubble(isLastBar and showTech, S2, "S2", Color.DARK_GREEN, yes);
+
+# Fibs
+AddChartBubble(isLastBar and showFib, Fib382, "38.2%", Color.ORANGE, no);
+AddChartBubble(isLastBar and showFib, Fib500, "50%", Color.ORANGE, no);
+AddChartBubble(isLastBar and showFib, Fib618, "61.8%", Color.ORANGE, no);
+
+# SMA
+AddChartBubble(isLastBar and showSMA, SMA50, "SMA50", Color.CYAN, yes);
+AddChartBubble(isLastBar and showSMA, SMA200, "SMA200", Color.WHITE, yes);

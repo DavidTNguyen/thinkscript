@@ -48,9 +48,25 @@ plot(fib_618, title="Fib 61.8%", color=color.new(color.orange, 30), linewidth=1,
 plot(sma_50, title="SMA 50", color=color.blue, linewidth=2)
 plot(sma_200, title="SMA 200", color=color.black, linewidth=2)
 
-// Labels (Optional, to see what line is what on the chart scale)
+// Labels
 if barstate.islast
-    label.new(bar_index, gamma_250, "Gamma 250", style=label.style_none, textcolor=color.purple)
-    label.new(bar_index, r1, "R1", style=label.style_none, textcolor=color.red)
-    label.new(bar_index, s1, "S1", style=label.style_none, textcolor=color.green)
-    label.new(bar_index, fib_500, "Fib 50%", style=label.style_none, textcolor=color.orange)
+    // Gamma
+    label.new(bar_index, gamma_250, "G", style=label.style_label_left, color=color.purple, textcolor=color.white)
+    label.new(bar_index, gamma_245, "G", style=label.style_label_left, color=color.purple, textcolor=color.white)
+    label.new(bar_index, gamma_240, "G", style=label.style_label_left, color=color.purple, textcolor=color.white)
+    label.new(bar_index, gamma_260, "G", style=label.style_label_left, color=color.plum, textcolor=color.white)
+
+    // Tech
+    label.new(bar_index, r1, "R1", style=label.style_label_left, color=color.red, textcolor=color.white)
+    label.new(bar_index, r2, "R2", style=label.style_label_left, color=color.red, textcolor=color.white)
+    label.new(bar_index, s1, "S1", style=label.style_label_left, color=color.green, textcolor=color.white)
+    label.new(bar_index, s2, "S2", style=label.style_label_left, color=color.green, textcolor=color.white)
+
+    // Fibs
+    label.new(bar_index, fib_382, "38.2%", style=label.style_label_left, color=color.orange, textcolor=color.white)
+    label.new(bar_index, fib_500, "50%", style=label.style_label_left, color=color.orange, textcolor=color.white)
+    label.new(bar_index, fib_618, "61.8%", style=label.style_label_left, color=color.orange, textcolor=color.white)
+
+    // SMAs
+    label.new(bar_index, sma_50, "SMA50", style=label.style_label_left, color=color.blue, textcolor=color.white)
+    label.new(bar_index, sma_200, "SMA200", style=label.style_label_left, color=color.black, textcolor=color.white)
