@@ -1,5 +1,6 @@
 # Monkey Move (1-1-1) Indicator for TOS
-# Improved Version based on SpaceMonkey concept
+# Improved Version based on SpaceMonkey concept -
+# https://spacemonkeypro.notion.site/1-1-1-aka-Monkey-Move-c015bffc5d644f5694a9662fc39ac36d
 # Detects 1-1-1 Continuation Patterns:
 # 1. Impulse (Large, Vol)
 # 2. Pullback (Small, Lower Vol, Opposite)
@@ -80,8 +81,8 @@ BearSL.SetStyle(Curve.POINTS);
 BearSL.SetLineWeight(3);
 
 # Bubbles
-AddChartBubble(showSignals and BullishMonkey, low, "1-1-1 🐂\nEntry: " + close, Color.LIGHT_GREEN, no);
-AddChartBubble(showSignals and BearishMonkey, high, "1-1-1 🐻\nEntry: " + close, Color.PINK, yes);
+AddChartBubble(showSignals and BullishMonkey, low, "🐂\nEntry: " + close, Color.LIGHT_GREEN, no);
+AddChartBubble(showSignals and BearishMonkey, high, "🐻\nEntry: " + close, Color.PINK, yes);
 
 # Alerts
 Alert(BullishMonkey, " 🐂 1-1-1 Monkey Move Detected!", Alert.BAR, Sound.Ding);
