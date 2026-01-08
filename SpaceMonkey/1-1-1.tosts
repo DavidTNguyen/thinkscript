@@ -68,6 +68,17 @@ AssignPriceColor(if !useCandleColoring then Color.CURRENT
                  else if BearishMonkey then Color.MAGENTA 
                  else Color.CURRENT);
 
+# Solid Body Fill for Signal Candles
+# Expand cloud slightly to make it visible behind hollow candles
+def bodyBuffer = 0.01;  # Small buffer to ensure visibility
+def bullSignalTop = if useCandleColoring and BullishMonkey then Max(open, close) + bodyBuffer else Double.NaN;
+def bullSignalBot = if useCandleColoring and BullishMonkey then Min(open, close) - bodyBuffer else Double.NaN;
+def bearSignalTop = if useCandleColoring and BearishMonkey then Max(open, close) else Double.NaN;
+def bearSignalBot = if useCandleColoring and BearishMonkey then Min(open, close) else Double.NaN;
+
+AddCloud(bullSignalTop, bullSignalBot, Color.CYAN, Color.CYAN);
+AddCloud(bearSignalTop, bearSignalBot, Color.MAGENTA, Color.MAGENTA);
+
 # Stop Loss Lines (Visual)
 # Suggested SL is under the Low of the Pullback (🐂) or above High of Pullback (🐻)
 plot BullSL = if showStopLines and BullishMonkey then low[1] else Double.NaN;
