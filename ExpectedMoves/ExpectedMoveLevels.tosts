@@ -34,10 +34,60 @@ def defaultDailyLow  = if hasIV then openDaily - moveDaily else Double.NaN;
 def defaultWeeklyHigh = if hasIV then openWeekly + moveWeekly else Double.NaN;
 def defaultWeeklyLow  = if hasIV then openWeekly - moveWeekly else Double.NaN;
 
-def activeDailyHigh = if dailyHigh != 0 then dailyHigh else defaultDailyHigh;
-def activeDailyLow = if dailyLow != 0 then dailyLow else defaultDailyLow;
-def activeWeeklyHigh = if weeklyHigh != 0 then weeklyHigh else defaultWeeklyHigh;
-def activeWeeklyLow = if weeklyLow != 0 then weeklyLow else defaultWeeklyLow;
+# --- Hardcoded Levels from Table ---
+def currentSymbol = GetSymbol();
+def tableDailyHigh = 
+    if currentSymbol == "SPY" then 694.29
+    else if currentSymbol == "SPX" then 6967.34
+    else if currentSymbol == "XSP" then 696.70
+    else if currentSymbol == "QQQ" then 626.03
+    else if currentSymbol == "IWM" then 261.79
+    else if currentSymbol == "/ES" or currentSymbol == "ES" then 7024.09
+    else if currentSymbol == "/NQ" or currentSymbol == "NQ" then 25966.99
+    else if currentSymbol == "SLV" then 72.17
+    else if currentSymbol == "GLD" then 416.26
+    else Double.NaN;
+
+def tableDailyLow = 
+    if currentSymbol == "SPY" then 684.73
+    else if currentSymbol == "SPX" then 6875.58
+    else if currentSymbol == "XSP" then 687.60
+    else if currentSymbol == "QQQ" then 614.91
+    else if currentSymbol == "IWM" then 254.75
+    else if currentSymbol == "/ES" or currentSymbol == "ES" then 6918.41
+    else if currentSymbol == "/NQ" or currentSymbol == "NQ" then 25457.01
+    else if currentSymbol == "SLV" then 67.25
+    else if currentSymbol == "GLD" then 406.72
+    else Double.NaN;
+
+def tableWeeklyHigh = 
+    if currentSymbol == "SPY" then 691.56
+    else if currentSymbol == "SPX" then 6941.19
+    else if currentSymbol == "XSP" then 694.05
+    else if currentSymbol == "QQQ" then 624.29
+    else if currentSymbol == "IWM" then 253.57
+    else if currentSymbol == "/ES" or currentSymbol == "ES" then 6980.48
+    else if currentSymbol == "/NQ" or currentSymbol == "NQ" then 25824.64
+    else if currentSymbol == "SLV" then 71.38
+    else if currentSymbol == "GLD" then 408.82
+    else Double.NaN;
+
+def tableWeeklyLow = 
+    if currentSymbol == "SPY" then 674.78
+    else if currentSymbol == "SPX" then 6775.75
+    else if currentSymbol == "XSP" then 677.65
+    else if currentSymbol == "QQQ" then 601.95
+    else if currentSymbol == "IWM" then 243.99
+    else if currentSymbol == "/ES" or currentSymbol == "ES" then 6820.52
+    else if currentSymbol == "/NQ" or currentSymbol == "NQ" then 24964.36
+    else if currentSymbol == "SLV" then 60.12
+    else if currentSymbol == "GLD" then 387.74
+    else Double.NaN;
+
+def activeDailyHigh = if dailyHigh != 0 then dailyHigh else if !IsNaN(tableDailyHigh) then tableDailyHigh else defaultDailyHigh;
+def activeDailyLow = if dailyLow != 0 then dailyLow else if !IsNaN(tableDailyLow) then tableDailyLow else defaultDailyLow;
+def activeWeeklyHigh = if weeklyHigh != 0 then weeklyHigh else if !IsNaN(tableWeeklyHigh) then tableWeeklyHigh else defaultWeeklyHigh;
+def activeWeeklyLow = if weeklyLow != 0 then weeklyLow else if !IsNaN(tableWeeklyLow) then tableWeeklyLow else defaultWeeklyLow;
 
 # Calculate ranges
 def dailyRange = activeDailyHigh - activeDailyLow;
