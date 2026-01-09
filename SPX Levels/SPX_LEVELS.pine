@@ -164,10 +164,10 @@ if showLines and barstate.islast
 
 // === LABELS ===
 if barstate.islast and showLabels
-    label.new(bar_index + 8, level_max, "6999.9 **", style=label.style_label_left, color=color.fuchsia, textcolor=color.white, size=size.large)
+    label.new(bar_index + 8, level_max, "6999.9 🎯**", style=label.style_label_left, color=color.fuchsia, textcolor=color.white, size=size.large)
     label.new(bar_index + 8, level0, "6975 🎯", style=label.style_label_left, color=color.fuchsia, textcolor=color.white, size=size.large)
-    label.new(bar_index + 8, level1, "6945 Target *", style=label.style_label_left, color=color.fuchsia, textcolor=color.white, size=size.large)
-    label.new(bar_index + 8, level2, "6921 Target *", style=label.style_label_left, color=color.fuchsia, textcolor=color.white, size=size.large)
+    label.new(bar_index + 8, level1, "6945 🎯*", style=label.style_label_left, color=color.fuchsia, textcolor=color.white, size=size.large)
+    label.new(bar_index + 8, level2, "6921 🎯*", style=label.style_label_left, color=color.fuchsia, textcolor=color.white, size=size.large)
     label.new(bar_index + 8, level3, "6895 Squeeze", style=label.style_label_left, color=color.red, textcolor=color.white, size=size.large)
     label.new(bar_index + 8, level4, "6850 Mid", style=label.style_label_left, color=color.aqua, textcolor=color.black)
     label.new(bar_index + 8, level5, "6823 Support", style=label.style_label_left, color=color.lime, textcolor=color.black, size=size.large)
