@@ -5,45 +5,46 @@ indicator("ES Levels - Jan 10", overlay=true, max_lines_count=500, max_labels_co
 // BIG PICTURE OVERVIEW
 //
 // CONTEXT:
-// - Choppy range (6945-6964) after 3-day rally. Bulls defended 6940.
-// - ⚠️ CATALYST: Supreme Court Tariff ruling ~10am - expect volatility!
+// - Clean 3 target run then noisy chop. 6940 support held exact.
+// - 6950 reclaim long trigger given and paying. Back to 6950 now (watch traps).
+// - 10am Catalyst passed. Now protecting gains.
 //
 // PLAN:
-// - 🐂ish: Hold 6935 (bull flag backtest). Targets: 6977→6986→7002→7011+
-// - Strong bull: Stay above 6945, resume higher.
-// - 🐻ish: Below 6945. Short under 6941 after bounce → 6935→6925→6913.
+// - 🐂ish: Hold 6964/6950. Targets: 6977→6986→6991→7002 (Major).
+// - Strong bull: Stay above 6964, resume higher.
+// - 🐻ish: Below 6940. Sell trigger <6940 → 6935 → 6925.
 //
 // SETUPS:
-// - Failed Breakdown of 6945 or 6935 = HIGH QUALITY LONG
-// - Lock 75% at first level, leave runner. Stop below structure.
-// NOTE: Breakdown trades = low win-rate, high R/R.
+// - 6950/64 Support holding = LONG.
+// - Breakdown < 6940 = SHORT to 35/25.
+// - Protect gains, leave runners.
 
 // === TARGETS ===
 level1 = input.float(7002, "Major 🎯: 7002", group="Targets")
 level1_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="Targets")
-level2 = input.float(6986, "Major 🎯: 6986", group="Targets")
+level2 = input.float(6991, "Target 🎯: 6991", group="Targets")
 level2_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="Targets")
-level3 = input.float(6977, "🔑 Level: 6977", group="Targets")
+level3 = input.float(6986, "Target 🎯: 6986", group="Targets")
 level3_thickness = input.int(3, "Line Weight", minval=1, maxval=5, group="Targets")
 
 // === RESISTANCE / TRIGGER ===
-level4 = input.float(6964, "Major Resistance: 6964", group="Resistance")
+level4 = input.float(6977, "Resistance: 6977", group="Resistance")
 level4_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="Resistance")
-level5 = input.float(6952, "💪: 6952", group="Resistance")
+level5 = input.float(6964, "Support 🧱: 6964", group="Resistance")
 level5_thickness = input.int(1, "Line Weight", minval=1, maxval=5, group="Resistance")
-level6 = input.float(6945, "🐻 Trigger: 6945", group="Resistance")
+level6 = input.float(6950, "Reclaim 🐂: 6950", group="Resistance")
 level6_thickness = input.int(3, "Line Weight", minval=1, maxval=5, group="Resistance")
 
 // === SUPPORT LEVELS ===
-level7 = input.float(6935, "🐂 Flag Backtest: 6935", group="Support")
+level7 = input.float(6940, "Bear Trigger < 6940", group="Support")
 level7_thickness = input.int(3, "Line Weight", minval=1, maxval=5, group="Support")
-level8 = input.float(6925, "Major 💪: 6925", group="Support")
+level8 = input.float(6935, "Target 🧱: 6935", group="Support")
 level8_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="Support")
-level9 = input.float(6913, "💪: 6913", group="Support")
+level9 = input.float(6925, "Major 🧱: 6925", group="Support")
 level9_thickness = input.int(1, "Line Weight", minval=1, maxval=5, group="Support")
 
 // === LOWER SUPPORT ===
-level10 = input.float(6906, "Major 💪: 6906", group="Lower")
+level10 = input.float(6906, "Major 🧱: 6906", group="Lower")
 level10_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="Lower")
 level11 = input.float(0, "Unused", group="Lower")
 level11_thickness = input.int(1, "Line Weight", minval=1, maxval=5, group="Lower")
@@ -56,15 +57,15 @@ showTable = input.bool(false, "Show Status Table", group="Display Settings")
 
 // === Plot Levels ===
 plot(level1, "7002 🎯", #FF00FF, level1_thickness, style=plot.style_line, trackprice=false)
-plot(level2, "6986 🎯", #FF00FF, level2_thickness, trackprice=false)
-plot(level3, "6977 🔑", #FF00FF, level3_thickness, trackprice=false)
-plot(level4, "6964 Res", #FFA500, level4_thickness, trackprice=false)
-plot(level5, "6952 💪", #FFA500, level5_thickness, trackprice=false)
-plot(level6, "6945 🐻<", #FFFF00, level6_thickness, trackprice=false)
-plot(level7, "6935 🐂Flag", #00FFFF, level7_thickness, trackprice=false)
-plot(level8, "6925 💪", #00FFFF, level8_thickness, trackprice=false)
-plot(level9, "6913 💪", #FF0000, level9_thickness, trackprice=false)
-plot(level10, "6906 💪", #FF0000, level10_thickness, trackprice=false)
+plot(level2, "6991 🎯", #FF00FF, level2_thickness, trackprice=false)
+plot(level3, "6986 🎯", #FF00FF, level3_thickness, trackprice=false)
+plot(level4, "6977 Res", #FFA500, level4_thickness, trackprice=false)
+plot(level5, "6964 Sup", #FFA500, level5_thickness, trackprice=false)
+plot(level6, "6950 🐂Reclaim", #FFFF00, level6_thickness, trackprice=false)
+plot(level7, "6940 🐻Trigger", #00FFFF, level7_thickness, trackprice=false)
+plot(level8, "6935 🧱", #00FFFF, level8_thickness, trackprice=false)
+plot(level9, "6925 🧱", #FF0000, level9_thickness, trackprice=false)
+plot(level10, "6906 🧱", #FF0000, level10_thickness, trackprice=false)
 plot(level11 > 0 ? level11 : na, "L11", #808080, level11_thickness, trackprice=false)
 
 // === Labels on Last Bar ===
@@ -94,15 +95,15 @@ if barstate.islast and showLabels
     label.delete(lbl11)
     
     lbl1 := label.new(bar_index + 5, level1, "02 🎯", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF00FF, 80), textcolor=#FF00FF, style=label.style_label_left, size=size.small)
-    lbl2 := label.new(bar_index + 5, level2, "86 🎯", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF00FF, 80), textcolor=#FF00FF, style=label.style_label_left, size=size.small)
-    lbl3 := label.new(bar_index + 5, level3, "77 🔑", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF00FF, 80), textcolor=#FF00FF, style=label.style_label_left, size=size.small)
-    lbl4 := label.new(bar_index + 5, level4, "64 Res", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFA500, 80), textcolor=#FFA500, style=label.style_label_left, size=size.small)
-    lbl5 := label.new(bar_index + 5, level5, "52 💪", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFA500, 80), textcolor=#FFA500, style=label.style_label_left, size=size.small)
-    lbl6 := label.new(bar_index + 5, level6, "45 🐻<", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFFF00, 80), textcolor=#FFFF00, style=label.style_label_left, size=size.small)
-    lbl7 := label.new(bar_index + 5, level7, "35 🐂Flag", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
-    lbl8 := label.new(bar_index + 5, level8, "25 💪", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
-    lbl9 := label.new(bar_index + 5, level9, "13 💪", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF0000, 80), textcolor=#FF0000, style=label.style_label_left, size=size.small)
-    lbl10 := label.new(bar_index + 5, level10, "06 💪", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF0000, 80), textcolor=#FF0000, style=label.style_label_left, size=size.small)
+    lbl2 := label.new(bar_index + 5, level2, "91 🎯", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF00FF, 80), textcolor=#FF00FF, style=label.style_label_left, size=size.small)
+    lbl3 := label.new(bar_index + 5, level3, "86 🎯", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF00FF, 80), textcolor=#FF00FF, style=label.style_label_left, size=size.small)
+    lbl4 := label.new(bar_index + 5, level4, "77 Res", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFA500, 80), textcolor=#FFA500, style=label.style_label_left, size=size.small)
+    lbl5 := label.new(bar_index + 5, level5, "64 Sup", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFA500, 80), textcolor=#FFA500, style=label.style_label_left, size=size.small)
+    lbl6 := label.new(bar_index + 5, level6, "50 🐂Reclaim", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFFF00, 80), textcolor=#FFFF00, style=label.style_label_left, size=size.small)
+    lbl7 := label.new(bar_index + 5, level7, "40 🐻<", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
+    lbl8 := label.new(bar_index + 5, level8, "35 🧱", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
+    lbl9 := label.new(bar_index + 5, level9, "25 🧱", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF0000, 80), textcolor=#FF0000, style=label.style_label_left, size=size.small)
+    lbl10 := label.new(bar_index + 5, level10, "06 🧱", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF0000, 80), textcolor=#FF0000, style=label.style_label_left, size=size.small)
     lbl11 := level11 > 0 ? label.new(bar_index + 5, level11, "L11", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#808080, 80), textcolor=#808080, style=label.style_label_left, size=size.small) : na
 
 // === Alert Conditions ===
@@ -111,34 +112,34 @@ alertcondition(ta.crossover(close, level1), "ES >> 7002", "ES >> 7002 - MAJOR �
 alertcondition(ta.crossunder(close, level1), "ES << 7002", "ES << 7002")
 
 // Major Target
-alertcondition(ta.crossover(close, level2), "ES >> 6986", "ES >> 6986 - 🎯!")
-alertcondition(ta.crossunder(close, level2), "ES << 6986", "ES << 6986")
-alertcondition(ta.crossover(close, level3), "ES >> 6977", "ES >> 6977 - 🔑 LEVEL!")
-alertcondition(ta.crossunder(close, level3), "ES << 6977", "ES << 6977")
+alertcondition(ta.crossover(close, level2), "ES >> 6991", "ES >> 6991 - 🎯!")
+alertcondition(ta.crossunder(close, level2), "ES << 6991", "ES << 6991")
+alertcondition(ta.crossover(close, level3), "ES >> 6986", "ES >> 6986 - 🔑 LEVEL!")
+alertcondition(ta.crossunder(close, level3), "ES << 6986", "ES << 6986")
 
 // Resistance
-alertcondition(ta.crossover(close, level4), "ES >> 6964", "ES >> 6964")
-alertcondition(ta.crossunder(close, level4), "ES << 6964", "ES << 6964")
+alertcondition(ta.crossover(close, level4), "ES >> 6977", "ES >> 6977 - Resistance")
+alertcondition(ta.crossunder(close, level4), "ES << 6977", "ES << 6977")
 
 // Support
-alertcondition(ta.crossover(close, level5), "ES >> 6952", "ES >> 6952")
-alertcondition(ta.crossunder(close, level5), "ES << 6952", "ES << 6952")
+alertcondition(ta.crossover(close, level5), "ES >> 6964", "ES >> 6964 - Support")
+alertcondition(ta.crossunder(close, level5), "ES << 6964", "ES << 6964")
+
+// Reclaim
+alertcondition(ta.crossover(close, level6), "ES >> 6950", "ES >> 6950 - Reclaim 🐂")
+alertcondition(ta.crossunder(close, level6), "ES << 6950", "ES << 6950 - Breakdown Watch")
 
 // Bear Trigger
-alertcondition(ta.crossover(close, level6), "ES >> 6945", "ES >> 6945 - Reclaim")
-alertcondition(ta.crossunder(close, level6), "ES << 6945", "ES << 6945 - 🐻 TRIGGER!")
-
-// Bull Flag
-alertcondition(ta.crossover(close, level7), "ES >> 6935", "ES >> 6935 - Reclaim")
-alertcondition(ta.crossunder(close, level7), "ES << 6935", "ES << 6935 - 🐂 Flag Test")
+alertcondition(ta.crossover(close, level7), "ES >> 6940", "ES >> 6940 - Safe")
+alertcondition(ta.crossunder(close, level7), "ES << 6940", "ES << 6940 - 🐻 TRIGGER!")
 
 // Major Support
-alertcondition(ta.crossover(close, level8), "ES >> 6925", "ES >> 6925")
-alertcondition(ta.crossunder(close, level8), "ES << 6925", "ES << 6925")
+alertcondition(ta.crossover(close, level8), "ES >> 6935", "ES >> 6935")
+alertcondition(ta.crossunder(close, level8), "ES << 6935", "ES << 6935")
 
 // Support
-alertcondition(ta.crossover(close, level9), "ES >> 6913", "ES >> 6913")
-alertcondition(ta.crossunder(close, level9), "ES << 6913", "ES << 6913")
+alertcondition(ta.crossover(close, level9), "ES >> 6925", "ES >> 6925")
+alertcondition(ta.crossunder(close, level9), "ES << 6925", "ES << 6925")
 
 // Lower Support
 alertcondition(ta.crossover(close, level10), "ES >> 6906", "ES >> 6906")
@@ -148,46 +149,46 @@ alertcondition(ta.crossunder(close, level10), "ES << 6906", "ES << 6906")
 var table statusTable = table.new(position.top_right, 2, 10, border_width=1)
 
 if barstate.islast and showTable
-    table.cell(statusTable, 0, 0, "ES - Jan 7", text_color=color.white, bgcolor=color.new(color.blue, 50))
+    table.cell(statusTable, 0, 0, "ES - Jan 10", text_color=color.white, bgcolor=color.new(color.blue, 50))
     table.cell(statusTable, 1, 0, "Level-to-Level", text_color=color.lime, bgcolor=color.new(color.blue, 50))
     
     table.cell(statusTable, 0, 1, "Now", text_color=color.white, bgcolor=color.new(color.gray, 50))
     table.cell(statusTable, 1, 1, str.tostring(close, "#.00"), text_color=color.aqua, bgcolor=color.new(color.gray, 50))
     
     // Position Status
-    posStatus = close >= level2 ? "PROFIT ZONE" : close >= level4 ? "MOMO ZONE" : close >= level7 ? "LONG BIAS" : close >= level8 ? "CAUTION" : "DEFENSIVE"
-    posColor = close >= level2 ? color.fuchsia : close >= level4 ? color.orange : close >= level7 ? color.aqua : close >= level8 ? color.yellow : color.red
+    posStatus = close >= level3 ? "PROFIT ZONE" : close >= level5 ? "MOMO ZONE" : close >= level6 ? "LONG BIAS" : close >= level7 ? "CAUTION" : "DEFENSIVE"
+    posColor = close >= level3 ? color.fuchsia : close >= level5 ? color.orange : close >= level6 ? color.aqua : close >= level7 ? color.yellow : color.red
     
     table.cell(statusTable, 0, 2, "Position", text_color=color.white, bgcolor=color.new(color.gray, 50))
     table.cell(statusTable, 1, 2, posStatus, text_color=posColor, bgcolor=color.new(color.gray, 50))
     
     // Trade Plan
-    tradePlan = close >= level3 ? "PROTECT: 6970-75" : close >= level4 ? "T: 6970-75" : close >= level7 ? "DIP BUY 45-40" : close >= level8 ? "HOLD 6935" : "T: 6925->6910"
-    planColor = close >= level3 ? color.fuchsia : close >= level4 ? color.orange : close >= level7 ? color.aqua : close >= level8 ? color.yellow : color.red
+    tradePlan = close >= level4 ? "PROTECT: 6977+" : close >= level6 ? "HOLD 6950+" : close >= level7 ? "WATCH TRAPS" : "SHORT -> 6935"
+    planColor = close >= level4 ? color.fuchsia : close >= level6 ? color.aqua : close >= level7 ? color.yellow : color.red
     
     table.cell(statusTable, 0, 3, "Plan", text_color=color.white, bgcolor=color.new(color.gray, 50))
     table.cell(statusTable, 1, 3, tradePlan, text_color=planColor, bgcolor=color.new(color.gray, 50))
     
     // Key Concepts
     table.cell(statusTable, 0, 4, "Bias", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 4, ">6940 = Long", text_color=color.lime, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 4, ">6950 = Long", text_color=color.lime, bgcolor=color.new(color.gray, 50))
     
     table.cell(statusTable, 0, 5, "Fail", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 5, "<6935 Defensive", text_color=color.red, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 5, "<6940 Defensive", text_color=color.red, bgcolor=color.new(color.gray, 50))
     
     // Key Levels
     table.cell(statusTable, 0, 6, "Inflection", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 6, "6970-75", text_color=color.fuchsia, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 6, "6991/7002", text_color=color.fuchsia, bgcolor=color.new(color.gray, 50))
     
     table.cell(statusTable, 0, 7, "Support", text_color=color.white, bgcolor=color.new(color.gray, 50))
-    table.cell(statusTable, 1, 7, "6945-40, 6935", text_color=color.aqua, bgcolor=color.new(color.gray, 50))
+    table.cell(statusTable, 1, 7, "6964, 6950", text_color=color.aqua, bgcolor=color.new(color.gray, 50))
     
     // Distance to key level
-    if close < level3
-        dist3 = level3 - close
-        table.cell(statusTable, 0, 8, "->6970", text_color=color.white, bgcolor=color.new(color.gray, 50))
+    if close < level4
+        dist3 = level4 - close
+        table.cell(statusTable, 0, 8, "->6977", text_color=color.white, bgcolor=color.new(color.gray, 50))
         table.cell(statusTable, 1, 8, str.tostring(dist3, "#.0") + " pts", text_color=color.fuchsia, bgcolor=color.new(color.gray, 50))
     else
         dist1 = level1 - close
-        table.cell(statusTable, 0, 8, "->6980 Ext", text_color=color.white, bgcolor=color.new(color.gray, 50))
+        table.cell(statusTable, 0, 8, "->7002 Major", text_color=color.white, bgcolor=color.new(color.gray, 50))
         table.cell(statusTable, 1, 8, str.tostring(dist1, "#.0") + " pts", text_color=color.fuchsia, bgcolor=color.new(color.gray, 50))
