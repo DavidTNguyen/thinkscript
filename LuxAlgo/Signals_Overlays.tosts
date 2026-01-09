@@ -1,0 +1,116 @@
+# LuxAlgo Signals & Overlays (Approximate Port)
+# Converted and adapted for ThinkData
+# Note: Proprietary library functions from the original PineScript (LAF.getSmartTrail, etc.) 
+# have been approximated using standard technical analysis concepts.
+
+declare upper;
+
+# ============================[GET USERS INPUT]============================ 
+input showSignals = yes;
+input signalMode = {default "Confirmation + Exits", "Contrarian + Exits", "None"};
+input signalSensitivity = 5; # Mapped to ATR Period/Multiplier scaling
+input candleColorType = {default "Confirmation Simple", "Confirmation Gradient", "Contrarian Gradient", "None"};
+
+# Indicator Overlay Settings
+input showSmartTrail = yes;
+input showTrendCatcher = no;
+input showNeoCloud = no;
+input showTrendTracer = no;
+input showDashboard = yes;
+
+# ============================[CALCULATIONS: MACD COLORING]============================ 
+# Logic from Pine:
+# if candleColorType != 'Confirmation Simple' -> 10, 25, 8 else 12, 26, 9
+def fastLength = if candleColorType != candleColorType."Confirmation Simple" then 10 else 12;
+def slowLength = if candleColorType != candleColorType."Confirmation Simple" then 25 else 26;
+def signalLength = if candleColorType != candleColorType."Confirmation Simple" then 8 else 9;
+
+def MacdValue = MACD(fastLength, slowLength, signalLength, AverageType.EXPONENTIAL).Value;
+def MacdAvg = MACD(fastLength, slowLength, signalLength, AverageType.EXPONENTIAL).Avg;
+def MacdDiff = MACD(fastLength, slowLength, signalLength, AverageType.EXPONENTIAL).Diff;
+
+# Candle Colors
+def greenCandle = if candleColorType == candleColorType."Confirmation Simple" then MacdDiff > 0 else MacdValue > MacdAvg;
+def redCandle = !greenCandle;
+
+AssignPriceColor(if candleColorType == candleColorType."None" then Color.CURRENT else 
+                 if greenCandle then if candleColorType == candleColorType."Confirmation Simple" then Color.GREEN else Color.CYAN
+                 else if candleColorType == candleColorType."Confirmation Simple" then Color.RED else Color.MAGENTA);
+
+# ============================[CALCULATIONS: SMART TRAIL]============================ 
+# Approximating Smart Trail using an ATR Trailing Stop logic
+# Sensitivity controls the tightness
+def trailPeriod = 10 + signalSensitivity; 
+def trailMultiplier = 1.5 + (signalSensitivity / 5.0);
+
+def ATR = Average(TrueRange(high, close, low), trailPeriod);
+def trailStop;
+def trend;
+
+if (IsNaN(trailStop[1])) {
+    trailStop = close;
+    trend = 1;
+} else {
+    if (trend[1] > 0) {
+        if (close < trailStop[1]) {
+            trend = -1;
+            trailStop = close + (ATR * trailMultiplier);
+        } else {
+            trend = 1;
+            trailStop = Max(trailStop[1], close - (ATR * trailMultiplier));
+        }
+    } else {
+        if (close > trailStop[1]) {
+            trend = 1;
+            trailStop = close - (ATR * trailMultiplier);
+        } else {
+            trend = -1;
+            trailStop = Min(trailStop[1], close + (ATR * trailMultiplier));
+        }
+    }
+}
+
+plot SmartTrail = if showSmartTrail then trailStop else Double.NaN;
+SmartTrail.AssignValueColor(if trend > 0 then Color.BLUE else Color.RED);
+SmartTrail.SetLineWeight(2);
+
+# Filler Line (Visual approximation for cloud effect)
+def fillerLine = trailStop * (if trend > 0 then 0.9995 else 1.0005);
+AddCloud(if showSmartTrail then SmartTrail else Double.NaN, if showSmartTrail then fillerLine else Double.NaN, Color.BLUE, Color.RED);
+
+# ============================[CALCULATIONS: TREND CATCHER]============================ 
+# Shorter term trend filter
+def catchPeriod = 5 + Round(signalSensitivity / 2, 0);
+def trendCatcherMA = ExpAverage(close, catchPeriod);
+def trendCatcherSignal = if close > trendCatcherMA then 1 else -1;
+
+plot TrendCatcher = if showTrendCatcher then trendCatcherMA else Double.NaN;
+TrendCatcher.AssignValueColor(if trendCatcherSignal > 0 then Color.GREEN else Color.RED);
+
+# ============================[CALCULATIONS: NEOCLOUD]============================ 
+# Ichimoku-style cloud or EMA Cloud
+def neoFast = ExpAverage(close, 20);
+def neoSlow = ExpAverage(close, 50);
+
+AddCloud(if showNeoCloud then neoFast else Double.NaN, if showNeoCloud then neoSlow else Double.NaN, Color.LIGHT_GREEN, Color.PINK);
+
+# ============================[SIGNALS]============================ 
+# Generating Buy/Sell signals based on Smart Trail flips
+def BuySignal = showSignals and trend > 0 and trend[1] <= 0;
+def SellSignal = showSignals and trend < 0 and trend[1] >= 0;
+
+plot Buy = if BuySignal then low else Double.NaN;
+Buy.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
+Buy.SetDefaultColor(Color.GREEN);
+Buy.SetLineWeight(3);
+
+plot Sell = if SellSignal then high else Double.NaN;
+Sell.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
+Sell.SetDefaultColor(Color.RED);
+Sell.SetLineWeight(3);
+
+# ============================[DASHBOARD]============================ 
+AddLabel(showDashboard, "LuxAlgo Overlay", Color.WHITE);
+AddLabel(showDashboard, "Trend: " + (if trend > 0 then "Bullish" else "Bearish"), if trend > 0 then Color.GREEN else Color.RED);
+AddLabel(showDashboard, "Volatility: " + (if ATR > ATR[1] then "Rising" else "Falling"), Color.GRAY);
+
