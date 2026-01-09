@@ -1,13 +1,7 @@
-# Smart Money Concepts [LuxAlgo]
-# Ported to ThinkScript
-# Information
-# This indicator provides a comprehensive Smart Money Concepts (SMC) toolkit.
-# Features:
-# - Full Market Structure (Internal & Swing)
-# - Order Blocks (Swing & Internal)
-# - Fair Value Gaps (FVG)
-# - Equal Highs/Lows
-# - Premium & Discount Zones
+# Smart Money Concepts for ThinkScript
+# Converted By VietRoadie from LuxAlgo Pine Script
+# Original: https://www.tradingview.com/script/SMgKoc0H-Smart-Money-Concepts-LuxAlgo/
+# License: CC BY-NC-SA 4.0
 
 declare upper;
 
