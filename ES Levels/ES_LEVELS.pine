@@ -1,47 +1,49 @@
 //@version=6
-indicator("ES Levels - Jan 7", overlay=true, max_lines_count=500, max_labels_count=500)
+indicator("ES Levels - Jan 10", overlay=true, max_lines_count=500, max_labels_count=500)
 
 // === ES Plan - Clean Execution Focus (Level-to-Level) ===
 // BIG PICTURE OVERVIEW
 //
 // CONTEXT:
-// - Constructively bullish while ES holds above 6940-35.
-// - Below that zone, upside edge degrades quickly.
+// - Choppy range (6945-6964) after 3-day rally. Bulls defended 6940.
+// - ⚠️ CATALYST: Supreme Court Tariff ruling ~10am - expect volatility!
 //
 // PLAN:
-// - 🐂ish: Above 6940 = Long bias. Dip buy 6945-40. Add > 6960.
-// - Inflection: 6970-75 = Profit zone. Tighten stops.
-// - 🐻ish: Below 6935 = Flip defensive. Target 6925 -> 6910.
+// - 🐂ish: Hold 6935 (bull flag backtest). Targets: 6977→6986→7002→7011+
+// - Strong bull: Stay above 6945, resume higher.
+// - 🐻ish: Below 6945. Short under 6941 after bounce → 6935→6925→6913.
 //
-// TACTICS: Best trades = Failed breakdowns & Reclaims. Avoid mid-range chop.
-// NOTE: We don't predict - we REACT and follow price level to level.
+// SETUPS:
+// - Failed Breakdown of 6945 or 6935 = HIGH QUALITY LONG
+// - Lock 75% at first level, leave runner. Stop below structure.
+// NOTE: Breakdown trades = low win-rate, high R/R.
 
-// === TARGETS / INFLECTION ===
-level1 = input.float(6980, "Extension Target: 6980", group="Targets")
-level1_thickness = input.int(1, "Line Weight", minval=1, maxval=5, group="Targets")
-level2 = input.float(6975, "Inflection Upper: 6975", group="Targets")
+// === TARGETS ===
+level1 = input.float(7002, "Major 🎯: 7002", group="Targets")
+level1_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="Targets")
+level2 = input.float(6986, "Major 🎯: 6986", group="Targets")
 level2_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="Targets")
-level3 = input.float(6970, "Inflection Lower: 6970", group="Targets")
-level3_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="Targets")
+level3 = input.float(6977, "🔑 Level: 6977", group="Targets")
+level3_thickness = input.int(3, "Line Weight", minval=1, maxval=5, group="Targets")
 
-// === MOMENTUM / RESISTANCE ===
-level4 = input.float(6960, "Momo Add Trigger: 6960", group="Resistance")
-level4_thickness = input.int(1, "Line Weight", minval=1, maxval=5, group="Resistance")
-level5 = input.float(6955, "Near-term Res: 6955", group="Resistance")
+// === RESISTANCE / TRIGGER ===
+level4 = input.float(6964, "Major Resistance: 6964", group="Resistance")
+level4_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="Resistance")
+level5 = input.float(6952, "💪: 6952", group="Resistance")
 level5_thickness = input.int(1, "Line Weight", minval=1, maxval=5, group="Resistance")
-level6 = input.float(6945, "Bull Control: 6945", group="Resistance")
-level6_thickness = input.int(1, "Line Weight", minval=1, maxval=5, group="Resistance")
+level6 = input.float(6945, "🐻 Trigger: 6945", group="Resistance")
+level6_thickness = input.int(3, "Line Weight", minval=1, maxval=5, group="Resistance")
 
 // === SUPPORT LEVELS ===
-level7 = input.float(6940, "Delta Support: 6940", group="Support")
-level7_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="Support")
-level8 = input.float(6935, "Struct Failure: 6935", group="Support")
-level8_thickness = input.int(3, "Line Weight", minval=1, maxval=5, group="Support")
-level9 = input.float(6925, "Last Dip-Buy: 6925", group="Support")
-level9_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="Support")
+level7 = input.float(6935, "🐂 Flag Backtest: 6935", group="Support")
+level7_thickness = input.int(3, "Line Weight", minval=1, maxval=5, group="Support")
+level8 = input.float(6925, "Major 💪: 6925", group="Support")
+level8_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="Support")
+level9 = input.float(6913, "💪: 6913", group="Support")
+level9_thickness = input.int(1, "Line Weight", minval=1, maxval=5, group="Support")
 
 // === LOWER SUPPORT ===
-level10 = input.float(6910, "Lower Support: 6910", group="Lower")
+level10 = input.float(6906, "Major 💪: 6906", group="Lower")
 level10_thickness = input.int(2, "Line Weight", minval=1, maxval=5, group="Lower")
 level11 = input.float(0, "Unused", group="Lower")
 level11_thickness = input.int(1, "Line Weight", minval=1, maxval=5, group="Lower")
@@ -50,19 +52,19 @@ level11_thickness = input.int(1, "Line Weight", minval=1, maxval=5, group="Lower
 enableAlerts = input.bool(true, "Enable Alerts", group="Alert Settings")
 alertSensitivity = input.float(0.5, "Alert Sensitivity (pts)", minval=0.1, maxval=5.0, group="Alert Settings")
 showLabels = input.bool(true, "Show Price Labels", group="Display Settings")
-showTable = input.bool(fase, "Show Status Table", group="Display Settings")
+showTable = input.bool(false, "Show Status Table", group="Display Settings")
 
 // === Plot Levels ===
-plot(level1, "6980 Ext", #FF00FF, level1_thickness, style=plot.style_line, trackprice=false)
-plot(level2, "6975 Inflect", #FF00FF, level2_thickness, trackprice=false)
-plot(level3, "6970 Inflect", #FF00FF, level3_thickness, trackprice=false)
-plot(level4, "6960 Momo", #FFA500, level4_thickness, trackprice=false)
-plot(level5, "6955 Res", #FFA500, level5_thickness, trackprice=false)
-plot(level6, "6945 Bull Ctrl", #00FFFF, level6_thickness, trackprice=false)
-plot(level7, "6940 Delta", #00FFFF, level7_thickness, trackprice=false)
-plot(level8, "6935 FAIL", #FFFF00, level8_thickness, trackprice=false)
-plot(level9, "6925 Dip Buy", #FFFF00, level9_thickness, trackprice=false)
-plot(level10, "6910 Supp", #FF0000, level10_thickness, trackprice=false)
+plot(level1, "7002 🎯", #FF00FF, level1_thickness, style=plot.style_line, trackprice=false)
+plot(level2, "6986 🎯", #FF00FF, level2_thickness, trackprice=false)
+plot(level3, "6977 🔑", #FF00FF, level3_thickness, trackprice=false)
+plot(level4, "6964 Res", #FFA500, level4_thickness, trackprice=false)
+plot(level5, "6952 💪", #FFA500, level5_thickness, trackprice=false)
+plot(level6, "6945 🐻<", #FFFF00, level6_thickness, trackprice=false)
+plot(level7, "6935 🐂Flag", #00FFFF, level7_thickness, trackprice=false)
+plot(level8, "6925 💪", #00FFFF, level8_thickness, trackprice=false)
+plot(level9, "6913 💪", #FF0000, level9_thickness, trackprice=false)
+plot(level10, "6906 💪", #FF0000, level10_thickness, trackprice=false)
 plot(level11 > 0 ? level11 : na, "L11", #808080, level11_thickness, trackprice=false)
 
 // === Labels on Last Bar ===
@@ -91,56 +93,56 @@ if barstate.islast and showLabels
     label.delete(lbl10)
     label.delete(lbl11)
     
-    lbl1 := label.new(bar_index + 5, level1, "80 Ext", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF00FF, 80), textcolor=#FF00FF, style=label.style_label_left, size=size.small)
-    lbl2 := label.new(bar_index + 5, level2, "75 Inflect", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF00FF, 80), textcolor=#FF00FF, style=label.style_label_left, size=size.small)
-    lbl3 := label.new(bar_index + 5, level3, "70 Inflect", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF00FF, 80), textcolor=#FF00FF, style=label.style_label_left, size=size.small)
-    lbl4 := label.new(bar_index + 5, level4, "60 Momo", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFA500, 80), textcolor=#FFA500, style=label.style_label_left, size=size.small)
-    lbl5 := label.new(bar_index + 5, level5, "55 Res", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFA500, 80), textcolor=#FFA500, style=label.style_label_left, size=size.small)
-    lbl6 := label.new(bar_index + 5, level6, "45 🐂 Ctrl", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
-    lbl7 := label.new(bar_index + 5, level7, "40 Delta", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
-    lbl8 := label.new(bar_index + 5, level8, "35 FAIL", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFFF00, 80), textcolor=#FFFF00, style=label.style_label_left, size=size.small)
-    lbl9 := label.new(bar_index + 5, level9, "25 Dip Buy", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFFF00, 80), textcolor=#FFFF00, style=label.style_label_left, size=size.small)
-    lbl10 := label.new(bar_index + 5, level10, "10 Supp", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF0000, 80), textcolor=#FF0000, style=label.style_label_left, size=size.small)
+    lbl1 := label.new(bar_index + 5, level1, "02 🎯", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF00FF, 80), textcolor=#FF00FF, style=label.style_label_left, size=size.small)
+    lbl2 := label.new(bar_index + 5, level2, "86 🎯", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF00FF, 80), textcolor=#FF00FF, style=label.style_label_left, size=size.small)
+    lbl3 := label.new(bar_index + 5, level3, "77 🔑", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF00FF, 80), textcolor=#FF00FF, style=label.style_label_left, size=size.small)
+    lbl4 := label.new(bar_index + 5, level4, "64 Res", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFA500, 80), textcolor=#FFA500, style=label.style_label_left, size=size.small)
+    lbl5 := label.new(bar_index + 5, level5, "52 💪", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFA500, 80), textcolor=#FFA500, style=label.style_label_left, size=size.small)
+    lbl6 := label.new(bar_index + 5, level6, "45 🐻<", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FFFF00, 80), textcolor=#FFFF00, style=label.style_label_left, size=size.small)
+    lbl7 := label.new(bar_index + 5, level7, "35 🐂Flag", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
+    lbl8 := label.new(bar_index + 5, level8, "25 💪", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#00FFFF, 80), textcolor=#00FFFF, style=label.style_label_left, size=size.small)
+    lbl9 := label.new(bar_index + 5, level9, "13 💪", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF0000, 80), textcolor=#FF0000, style=label.style_label_left, size=size.small)
+    lbl10 := label.new(bar_index + 5, level10, "06 💪", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#FF0000, 80), textcolor=#FF0000, style=label.style_label_left, size=size.small)
     lbl11 := level11 > 0 ? label.new(bar_index + 5, level11, "L11", xloc=xloc.bar_index, yloc=yloc.price, color=color.new(#808080, 80), textcolor=#808080, style=label.style_label_left, size=size.small) : na
 
 // === Alert Conditions ===
-// Extension Target
-alertcondition(ta.crossover(close, level1), "ES >> 6980", "ES >> 6980 - Extension!")
-alertcondition(ta.crossunder(close, level1), "ES << 6980", "ES << 6980")
+// Major Target
+alertcondition(ta.crossover(close, level1), "ES >> 7002", "ES >> 7002 - MAJOR 🎯!")
+alertcondition(ta.crossunder(close, level1), "ES << 7002", "ES << 7002")
 
-// Inflection Zone
-alertcondition(ta.crossover(close, level2), "ES >> 6975", "ES >> 6975 - PROFIT ZONE")
-alertcondition(ta.crossunder(close, level2), "ES << 6975", "ES << 6975")
-alertcondition(ta.crossover(close, level3), "ES >> 6970", "ES >> 6970 - Inflection")
-alertcondition(ta.crossunder(close, level3), "ES << 6970", "ES << 6970")
-
-// Momentum Add
-alertcondition(ta.crossover(close, level4), "ES >> 6960", "ES >> 6960 - MOMO ADD")
-alertcondition(ta.crossunder(close, level4), "ES << 6960", "ES << 6960")
+// Major Target
+alertcondition(ta.crossover(close, level2), "ES >> 6986", "ES >> 6986 - 🎯!")
+alertcondition(ta.crossunder(close, level2), "ES << 6986", "ES << 6986")
+alertcondition(ta.crossover(close, level3), "ES >> 6977", "ES >> 6977 - 🔑 LEVEL!")
+alertcondition(ta.crossunder(close, level3), "ES << 6977", "ES << 6977")
 
 // Resistance
-alertcondition(ta.crossover(close, level5), "ES >> 6955", "ES >> 6955 - Res Break")
-alertcondition(ta.crossunder(close, level5), "ES << 6955", "ES << 6955")
+alertcondition(ta.crossover(close, level4), "ES >> 6964", "ES >> 6964")
+alertcondition(ta.crossunder(close, level4), "ES << 6964", "ES << 6964")
 
-// Bull Control
-alertcondition(ta.crossover(close, level6), "ES >> 6945", "ES >> 6945 - Bull Ctrl")
-alertcondition(ta.crossunder(close, level6), "ES << 6945", "ES << 6945")
+// Support
+alertcondition(ta.crossover(close, level5), "ES >> 6952", "ES >> 6952")
+alertcondition(ta.crossunder(close, level5), "ES << 6952", "ES << 6952")
 
-// Delta Support
-alertcondition(ta.crossover(close, level7), "ES >> 6940", "ES >> 6940 - Reclaim!")
-alertcondition(ta.crossunder(close, level7), "ES << 6940", "ES << 6940 - Delta Fail?")
+// Bear Trigger
+alertcondition(ta.crossover(close, level6), "ES >> 6945", "ES >> 6945 - Reclaim")
+alertcondition(ta.crossunder(close, level6), "ES << 6945", "ES << 6945 - 🐻 TRIGGER!")
 
-// Structural Failure
-alertcondition(ta.crossover(close, level8), "ES >> 6935", "ES >> 6935 - Reclaim")
-alertcondition(ta.crossunder(close, level8), "ES << 6935", "ES << 6935 - STRUCT FAIL!")
+// Bull Flag
+alertcondition(ta.crossover(close, level7), "ES >> 6935", "ES >> 6935 - Reclaim")
+alertcondition(ta.crossunder(close, level7), "ES << 6935", "ES << 6935 - 🐂 Flag Test")
 
-// Last Dip-Buy
-alertcondition(ta.crossover(close, level9), "ES >> 6925", "ES >> 6925")
-alertcondition(ta.crossunder(close, level9), "ES << 6925", "ES << 6925 - Last Dip")
+// Major Support
+alertcondition(ta.crossover(close, level8), "ES >> 6925", "ES >> 6925")
+alertcondition(ta.crossunder(close, level8), "ES << 6925", "ES << 6925")
+
+// Support
+alertcondition(ta.crossover(close, level9), "ES >> 6913", "ES >> 6913")
+alertcondition(ta.crossunder(close, level9), "ES << 6913", "ES << 6913")
 
 // Lower Support
-alertcondition(ta.crossover(close, level10), "ES >> 6910", "ES >> 6910")
-alertcondition(ta.crossunder(close, level10), "ES << 6910", "ES << 6910 - Selloff")
+alertcondition(ta.crossover(close, level10), "ES >> 6906", "ES >> 6906")
+alertcondition(ta.crossunder(close, level10), "ES << 6906", "ES << 6906")
 
 // === Market Structure Status Table ===
 var table statusTable = table.new(position.top_right, 2, 10, border_width=1)

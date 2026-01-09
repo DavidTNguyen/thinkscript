@@ -24,17 +24,17 @@ input level3 = 6977;  # 🔑 Level
 input level3_thickness = 3;
 input level4 = 6964;  # Major Resistance
 input level4_thickness = 2;
-input level5 = 6952;  # Support
+input level5 = 6952;  # 💪
 input level5_thickness = 1;
 input level6 = 6945;  # 🐻 Trigger
 input level6_thickness = 3;
 input level7 = 6935;  # 🐂 Flag Backtest
 input level7_thickness = 3;
-input level8 = 6925;  # Major Support
+input level8 = 6925;  # Major 💪
 input level8_thickness = 2;
-input level9 = 6913;  # Support
+input level9 = 6913;  # 💪
 input level9_thickness = 1;
-input level10 = 6906; # Major Support
+input level10 = 6906; # Major 💪
 input level10_thickness = 2;
 input level11 = 0;    # Unused
 input level11_thickness = 1;
@@ -171,12 +171,12 @@ AddChartBubble(isLastBar, level1, "02 🎯", Color.MAGENTA, yes);
 AddChartBubble(isLastBar, level2, "86 🎯", Color.MAGENTA, yes);
 AddChartBubble(isLastBar, level3, "77 🔑", Color.MAGENTA, yes);
 AddChartBubble(isLastBar, level4, "64 Res", Color.ORANGE, yes);
-AddChartBubble(isLastBar, level5, "52 Supp", Color.ORANGE, yes);
+AddChartBubble(isLastBar, level5, "52 💪", Color.ORANGE, yes);
 AddChartBubble(isLastBar, level6, "45 🐻<", Color.YELLOW, no);
 AddChartBubble(isLastBar, level7, "35 🐂Flag", Color.CYAN, no);
-AddChartBubble(isLastBar, level8, "25 Supp", Color.CYAN, no);
-AddChartBubble(isLastBar and level9 > 0, level9, "13 Supp", Color.RED, no);
-AddChartBubble(isLastBar and level10 > 0, level10, "06 Supp", Color.RED, no);
+AddChartBubble(isLastBar, level8, "25 💪", Color.CYAN, no);
+AddChartBubble(isLastBar and level9 > 0, level9, "13 💪", Color.RED, no);
+AddChartBubble(isLastBar and level10 > 0, level10, "06 💪", Color.RED, no);
 AddChartBubble(isLastBar and level11 > 0, level11, "L11", Color.RED, no);
 AddChartBubble(isLastBar and level12 > 0, level12, "L12", Color.GRAY, no);
 AddChartBubble(isLastBar and showNWOG, nwog_high, "NWOG H", Color.VIOLET, yes);
