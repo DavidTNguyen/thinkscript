@@ -37,6 +37,7 @@
 
 # === KEY LEVELS ===
 input level_max = 6999.9; # Double Star Target
+input level0 = 6975;  # 🎯 Target
 input level1 = 6945;  # Upside Target 3
 input level2 = 6921;  # Upside Target 2
 input level3 = 6895;  # Squeeze Trigger / Resistance
@@ -73,6 +74,12 @@ L_Max.SetDefaultColor(Color.MAGENTA);
 L_Max.SetLineWeight(3);
 L_Max.SetStyle(Curve.FIRM);
 L_Max.SetHiding(!showLines);
+
+plot L0 = level0;
+L0.SetDefaultColor(Color.MAGENTA);
+L0.SetLineWeight(2);
+L0.SetStyle(Curve.SHORT_DASH);
+L0.SetHiding(!showLines);
 
 plot L1 = level1;
 L1.SetDefaultColor(Color.RED);
@@ -185,6 +192,8 @@ def isLastBar = isLastBar1[-bubblesBeforeLast];
 # Position detection
 def aboveMax = close > level_max;
 def atMax = close >= level_max - 5 and close <= level_max + 5;
+def above6975 = close > level0;  # 🎯 Target
+def at6975 = close >= level0 - 5 and close <= level0 + 5;
 def above6945 = close > level1;  # Upside Target 3
 def at6945 = close >= level1 - 5 and close <= level1 + 5;
 def above6921 = close > level2;  # Upside Target 2
@@ -226,6 +235,7 @@ def belowMaxRisk = close < level6;                         # Below 6802
 
 # === CHART BUBBLES ===
 AddChartBubble(isLastBar and showLabels, level_max, "6999.9 **", Color.MAGENTA, yes);
+AddChartBubble(isLastBar and showLabels, level0, "6975 🎯", Color.MAGENTA, yes);
 AddChartBubble(isLastBar and showLabels, level1, "6945 Target *", Color.MAGENTA, yes);
 AddChartBubble(isLastBar and showLabels, level2, "6921 Target *", Color.MAGENTA, yes);
 AddChartBubble(isLastBar and showLabels, level3, "6895 Squeeze", Color.RED, yes);
@@ -244,6 +254,9 @@ AddChartBubble(isLastBar and showLabels, level14, "6600", Color.CYAN, no);
 # === TOUCH LOGIC ===
 def touchMax = low <= level_max and high >= level_max;
 def firstTouchMax = touchMax and !touchMax[1];
+
+def touch6975 = low <= level0 and high >= level0;
+def firstTouch6975 = touch6975 and !touch6975[1];
 
 def touch6945 = low <= level1 and high >= level1;
 def firstTouch6945 = touch6945 and !touch6945[1];
@@ -297,12 +310,16 @@ def firstTouch6600 = touch6600 and !touch6600[1];
 Alert(enableAlerts and firstTouchMax, "SPX >> 6999.9 - DOUBLE STAR HIT!", Alert.BAR, Sound.Ring);
 Alert(enableAlerts and atMax, "SPX at 6999.9 - Double Star!", Alert.BAR, Sound.Chimes);
 
+# TARGET 6975
+Alert(enableAlerts and firstTouch6975, "SPX >> 6975 - 🎯3 [x]", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and at6975, "SPX at 6975!", Alert.BAR, Sound.Chimes);
+
 # UPSIDE TARGET 3 (6945)
-Alert(enableAlerts and firstTouch6945, "SPX >> 6945 - TARGET 3 HIT!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6945, "SPX >> 6945 - 🎯 2 [x]", Alert.BAR, Sound.Ring);
 Alert(enableAlerts and at6945, "SPX at 6945 - Final target!", Alert.BAR, Sound.Chimes);
 
 # UPSIDE TARGET 2 (6921)
-Alert(enableAlerts and firstTouch6921Up, "SPX UP 6921 - TARGET 2 HIT!", Alert.BAR, Sound.Ring);
+Alert(enableAlerts and firstTouch6921Up, "SPX UP 6921 - 🎯 1 [x]", Alert.BAR, Sound.Ring);
 Alert(enableAlerts and firstTouch6921Down, "SPX DOWN 6921 - Back below target 2!", Alert.BAR, Sound.Bell);
 Alert(enableAlerts and at6921, "SPX at 6921 - Target 2!", Alert.BAR, Sound.Chimes);
 

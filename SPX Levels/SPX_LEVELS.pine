@@ -40,7 +40,9 @@ indicator("SPX JAN 2 - New Year Session", overlay=true, max_lines_count=500, max
 
 // === INPUTS ===
 // Upside Targets
-level_max = input.float(6999.9, "Double Star Target", group="Upside Targets")
+level_max = input.float(6999.9, "Double Star 🎯", group="Upside Targets")
+level0 = input.float(6975, "🎯 [x]", group="Upside Targets")
+level0_thickness = input.int(2, "6975 Line Thickness", minval=1, maxval=10, group="Upside Targets")
 level1 = input.float(6945, "Upside Target 3", group="Upside Targets")
 level1_thickness = input.int(2, "6945 Line Thickness", minval=1, maxval=10, group="Upside Targets")
 level2 = input.float(6921, "Upside Target 2", group="Upside Targets")
@@ -95,6 +97,7 @@ showTable = input.bool(false, "Show Status Table", group="Display Settings")
 
 // === LEVEL LINES ===
 var line l_max = na
+var line l0 = na
 var line l1 = na
 var line l2 = na
 var line l3 = na
@@ -113,6 +116,9 @@ var line l14 = na
 if showLines and barstate.islast
     // Double Star Target - 6999.9 (Magenta, thick)
     l_max := line.new(bar_index - 100, level_max, bar_index + 20, level_max, color=color.fuchsia, width=3, style=line.style_solid)
+
+    // 🎯 Target - 6975 (Magenta)
+    l0 := line.new(bar_index - 100, level0, bar_index + 20, level0, color=color.fuchsia, width=level0_thickness, style=line.style_dashed)
 
     // Upside Target 3 - 6945 (Magenta)
     l1 := line.new(bar_index - 100, level1, bar_index + 20, level1, color=color.fuchsia, width=level1_thickness, style=line.style_dashed)
@@ -159,6 +165,7 @@ if showLines and barstate.islast
 // === LABELS ===
 if barstate.islast and showLabels
     label.new(bar_index + 8, level_max, "6999.9 **", style=label.style_label_left, color=color.fuchsia, textcolor=color.white, size=size.large)
+    label.new(bar_index + 8, level0, "6975 🎯", style=label.style_label_left, color=color.fuchsia, textcolor=color.white, size=size.large)
     label.new(bar_index + 8, level1, "6945 Target *", style=label.style_label_left, color=color.fuchsia, textcolor=color.white, size=size.large)
     label.new(bar_index + 8, level2, "6921 Target *", style=label.style_label_left, color=color.fuchsia, textcolor=color.white, size=size.large)
     label.new(bar_index + 8, level3, "6895 Squeeze", style=label.style_label_left, color=color.red, textcolor=color.white, size=size.large)
@@ -177,6 +184,8 @@ if barstate.islast and showLabels
 // === POSITION DETECTION ===
 aboveMax = close > level_max
 atMax = close >= level_max - 5 and close <= level_max + 5
+above6975 = close > level0  // 🎯 Target
+at6975 = close >= level0 - 5 and close <= level0 + 5
 above6945 = close > level1  // Upside Target 3
 at6945 = close >= level1 - 5 and close <= level1 + 5
 above6921 = close > level2  // Upside Target 2
