@@ -1,259 +1,189 @@
-# Smart Money Concepts for ThinkScript
-# Converted from LuxAlgo Pine Script
-# Original: https://www.tradingview.com/script/SMgKoc0H-Smart-Money-Concepts-LuxAlgo/
-# License: CC BY-NC-SA 4.0
+# Smart Money Concepts [LuxAlgo]
+# Ported to ThinkScript
+# Information
+# This indicator provides a comprehensive Smart Money Concepts (SMC) toolkit.
+# Features:
+# - Full Market Structure (Internal & Swing)
+# - Order Blocks (Swing & Internal)
+# - Fair Value Gaps (FVG)
+# - Equal Highs/Lows
+# - Premium & Discount Zones
 
 declare upper;
 
-# INPUTS
-
-# Structure Settings
-input showInternalStructure = no;
+# --- INPUTS ---
+input showInternalStructure = yes;
+input internalStructureLength = 5;
 input showSwingStructure = yes;
-input swingLength = 50;
-input showSwings = no;
-input showHighLowSwings = no;
+input swingStructureLength = 50;
 
-# Order Blocks
-input showInternalOrderBlocks = yes;
-input internalOrderBlocksSize = 5;
-input showSwingOrderBlocks = yes;
-input swingOrderBlocksSize = 5;
+input showOrderBlocks = yes;
+input showInternalOB = yes;
+input showSwingOB = yes;
+input obMitigationType = {default Close, HighLow}; # Mitigation method
 
-# Fair Value Gaps (Use FairValueGapSTUDY for proper FVG display)
-input showFairValueGaps = no;
-input fairValueGapsAutoThreshold = yes;
-input fairValueGapsExtend = 1;
-
-# Equal Highs/Lows
+input showFVG = yes;
 input showEqualHighsLows = yes;
-input equalHighsLowsLength = 20;
-input equalHighsLowsThreshold = 0.001;
-
-# Premium/Discount Zones
-input showPremiumDiscountZones = no;
+input showPremiumDiscount = no;
 
 # Colors
-DefineGlobalColor("BullishStructure", CreateColor(8, 153, 129));
-DefineGlobalColor("BearishStructure", CreateColor(242, 54, 69));
-DefineGlobalColor("InternalBullishOB", CreateColor(49, 121, 245));
-DefineGlobalColor("InternalBearishOB", CreateColor(247, 124, 128));
-DefineGlobalColor("SwingBullishOB", CreateColor(24, 72, 204));
-DefineGlobalColor("SwingBearishOB", CreateColor(178, 40, 51));
-DefineGlobalColor("BullishFVG", CreateColor(0, 255, 104));
-DefineGlobalColor("BearishFVG", CreateColor(255, 0, 8));
+DefineGlobalColor("BullStructure", CreateColor(8, 153, 129)); # #089981
+DefineGlobalColor("BearStructure", CreateColor(242, 54, 69)); # #F23645
+DefineGlobalColor("BullOB", CreateColor(33, 87, 243));        # #2157f3 (Blueish)
+DefineGlobalColor("BearOB", CreateColor(255, 0, 8));          # Red
+DefineGlobalColor("BullFVG", CreateColor(0, 255, 104));
+DefineGlobalColor("BearFVG", CreateColor(255, 0, 8));
 
-# ===== SWING DETECTION =====
+# --- FUNCTIONS & LOGIC ---
 
-def swingHighBar = high == Highest(high, swingLength);
-def swingLowBar = low == Lowest(low, swingLength);
+# 1. Pivot Detection
+# ------------------
+# Finds pivots where price is the highest/lowest in the neighborhood of 'length' bars.
+# Note: These signals are confirmed 'length' bars after they happen.
 
-# Store swing highs and lows
-def swingHigh = if swingHighBar then high else swingHigh[1];
-def swingLow = if swingLowBar then low else swingLow[1];
+# Internal Pivots
+def iHigh = high[internalStructureLength] == Highest(high, 2 * internalStructureLength + 1);
+def iLow  = low[internalStructureLength] == Lowest(low, 2 * internalStructureLength + 1);
 
-# Track last swing high/low bar index
-def lastSwingHighBar = if swingHighBar then BarNumber() else lastSwingHighBar[1];
-def lastSwingLowBar = if swingLowBar then BarNumber() else lastSwingLowBar[1];
+# Swing Pivots
+def sHigh = high[swingStructureLength] == Highest(high, 2 * swingStructureLength + 1);
+def sLow  = low[swingStructureLength] == Lowest(low, 2 * swingStructureLength + 1);
 
-# ===== MARKET STRUCTURE =====
+# 2. Market Structure (Trend & Breaks)
+# ------------------------------------
+# We distinguish between BOS (Break of Structure) and CHoCH (Change of Character).
+# BOS: Continuation of trend.
+# CHoCH: Reversal of trend.
 
-# Determine trend based on swing structure - only on actual swing changes
-def bullishStructure = swingHighBar and low > swingLow[1];
-def bearishStructure = swingLowBar and high < swingHigh[1];
+# Track Last Internal Swing Points
+rec last_iHigh = if iHigh then high[internalStructureLength] else last_iHigh[1];
+rec last_iLow  = if iLow then low[internalStructureLength] else last_iLow[1];
+rec prev_iHigh = if iHigh then last_iHigh[1] else prev_iHigh[1]; # Previous High
+rec prev_iLow  = if iLow then last_iLow[1] else prev_iLow[1];    # Previous Low
 
-def currentTrend = if bullishStructure then 1 
-                   else if bearishStructure then -1 
-                   else currentTrend[1];
+# Track Last Swing Swing Points
+rec last_sHigh = if sHigh then high[swingStructureLength] else last_sHigh[1];
+rec last_sLow  = if sLow then low[swingStructureLength] else last_sLow[1];
 
-# Break of Structure (BOS) detection - continuation in trend direction
-def bosBreakUp = currentTrend[1] == 1 and swingHighBar and high > swingHigh[1];
-def bosBreakDown = currentTrend[1] == -1 and swingLowBar and low < swingLow[1];
+# Internal Trend Logic
+# 1 = Bullish, -1 = Bearish
+rec iTrend = if close crosses above last_iHigh then 1 
+             else if close crosses below last_iLow then -1 
+             else iTrend[1];
 
-# Change of Character (CHoCH) detection - trend reversal
-def chochBreakUp = currentTrend[1] == -1 and swingHighBar and high > swingHigh[1];
-def chochBreakDown = currentTrend[1] == 1 and swingLowBar and low < swingLow[1];
+# Detect Crosses
+def iBreakHigh = close crosses above last_iHigh;
+def iBreakLow  = close crosses below last_iLow;
 
-# ===== ORDER BLOCKS =====
+# Internal Signals
+def iBOS_Bull   = iBreakHigh and iTrend[1] == 1;
+def iCHoCH_Bull = iBreakHigh and iTrend[1] == -1;
+def iBOS_Bear   = iBreakLow and iTrend[1] == -1;
+def iCHoCH_Bear = iBreakLow and iTrend[1] == 1;
 
-# Volatility measure for filtering
-def atrValue = Average(TrueRange(high, close, low), 200);
+# Swing Trend Logic
+rec sTrend = if close crosses above last_sHigh then 1 
+             else if close crosses below last_sLow then -1 
+             else sTrend[1];
 
-# Bullish Order Block: last down candle before bullish move
-def bullishOB = close > open[1] and open[1] > close[1];
-def bullishOBTop = if bullishOB then high[1] else bullishOBTop[1];
-def bullishOBBot = if bullishOB then low[1] else bullishOBBot[1];
-def bullishOBBar = if bullishOB then BarNumber() else bullishOBBar[1];
+def sBreakHigh = close crosses above last_sHigh;
+def sBreakLow  = close crosses below last_sLow;
 
-# Bearish Order Block: last up candle before bearish move
-def bearishOB = close < open[1] and open[1] < close[1];
-def bearishOBTop = if bearishOB then high[1] else bearishOBTop[1];
-def bearishOBBot = if bearishOB then low[1] else bearishOBBot[1];
-def bearishOBBar = if bearishOB then BarNumber() else bearishOBBar[1];
+# Swing Signals
+def sBOS_Bull   = sBreakHigh and sTrend[1] == 1;
+def sCHoCH_Bull = sBreakHigh and sTrend[1] == -1;
+def sBOS_Bear   = sBreakLow and sTrend[1] == -1;
+def sCHoCH_Bear = sBreakLow and sTrend[1] == 1;
 
-# Order Block mitigation (when price returns to block)
-def bullishOBMitigated = low <= bullishOBTop and BarNumber() > bullishOBBar;
-def bearishOBMitigated = high >= bearishOBBot and BarNumber() > bearishOBBar;
+# 3. Order Blocks (Simplification for TOS)
+# ----------------------------------------
+# We look for the candle *prior* to a significant move (BOS/CHoCH).
+# Since tracking "last broken structure's origin" is complex, we use the standard definition:
+# Bullish OB: Bearish Candle followed by Bullish Engulfing/Break.
+# We will show the most recent "Unmitigated" OB found near a pivot.
 
-# ===== FAIR VALUE GAPS =====
+# Store candle properties for OB detection
+def upCandle = close > open;
+def downCandle = close < open;
 
-# Bullish FVG: gap between high[2] and low (current bar high > low[2])
-def bullishFVG = low > high[2];
-def bullishFVGTop = if bullishFVG then low else Double.NaN;
-def bullishFVGBottom = if bullishFVG then high[2] else Double.NaN;
+# Swing OBs are significant.
+# Bullish Swing OB: The lowest down-candle near the last Swing Low.
+# Bearish Swing OB: The highest up-candle near the last Swing High.
 
-# Bearish FVG: gap between low[2] and high (current bar low < high[2])
-def bearishFVG = high < low[2];
-def bearishFVGTop = if bearishFVG then low[2] else Double.NaN;
-def bearishFVGBottom = if bearishFVG then high else Double.NaN;
+# We just visualize the LAST valid OB created at a pivot.
+rec sBullOB_Top = if sLow then (if downCandle[swingStructureLength] then high[swingStructureLength] else high[swingStructureLength]) else sBullOB_Top[1];
+rec sBullOB_Bot = if sLow then (if downCandle[swingStructureLength] then low[swingStructureLength] else low[swingStructureLength]) else sBullOB_Bot[1];
 
-# ===== EQUAL HIGHS/LOWS =====
+rec sBearOB_Top = if sHigh then (if upCandle[swingStructureLength] then high[swingStructureLength] else high[swingStructureLength]) else sBearOB_Top[1];
+rec sBearOB_Bot = if sHigh then (if upCandle[swingStructureLength] then low[swingStructureLength] else low[swingStructureLength]) else sBearOB_Bot[1];
 
-def recentHigh = Highest(high, equalHighsLowsLength);
-def recentLow = Lowest(low, equalHighsLowsLength);
+# Plotting OBs
+# These will plot horizontal lines from the last Swing Point.
+# Use AddCloud to fill.
 
-# Equal highs: current high approximately equal to recent high
-# Only show if high is actually at the peak and within threshold
-# Must be at swing high (local peak) and have matching peak with strong confirmation
-def equalHigh = swingHighBar
-                and high[equalHighsLowsLength] == Highest(high[equalHighsLowsLength], equalHighsLowsLength)
-                and AbsValue(high - high[equalHighsLowsLength]) / high <= equalHighsLowsThreshold
-                and high[equalHighsLowsLength + 1] != high[equalHighsLowsLength];
+# 4. Fair Value Gaps (FVG)
+# ------------------------
+# Bullish FVG: Low > High[2]
+# Bearish FVG: High < Low[2]
 
-# Equal lows: current low approximately equal to recent low
-# Only show if low is actually at the trough and within threshold
-# Must be at swing low (local trough) and have matching trough with strong confirmation
-def equalLow = swingLowBar
-               and low[equalHighsLowsLength] == Lowest(low[equalHighsLowsLength], equalHighsLowsLength)
-               and AbsValue(low - low[equalHighsLowsLength]) / low <= equalHighsLowsThreshold
-               and low[equalHighsLowsLength + 1] != low[equalHighsLowsLength];
+def isBullFVG = low > high[2];
+def isBearFVG = high < low[2];
 
-# ===== PREMIUM/DISCOUNT ZONES =====
+# Track most recent FVG and check mitigation
+# Mitigation: Price comes back and touches the gap.
+# If low crosses below FVG Top (for Bullish) -> Mitigated.
 
-def highestSwing = Highest(swingHigh, 100);
-def lowestSwing = Lowest(swingLow, 100);
-def swingRange = highestSwing - lowestSwing;
+rec curBullFVG_Top = if isBullFVG then low else if low < curBullFVG_Top[1] then Double.NaN else curBullFVG_Top[1];
+rec curBullFVG_Bot = if isBullFVG then high[2] else if low < curBullFVG_Top[1] then Double.NaN else curBullFVG_Bot[1];
 
-def premiumZone = highestSwing - (swingRange * 0.25);
-def equilibrium = highestSwing - (swingRange * 0.5);
-def discountZone = lowestSwing + (swingRange * 0.25);
+rec curBearFVG_Top = if isBearFVG then low[2] else if high > curBearFVG_Bot[1] then Double.NaN else curBearFVG_Top[1];
+rec curBearFVG_Bot = if isBearFVG then high else if high > curBearFVG_Bot[1] then Double.NaN else curBearFVG_Bot[1];
 
-# ===== PLOTS =====
+# 5. Equal Highs/Lows
+# -------------------
+# If current pivot High is close to previous pivot High.
+def eqHigh = iHigh and AbsValue(high[internalStructureLength] - prev_iHigh) < (high[internalStructureLength] * 0.001);
+def eqLow  = iLow and AbsValue(low[internalStructureLength] - prev_iLow) < (low[internalStructureLength] * 0.001);
 
-# Structure Break Points
-plot BullishBOS = if showSwingStructure and bosBreakUp then low else Double.NaN;
-BullishBOS.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
-BullishBOS.SetDefaultColor(GlobalColor("BullishStructure"));
-BullishBOS.SetLineWeight(3);
+# --- PLOTTING ---
 
-plot BearishBOS = if showSwingStructure and bosBreakDown then high else Double.NaN;
-BearishBOS.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
-BearishBOS.SetDefaultColor(GlobalColor("BearishStructure"));
-BearishBOS.SetLineWeight(3);
+# Market Structure Labels
+# We plot them at the time of the break.
+AddChartBubble(showInternalStructure and iBOS_Bull, high, "iBOS", GlobalColor("BullStructure"), no);
+AddChartBubble(showInternalStructure and iCHoCH_Bull, high, "iCHoCH", GlobalColor("BullStructure"), no);
+AddChartBubble(showInternalStructure and iBOS_Bear, low, "iBOS", GlobalColor("BearStructure"), yes);
+AddChartBubble(showInternalStructure and iCHoCH_Bear, low, "iCHoCH", GlobalColor("BearStructure"), yes);
 
-plot BullishCHoCH = if showSwingStructure and chochBreakUp then low else Double.NaN;
-BullishCHoCH.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_UP);
-BullishCHoCH.SetDefaultColor(Color.CYAN);
-BullishCHoCH.SetLineWeight(2);
+AddChartBubble(showSwingStructure and sBOS_Bull, high, "BOS", GlobalColor("BullStructure"), no);
+AddChartBubble(showSwingStructure and sCHoCH_Bull, high, "CHoCH", GlobalColor("BullStructure"), no);
+AddChartBubble(showSwingStructure and sBOS_Bear, low, "BOS", GlobalColor("BearStructure"), yes);
+AddChartBubble(showSwingStructure and sCHoCH_Bear, low, "CHoCH", GlobalColor("BearStructure"), yes);
 
-plot BearishCHoCH = if showSwingStructure and chochBreakDown then high else Double.NaN;
-BearishCHoCH.SetPaintingStrategy(PaintingStrategy.BOOLEAN_ARROW_DOWN);
-BearishCHoCH.SetDefaultColor(Color.MAGENTA);
-BearishCHoCH.SetLineWeight(2);
+# FVG Plots (Showing the active unmitigated one)
+plot FVG_Bull_Top = if showFVG and !IsNaN(curBullFVG_Top) then curBullFVG_Top else Double.NaN;
+plot FVG_Bull_Bot = if showFVG and !IsNaN(curBullFVG_Bot) then curBullFVG_Bot else Double.NaN;
+AddCloud(FVG_Bull_Top, FVG_Bull_Bot, GlobalColor("BullFVG"), GlobalColor("BullFVG"));
 
-# Swing Points
-plot SwingHighPlot = if showSwings and swingHighBar then high else Double.NaN;
-SwingHighPlot.SetPaintingStrategy(PaintingStrategy.BOOLEAN_POINTS);
-SwingHighPlot.SetDefaultColor(Color.YELLOW);
-SwingHighPlot.SetLineWeight(3);
+plot FVG_Bear_Top = if showFVG and !IsNaN(curBearFVG_Top) then curBearFVG_Top else Double.NaN;
+plot FVG_Bear_Bot = if showFVG and !IsNaN(curBearFVG_Bot) then curBearFVG_Bot else Double.NaN;
+AddCloud(FVG_Bear_Top, FVG_Bear_Bot, GlobalColor("BearFVG"), GlobalColor("BearFVG"));
 
-plot SwingLowPlot = if showSwings and swingLowBar then low else Double.NaN;
-SwingLowPlot.SetPaintingStrategy(PaintingStrategy.BOOLEAN_POINTS);
-SwingLowPlot.SetDefaultColor(Color.YELLOW);
-SwingLowPlot.SetLineWeight(3);
+# Order Block Plots
+# Visualizing simple blocks from last swing
+plot OB_Bull_Top = if showOrderBlocks and showSwingOB and sTrend == 1 then sBullOB_Top else Double.NaN;
+plot OB_Bull_Bot = if showOrderBlocks and showSwingOB and sTrend == 1 then sBullOB_Bot else Double.NaN;
+# Condition: Only show if price is above it (unmitigated-ish or valid support)
+# OBs are valid until broken.
+AddCloud(if close > OB_Bull_Bot then OB_Bull_Top else Double.NaN, if close > OB_Bull_Bot then OB_Bull_Bot else Double.NaN, GlobalColor("BullOB"), GlobalColor("BullOB"));
 
-# Order Blocks (as zones with clouds)
-plot BullishOBHigh = if showSwingOrderBlocks and !bullishOBMitigated 
-                      and BarNumber() - bullishOBBar <= 50 
-                      then bullishOBTop else Double.NaN;
-plot BullishOBLow = if showSwingOrderBlocks and !bullishOBMitigated 
-                     and BarNumber() - bullishOBBar <= 50 
-                     then bullishOBBot else Double.NaN;
-                     
-BullishOBHigh.SetDefaultColor(GlobalColor("SwingBullishOB"));
-BullishOBHigh.SetLineWeight(1);
-BullishOBLow.SetDefaultColor(GlobalColor("SwingBullishOB"));
-BullishOBLow.SetLineWeight(1);
+plot OB_Bear_Top = if showOrderBlocks and showSwingOB and sTrend == -1 then sBearOB_Top else Double.NaN;
+plot OB_Bear_Bot = if showOrderBlocks and showSwingOB and sTrend == -1 then sBearOB_Bot else Double.NaN;
+AddCloud(if close < OB_Bear_Top then OB_Bear_Top else Double.NaN, if close < OB_Bear_Top then OB_Bear_Bot else Double.NaN, GlobalColor("BearOB"), GlobalColor("BearOB"));
 
-plot BearishOBHigh = if showSwingOrderBlocks and !bearishOBMitigated 
-                      and BarNumber() - bearishOBBar <= 50 
-                      then bearishOBTop else Double.NaN;
-plot BearishOBLow = if showSwingOrderBlocks and !bearishOBMitigated 
-                     and BarNumber() - bearishOBBar <= 50 
-                     then bearishOBBot else Double.NaN;
-                     
-BearishOBHigh.SetDefaultColor(GlobalColor("SwingBearishOB"));
-BearishOBHigh.SetLineWeight(1);
-BearishOBLow.SetDefaultColor(GlobalColor("SwingBearishOB"));
-BearishOBLow.SetLineWeight(1);
+# Equal Highs/Lows Labels
+# These appear at the pivot point (delayed by length)
+AddChartBubble(showEqualHighsLows and eqHigh, high[internalStructureLength], "EQH", Color.YELLOW, yes);
+AddChartBubble(showEqualHighsLows and eqLow, low[internalStructureLength], "EQL", Color.YELLOW, no);
 
-# Order Block Clouds (create rectangle effect)
-AddCloud(BullishOBHigh, BullishOBLow, GlobalColor("SwingBullishOB"), GlobalColor("SwingBullishOB"));
-AddCloud(BearishOBHigh, BearishOBLow, GlobalColor("SwingBearishOB"), GlobalColor("SwingBearishOB"));
-
-# Fair Value Gaps
-plot BullishFVGTopPlot = if showFairValueGaps and !IsNaN(bullishFVGTop) then bullishFVGTop else Double.NaN;
-BullishFVGTopPlot.SetDefaultColor(Color.CURRENT);
-BullishFVGTopPlot.HideBubble();
-BullishFVGTopPlot.HideTitle();
-BullishFVGTopPlot.Hide();
-
-plot BullishFVGBottomPlot = if showFairValueGaps and !IsNaN(bullishFVGBottom) then bullishFVGBottom else Double.NaN;
-BullishFVGBottomPlot.SetDefaultColor(Color.CURRENT);
-BullishFVGBottomPlot.HideBubble();
-BullishFVGBottomPlot.HideTitle();
-BullishFVGBottomPlot.Hide();
-
-plot BearishFVGTopPlot = if showFairValueGaps and !IsNaN(bearishFVGTop) then bearishFVGTop else Double.NaN;
-BearishFVGTopPlot.SetDefaultColor(Color.CURRENT);
-BearishFVGTopPlot.HideBubble();
-BearishFVGTopPlot.HideTitle();
-BearishFVGTopPlot.Hide();
-
-plot BearishFVGBottomPlot = if showFairValueGaps and !IsNaN(bearishFVGBottom) then bearishFVGBottom else Double.NaN;
-BearishFVGBottomPlot.SetDefaultColor(Color.CURRENT);
-BearishFVGBottomPlot.HideBubble();
-BearishFVGBottomPlot.HideTitle();
-BearishFVGBottomPlot.Hide();
-
-# FVG Clouds
-AddCloud(BullishFVGTopPlot, BullishFVGBottomPlot, CreateColor(0, 255, 104), CreateColor(0, 255, 104));
-AddCloud(BearishFVGTopPlot, BearishFVGBottomPlot, CreateColor(255, 0, 8), CreateColor(255, 0, 8));
-
-# Premium/Discount Zones
-plot PremiumLevel = if showPremiumDiscountZones then premiumZone else Double.NaN;
-PremiumLevel.SetDefaultColor(GlobalColor("BearishStructure"));
-PremiumLevel.SetStyle(Curve.SHORT_DASH);
-
-plot EquilibriumLevel = if showPremiumDiscountZones then equilibrium else Double.NaN;
-EquilibriumLevel.SetDefaultColor(Color.GRAY);
-EquilibriumLevel.SetStyle(Curve.SHORT_DASH);
-
-plot DiscountLevel = if showPremiumDiscountZones then discountZone else Double.NaN;
-DiscountLevel.SetDefaultColor(GlobalColor("BullishStructure"));
-DiscountLevel.SetStyle(Curve.SHORT_DASH);
-
-# Candle Coloring based on trend
-AssignPriceColor(if currentTrend == 1 then GlobalColor("BullishStructure") 
-                 else if currentTrend == -1 then GlobalColor("BearishStructure") 
-                 else Color.GRAY);
-
-# Labels for Equal Highs/Lows
-AddChartBubble(showEqualHighsLows and equalHigh, high, "EQH", Color.YELLOW, yes);
-AddChartBubble(showEqualHighsLows and equalLow, low, "EQL", Color.YELLOW, no);
-
-# Labels for Structure Breaks
-AddChartBubble(showSwingStructure and bosBreakUp, low, "BOS", GlobalColor("BullishStructure"), no);
-AddChartBubble(showSwingStructure and bosBreakDown, high, "BOS", GlobalColor("BearishStructure"), yes);
-AddChartBubble(showSwingStructure and chochBreakUp, low, "CHoCH", Color.CYAN, no);
-AddChartBubble(showSwingStructure and chochBreakDown, high, "CHoCH", Color.MAGENTA, yes);
+# Trend Candles
+AssignPriceColor(if !showInternalStructure then Color.CURRENT else if iTrend == 1 then GlobalColor("BullStructure") else GlobalColor("BearStructure"));
