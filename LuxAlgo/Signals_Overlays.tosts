@@ -1,5 +1,5 @@
 # LuxAlgo Signals & Overlays (Approximate Port)
-# Converted and adapted for ThinkData
+# Converted and adapted for ThinkScript by VietRoadie
 # Note: Proprietary library functions from the original PineScript (LAF.getSmartTrail, etc.) 
 # have been approximated using standard technical analysis concepts.
 
