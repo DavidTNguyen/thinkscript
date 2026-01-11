@@ -34,54 +34,54 @@ def defaultDailyLow  = if hasIV then openDaily - moveDaily else Double.NaN;
 def defaultWeeklyHigh = if hasIV then openWeekly + moveWeekly else Double.NaN;
 def defaultWeeklyLow  = if hasIV then openWeekly - moveWeekly else Double.NaN;
 
-# --- Hardcoded Levels from Table ---
+# --- Hardcoded Levels from Table (Updated 1/12/2026) ---
 def currentSymbol = GetSymbol();
 def tableDailyHigh = 
-    if currentSymbol == "SPY" then 694.29
-    else if currentSymbol == "SPX" then 6967.34
-    else if currentSymbol == "XSP" then 696.70
-    else if currentSymbol == "QQQ" then 626.03
-    else if currentSymbol == "IWM" then 261.79
-    else if currentSymbol == "/ES" or currentSymbol == "ES" then 7024.09
-    else if currentSymbol == "/NQ" or currentSymbol == "NQ" then 25966.99
-    else if currentSymbol == "SLV" then 72.17
-    else if currentSymbol == "GLD" then 416.26
+    if currentSymbol == "SPY" then 697.14
+    else if currentSymbol == "SPX" then 6995.48
+    else if currentSymbol == "XSP" then 699.46
+    else if currentSymbol == "QQQ" then 630.82
+    else if currentSymbol == "IWM" then 262.15
+    else if currentSymbol == "/ES" or currentSymbol == "ES" then 7033.18
+    else if currentSymbol == "/NQ" or currentSymbol == "NQ" then 26088.25
+    else if currentSymbol == "SLV" then 75.09
+    else if currentSymbol == "GLD" then 418.76
     else Double.NaN;
 
 def tableDailyLow = 
-    if currentSymbol == "SPY" then 684.73
-    else if currentSymbol == "SPX" then 6875.58
-    else if currentSymbol == "XSP" then 687.60
-    else if currentSymbol == "QQQ" then 614.91
-    else if currentSymbol == "IWM" then 254.75
-    else if currentSymbol == "/ES" or currentSymbol == "ES" then 6918.41
-    else if currentSymbol == "/NQ" or currentSymbol == "NQ" then 25457.01
-    else if currentSymbol == "SLV" then 67.25
-    else if currentSymbol == "GLD" then 406.72
+    if currentSymbol == "SPY" then 691.00
+    else if currentSymbol == "SPX" then 6937.08
+    else if currentSymbol == "XSP" then 693.80
+    else if currentSymbol == "QQQ" then 622.48
+    else if currentSymbol == "IWM" then 258.31
+    else if currentSymbol == "/ES" or currentSymbol == "ES" then 6974.82
+    else if currentSymbol == "/NQ" or currentSymbol == "NQ" then 25775.25
+    else if currentSymbol == "SLV" then 69.67
+    else if currentSymbol == "GLD" then 410.18
     else Double.NaN;
 
 def tableWeeklyHigh = 
-    if currentSymbol == "SPY" then 691.56
-    else if currentSymbol == "SPX" then 6941.19
-    else if currentSymbol == "XSP" then 694.05
-    else if currentSymbol == "QQQ" then 624.29
-    else if currentSymbol == "IWM" then 253.57
-    else if currentSymbol == "/ES" or currentSymbol == "ES" then 6980.48
-    else if currentSymbol == "/NQ" or currentSymbol == "NQ" then 25824.64
-    else if currentSymbol == "SLV" then 71.38
-    else if currentSymbol == "GLD" then 408.82
+    if currentSymbol == "SPY" then 702.60
+    else if currentSymbol == "SPX" then 7049.71
+    else if currentSymbol == "XSP" then 704.86
+    else if currentSymbol == "QQQ" then 637.35
+    else if currentSymbol == "IWM" then 265.31
+    else if currentSymbol == "/ES" or currentSymbol == "ES" then 7086.79
+    else if currentSymbol == "/NQ" or currentSymbol == "NQ" then 26355.99
+    else if currentSymbol == "SLV" then 78.22
+    else if currentSymbol == "GLD" then 424.49
     else Double.NaN;
 
 def tableWeeklyLow = 
-    if currentSymbol == "SPY" then 674.78
-    else if currentSymbol == "SPX" then 6775.75
-    else if currentSymbol == "XSP" then 677.65
-    else if currentSymbol == "QQQ" then 601.95
-    else if currentSymbol == "IWM" then 243.99
-    else if currentSymbol == "/ES" or currentSymbol == "ES" then 6820.52
-    else if currentSymbol == "/NQ" or currentSymbol == "NQ" then 24964.36
-    else if currentSymbol == "SLV" then 60.12
-    else if currentSymbol == "GLD" then 387.74
+    if currentSymbol == "SPY" then 685.54
+    else if currentSymbol == "SPX" then 6882.85
+    else if currentSymbol == "XSP" then 688.40
+    else if currentSymbol == "QQQ" then 615.95
+    else if currentSymbol == "IWM" then 255.15
+    else if currentSymbol == "/ES" or currentSymbol == "ES" then 6921.21
+    else if currentSymbol == "/NQ" or currentSymbol == "NQ" then 25507.51
+    else if currentSymbol == "SLV" then 66.54
+    else if currentSymbol == "GLD" then 404.45
     else Double.NaN;
 
 def activeDailyHigh = if dailyHigh != 0 then dailyHigh else if !IsNaN(tableDailyHigh) then tableDailyHigh else defaultDailyHigh;
